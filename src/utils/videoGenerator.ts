@@ -1,6 +1,6 @@
-import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { fetchFile, toBlobURL } from "@ffmpeg/util";
 import html2canvas from "html2canvas";
+// @ts-ignore - gif.js doesn't have TypeScript definitions
+import GIF from "gif.js";
 
 export interface VideoGenerationProgress {
   stage: "initializing" | "capturing" | "encoding" | "complete" | "error";
@@ -10,47 +10,19 @@ export interface VideoGenerationProgress {
   message: string;
 }
 
-let ffmpegInstance: FFmpeg | null = null;
-
-const initFFmpeg = async (): Promise<FFmpeg> => {
-  if (ffmpegInstance) return ffmpegInstance;
-
-  const ffmpeg = new FFmpeg();
-  const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
-
-  await ffmpeg.load({
-    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
-  });
-
-  ffmpegInstance = ffmpeg;
-  return ffmpeg;
-};
-
-const captureFrame = async (elementId: string): Promise<Blob> => {
+const captureFrame = async (elementId: string): Promise<HTMLCanvasElement> => {
   const element = document.getElementById(elementId);
   if (!element) throw new Error("Elemento no encontrado");
 
   const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    allowTaint: true,
+    scale: 1,
     backgroundColor: "#000000",
     logging: false,
     width: 1080,
     height: 1920,
   });
 
-  return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => {
-        if (blob) resolve(blob);
-        else reject(new Error("Error al crear blob"));
-      },
-      "image/png",
-      1.0
-    );
-  });
+  return canvas;
 };
 
 export const generateReelVideo = async (
@@ -62,10 +34,17 @@ export const generateReelVideo = async (
     onProgress({
       stage: "initializing",
       progress: 0,
-      message: "Inicializando generador de video...",
+      message: "Inicializando generador de reel...",
     });
 
-    const ffmpeg = await initFFmpeg();
+    // Crear instancia de GIF
+    const gif = new GIF({
+      workers: 2,
+      quality: 10,
+      width: 1080,
+      height: 1920,
+      workerScript: "https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js",
+    });
 
     onProgress({
       stage: "capturing",
@@ -76,13 +55,13 @@ export const generateReelVideo = async (
     });
 
     // Capturar cada foto como frame
-    const frames: Blob[] = [];
+    const frames: HTMLCanvasElement[] = [];
     for (let i = 0; i < photos.length; i++) {
-      // Esperar un momento para que el DOM se actualice
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Pequeña pausa para que el DOM se actualice
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
-      const frameBlob = await captureFrame(elementId);
-      frames.push(frameBlob);
+      const frameCanvas = await captureFrame(elementId);
+      frames.push(frameCanvas);
 
       onProgress({
         stage: "capturing",
@@ -96,75 +75,37 @@ export const generateReelVideo = async (
     onProgress({
       stage: "encoding",
       progress: 60,
-      message: "Codificando video...",
+      message: "Generando reel animado...",
     });
 
-    // Escribir frames en FFmpeg
-    for (let i = 0; i < frames.length; i++) {
-      const fileName = `frame${i.toString().padStart(3, "0")}.png`;
-      await ffmpeg.writeFile(fileName, await fetchFile(frames[i]));
-    }
-
-    onProgress({
-      stage: "encoding",
-      progress: 75,
-      message: "Generando video final...",
+    // Agregar frames al GIF (3 segundos = 3000ms por frame)
+    frames.forEach((canvas) => {
+      gif.addFrame(canvas, { delay: 3000 });
     });
 
-    // Generar video con FFmpeg
-    // Cada frame dura 3 segundos (framerate = 1/3 fps)
-    await ffmpeg.exec([
-      "-framerate",
-      "1/3",
-      "-i",
-      "frame%03d.png",
-      "-c:v",
-      "libx264",
-      "-pix_fmt",
-      "yuv420p",
-      "-preset",
-      "medium",
-      "-crf",
-      "23",
-      "-vf",
-      "scale=1080:1920",
-      "output.mp4",
-    ]);
+    // Renderizar GIF
+    return new Promise((resolve, reject) => {
+      gif.on("finished", (blob: Blob) => {
+        onProgress({
+          stage: "complete",
+          progress: 100,
+          message: "¡Reel listo!",
+        });
+        resolve(blob);
+      });
 
-    onProgress({
-      stage: "encoding",
-      progress: 90,
-      message: "Finalizando...",
+      gif.on("progress", (p: number) => {
+        onProgress({
+          stage: "encoding",
+          progress: 60 + p * 35,
+          message: `Generando reel animado... ${Math.round(p * 100)}%`,
+        });
+      });
+
+      gif.render();
     });
-
-    const data = await ffmpeg.readFile("output.mp4");
-    // @ts-ignore - FFmpeg returns Uint8Array compatible with Blob
-    const videoBlob = new Blob([data.buffer], { type: "video/mp4" });
-
-    // Limpiar archivos temporales
-    for (let i = 0; i < frames.length; i++) {
-      const fileName = `frame${i.toString().padStart(3, "0")}.png`;
-      try {
-        await ffmpeg.deleteFile(fileName);
-      } catch (e) {
-        console.warn("Error limpiando archivo:", e);
-      }
-    }
-    try {
-      await ffmpeg.deleteFile("output.mp4");
-    } catch (e) {
-      console.warn("Error limpiando output:", e);
-    }
-
-    onProgress({
-      stage: "complete",
-      progress: 100,
-      message: "¡Video listo!",
-    });
-
-    return videoBlob;
   } catch (error) {
-    console.error("Error generando video:", error);
+    console.error("Error generando reel:", error);
     onProgress({
       stage: "error",
       progress: 0,

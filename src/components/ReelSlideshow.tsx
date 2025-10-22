@@ -70,8 +70,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       setCurrentPhotoIndex(0);
       
       toast({
-        title: "Iniciando generación",
-        description: "Preparando tu reel animado...",
+        title: "✨ ¡Generando tu reel!",
+        description: "Esto puede tomar 10-20 segundos. No cierres esta pestaña.",
       });
 
       // Necesitamos renderizar cada foto y capturarla
@@ -95,19 +95,19 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
       downloadBlob(
         videoBlob,
-        `reel-${aliadoConfig.nombre.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.mp4`
+        `reel-${aliadoConfig.nombre.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.gif`
       );
 
       toast({
-        title: "¡Video descargado!",
-        description: "Tu reel está listo para compartir en redes sociales.",
+        title: "🎉 ¡Reel generado!",
+        description: "Tu reel animado se está descargando.",
       });
 
       if (onDownload) onDownload();
     } catch (error) {
       console.error("Error generando video:", error);
       toast({
-        title: "Error al generar video",
+        title: "Error al generar reel",
         description: "Por favor intenta de nuevo o contacta soporte.",
         variant: "destructive",
       });
@@ -281,7 +281,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         {/* Instrucciones */}
         <div className="mt-4 p-3 bg-accent/50 rounded-lg">
           <p className="text-sm text-muted-foreground text-center">
-            💡 Haz clic en ▶️ para ver la animación · Haz clic en ⬇️ para descargar el video (30-60s)
+            💡 Presiona ▶ para ver el slideshow · Presiona ⬇️ para descargar reel animado (GIF, 10-20s)
           </p>
         </div>
       </Card>
