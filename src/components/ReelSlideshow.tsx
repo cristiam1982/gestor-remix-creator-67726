@@ -330,26 +330,20 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
           </div>
 
-          {/* Información superpuesta */}
-          <div className="absolute top-12 left-0 right-0 p-4 z-10">
-            <div className="flex items-center gap-3 mb-2">
-              {(safeLogoUrl || aliadoConfig.logo) && (
-                <img
-                  src={safeLogoUrl || aliadoConfig.logo}
-                  alt={aliadoConfig.nombre}
-                  className="w-10 h-10 rounded-full border-2 border-white object-contain"
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                />
-              )}
-              <div>
-                <p className="text-white font-bold text-sm">{aliadoConfig.nombre}</p>
-                <p className="text-white/80 text-xs">{aliadoConfig.ciudad}</p>
-              </div>
-            </div>
+          {/* Logo del aliado */}
+          <div className="absolute top-8 left-4 z-10">
+            {(safeLogoUrl || aliadoConfig.logo) && (
+              <img
+                src={safeLogoUrl || aliadoConfig.logo}
+                alt={aliadoConfig.nombre}
+                className="w-16 h-16 rounded-full border-2 border-white object-contain bg-white/10 backdrop-blur-sm p-1 shadow-xl"
+                crossOrigin="anonymous"
+                referrerPolicy="no-referrer"
+              />
+            )}
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
@@ -425,26 +419,20 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             crossOrigin="anonymous"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
 
-          {/* Información superpuesta - ESCALADA PARA 1080x1920 */}
-          <div className="absolute top-24 left-0 right-0 px-10 z-10">
-            <div className="flex items-center gap-6 mb-4">
-              {(safeLogoUrl || aliadoConfig.logo) && (
-                <img
-                  src={safeLogoUrl || aliadoConfig.logo}
-                  alt={aliadoConfig.nombre}
-                  className="w-24 h-24 rounded-full border-4 border-white object-contain"
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                  data-ally-logo="true"
-                />
-              )}
-              <div>
-                <p className="text-white font-bold text-3xl">{aliadoConfig.nombre}</p>
-                <p className="text-white/80 text-2xl">{aliadoConfig.ciudad}</p>
-              </div>
-            </div>
+          {/* Logo del aliado - ESCALADO PARA 1080x1920 */}
+          <div className="absolute top-16 left-8 z-10">
+            {(safeLogoUrl || aliadoConfig.logo) && (
+              <img
+                src={safeLogoUrl || aliadoConfig.logo}
+                alt={aliadoConfig.nombre}
+                className="w-40 h-40 rounded-full border-4 border-white object-contain bg-white/10 backdrop-blur-sm p-2 shadow-2xl"
+                crossOrigin="anonymous"
+                referrerPolicy="no-referrer"
+                data-ally-logo="true"
+              />
+            )}
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 px-12 pb-16 z-10">
