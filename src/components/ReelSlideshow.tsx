@@ -99,7 +99,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [photos, setPhotos] = useState<string[]>(propertyData.fotos || []);
   const { toast } = useToast();
   
-  const slideDuration = 3000; // 3 segundos por foto
+  const slideDuration = 2500; // 2.5 segundos por foto
 
   // Sensors para drag & drop
   const sensors = useSensors(
@@ -214,14 +214,19 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       // Función para cambiar foto durante la captura
       const changePhoto = async (index: number): Promise<void> => {
         setCurrentPhotoIndex(index);
+        // Doble requestAnimationFrame para asegurar renderizado completo
         return new Promise((resolve) => {
-          setTimeout(resolve, 0);
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              resolve();
+            });
+          });
         });
       };
 
       const videoBlob = await generateReelVideo(
         photos,
-        "reel-frame",
+        "reel-capture-canvas",
         setGenerationProgress,
         changePhoto
       );
@@ -278,7 +283,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           <div>
             <h3 className="text-xl font-semibold text-primary">Reel Slideshow</h3>
             <p className="text-sm text-muted-foreground">
-              {photos.length} fotos · {photos.length * 3} segundos total
+              {photos.length} fotos · {(photos.length * 2.5).toFixed(1)}s total
             </p>
           </div>
           <div className="flex gap-2">
@@ -300,8 +305,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           </div>
         </div>
 
-        {/* Vista previa principal */}
-        <div id="reel-frame" className="relative aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4">
+        {/* Vista previa principal - RESPONSIVE */}
+        <div className="relative aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4">
           {/* Barras de progreso */}
           <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
             {photos.map((_, idx) => (
@@ -338,7 +343,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   className="w-10 h-10 rounded-full border-2 border-white object-contain"
                   crossOrigin="anonymous"
                   referrerPolicy="no-referrer"
-                  data-ally-logo="true"
                 />
               )}
               <div>
@@ -401,6 +405,89 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           )}
         </div>
 
+        {/* Canvas de captura OCULTO - 1080x1920px para GIF */}
+        <div 
+          id="reel-capture-canvas" 
+          className="fixed pointer-events-none"
+          style={{ 
+            width: '1080px', 
+            height: '1920px',
+            left: '-9999px',
+            top: '-9999px',
+            backgroundColor: '#000000'
+          }}
+        >
+          {/* Foto actual */}
+          <img
+            src={photos[currentPhotoIndex]}
+            alt="Captura"
+            className="absolute inset-0 w-full h-full object-cover"
+            crossOrigin="anonymous"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+
+          {/* Información superpuesta - ESCALADA PARA 1080x1920 */}
+          <div className="absolute top-24 left-0 right-0 px-10 z-10">
+            <div className="flex items-center gap-6 mb-4">
+              {(safeLogoUrl || aliadoConfig.logo) && (
+                <img
+                  src={safeLogoUrl || aliadoConfig.logo}
+                  alt={aliadoConfig.nombre}
+                  className="w-24 h-24 rounded-full border-4 border-white object-contain"
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                  data-ally-logo="true"
+                />
+              )}
+              <div>
+                <p className="text-white font-bold text-3xl">{aliadoConfig.nombre}</p>
+                <p className="text-white/80 text-2xl">{aliadoConfig.ciudad}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute bottom-0 left-0 right-0 px-12 pb-16 z-10">
+            <h3 className="text-white text-6xl font-bold mb-4">
+              {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
+            </h3>
+            {propertyData.ubicacion && (
+              <p className="text-white/90 text-3xl mb-6">📍 {propertyData.ubicacion}</p>
+            )}
+            {propertyData.canon && (
+              <p className="text-white text-5xl font-bold mb-6">
+                💰 {propertyData.canon}/mes
+              </p>
+            )}
+            <div className="flex gap-6 text-white text-2xl">
+              {propertyData.habitaciones && (
+                <span className="bg-white/20 backdrop-blur-sm px-8 py-3 rounded-full">
+                  🛏️ {propertyData.habitaciones}
+                </span>
+              )}
+              {propertyData.banos && (
+                <span className="bg-white/20 backdrop-blur-sm px-8 py-3 rounded-full">
+                  🚿 {propertyData.banos}
+                </span>
+              )}
+              {propertyData.area && (
+                <span className="bg-white/20 backdrop-blur-sm px-8 py-3 rounded-full">
+                  📐 {propertyData.area}m²
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Logo El Gestor - ESCALADO */}
+          <div className="absolute bottom-10 right-10 z-30">
+            <img 
+              src={elGestorLogo} 
+              alt="El Gestor" 
+              className="h-20 object-contain opacity-80 drop-shadow-lg"
+            />
+          </div>
+        </div>
+
         {/* Miniaturas con drag & drop */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -432,7 +519,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         {/* Instrucciones */}
         <div className="mt-4 p-3 bg-accent/50 rounded-lg space-y-1">
           <p className="text-sm text-muted-foreground text-center">
-            💡 <strong>Play:</strong> Ver slideshow automático (3s por foto)
+            💡 <strong>Play:</strong> Ver slideshow automático (2.5s por foto)
           </p>
           <p className="text-sm text-muted-foreground text-center">
             🔄 <strong>Reordenar:</strong> Arrastra el ícono de las miniaturas

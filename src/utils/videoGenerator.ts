@@ -146,9 +146,9 @@ export const generateReelVideo = async (
       message: "Generando reel animado...",
     });
 
-    // Agregar frames al GIF (3 segundos por foto)
+    // Agregar frames al GIF (2.5 segundos por foto)
     frames.forEach((canvas) => {
-      gif.addFrame(canvas, { delay: 3000 });
+      gif.addFrame(canvas, { delay: 2500 });
     });
 
     // Renderizar GIF
