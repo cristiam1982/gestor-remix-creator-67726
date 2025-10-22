@@ -40,11 +40,18 @@ const captureFrame = async (
       height: 1920,
       useCORS: true,
       allowTaint: false,
-      imageTimeout: 15000,
+      imageTimeout: 30000, // Más tiempo para cargar imágenes
       removeContainer: false,
       foreignObjectRendering: false,
       windowWidth: 1080,
       windowHeight: 1920,
+      onclone: (clonedDoc) => {
+        // Forzar que las imágenes se capturen con colores reales
+        const imgs = clonedDoc.querySelectorAll('img');
+        imgs.forEach(img => {
+          img.style.opacity = '1';
+        });
+      }
     });
 
     return canvas;
@@ -89,12 +96,13 @@ export const generateReelVideo = async (
     // Crear instancia de GIF optimizada para colores vivos y naturales
     const gif = new GIF({
       workers: numWorkers,
-      quality: 10, // Balance entre velocidad y calidad (1-30, menor = mejor)
+      quality: 5, // Mejor calidad de color (1-30, menor = mejor)
       width: 1080,
       height: 1920,
       workerScript: "/gif.worker.js",
       repeat: 0,
       transparent: null, // Sin transparencia
+      dither: 'FloydSteinberg', // Dithering específico para mejor gradación de colores
     });
 
     onProgress({

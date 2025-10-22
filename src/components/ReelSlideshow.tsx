@@ -330,7 +330,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
+            {/* Sin overlay oscuro - colores naturales */}
           </div>
 
           {/* Logo del aliado */}
@@ -346,7 +346,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             )}
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+          <div className="absolute bottom-0 left-0 right-0 p-6 z-10 bg-gradient-to-t from-black/70 via-black/40 to-transparent pt-12">
             <h3 className="text-white text-2xl font-bold mb-2">
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h3>
@@ -382,7 +382,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             <img 
               src={elGestorLogo} 
               alt="El Gestor" 
-              className="h-8 object-contain opacity-80 drop-shadow-lg"
+              className="h-8 object-contain opacity-100 drop-shadow-lg"
             />
           </div>
 
@@ -419,7 +419,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             crossOrigin="anonymous"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
+          {/* Sin overlay oscuro - colores naturales */}
 
           {/* Logo del aliado - ESCALADO PARA 1080x1920 */}
           <div className="absolute top-16 left-8 z-10">
@@ -435,7 +435,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             )}
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 px-12 pb-16 z-10">
+          <div className="absolute bottom-0 left-0 right-0 px-12 pb-16 z-10 bg-gradient-to-t from-black/70 via-black/40 to-transparent pt-20">
             <h3 className="text-white text-6xl font-bold mb-4">
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h3>
@@ -471,7 +471,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             <img 
               src={elGestorLogo} 
               alt="El Gestor" 
-              className="h-20 object-contain opacity-80 drop-shadow-lg"
+              className="h-20 object-contain opacity-100 drop-shadow-lg"
             />
           </div>
         </div>
