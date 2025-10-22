@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import { Square, Smartphone, Image as ImageIcon, Video } from "lucide-react";
+import { Square, Smartphone, Image as ImageIcon, Video, Download } from "lucide-react";
 import { ContentTypeCard } from "@/components/ContentTypeCard";
 import { AliadoConfigForm } from "@/components/AliadoConfigForm";
 import { PropertyForm } from "@/components/PropertyForm";
+import { PhotoManager } from "@/components/PhotoManager";
+import { CanvasPreview } from "@/components/CanvasPreview";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { generateCaption } from "@/utils/captionGenerator";
+import { exportToImage } from "@/utils/imageExporter";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
@@ -69,19 +72,18 @@ const Index = () => {
     });
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const newPhotos: string[] = [];
-      Array.from(files).forEach((file) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          newPhotos.push(reader.result as string);
-          if (newPhotos.length === files.length) {
-            setPropertyData({ ...propertyData, fotos: [...propertyData.fotos!, ...newPhotos] });
-          }
-        };
-        reader.readAsDataURL(file);
+  const handleDownloadImage = async () => {
+    try {
+      await exportToImage("canvas-preview", `publicacion-${propertyData.tipo}-${Date.now()}.png`);
+      toast({
+        title: "✅ Imagen descargada",
+        description: "Tu publicación se guardó correctamente.",
+      });
+    } catch (error) {
+      toast({
+        title: "❌ Error al descargar",
+        description: "Intenta nuevamente o contacta soporte.",
+        variant: "destructive",
       });
     }
   };
@@ -183,38 +185,11 @@ const Index = () => {
               onDataChange={setPropertyData}
             />
 
-            <Card className="p-6">
-              <h3 className="text-xl font-semibold mb-4 text-primary">Subir Fotos</h3>
-              <div className="space-y-4">
-                <Label htmlFor="fotos">
-                  {selectedContentType === "post" && "Sube 1-3 fotos del inmueble"}
-                  {selectedContentType === "historia" && "Sube 1-3 fotos del inmueble"}
-                  {selectedContentType === "reel-fotos" && "Sube 3-10 fotos para el slideshow"}
-                  {selectedContentType === "reel-video" && "Sube un video (máx. 20 segundos)"}
-                </Label>
-                <input
-                  id="fotos"
-                  type="file"
-                  accept={selectedContentType === "reel-video" ? "video/*" : "image/*"}
-                  multiple={selectedContentType !== "reel-video"}
-                  onChange={handleImageUpload}
-                  className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-secondary file:text-secondary-foreground hover:file:bg-secondary/80 cursor-pointer"
-                />
-
-                {propertyData.fotos && propertyData.fotos.length > 0 && (
-                  <div className="grid grid-cols-3 gap-4 mt-4">
-                    {propertyData.fotos.map((foto, idx) => (
-                      <img
-                        key={idx}
-                        src={foto}
-                        alt={`Foto ${idx + 1}`}
-                        className="w-full h-32 object-cover rounded-lg shadow-md"
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Card>
+            <PhotoManager
+              photos={propertyData.fotos || []}
+              onPhotosChange={(photos) => setPropertyData({ ...propertyData, fotos: photos })}
+              contentType={selectedContentType!}
+            />
 
             <Button
               onClick={handleGeneratePreview}
@@ -231,37 +206,48 @@ const Index = () => {
         {currentStep === 3 && (
           <div className="space-y-6 animate-fade-in">
             <Card className="p-6">
-              <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
-              <div className="bg-muted p-4 rounded-lg mb-4 whitespace-pre-wrap font-mono text-sm">
-                {generatedCaption}
+              <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
+              <div className="flex justify-center mb-6">
+                {aliadoConfig && (
+                  <CanvasPreview
+                    propertyData={propertyData as PropertyData}
+                    aliadoConfig={aliadoConfig}
+                    contentType={selectedContentType!}
+                  />
+                )}
               </div>
-              <Button onClick={handleCopyCaption} variant="secondary" className="w-full">
-                📋 Copiar Caption
+              <Button 
+                onClick={handleDownloadImage} 
+                variant="hero" 
+                size="lg"
+                className="w-full"
+              >
+                <Download className="w-5 h-5 mr-2" />
+                Descargar Imagen
               </Button>
             </Card>
 
-            <Card className="p-6 bg-muted/50">
-              <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
-              <div className="bg-white rounded-lg shadow-xl p-8 aspect-square flex items-center justify-center">
-                <div className="text-center">
-                  <p className="text-muted-foreground mb-4">
-                    La vista previa visual se implementará en la siguiente fase
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Por ahora, copia el caption y usa las fotos subidas para crear tu publicación manualmente
-                  </p>
-                </div>
+            <Card className="p-6">
+              <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
+              <Textarea
+                value={generatedCaption}
+                onChange={(e) => setGeneratedCaption(e.target.value)}
+                className="min-h-[150px] mb-4 font-mono text-sm"
+                placeholder="Tu caption aparecerá aquí..."
+              />
+              <div className="flex gap-3">
+                <Button onClick={handleCopyCaption} variant="secondary" className="flex-1">
+                  📋 Copiar Caption
+                </Button>
+                <Button 
+                  onClick={handleBackToHub}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  🎉 Crear Otra
+                </Button>
               </div>
             </Card>
-
-            <Button
-              onClick={handleBackToHub}
-              variant="hero"
-              size="lg"
-              className="w-full"
-            >
-              🎉 Crear Nueva Publicación
-            </Button>
           </div>
         )}
       </div>
