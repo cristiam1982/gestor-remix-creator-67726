@@ -220,11 +220,15 @@ export const PropertyForm = ({ onDataChange, data }: PropertyFormProps) => {
   return (
     <Card className="p-6 space-y-6">
       <div>
-        <h3 className="text-xl font-semibold mb-4 text-primary">Información del Inmueble</h3>
+        <h3 className="text-xl font-semibold mb-2 text-primary">Información del Inmueble</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          💡 Completa los campos para generar tu publicación profesional
+        </p>
         
         <div className="space-y-4">
           <div>
             <Label>Tipo de Inmueble</Label>
+            <p className="text-xs text-muted-foreground mb-2">Selecciona el tipo que mejor describe tu propiedad</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
               {(Object.keys(propertyTypeIcons) as PropertyType[]).map((tipo) => {
                 const Icon = propertyTypeIcons[tipo];

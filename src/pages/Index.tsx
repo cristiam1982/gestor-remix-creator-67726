@@ -5,12 +5,14 @@ import { AliadoConfigForm } from "@/components/AliadoConfigForm";
 import { PropertyForm } from "@/components/PropertyForm";
 import { PhotoManager } from "@/components/PhotoManager";
 import { CanvasPreview } from "@/components/CanvasPreview";
+import { SocialMockup } from "@/components/SocialMockup";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { generateCaption } from "@/utils/captionGenerator";
 import { exportToImage } from "@/utils/imageExporter";
+import { validatePropertyData } from "@/utils/formValidation";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
@@ -21,6 +23,7 @@ const Index = () => {
   const [propertyData, setPropertyData] = useState<Partial<PropertyData>>({ fotos: [] });
   const [currentStep, setCurrentStep] = useState(1);
   const [generatedCaption, setGeneratedCaption] = useState("");
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const savedConfig = localStorage.getItem("aliado-config");
@@ -53,6 +56,29 @@ const Index = () => {
   };
 
   const handleGeneratePreview = () => {
+    if (!propertyData.tipo) {
+      toast({
+        title: "⚠️ Selecciona un tipo de inmueble",
+        description: "Completa el formulario antes de continuar.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const validation = validatePropertyData(propertyData, propertyData.tipo);
+    
+    if (!validation.success) {
+      setValidationErrors(validation.errors);
+      toast({
+        title: "❌ Errores en el formulario",
+        description: "Por favor corrige los campos marcados en rojo.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setValidationErrors({});
+    
     if (aliadoConfig && propertyData.tipo) {
       const caption = generateCaption(propertyData as PropertyData, aliadoConfig);
       setGeneratedCaption(caption);
@@ -229,12 +255,17 @@ const Index = () => {
 
             <Card className="p-6">
               <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
-              <Textarea
-                value={generatedCaption}
-                onChange={(e) => setGeneratedCaption(e.target.value)}
-                className="min-h-[150px] mb-4 font-mono text-sm"
-                placeholder="Tu caption aparecerá aquí..."
-              />
+              <div className="space-y-2 mb-4">
+                <Textarea
+                  value={generatedCaption}
+                  onChange={(e) => setGeneratedCaption(e.target.value)}
+                  className="min-h-[150px] font-mono text-sm"
+                  placeholder="Tu caption aparecerá aquí..."
+                />
+                <p className="text-xs text-muted-foreground">
+                  {generatedCaption.length} caracteres
+                </p>
+              </div>
               <div className="flex gap-3">
                 <Button onClick={handleCopyCaption} variant="secondary" className="flex-1">
                   📋 Copiar Caption
@@ -248,6 +279,16 @@ const Index = () => {
                 </Button>
               </div>
             </Card>
+
+            {/* Vista previa en redes sociales */}
+            {aliadoConfig && (
+              <SocialMockup
+                propertyData={propertyData as PropertyData}
+                aliadoConfig={aliadoConfig}
+                contentType={selectedContentType!}
+                caption={generatedCaption}
+              />
+            )}
           </div>
         )}
       </div>

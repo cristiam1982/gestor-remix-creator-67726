@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { AliadoConfig } from "@/types/property";
-import { Settings, Upload } from "lucide-react";
+import { Settings } from "lucide-react";
+import { validateAliadoConfig } from "@/utils/formValidation";
+import { useToast } from "@/hooks/use-toast";
 
 interface AliadoConfigFormProps {
   onSave: (config: AliadoConfig) => void;
@@ -12,6 +14,7 @@ interface AliadoConfigFormProps {
 }
 
 export const AliadoConfigForm = ({ onSave, initialConfig }: AliadoConfigFormProps) => {
+  const { toast } = useToast();
   const [config, setConfig] = useState<AliadoConfig>(
     initialConfig || {
       nombre: "",
@@ -21,11 +24,25 @@ export const AliadoConfigForm = ({ onSave, initialConfig }: AliadoConfigFormProp
       ciudad: "",
     }
   );
-
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [showForm, setShowForm] = useState(!initialConfig);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const validation = validateAliadoConfig(config);
+    
+    if (!validation.success) {
+      setErrors(validation.errors);
+      toast({
+        title: "❌ Errores en el formulario",
+        description: "Por favor corrige los campos marcados en rojo.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setErrors({});
     localStorage.setItem("aliado-config", JSON.stringify(config));
     onSave(config);
     setShowForm(false);
@@ -73,7 +90,9 @@ export const AliadoConfigForm = ({ onSave, initialConfig }: AliadoConfigFormProp
               onChange={(e) => setConfig({ ...config, nombre: e.target.value })}
               placeholder="Ej: Inmobiliaria Éxito"
               required
+              className={errors.nombre ? "border-destructive" : ""}
             />
+            {errors.nombre && <p className="text-xs text-destructive mt-1">{errors.nombre}</p>}
           </div>
 
           <div>
@@ -106,8 +125,10 @@ export const AliadoConfigForm = ({ onSave, initialConfig }: AliadoConfigFormProp
                 value={config.color}
                 onChange={(e) => setConfig({ ...config, color: e.target.value })}
                 placeholder="#8BC53F"
+                className={errors.color ? "border-destructive" : ""}
               />
             </div>
+            {errors.color && <p className="text-xs text-destructive mt-1">{errors.color}</p>}
           </div>
 
           <div>
@@ -118,7 +139,9 @@ export const AliadoConfigForm = ({ onSave, initialConfig }: AliadoConfigFormProp
               onChange={(e) => setConfig({ ...config, whatsapp: e.target.value })}
               placeholder="3001234567"
               required
+              className={errors.whatsapp ? "border-destructive" : ""}
             />
+            {errors.whatsapp && <p className="text-xs text-destructive mt-1">{errors.whatsapp}</p>}
           </div>
 
           <div>
@@ -129,7 +152,9 @@ export const AliadoConfigForm = ({ onSave, initialConfig }: AliadoConfigFormProp
               onChange={(e) => setConfig({ ...config, ciudad: e.target.value })}
               placeholder="Ej: Bogotá"
               required
+              className={errors.ciudad ? "border-destructive" : ""}
             />
+            {errors.ciudad && <p className="text-xs text-destructive mt-1">{errors.ciudad}</p>}
           </div>
 
           <div className="flex gap-2 pt-4">
