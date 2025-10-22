@@ -1,3 +1,4 @@
+// Core types for property data
 export type PropertyType = 
   | "apartamento" 
   | "casa" 
