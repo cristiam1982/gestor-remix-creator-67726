@@ -339,38 +339,38 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               <img
                 src={safeLogoUrl || aliadoConfig.logo}
                 alt={aliadoConfig.nombre}
-                className="w-16 h-16 rounded-full border-2 border-white object-contain bg-white/10 backdrop-blur-sm p-1 shadow-xl"
+                className="w-16 h-16 rounded-full border-2 border-white object-contain p-1 shadow-xl"
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
               />
             )}
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-6 z-10 bg-gradient-to-t from-black/70 via-black/40 to-transparent pt-12">
-            <h3 className="text-white text-2xl font-bold mb-2">
+          <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+            <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h3>
             {propertyData.ubicacion && (
-              <p className="text-white/90 text-sm mb-3">📍 {propertyData.ubicacion}</p>
+              <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
             )}
             {propertyData.canon && (
-              <p className="text-white text-xl font-bold mb-3">
+              <p className="text-white text-xl font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
                 💰 {propertyData.canon}/mes
               </p>
             )}
-            <div className="flex gap-3 text-white text-sm">
+            <div className="flex gap-3 text-sm">
               {propertyData.habitaciones && (
-                <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
                   🛏️ {propertyData.habitaciones}
                 </span>
               )}
               {propertyData.banos && (
-                <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
                   🚿 {propertyData.banos}
                 </span>
               )}
               {propertyData.area && (
-                <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
                   📐 {propertyData.area}m²
                 </span>
               )}
@@ -382,7 +382,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             <img 
               src={elGestorLogo} 
               alt="El Gestor" 
-              className="h-8 object-contain opacity-100 drop-shadow-lg"
+              className="h-8 object-contain opacity-80 drop-shadow-lg"
             />
           </div>
 
@@ -427,7 +427,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               <img
                 src={safeLogoUrl || aliadoConfig.logo}
                 alt={aliadoConfig.nombre}
-                className="w-40 h-40 rounded-full border-4 border-white object-contain bg-white/10 backdrop-blur-sm p-2 shadow-2xl"
+                className="w-40 h-40 rounded-full border-4 border-white object-contain p-2 shadow-2xl"
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
                 data-ally-logo="true"
@@ -435,31 +435,31 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             )}
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 px-12 pb-16 z-10 bg-gradient-to-t from-black/70 via-black/40 to-transparent pt-20">
-            <h3 className="text-white text-6xl font-bold mb-4">
+          <div className="absolute bottom-0 left-0 right-0 px-12 pb-16 z-10">
+            <h3 className="text-white text-6xl font-bold mb-4" style={{ textShadow: '4px 4px 12px rgba(0,0,0,0.95)' }}>
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h3>
             {propertyData.ubicacion && (
-              <p className="text-white/90 text-3xl mb-6">📍 {propertyData.ubicacion}</p>
+              <p className="text-white text-3xl mb-6" style={{ textShadow: '4px 4px 12px rgba(0,0,0,0.95)' }}>📍 {propertyData.ubicacion}</p>
             )}
             {propertyData.canon && (
-              <p className="text-white text-5xl font-bold mb-6">
+              <p className="text-white text-5xl font-bold mb-6" style={{ textShadow: '4px 4px 12px rgba(0,0,0,0.95)' }}>
                 💰 {propertyData.canon}/mes
               </p>
             )}
-            <div className="flex gap-6 text-white text-2xl">
+            <div className="flex gap-6 text-2xl">
               {propertyData.habitaciones && (
-                <span className="bg-white/20 backdrop-blur-sm px-8 py-3 rounded-full">
+                <span className="bg-white text-black px-8 py-3 rounded-full font-semibold shadow-lg">
                   🛏️ {propertyData.habitaciones}
                 </span>
               )}
               {propertyData.banos && (
-                <span className="bg-white/20 backdrop-blur-sm px-8 py-3 rounded-full">
+                <span className="bg-white text-black px-8 py-3 rounded-full font-semibold shadow-lg">
                   🚿 {propertyData.banos}
                 </span>
               )}
               {propertyData.area && (
-                <span className="bg-white/20 backdrop-blur-sm px-8 py-3 rounded-full">
+                <span className="bg-white text-black px-8 py-3 rounded-full font-semibold shadow-lg">
                   📐 {propertyData.area}m²
                 </span>
               )}
@@ -471,7 +471,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             <img 
               src={elGestorLogo} 
               alt="El Gestor" 
-              className="h-20 object-contain opacity-100 drop-shadow-lg"
+              className="h-20 object-contain opacity-80 drop-shadow-lg"
             />
           </div>
         </div>
