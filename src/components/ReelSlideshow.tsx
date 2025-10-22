@@ -3,8 +3,10 @@ import { PropertyData, AliadoConfig } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Download } from "lucide-react";
-import { CanvasPreview } from "./CanvasPreview";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
+import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
+import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
+import { useToast } from "@/hooks/use-toast";
 
 interface ReelSlideshowProps {
   propertyData: PropertyData;
@@ -16,6 +18,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [generationProgress, setGenerationProgress] = useState<VideoGenerationProgress | null>(null);
+  const { toast } = useToast();
   
   const slideDuration = 3000; // 3 segundos por foto
   const photos = propertyData.fotos || [];
@@ -60,6 +64,58 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     setProgress(0);
   };
 
+  const handleDownloadVideo = async () => {
+    try {
+      setIsPlaying(false);
+      setCurrentPhotoIndex(0);
+      
+      toast({
+        title: "Iniciando generación",
+        description: "Preparando tu reel animado...",
+      });
+
+      // Necesitamos renderizar cada foto y capturarla
+      const frameElement = document.getElementById("reel-frame");
+      if (!frameElement) {
+        throw new Error("No se encontró el elemento de reel");
+      }
+
+      const videoBlob = await generateReelVideo(
+        photos,
+        "reel-frame",
+        (progress) => {
+          setGenerationProgress(progress);
+          
+          // Cambiar foto actual según el frame que se está capturando
+          if (progress.stage === "capturing" && progress.currentFrame !== undefined) {
+            setCurrentPhotoIndex(progress.currentFrame - 1);
+          }
+        }
+      );
+
+      downloadBlob(
+        videoBlob,
+        `reel-${aliadoConfig.nombre.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.mp4`
+      );
+
+      toast({
+        title: "¡Video descargado!",
+        description: "Tu reel está listo para compartir en redes sociales.",
+      });
+
+      if (onDownload) onDownload();
+    } catch (error) {
+      console.error("Error generando video:", error);
+      toast({
+        title: "Error al generar video",
+        description: "Por favor intenta de nuevo o contacta soporte.",
+        variant: "destructive",
+      });
+    } finally {
+      setTimeout(() => setGenerationProgress(null), 2000);
+    }
+  };
+
   if (photos.length === 0) {
     return (
       <Card className="p-6 text-center">
@@ -72,6 +128,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
   return (
     <div className="space-y-4">
+      {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
+      
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -88,20 +146,19 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             >
               {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
             </Button>
-            {onDownload && (
-              <Button
-                variant="hero"
-                size="icon"
-                onClick={onDownload}
-              >
-                <Download className="w-5 h-5" />
-              </Button>
-            )}
+            <Button
+              variant="hero"
+              size="icon"
+              onClick={handleDownloadVideo}
+              title="Descargar video animado"
+            >
+              <Download className="w-5 h-5" />
+            </Button>
           </div>
         </div>
 
         {/* Vista previa principal */}
-        <div className="relative aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4">
+        <div id="reel-frame" className="relative aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4">
           {/* Barras de progreso */}
           <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
             {photos.map((_, idx) => (
@@ -224,7 +281,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         {/* Instrucciones */}
         <div className="mt-4 p-3 bg-accent/50 rounded-lg">
           <p className="text-sm text-muted-foreground text-center">
-            💡 Haz clic en ▶️ para ver la animación del reel. Cada foto se muestra 3 segundos.
+            💡 Haz clic en ▶️ para ver la animación · Haz clic en ⬇️ para descargar el video (30-60s)
           </p>
         </div>
       </Card>
