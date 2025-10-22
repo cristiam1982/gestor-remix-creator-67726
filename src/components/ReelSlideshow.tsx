@@ -7,6 +7,7 @@ import elGestorLogo from "@/assets/el-gestor-logo.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { useToast } from "@/hooks/use-toast";
+import { urlToDataURL } from "@/utils/imageUtils";
 
 interface ReelSlideshowProps {
   propertyData: PropertyData;
@@ -19,10 +20,30 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [generationProgress, setGenerationProgress] = useState<VideoGenerationProgress | null>(null);
+  const [safeLogoUrl, setSafeLogoUrl] = useState<string | null>(null);
   const { toast } = useToast();
   
   const slideDuration = 3000; // 3 segundos por foto
   const photos = propertyData.fotos || [];
+
+  // Convertir logo del aliado a dataURL para evitar CORS
+  useEffect(() => {
+    const convertLogoToDataURL = async () => {
+      if (aliadoConfig.logo && aliadoConfig.logo.startsWith("http")) {
+        try {
+          const dataURL = await urlToDataURL(aliadoConfig.logo);
+          setSafeLogoUrl(dataURL);
+        } catch (error) {
+          console.warn("No se pudo convertir el logo a dataURL:", error);
+          setSafeLogoUrl(null);
+        }
+      } else {
+        setSafeLogoUrl(aliadoConfig.logo);
+      }
+    };
+
+    convertLogoToDataURL();
+  }, [aliadoConfig.logo]);
 
   useEffect(() => {
     if (!isPlaying || photos.length === 0) return;
@@ -71,26 +92,22 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       
       toast({
         title: "✨ ¡Generando tu reel!",
-        description: "Esto puede tomar 10-20 segundos. No cierres esta pestaña.",
+        description: "Esto tomará 10-20 segundos. No cierres esta pestaña.",
       });
 
-      // Necesitamos renderizar cada foto y capturarla
-      const frameElement = document.getElementById("reel-frame");
-      if (!frameElement) {
-        throw new Error("No se encontró el elemento de reel");
-      }
+      // Función para cambiar foto durante la captura
+      const changePhoto = async (index: number): Promise<void> => {
+        setCurrentPhotoIndex(index);
+        return new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
+      };
 
       const videoBlob = await generateReelVideo(
         photos,
         "reel-frame",
-        (progress) => {
-          setGenerationProgress(progress);
-          
-          // Cambiar foto actual según el frame que se está capturando
-          if (progress.stage === "capturing" && progress.currentFrame !== undefined) {
-            setCurrentPhotoIndex(progress.currentFrame - 1);
-          }
-        }
+        setGenerationProgress,
+        changePhoto
       );
 
       downloadBlob(
@@ -100,15 +117,25 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
       toast({
         title: "🎉 ¡Reel generado!",
-        description: "Tu reel animado se está descargando.",
+        description: "Tu reel animado GIF se ha descargado correctamente.",
       });
 
       if (onDownload) onDownload();
     } catch (error) {
       console.error("Error generando video:", error);
+      
+      let errorDescription = "Por favor intenta de nuevo.";
+      if (error instanceof Error) {
+        if (error.message.includes("CORS") || error.message.includes("tainted")) {
+          errorDescription = "Se detectó un problema con el logo. El reel se generó sin él.";
+        } else {
+          errorDescription = error.message;
+        }
+      }
+      
       toast({
         title: "Error al generar reel",
-        description: "Por favor intenta de nuevo o contacta soporte.",
+        description: errorDescription,
         variant: "destructive",
       });
     } finally {
@@ -179,6 +206,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               src={photos[currentPhotoIndex]}
               alt={`Foto ${currentPhotoIndex + 1}`}
               className="w-full h-full object-cover"
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
           </div>
@@ -186,11 +215,14 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           {/* Información superpuesta */}
           <div className="absolute top-12 left-0 right-0 p-4 z-10">
             <div className="flex items-center gap-3 mb-2">
-              {aliadoConfig.logo && (
+              {(safeLogoUrl || aliadoConfig.logo) && (
                 <img
-                  src={aliadoConfig.logo}
+                  src={safeLogoUrl || aliadoConfig.logo}
                   alt={aliadoConfig.nombre}
                   className="w-10 h-10 rounded-full border-2 border-white object-contain"
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                  data-ally-logo="true"
                 />
               )}
               <div>
@@ -279,9 +311,12 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         </div>
 
         {/* Instrucciones */}
-        <div className="mt-4 p-3 bg-accent/50 rounded-lg">
+        <div className="mt-4 p-3 bg-accent/50 rounded-lg space-y-1">
           <p className="text-sm text-muted-foreground text-center">
-            💡 Presiona ▶ para ver el slideshow · Presiona ⬇️ para descargar reel animado (GIF, 10-20s)
+            💡 <strong>Play:</strong> Ver slideshow automático (3s por foto)
+          </p>
+          <p className="text-sm text-muted-foreground text-center">
+            📥 <strong>Descargar:</strong> Genera GIF animado (10-20s) · Compatible con todas las redes
           </p>
         </div>
       </Card>

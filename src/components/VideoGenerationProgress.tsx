@@ -59,6 +59,12 @@ export const VideoGenerationProgressModal = ({ progress }: VideoGenerationProgre
                   </span>
                 )}
               </div>
+              
+              {progress.estimatedTimeLeft && progress.estimatedTimeLeft > 0 && (
+                <p className="text-xs text-muted-foreground text-center">
+                  ⏱️ ~{progress.estimatedTimeLeft}s restantes
+                </p>
+              )}
             </div>
           )}
 
@@ -81,7 +87,7 @@ export const VideoGenerationProgressModal = ({ progress }: VideoGenerationProgre
 
           {(progress.stage === "initializing" || progress.stage === "capturing") && (
             <p className="text-xs text-muted-foreground text-center">
-              ⏱️ Esto puede tomar 30-60 segundos
+              ⏱️ Esto tomará 10-20 segundos
             </p>
           )}
         </div>
