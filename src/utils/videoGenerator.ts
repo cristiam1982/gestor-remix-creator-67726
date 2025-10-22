@@ -82,13 +82,13 @@ export const generateReelVideo = async (
     // Detectar número de workers según capacidad del dispositivo
     const numWorkers = Math.min(navigator.hardwareConcurrency || 2, 4);
 
-    // Crear instancia de GIF optimizada
+    // Crear instancia de GIF optimizada (usando worker local para evitar CORS)
     const gif = new GIF({
       workers: numWorkers,
       quality: 20, // Mayor número = más rápido en gif.js
       width: 1080,
       height: 1920,
-      workerScript: "https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js",
+      workerScript: "/gif.worker.js",
     });
 
     onProgress({

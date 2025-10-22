@@ -2,12 +2,29 @@ import { useState, useEffect } from "react";
 import { PropertyData, AliadoConfig } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Download } from "lucide-react";
+import { Play, Pause, Download, GripVertical } from "lucide-react";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { useToast } from "@/hooks/use-toast";
 import { urlToDataURL } from "@/utils/imageUtils";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  horizontalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface ReelSlideshowProps {
   propertyData: PropertyData;
@@ -15,16 +32,87 @@ interface ReelSlideshowProps {
   onDownload?: () => void;
 }
 
+interface SortablePhotoProps {
+  photo: string;
+  index: number;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+const SortablePhoto = ({ photo, index, isActive, onClick }: SortablePhotoProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: photo });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+        isActive
+          ? "border-primary scale-105"
+          : "border-transparent hover:border-primary/50"
+      }`}
+    >
+      <button
+        onClick={onClick}
+        className="w-full h-full"
+      >
+        <img
+          src={photo}
+          alt={`Miniatura ${index + 1}`}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/20" />
+        <span className="absolute bottom-1 right-1 text-white text-xs font-bold bg-black/60 px-1 rounded">
+          {index + 1}
+        </span>
+      </button>
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute top-1 left-1 cursor-grab active:cursor-grabbing bg-black/60 rounded p-1 hover:bg-black/80 transition-colors"
+      >
+        <GripVertical className="w-4 h-4 text-white" />
+      </div>
+    </div>
+  );
+};
+
 export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSlideshowProps) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [generationProgress, setGenerationProgress] = useState<VideoGenerationProgress | null>(null);
   const [safeLogoUrl, setSafeLogoUrl] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<string[]>(propertyData.fotos || []);
   const { toast } = useToast();
   
   const slideDuration = 3000; // 3 segundos por foto
-  const photos = propertyData.fotos || [];
+
+  // Sensors para drag & drop
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Sincronizar fotos cuando cambia propertyData
+  useEffect(() => {
+    setPhotos(propertyData.fotos || []);
+  }, [propertyData.fotos]);
 
   // Convertir logo del aliado a dataURL para evitar CORS
   useEffect(() => {
@@ -83,6 +171,34 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const handlePhotoClick = (index: number) => {
     setCurrentPhotoIndex(index);
     setProgress(0);
+    setIsPlaying(false);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setPhotos((items) => {
+        const oldIndex = items.indexOf(active.id as string);
+        const newIndex = items.indexOf(over.id as string);
+
+        // Si la foto actual fue movida, actualizar el índice
+        if (oldIndex === currentPhotoIndex) {
+          setCurrentPhotoIndex(newIndex);
+        } else if (newIndex <= currentPhotoIndex && oldIndex > currentPhotoIndex) {
+          setCurrentPhotoIndex(currentPhotoIndex + 1);
+        } else if (newIndex >= currentPhotoIndex && oldIndex < currentPhotoIndex) {
+          setCurrentPhotoIndex(currentPhotoIndex - 1);
+        }
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+
+      toast({
+        title: "📸 Fotos reordenadas",
+        description: "Arrastra las miniaturas para cambiar el orden del slideshow.",
+      });
+    }
   };
 
   const handleDownloadVideo = async () => {
@@ -285,35 +401,41 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           )}
         </div>
 
-        {/* Miniaturas */}
-        <div className="grid grid-cols-5 gap-2">
-          {photos.map((photo, idx) => (
-            <button
-              key={idx}
-              onClick={() => handlePhotoClick(idx)}
-              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                idx === currentPhotoIndex
-                  ? "border-primary scale-105"
-                  : "border-transparent hover:border-primary/50"
-              }`}
-            >
-              <img
-                src={photo}
-                alt={`Miniatura ${idx + 1}`}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/20" />
-              <span className="absolute bottom-1 right-1 text-white text-xs font-bold bg-black/60 px-1 rounded">
-                {idx + 1}
-              </span>
-            </button>
-          ))}
+        {/* Miniaturas con drag & drop */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-muted-foreground">
+              📸 Arrastra las fotos para cambiar el orden
+            </p>
+          </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={photos} strategy={horizontalListSortingStrategy}>
+              <div className="grid grid-cols-5 gap-2">
+                {photos.map((photo, idx) => (
+                  <SortablePhoto
+                    key={photo}
+                    photo={photo}
+                    index={idx}
+                    isActive={idx === currentPhotoIndex}
+                    onClick={() => handlePhotoClick(idx)}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         </div>
 
         {/* Instrucciones */}
         <div className="mt-4 p-3 bg-accent/50 rounded-lg space-y-1">
           <p className="text-sm text-muted-foreground text-center">
             💡 <strong>Play:</strong> Ver slideshow automático (3s por foto)
+          </p>
+          <p className="text-sm text-muted-foreground text-center">
+            🔄 <strong>Reordenar:</strong> Arrastra el ícono de las miniaturas
           </p>
           <p className="text-sm text-muted-foreground text-center">
             📥 <strong>Descargar:</strong> Genera GIF animado (10-20s) · Compatible con todas las redes
