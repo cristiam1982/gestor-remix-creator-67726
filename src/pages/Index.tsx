@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Square, Smartphone, Image as ImageIcon, Video, Download } from "lucide-react";
+import { Square, Smartphone, Image as ImageIcon, Video, Download, RefreshCw } from "lucide-react";
 import { ContentTypeCard } from "@/components/ContentTypeCard";
 import { AliadoConfigForm } from "@/components/AliadoConfigForm";
 import { PropertyForm } from "@/components/PropertyForm";
@@ -14,12 +14,14 @@ import { MetricsPanel } from "@/components/MetricsPanel";
 import { ViralIdeasPanel } from "@/components/ViralIdeasPanel";
 import { RemixBanner } from "@/components/RemixBanner";
 import { ExportOptions } from "@/components/ExportOptions";
+import { LoadingState } from "@/components/LoadingState";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
 import { TemplateTheme } from "@/types/templates";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { generateCaption } from "@/utils/captionGenerator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { generateCaption, regenerateCaption } from "@/utils/captionGenerator";
 import { exportToImage, exportVideo, ExportOptions as ExportOptionsType } from "@/utils/imageExporter";
 import { validatePropertyData } from "@/utils/formValidation";
 import { savePublicationMetric, clearMetrics } from "@/utils/metricsManager";
@@ -43,6 +45,7 @@ const Index = () => {
     quality: 0.95 
   });
   const [remixLink, setRemixLink] = useState<string>("");
+  const [isDownloading, setIsDownloading] = useState(false);
   
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
@@ -145,7 +148,12 @@ const Index = () => {
     setValidationErrors({});
     
     if (aliadoConfig && propertyData.tipo) {
-      const caption = generateCaption(propertyData as PropertyData, aliadoConfig);
+      const caption = generateCaption(
+        propertyData as PropertyData, 
+        aliadoConfig, 
+        selectedTemplate,
+        true
+      );
       setGeneratedCaption(caption);
       setCurrentStep(3);
       
@@ -175,7 +183,23 @@ const Index = () => {
     });
   };
 
+  const handleRegenerateCaption = () => {
+    if (aliadoConfig && propertyData.tipo) {
+      const newCaption = regenerateCaption(
+        propertyData as PropertyData,
+        aliadoConfig,
+        selectedTemplate
+      );
+      setGeneratedCaption(newCaption);
+      toast({
+        title: "✨ Caption regenerado",
+        description: "Se ha creado una versión alternativa.",
+      });
+    }
+  };
+
   const handleDownloadImage = async () => {
+    setIsDownloading(true);
     try {
       // Para reels con video, descargar el video original
       if (selectedContentType === "reel-video" && propertyData.fotos && propertyData.fotos[0]) {
@@ -200,6 +224,8 @@ const Index = () => {
         description: "Intenta nuevamente o contacta soporte.",
         variant: "destructive",
       });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -288,6 +314,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
+      {isDownloading && <LoadingState message="Generando tu publicación..." />}
+      
       <div className="max-w-4xl mx-auto">
         <div className="mb-6 flex items-center justify-between">
           <Button variant="outline" onClick={handleBackToHub}>
@@ -335,15 +363,26 @@ const Index = () => {
               />
             )}
 
-            <Button
-              onClick={handleGeneratePreview}
-              className="w-full"
-              variant="hero"
-              size="lg"
-              disabled={!propertyData.tipo || propertyData.fotos?.length === 0}
-            >
-              Generar Vista Previa
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={handleGeneratePreview}
+                    className="w-full"
+                    variant="hero"
+                    size="lg"
+                    disabled={!propertyData.tipo || propertyData.fotos?.length === 0}
+                  >
+                    Generar Vista Previa
+                  </Button>
+                </TooltipTrigger>
+                {(!propertyData.tipo || propertyData.fotos?.length === 0) && (
+                  <TooltipContent>
+                    <p>Completa el formulario y sube al menos una foto</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           </div>
         )}
 
@@ -387,9 +426,19 @@ const Index = () => {
                   variant="hero" 
                   size="lg"
                   className="w-full"
+                  disabled={isDownloading}
                 >
-                  <Download className="w-5 h-5 mr-2" />
-                  Descargar Imagen
+                  {isDownloading ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                      Descargando...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-5 h-5 mr-2" />
+                      Descargar Imagen
+                    </>
+                  )}
                 </Button>
               </Card>
             )}
@@ -408,9 +457,36 @@ const Index = () => {
                 </p>
               </div>
               <div className="flex gap-3">
-                <Button onClick={handleCopyCaption} variant="secondary" className="flex-1">
-                  📋 Copiar Caption
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button onClick={handleCopyCaption} variant="secondary" className="flex-1">
+                        📋 Copiar Caption
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Copia el texto para pegar en Instagram o Facebook</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        onClick={handleRegenerateCaption}
+                        variant="outline"
+                      >
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Regenerar
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Genera una versión alternativa del caption</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
                 <Button 
                   onClick={handleBackToHub}
                   variant="outline"

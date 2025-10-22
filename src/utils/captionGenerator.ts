@@ -1,59 +1,109 @@
 import { PropertyData, AliadoConfig } from "@/types/property";
+import { TemplateTheme } from "@/types/templates";
+import { getViralIdeas } from "./viralIdeas";
 
-export const generateCaption = (property: PropertyData, aliado: AliadoConfig): string => {
+const TONES = {
+  residencial: {
+    prefix: "✨",
+    style: "emocional y acogedor",
+    verbs: ["espera", "sueñas", "imaginas", "deseas"],
+    adjectives: ["hermoso", "acogedor", "ideal", "perfecto"]
+  },
+  comercial: {
+    prefix: "💼",
+    style: "profesional y directo",
+    verbs: ["potencia", "impulsa", "desarrolla", "posiciona"],
+    adjectives: ["estratégico", "eficiente", "rentable", "productivo"]
+  },
+  premium: {
+    prefix: "💎",
+    style: "exclusivo y sofisticado",
+    verbs: ["distingue", "eleva", "transforma", "destaca"],
+    adjectives: ["exclusivo", "distinguido", "excepcional", "único"]
+  }
+};
+
+export const generateCaption = (
+  property: PropertyData, 
+  aliado: AliadoConfig,
+  template: TemplateTheme = "residencial",
+  includeViralIdeas: boolean = true
+): string => {
   const { tipo, ubicacion, habitaciones, banos, canon, area, trafico } = property;
   const { ciudad } = aliado;
+  const tone = TONES[template];
   
   let caption = "";
   let hashtags = "";
 
+  // Get viral hook if enabled
+  let hook = "";
+  if (includeViralIdeas) {
+    const viralIdeas = getViralIdeas(tipo, "post");
+    if (viralIdeas && viralIdeas.length > 0) {
+      hook = viralIdeas[0].title;
+    }
+  }
+
   switch (tipo) {
     case "apartamento":
-      caption = `✨ ¡Tu nuevo hogar te espera en ${ubicacion || ciudad}!\n`;
+      caption = hook || `${tone.prefix} ¡El hogar ${tone.adjectives[0]} que ${tone.verbs[0]} en ${ubicacion || ciudad}!\n`;
       caption += `Apartamento de ${habitaciones} habitaciones y ${banos} baños.\n`;
-      caption += `Arrienda con confianza y respaldo de ${aliado.nombre}.\n`;
+      caption += template === "premium" 
+        ? `Vive con distinción en ${aliado.nombre}.\n`
+        : `Arrienda con confianza y respaldo de ${aliado.nombre}.\n`;
       if (canon) caption += `💰 $${canon} mensual\n`;
-      hashtags = `#Arriendos${aliado.ciudad.replace(/\s/g, "")} #Apartamentos${aliado.ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar`;
+      hashtags = `#Arriendos${ciudad.replace(/\s/g, "")} #Apartamentos${ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar`;
       break;
 
     case "casa":
-      caption = `🏡 La casa de tus sueños está aquí en ${ubicacion || ciudad}!\n`;
+      caption = hook || `${tone.prefix} La casa ${tone.adjectives[0]} que ${tone.verbs[1]} en ${ubicacion || ciudad}!\n`;
       caption += `${habitaciones} habitaciones, ${banos} baños y mucho espacio para tu familia.\n`;
-      caption += `Haz realidad tu hogar con ${aliado.nombre}.\n`;
+      caption += template === "premium"
+        ? `${tone.adjectives[1].charAt(0).toUpperCase() + tone.adjectives[1].slice(1)} exclusividad con ${aliado.nombre}.\n`
+        : `Haz realidad tu hogar con ${aliado.nombre}.\n`;
       if (canon) caption += `💰 $${canon} mensual\n`;
-      hashtags = `#Casas${aliado.ciudad.replace(/\s/g, "")} #Arriendos #ElGestor #HogarDulceHogar`;
+      hashtags = `#Casas${ciudad.replace(/\s/g, "")} #Arriendos #ElGestor #HogarDulceHogar`;
       break;
 
     case "local":
-      caption = `📍 Ubica tu negocio en ${ubicacion || ciudad}.\n`;
+      caption = hook || `${tone.prefix} Espacio ${tone.adjectives[2]} para ${tone.verbs[2]} tu negocio en ${ubicacion || ciudad}.\n`;
       caption += `Local de ${area} m² con tráfico ${trafico} y excelente visibilidad.\n`;
-      caption += `Haz crecer tu marca con el respaldo de ${aliado.nombre}.\n`;
+      caption += template === "comercial"
+        ? `${tone.verbs[0].charAt(0).toUpperCase() + tone.verbs[0].slice(1)} tu marca con ${aliado.nombre}.\n`
+        : `Haz crecer tu negocio con el respaldo de ${aliado.nombre}.\n`;
       if (canon) caption += `💼 $${canon} mensual\n`;
-      hashtags = `#LocalesComerciales #Negocios${aliado.ciudad.replace(/\s/g, "")} #ElGestor #EmprenderConConfianza`;
+      hashtags = `#LocalesComerciales #Negocios${ciudad.replace(/\s/g, "")} #ElGestor #EmprenderConConfianza`;
       break;
 
     case "oficina":
-      caption = `💼 Oficina profesional en ${ubicacion || ciudad}.\n`;
+      caption = hook || `${tone.prefix} Oficina ${tone.adjectives[1]} en ${ubicacion || ciudad}.\n`;
       caption += `${area} m² ideales para tu empresa.\n`;
-      caption += `Con ${aliado.nombre}, tu éxito empresarial empieza aquí.\n`;
+      caption += template === "comercial"
+        ? `${tone.verbs[3].charAt(0).toUpperCase() + tone.verbs[3].slice(1)} tu éxito con ${aliado.nombre}.\n`
+        : `Con ${aliado.nombre}, tu éxito empresarial empieza aquí.\n`;
       if (canon) caption += `📊 $${canon} mensual\n`;
-      hashtags = `#Oficinas${aliado.ciudad.replace(/\s/g, "")} #EspaciosProfesionales #ElGestor`;
+      hashtags = `#Oficinas${ciudad.replace(/\s/g, "")} #EspaciosProfesionales #ElGestor`;
       break;
 
     case "bodega":
-      caption = `🏭 Bodega estratégica en ${ubicacion || ciudad}.\n`;
+      caption = hook || `${tone.prefix} Bodega ${tone.adjectives[2]} en ${ubicacion || ciudad}.\n`;
       caption += `${area} m² para almacenamiento y logística.\n`;
-      caption += `Optimiza tu operación con ${aliado.nombre}.\n`;
+      caption += template === "comercial"
+        ? `Optimiza y ${tone.verbs[0]} tu operación con ${aliado.nombre}.\n`
+        : `Optimiza tu operación con ${aliado.nombre}.\n`;
       if (canon) caption += `📦 $${canon} mensual\n`;
-      hashtags = `#Bodegas${aliado.ciudad.replace(/\s/g, "")} #Logistica #ElGestor`;
+      hashtags = `#Bodegas${ciudad.replace(/\s/g, "")} #Logistica #ElGestor`;
       break;
 
     case "lote":
-      caption = `🌳 Lote ${property.uso} en ${ubicacion || ciudad}.\n`;
+      caption = hook || `${tone.prefix} Lote ${tone.adjectives[3]} ${property.uso} en ${ubicacion || ciudad}.\n`;
       caption += `${area} m² con grandes posibilidades.\n`;
-      caption += `Invierte en tu futuro con ${aliado.nombre}.\n`;
+      caption += template === "premium"
+        ? `Inversión ${tone.adjectives[0]} con ${aliado.nombre}.\n`
+        : `Invierte en tu futuro con ${aliado.nombre}.\n`;
       if (property.valorVenta) caption += `💎 $${property.valorVenta}\n`;
-      hashtags = `#Lotes${aliado.ciudad.replace(/\s/g, "")} #Inversión #ElGestor`;
+      hashtags = `#Lotes${ciudad.replace(/\s/g, "")} #Inversión #ElGestor`;
       break;
   }
 
@@ -61,4 +111,13 @@ export const generateCaption = (property: PropertyData, aliado: AliadoConfig): s
   caption += hashtags;
 
   return caption;
+};
+
+export const regenerateCaption = (
+  property: PropertyData, 
+  aliado: AliadoConfig,
+  template: TemplateTheme = "residencial"
+): string => {
+  // Generate alternative version without viral hook
+  return generateCaption(property, aliado, template, false);
 };

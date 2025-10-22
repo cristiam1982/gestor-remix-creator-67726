@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PropertyData, AliadoConfig, ContentType } from "@/types/property";
 import { TemplateTheme, TEMPLATE_THEMES } from "@/types/templates";
-import { Home, Bed, Bath, Car, MapPin, Square } from "lucide-react";
+import { Home, Bed, Bath, Car, MapPin, Square, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface CanvasPreviewProps {
   propertyData: PropertyData;
@@ -14,6 +15,8 @@ interface CanvasPreviewProps {
 export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, template = "residencial", onReady }: CanvasPreviewProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const templateConfig = TEMPLATE_THEMES[template];
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const hasMultiplePhotos = propertyData.fotos && propertyData.fotos.length > 1;
 
   useEffect(() => {
     if (onReady) {
@@ -24,6 +27,18 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
   const isStory = contentType === "historia";
   const dimensions = isStory ? "aspect-[9/16]" : "aspect-square";
   const primaryColor = templateConfig.colors.primary;
+
+  const handlePrevPhoto = () => {
+    if (propertyData.fotos && currentPhotoIndex > 0) {
+      setCurrentPhotoIndex(currentPhotoIndex - 1);
+    }
+  };
+
+  const handleNextPhoto = () => {
+    if (propertyData.fotos && currentPhotoIndex < propertyData.fotos.length - 1) {
+      setCurrentPhotoIndex(currentPhotoIndex + 1);
+    }
+  };
 
   const renderPropertyIcons = () => {
     const icons = [];
@@ -74,15 +89,58 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
       className={`relative ${dimensions} w-full max-w-[540px] mx-auto overflow-hidden ${templateConfig.style.borderRadius} ${templateConfig.style.shadow}`}
       style={{ backgroundColor: primaryColor }}
     >
-      {/* Foto principal */}
+      {/* Foto principal con navegación */}
       {propertyData.fotos && propertyData.fotos.length > 0 && (
         <div className="absolute inset-0">
           <img 
-            src={propertyData.fotos[0]} 
-            alt="Propiedad"
-            className="w-full h-full object-cover"
+            src={propertyData.fotos[currentPhotoIndex]} 
+            alt={`Propiedad ${currentPhotoIndex + 1}`}
+            className="w-full h-full object-cover transition-opacity duration-300"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+          
+          {/* Photo navigation */}
+          {hasMultiplePhotos && (
+            <>
+              {/* Arrows */}
+              {currentPhotoIndex > 0 && (
+                <Button
+                  onClick={handlePrevPhoto}
+                  variant="secondary"
+                  size="icon"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </Button>
+              )}
+              {currentPhotoIndex < propertyData.fotos.length - 1 && (
+                <Button
+                  onClick={handleNextPhoto}
+                  variant="secondary"
+                  size="icon"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </Button>
+              )}
+              
+              {/* Dots indicator */}
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                {propertyData.fotos.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentPhotoIndex(idx)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      idx === currentPhotoIndex 
+                        ? "bg-white w-6" 
+                        : "bg-white/50"
+                    }`}
+                    aria-label={`Ver foto ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
 
