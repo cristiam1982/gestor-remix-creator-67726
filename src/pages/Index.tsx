@@ -11,6 +11,7 @@ import { VideoPreview } from "@/components/VideoPreview";
 import { DownloadInstructions } from "@/components/DownloadInstructions";
 import { TemplateSelector } from "@/components/TemplateSelector";
 import { MetricsPanel } from "@/components/MetricsPanel";
+import { ViralIdeasPanel } from "@/components/ViralIdeasPanel";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
 import { TemplateTheme } from "@/types/templates";
 import { Button } from "@/components/ui/button";
@@ -272,6 +273,14 @@ const Index = () => {
               onPhotosChange={(photos) => setPropertyData({ ...propertyData, fotos: photos })}
               contentType={selectedContentType!}
             />
+
+            {propertyData.tipo && aliadoConfig && (
+              <ViralIdeasPanel
+                propertyType={propertyData.tipo}
+                contentType={selectedContentType!}
+                ciudad={aliadoConfig.ciudad}
+              />
+            )}
 
             <Button
               onClick={handleGeneratePreview}
