@@ -9,13 +9,18 @@ import { SocialMockup } from "@/components/SocialMockup";
 import { ReelSlideshow } from "@/components/ReelSlideshow";
 import { VideoPreview } from "@/components/VideoPreview";
 import { DownloadInstructions } from "@/components/DownloadInstructions";
+import { TemplateSelector } from "@/components/TemplateSelector";
+import { MetricsPanel } from "@/components/MetricsPanel";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
+import { TemplateTheme } from "@/types/templates";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { generateCaption } from "@/utils/captionGenerator";
 import { exportToImage } from "@/utils/imageExporter";
 import { validatePropertyData } from "@/utils/formValidation";
+import { savePublicationMetric, clearMetrics } from "@/utils/metricsManager";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
@@ -27,6 +32,9 @@ const Index = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [generatedCaption, setGeneratedCaption] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateTheme>("residencial");
+  
+  const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
   useEffect(() => {
     const savedConfig = localStorage.getItem("aliado-config");
@@ -34,6 +42,21 @@ const Index = () => {
       const config = JSON.parse(savedConfig);
       setAliadoConfig(config);
       setShowConfig(false);
+    }
+
+    // Cargar datos autoguardados si existen (solo una vez al montar)
+    try {
+      const saved = localStorage.getItem("property-form-autosave");
+      const autoSaved = saved ? JSON.parse(saved) : null;
+      if (autoSaved && autoSaved.tipo) {
+        toast({
+          title: "📝 Borrador recuperado",
+          description: "Se ha restaurado tu última sesión.",
+        });
+        setPropertyData(autoSaved);
+      }
+    } catch (error) {
+      console.error("Error loading auto-saved data:", error);
     }
   }, []);
 
@@ -56,6 +79,7 @@ const Index = () => {
     setPropertyData({ fotos: [] });
     setCurrentStep(1);
     setGeneratedCaption("");
+    clearAutoSavedData();
   };
 
   const handleGeneratePreview = () => {
@@ -86,6 +110,10 @@ const Index = () => {
       const caption = generateCaption(propertyData as PropertyData, aliadoConfig);
       setGeneratedCaption(caption);
       setCurrentStep(3);
+      
+      // Guardar métrica
+      savePublicationMetric(propertyData.tipo, selectedContentType!, selectedTemplate);
+      
       toast({
         title: "✨ Tu publicación está lista",
         description: "Revisa el caption y descarga tu imagen.",
@@ -98,6 +126,14 @@ const Index = () => {
     toast({
       title: "📋 Caption copiado",
       description: "El texto está listo para pegar en tus redes sociales.",
+    });
+  };
+
+  const handleClearMetrics = () => {
+    clearMetrics();
+    toast({
+      title: "🗑️ Estadísticas limpiadas",
+      description: "Se han eliminado todas las métricas guardadas.",
     });
   };
 
@@ -144,7 +180,7 @@ const Index = () => {
         />
         
         <div className="max-w-6xl w-full animate-fade-in">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h1 className="text-5xl font-bold text-white mb-4">
               🎨 Creador Inmobiliario de El Gestor
             </h1>
@@ -158,7 +194,10 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Métricas */}
+          <MetricsPanel onClearMetrics={handleClearMetrics} />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
             <ContentTypeCard
               icon={Square}
               title="Post Cuadrado"
@@ -218,6 +257,11 @@ const Index = () => {
 
         {currentStep === 2 && (
           <div className="space-y-6 animate-fade-in">
+            <TemplateSelector
+              selectedTheme={selectedTemplate}
+              onThemeChange={setSelectedTemplate}
+            />
+            
             <PropertyForm 
               data={propertyData} 
               onDataChange={setPropertyData}
@@ -259,13 +303,14 @@ const Index = () => {
               <Card className="p-6">
                 <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
                 <div className="flex justify-center mb-6">
-                  {aliadoConfig && (
-                    <CanvasPreview
-                      propertyData={propertyData as PropertyData}
-                      aliadoConfig={aliadoConfig}
-                      contentType={selectedContentType!}
-                    />
-                  )}
+            {aliadoConfig && (
+              <CanvasPreview
+                propertyData={propertyData as PropertyData}
+                aliadoConfig={aliadoConfig}
+                contentType={selectedContentType!}
+                template={selectedTemplate}
+              />
+            )}
                 </div>
                 <Button 
                   onClick={handleDownloadImage} 

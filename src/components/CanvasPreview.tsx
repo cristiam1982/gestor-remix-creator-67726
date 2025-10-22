@@ -1,16 +1,19 @@
 import { useEffect, useRef } from "react";
 import { PropertyData, AliadoConfig, ContentType } from "@/types/property";
+import { TemplateTheme, TEMPLATE_THEMES } from "@/types/templates";
 import { Home, Bed, Bath, Car, MapPin, Square } from "lucide-react";
 
 interface CanvasPreviewProps {
   propertyData: PropertyData;
   aliadoConfig: AliadoConfig;
   contentType: ContentType;
+  template?: TemplateTheme;
   onReady?: () => void;
 }
 
-export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, onReady }: CanvasPreviewProps) => {
+export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, template = "residencial", onReady }: CanvasPreviewProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const templateConfig = TEMPLATE_THEMES[template];
 
   useEffect(() => {
     if (onReady) {
@@ -20,6 +23,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, onReady
 
   const isStory = contentType === "historia";
   const dimensions = isStory ? "aspect-[9/16]" : "aspect-square";
+  const primaryColor = templateConfig.colors.primary;
 
   const renderPropertyIcons = () => {
     const icons = [];
@@ -67,8 +71,8 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, onReady
     <div 
       ref={canvasRef}
       id="canvas-preview"
-      className={`relative ${dimensions} w-full max-w-[540px] mx-auto overflow-hidden rounded-xl shadow-2xl`}
-      style={{ backgroundColor: aliadoConfig.color || "#192A56" }}
+      className={`relative ${dimensions} w-full max-w-[540px] mx-auto overflow-hidden ${templateConfig.style.borderRadius} ${templateConfig.style.shadow}`}
+      style={{ backgroundColor: primaryColor }}
     >
       {/* Foto principal */}
       {propertyData.fotos && propertyData.fotos.length > 0 && (
@@ -93,7 +97,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, onReady
             />
           )}
           <div>
-            <p className="font-bold text-sm" style={{ color: aliadoConfig.color || "#192A56" }}>
+            <p className={`font-bold text-sm ${templateConfig.fonts.heading}`} style={{ color: primaryColor }}>
               {aliadoConfig.nombre}
             </p>
             <p className="text-xs text-muted-foreground">{aliadoConfig.ciudad}</p>
@@ -106,7 +110,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, onReady
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h2 className="text-2xl font-bold mb-1" style={{ color: aliadoConfig.color || "#192A56" }}>
+              <h2 className={`text-2xl mb-1 ${templateConfig.fonts.heading}`} style={{ color: primaryColor }}>
                 {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
               </h2>
               {propertyData.ubicacion && (
@@ -119,7 +123,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, onReady
             {propertyData.canon && (
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Canon mensual</p>
-                <p className="text-2xl font-bold" style={{ color: aliadoConfig.color || "#192A56" }}>
+                <p className={`text-2xl ${templateConfig.fonts.heading}`} style={{ color: primaryColor }}>
                   {propertyData.canon}
                 </p>
               </div>
@@ -127,7 +131,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, onReady
             {propertyData.valorVenta && (
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Valor venta</p>
-                <p className="text-2xl font-bold" style={{ color: aliadoConfig.color || "#192A56" }}>
+                <p className={`text-2xl ${templateConfig.fonts.heading}`} style={{ color: primaryColor }}>
                   {propertyData.valorVenta}
                 </p>
               </div>
@@ -141,7 +145,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, onReady
 
           {/* WhatsApp */}
           <div className="mt-4 pt-4 border-t border-border">
-            <p className="text-sm font-semibold" style={{ color: aliadoConfig.color || "#192A56" }}>
+            <p className={`text-sm ${templateConfig.fonts.body}`} style={{ color: primaryColor }}>
               📱 WhatsApp: {aliadoConfig.whatsapp}
             </p>
           </div>
