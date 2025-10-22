@@ -4,7 +4,9 @@ import { PropertyType } from "@/types/property";
 export const aliadoConfigSchema = z.object({
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
   logo: z.string().optional(),
-  color: z.string().regex(/^#[0-9A-F]{6}$/i, "Color inválido (formato: #RRGGBB)"),
+  colorPrimario: z.string().regex(/^#[0-9A-F]{6}$/i, "Color primario inválido (formato: #RRGGBB)"),
+  colorSecundario: z.string().regex(/^#[0-9A-F]{6}$/i, "Color secundario inválido (formato: #RRGGBB)"),
+  colorAccent: z.string().regex(/^#[0-9A-F]{6}$/i, "Color de acento inválido (formato: #RRGGBB)"),
   whatsapp: z.string()
     .min(10, "El número debe tener al menos 10 dígitos")
     .regex(/^[0-9+\s()-]+$/, "Solo se permiten números y símbolos telefónicos"),

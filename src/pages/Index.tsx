@@ -11,8 +11,6 @@ import { VideoPreview } from "@/components/VideoPreview";
 import { DownloadInstructions } from "@/components/DownloadInstructions";
 import { TemplateSelector } from "@/components/TemplateSelector";
 import { MetricsPanel } from "@/components/MetricsPanel";
-import { ViralIdeasPanel } from "@/components/ViralIdeasPanel";
-import { RemixBanner } from "@/components/RemixBanner";
 import { ExportOptions } from "@/components/ExportOptions";
 import { LoadingState } from "@/components/LoadingState";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
@@ -31,7 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const { toast } = useToast();
-  const { remixConfig, isRemixLocked, generateRemixLink, lockRemix } = useRemixConfig();
+  const { remixConfig, isRemixLocked, lockRemix } = useRemixConfig();
   const [aliadoConfig, setAliadoConfig] = useState<AliadoConfig | null>(null);
   const [showConfig, setShowConfig] = useState(true);
   const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
@@ -44,7 +42,6 @@ const Index = () => {
     format: "png", 
     quality: 0.95 
   });
-  const [remixLink, setRemixLink] = useState<string>("");
   const [isDownloading, setIsDownloading] = useState(false);
   
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
@@ -97,17 +94,6 @@ const Index = () => {
       title: "✨ Identidad guardada",
       description: "Tu configuración se aplicará automáticamente a todas tus publicaciones.",
     });
-  };
-
-  const handleGenerateRemixLink = () => {
-    if (aliadoConfig) {
-      const link = generateRemixLink(aliadoConfig);
-      setRemixLink(link);
-      toast({
-        title: "🔗 Link de Remix generado",
-        description: "Ahora puedes compartir tu configuración",
-      });
-    }
   };
 
   const handleContentTypeSelect = (type: ContentType) => {
@@ -263,17 +249,6 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Remix Banner */}
-          {aliadoConfig && (
-            <div className="max-w-md mx-auto mb-6">
-              <RemixBanner
-                aliadoNombre={aliadoConfig.nombre}
-                remixLink={remixLink}
-                onGenerateLink={handleGenerateRemixLink}
-              />
-            </div>
-          )}
-
           {/* Métricas */}
           <MetricsPanel onClearMetrics={handleClearMetrics} />
 
@@ -354,14 +329,6 @@ const Index = () => {
               onPhotosChange={(photos) => setPropertyData({ ...propertyData, fotos: photos })}
               contentType={selectedContentType!}
             />
-
-            {propertyData.tipo && aliadoConfig && (
-              <ViralIdeasPanel
-                propertyType={propertyData.tipo}
-                contentType={selectedContentType!}
-                ciudad={aliadoConfig.ciudad}
-              />
-            )}
 
             <TooltipProvider>
               <Tooltip>

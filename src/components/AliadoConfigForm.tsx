@@ -20,7 +20,9 @@ export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: Al
     initialConfig || {
       nombre: "",
       logo: "",
-      color: "#8BC53F",
+      colorPrimario: "#00A5BD",
+      colorSecundario: "#8BC53F",
+      colorAccent: "#192A56",
       whatsapp: "",
       ciudad: "",
     }
@@ -128,23 +130,60 @@ export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: Al
           </div>
 
           <div>
-            <Label htmlFor="color">Color Corporativo</Label>
+            <Label htmlFor="colorPrimario">Color Primario</Label>
             <div className="flex gap-2">
               <Input
-                id="color"
+                id="colorPrimario"
                 type="color"
-                value={config.color}
-                onChange={(e) => setConfig({ ...config, color: e.target.value })}
+                value={config.colorPrimario}
+                onChange={(e) => setConfig({ ...config, colorPrimario: e.target.value })}
                 className="w-20 h-10 cursor-pointer"
               />
               <Input
-                value={config.color}
-                onChange={(e) => setConfig({ ...config, color: e.target.value })}
-                placeholder="#8BC53F"
-                className={errors.color ? "border-destructive" : ""}
+                value={config.colorPrimario}
+                onChange={(e) => setConfig({ ...config, colorPrimario: e.target.value })}
+                placeholder="#00A5BD"
               />
             </div>
-            {errors.color && <p className="text-xs text-destructive mt-1">{errors.color}</p>}
+            <p className="text-xs text-muted-foreground mt-1">Para textos principales y precios</p>
+          </div>
+
+          <div>
+            <Label htmlFor="colorSecundario">Color Secundario</Label>
+            <div className="flex gap-2">
+              <Input
+                id="colorSecundario"
+                type="color"
+                value={config.colorSecundario}
+                onChange={(e) => setConfig({ ...config, colorSecundario: e.target.value })}
+                className="w-20 h-10 cursor-pointer"
+              />
+              <Input
+                value={config.colorSecundario}
+                onChange={(e) => setConfig({ ...config, colorSecundario: e.target.value })}
+                placeholder="#8BC53F"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Para iconos y badges</p>
+          </div>
+
+          <div>
+            <Label htmlFor="colorAccent">Color de Acento</Label>
+            <div className="flex gap-2">
+              <Input
+                id="colorAccent"
+                type="color"
+                value={config.colorAccent}
+                onChange={(e) => setConfig({ ...config, colorAccent: e.target.value })}
+                className="w-20 h-10 cursor-pointer"
+              />
+              <Input
+                value={config.colorAccent}
+                onChange={(e) => setConfig({ ...config, colorAccent: e.target.value })}
+                placeholder="#192A56"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Para fondos y gradientes</p>
           </div>
 
           <div>

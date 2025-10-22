@@ -3,6 +3,7 @@ import { PropertyData, AliadoConfig } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Volume2, VolumeX, AlertCircle } from "lucide-react";
+import elGestorLogo from "@/assets/el-gestor-logo.png";
 
 interface VideoPreviewProps {
   propertyData: PropertyData;
@@ -159,10 +160,12 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
             </div>
 
             {/* Logo El Gestor */}
-            <div className="absolute bottom-4 right-4">
-              <div className="bg-white/90 px-3 py-1 rounded-lg">
-                <p className="text-xs font-bold text-primary">El Gestor</p>
-              </div>
+            <div className="absolute bottom-4 right-4 z-30">
+              <img 
+                src={elGestorLogo} 
+                alt="El Gestor" 
+                className="h-8 object-contain opacity-80 drop-shadow-lg"
+              />
             </div>
           </div>
 

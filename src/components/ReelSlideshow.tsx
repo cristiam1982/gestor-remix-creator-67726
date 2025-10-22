@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Download } from "lucide-react";
 import { CanvasPreview } from "./CanvasPreview";
+import elGestorLogo from "@/assets/el-gestor-logo.png";
 
 interface ReelSlideshowProps {
   propertyData: PropertyData;
@@ -174,10 +175,12 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           </div>
 
           {/* Logo El Gestor */}
-          <div className="absolute bottom-4 right-4 z-20">
-            <div className="bg-white/90 px-3 py-1 rounded-lg">
-              <p className="text-xs font-bold text-primary">El Gestor</p>
-            </div>
+          <div className="absolute bottom-4 right-4 z-30">
+            <img 
+              src={elGestorLogo} 
+              alt="El Gestor" 
+              className="h-8 object-contain opacity-80 drop-shadow-lg"
+            />
           </div>
 
           {/* Play/Pause overlay */}
