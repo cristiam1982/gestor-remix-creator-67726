@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ContentType } from "@/types/property";
+import { validateImageFile, validateVideoFile } from "@/utils/fileValidation";
+import { useToast } from "@/hooks/use-toast";
 
 interface PhotoManagerProps {
   photos: string[];
@@ -13,38 +15,56 @@ interface PhotoManagerProps {
 }
 
 export const PhotoManager = ({ photos, onPhotosChange, contentType }: PhotoManagerProps) => {
+  const { toast } = useToast();
   const isVideoContent = contentType === "reel-video";
   const maxFiles = isVideoContent ? 1 : contentType === "reel-fotos" ? 10 : 3;
   
   const getHelpText = () => {
     switch (contentType) {
       case "post":
-        return "Sube 1-3 fotos del inmueble";
+        return "Sube 1-3 fotos del inmueble (máx. 5MB cada una)";
       case "historia":
-        return "Sube 1-3 fotos del inmueble";
+        return "Sube 1-3 fotos del inmueble (máx. 5MB cada una)";
       case "reel-fotos":
-        return "Sube 3-10 fotos para el slideshow";
+        return "Sube 3-10 fotos para el slideshow (máx. 5MB cada una)";
       case "reel-video":
-        return "Sube un video (máx. 20 segundos)";
+        return "Sube un video (máx. 20 seg, 50MB)";
       default:
         return "Sube tus archivos aquí";
     }
   };
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const newPhotos: string[] = [];
     
-    acceptedFiles.forEach((file) => {
+    for (const file of acceptedFiles) {
+      // Validate file
+      const validation = isVideoContent 
+        ? await validateVideoFile(file)
+        : validateImageFile(file);
+
+      if (!validation.valid) {
+        toast({
+          title: "❌ Archivo no válido",
+          description: validation.error,
+          variant: "destructive",
+        });
+        continue;
+      }
+
+      // Process valid file
       const reader = new FileReader();
       reader.onloadend = () => {
         newPhotos.push(reader.result as string);
-        if (newPhotos.length === acceptedFiles.length) {
+        if (newPhotos.length === acceptedFiles.filter(async f => 
+          isVideoContent ? (await validateVideoFile(f)).valid : validateImageFile(f).valid
+        ).length) {
           onPhotosChange([...photos, ...newPhotos].slice(0, maxFiles));
         }
       };
       reader.readAsDataURL(file);
-    });
-  }, [photos, onPhotosChange, maxFiles]);
+    }
+  }, [photos, onPhotosChange, maxFiles, isVideoContent, toast]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

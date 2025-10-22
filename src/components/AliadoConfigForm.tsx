@@ -11,9 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 interface AliadoConfigFormProps {
   onSave: (config: AliadoConfig) => void;
   initialConfig?: AliadoConfig;
+  isLocked?: boolean;
 }
 
-export const AliadoConfigForm = ({ onSave, initialConfig }: AliadoConfigFormProps) => {
+export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: AliadoConfigFormProps) => {
   const { toast } = useToast();
   const [config, setConfig] = useState<AliadoConfig>(
     initialConfig || {
@@ -60,6 +61,21 @@ export const AliadoConfigForm = ({ onSave, initialConfig }: AliadoConfigFormProp
   };
 
   if (!showForm && initialConfig) {
+    if (isLocked) {
+      return (
+        <div className="fixed top-4 right-4 z-50">
+          <Button
+            variant="outline"
+            size="icon"
+            disabled
+            className="shadow-lg"
+          >
+            <Settings className="w-5 h-5" />
+          </Button>
+        </div>
+      );
+    }
+
     return (
       <div className="fixed top-4 right-4 z-50">
         <Button
@@ -158,8 +174,13 @@ export const AliadoConfigForm = ({ onSave, initialConfig }: AliadoConfigFormProp
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button type="submit" className="flex-1" variant="hero">
-              Guardar Identidad
+            <Button 
+              type="submit" 
+              className="flex-1" 
+              variant="hero"
+              disabled={isLocked}
+            >
+              {isLocked ? "Configuración Bloqueada" : "Guardar Identidad"}
             </Button>
             {initialConfig && (
               <Button 
@@ -171,6 +192,12 @@ export const AliadoConfigForm = ({ onSave, initialConfig }: AliadoConfigFormProp
               </Button>
             )}
           </div>
+
+          {isLocked && (
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              La configuración está bloqueada en modo Remix
+            </p>
+          )}
         </form>
       </Card>
     </div>

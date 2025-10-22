@@ -12,20 +12,24 @@ import { DownloadInstructions } from "@/components/DownloadInstructions";
 import { TemplateSelector } from "@/components/TemplateSelector";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { ViralIdeasPanel } from "@/components/ViralIdeasPanel";
+import { RemixBanner } from "@/components/RemixBanner";
+import { ExportOptions } from "@/components/ExportOptions";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
 import { TemplateTheme } from "@/types/templates";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { generateCaption } from "@/utils/captionGenerator";
-import { exportToImage } from "@/utils/imageExporter";
+import { exportToImage, exportVideo, ExportOptions as ExportOptionsType } from "@/utils/imageExporter";
 import { validatePropertyData } from "@/utils/formValidation";
 import { savePublicationMetric, clearMetrics } from "@/utils/metricsManager";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import { useRemixConfig } from "@/hooks/useRemixConfig";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const { toast } = useToast();
+  const { remixConfig, isRemixLocked, generateRemixLink, lockRemix } = useRemixConfig();
   const [aliadoConfig, setAliadoConfig] = useState<AliadoConfig | null>(null);
   const [showConfig, setShowConfig] = useState(true);
   const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
@@ -34,10 +38,26 @@ const Index = () => {
   const [generatedCaption, setGeneratedCaption] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateTheme>("residencial");
+  const [exportOptions, setExportOptions] = useState<ExportOptionsType>({ 
+    format: "png", 
+    quality: 0.95 
+  });
+  const [remixLink, setRemixLink] = useState<string>("");
   
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
   useEffect(() => {
+    // Check for remix config first
+    if (remixConfig && !isRemixLocked) {
+      setAliadoConfig(remixConfig);
+      setShowConfig(false);
+      toast({
+        title: "🎨 Configuración de Remix cargada",
+        description: `Bienvenido, ${remixConfig.nombre}`,
+      });
+      return;
+    }
+
     const savedConfig = localStorage.getItem("aliado-config");
     if (savedConfig) {
       const config = JSON.parse(savedConfig);
@@ -59,15 +79,32 @@ const Index = () => {
     } catch (error) {
       console.error("Error loading auto-saved data:", error);
     }
-  }, []);
+  }, [remixConfig, isRemixLocked]);
 
   const handleConfigSave = (config: AliadoConfig) => {
     setAliadoConfig(config);
     setShowConfig(false);
+    
+    // Lock remix after first save
+    if (remixConfig) {
+      lockRemix();
+    }
+    
     toast({
       title: "✨ Identidad guardada",
       description: "Tu configuración se aplicará automáticamente a todas tus publicaciones.",
     });
+  };
+
+  const handleGenerateRemixLink = () => {
+    if (aliadoConfig) {
+      const link = generateRemixLink(aliadoConfig);
+      setRemixLink(link);
+      toast({
+        title: "🔗 Link de Remix generado",
+        description: "Ahora puedes compartir tu configuración",
+      });
+    }
   };
 
   const handleContentTypeSelect = (type: ContentType) => {
@@ -140,21 +177,24 @@ const Index = () => {
 
   const handleDownloadImage = async () => {
     try {
-      // Para reels con video, mostrar mensaje informativo
-      if (selectedContentType === "reel-video") {
+      // Para reels con video, descargar el video original
+      if (selectedContentType === "reel-video" && propertyData.fotos && propertyData.fotos[0]) {
+        await exportVideo(propertyData.fotos[0], `reel-${propertyData.tipo}-${Date.now()}.mp4`);
         toast({
-          title: "💡 Descarga de video",
-          description: "Para reels con video, descarga el video original y edítalo con tu app favorita agregando los textos del caption.",
+          title: "✅ Video descargado",
+          description: "Edita el video con tu app favorita agregando los textos.",
         });
         return;
       }
 
-      await exportToImage("canvas-preview", `publicacion-${propertyData.tipo}-${Date.now()}.png`);
+      const filename = `publicacion-${propertyData.tipo}-${Date.now()}.${exportOptions.format}`;
+      await exportToImage("canvas-preview", filename, exportOptions);
       toast({
         title: "✅ Imagen descargada",
         description: "Tu publicación se guardó correctamente.",
       });
     } catch (error) {
+      console.error("Error al descargar:", error);
       toast({
         title: "❌ Error al descargar",
         description: "Intenta nuevamente o contacta soporte.",
@@ -167,7 +207,8 @@ const Index = () => {
     return (
       <AliadoConfigForm 
         onSave={handleConfigSave} 
-        initialConfig={aliadoConfig || undefined}
+        initialConfig={aliadoConfig || remixConfig || undefined}
+        isLocked={isRemixLocked}
       />
     );
   }
@@ -178,6 +219,7 @@ const Index = () => {
         <AliadoConfigForm 
           onSave={handleConfigSave} 
           initialConfig={aliadoConfig}
+          isLocked={isRemixLocked}
         />
         
         <div className="max-w-6xl w-full animate-fade-in">
@@ -194,6 +236,17 @@ const Index = () => {
               </p>
             </div>
           </div>
+
+          {/* Remix Banner */}
+          {aliadoConfig && (
+            <div className="max-w-md mx-auto mb-6">
+              <RemixBanner
+                aliadoNombre={aliadoConfig.nombre}
+                remixLink={remixLink}
+                onGenerateLink={handleGenerateRemixLink}
+              />
+            </div>
+          )}
 
           {/* Métricas */}
           <MetricsPanel onClearMetrics={handleClearMetrics} />
@@ -296,6 +349,14 @@ const Index = () => {
 
         {currentStep === 3 && (
           <div className="space-y-6 animate-fade-in">
+            {/* Export Options */}
+            {selectedContentType !== "reel-video" && aliadoConfig && (
+              <ExportOptions
+                onOptionsChange={setExportOptions}
+                aliadoNombre={aliadoConfig.nombre}
+              />
+            )}
+
             {/* Vista previa según tipo de contenido */}
             {selectedContentType === "reel-fotos" && aliadoConfig ? (
               <ReelSlideshow
