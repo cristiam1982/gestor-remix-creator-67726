@@ -400,19 +400,17 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         </div>
 
         {/* Canvas de captura OCULTO - Escalado 2.5x para generar 1080x1920 */}
-        <div 
-          id="reel-capture-canvas" 
-          className="fixed pointer-events-none"
-          style={{ 
-            width: '432px', 
-            height: '768px',
-            transform: 'scale(2.5)',
-            transformOrigin: 'top left',
-            left: '-9999px',
-            top: '-9999px',
-            backgroundColor: '#000000'
-          }}
-        >
+      <div 
+        id="reel-capture-canvas" 
+        className="fixed pointer-events-none"
+        style={{ 
+          width: '432px', 
+          height: '768px',
+          left: '-9999px',
+          top: '-9999px',
+          backgroundColor: '#000000'
+        }}
+      >
           {/* Foto actual con overlay - CÓDIGO IDÉNTICO AL PREVIEW */}
           <div className="absolute inset-0">
             <img
