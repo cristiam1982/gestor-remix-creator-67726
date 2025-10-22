@@ -6,6 +6,9 @@ import { PropertyForm } from "@/components/PropertyForm";
 import { PhotoManager } from "@/components/PhotoManager";
 import { CanvasPreview } from "@/components/CanvasPreview";
 import { SocialMockup } from "@/components/SocialMockup";
+import { ReelSlideshow } from "@/components/ReelSlideshow";
+import { VideoPreview } from "@/components/VideoPreview";
+import { DownloadInstructions } from "@/components/DownloadInstructions";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -100,6 +103,15 @@ const Index = () => {
 
   const handleDownloadImage = async () => {
     try {
+      // Para reels con video, mostrar mensaje informativo
+      if (selectedContentType === "reel-video") {
+        toast({
+          title: "💡 Descarga de video",
+          description: "Para reels con video, descarga el video original y edítalo con tu app favorita agregando los textos del caption.",
+        });
+        return;
+      }
+
       await exportToImage("canvas-preview", `publicacion-${propertyData.tipo}-${Date.now()}.png`);
       toast({
         title: "✅ Imagen descargada",
@@ -231,27 +243,41 @@ const Index = () => {
 
         {currentStep === 3 && (
           <div className="space-y-6 animate-fade-in">
-            <Card className="p-6">
-              <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
-              <div className="flex justify-center mb-6">
-                {aliadoConfig && (
-                  <CanvasPreview
-                    propertyData={propertyData as PropertyData}
-                    aliadoConfig={aliadoConfig}
-                    contentType={selectedContentType!}
-                  />
-                )}
-              </div>
-              <Button 
-                onClick={handleDownloadImage} 
-                variant="hero" 
-                size="lg"
-                className="w-full"
-              >
-                <Download className="w-5 h-5 mr-2" />
-                Descargar Imagen
-              </Button>
-            </Card>
+            {/* Vista previa según tipo de contenido */}
+            {selectedContentType === "reel-fotos" && aliadoConfig ? (
+              <ReelSlideshow
+                propertyData={propertyData as PropertyData}
+                aliadoConfig={aliadoConfig}
+                onDownload={handleDownloadImage}
+              />
+            ) : selectedContentType === "reel-video" && aliadoConfig ? (
+              <VideoPreview
+                propertyData={propertyData as PropertyData}
+                aliadoConfig={aliadoConfig}
+              />
+            ) : (
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
+                <div className="flex justify-center mb-6">
+                  {aliadoConfig && (
+                    <CanvasPreview
+                      propertyData={propertyData as PropertyData}
+                      aliadoConfig={aliadoConfig}
+                      contentType={selectedContentType!}
+                    />
+                  )}
+                </div>
+                <Button 
+                  onClick={handleDownloadImage} 
+                  variant="hero" 
+                  size="lg"
+                  className="w-full"
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  Descargar Imagen
+                </Button>
+              </Card>
+            )}
 
             <Card className="p-6">
               <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
@@ -281,7 +307,7 @@ const Index = () => {
             </Card>
 
             {/* Vista previa en redes sociales */}
-            {aliadoConfig && (
+            {aliadoConfig && (selectedContentType === "post" || selectedContentType === "historia") && (
               <SocialMockup
                 propertyData={propertyData as PropertyData}
                 aliadoConfig={aliadoConfig}
@@ -289,6 +315,9 @@ const Index = () => {
                 caption={generatedCaption}
               />
             )}
+
+            {/* Instrucciones de descarga */}
+            <DownloadInstructions contentType={selectedContentType!} />
           </div>
         )}
       </div>
