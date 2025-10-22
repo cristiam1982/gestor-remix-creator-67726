@@ -32,7 +32,12 @@ const captureFrame = async (
   }
 
   try {
-    const canvas = await html2canvas(element, {
+    // Esperar a que las fuentes estén cargadas
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    const commonOptions = {
       scale: 2.5,
       backgroundColor: "#000000",
       logging: false,
@@ -40,19 +45,35 @@ const captureFrame = async (
       height: 768,
       useCORS: true,
       allowTaint: false,
-      imageTimeout: 30000, // Más tiempo para cargar imágenes
+      imageTimeout: 30000,
       removeContainer: false,
-      foreignObjectRendering: false,
       windowWidth: 432,
       windowHeight: 768,
-      onclone: (clonedDoc) => {
+      onclone: (clonedDoc: Document) => {
         // Forzar que las imágenes se capturen con colores reales
         const imgs = clonedDoc.querySelectorAll('img');
         imgs.forEach(img => {
-          img.style.opacity = '1';
+          (img as HTMLImageElement).style.opacity = '1';
         });
       }
-    });
+    };
+
+    let canvas: HTMLCanvasElement;
+    
+    // Intentar primero con foreignObjectRendering para mejor calidad
+    try {
+      canvas = await html2canvas(element, {
+        ...commonOptions,
+        foreignObjectRendering: true,
+      });
+    } catch (firstError) {
+      // Si falla (por CORS o compatibilidad), usar modo estándar
+      console.warn("Captura con foreignObject falló, usando modo estándar");
+      canvas = await html2canvas(element, {
+        ...commonOptions,
+        foreignObjectRendering: false,
+      });
+    }
 
     return canvas;
   } catch (error) {
@@ -93,16 +114,16 @@ export const generateReelVideo = async (
     // Detectar número de workers según capacidad del dispositivo
     const numWorkers = Math.min(navigator.hardwareConcurrency || 2, 8);
 
-    // Crear instancia de GIF optimizada para colores vivos y naturales
+    // Crear instancia de GIF optimizada para logos y colores limpios
     const gif = new GIF({
       workers: numWorkers,
-      quality: 5, // Mejor calidad de color (1-30, menor = mejor)
+      quality: 2, // Alta calidad de color (1-30, menor = mejor)
       width: 1080,
       height: 1920,
       workerScript: "/gif.worker.js",
       repeat: 0,
       transparent: null, // Sin transparencia
-      dither: 'FloydSteinberg', // Dithering específico para mejor gradación de colores
+      dither: false, // Sin dithering para logos y colores planos más nítidos
     });
 
     onProgress({

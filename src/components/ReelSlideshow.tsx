@@ -378,11 +378,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           </div>
 
           {/* Logo El Gestor */}
-          <div className="absolute bottom-4 right-4 z-30">
+          <div className="absolute bottom-4 right-4 z-30 shadow-lg rounded-lg">
             <img 
               src={elGestorLogo} 
               alt="El Gestor" 
-              className="h-8 object-contain opacity-80 drop-shadow-lg"
+              className="h-8 object-contain opacity-80"
             />
           </div>
 
@@ -469,11 +469,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           </div>
 
           {/* Logo El Gestor */}
-          <div className="absolute bottom-4 right-4 z-30">
+          <div className="absolute bottom-4 right-4 z-30 shadow-lg rounded-lg">
             <img 
               src={elGestorLogo} 
               alt="El Gestor" 
-              className="h-8 object-contain opacity-80 drop-shadow-lg"
+              className="h-8 object-contain opacity-80"
             />
           </div>
         </div>
