@@ -355,8 +355,8 @@ const Index = () => {
 
         {currentStep === 3 && (
           <div className="space-y-6 animate-fade-in">
-            {/* Export Options */}
-            {selectedContentType !== "reel-video" && aliadoConfig && (
+            {/* Export Options - Solo para imágenes estáticas */}
+            {(selectedContentType === "post" || selectedContentType === "historia") && aliadoConfig && (
               <ExportOptions
                 onOptionsChange={setExportOptions}
                 aliadoNombre={aliadoConfig.nombre}
@@ -365,10 +365,10 @@ const Index = () => {
 
             {/* Vista previa según tipo de contenido */}
             {selectedContentType === "reel-fotos" && aliadoConfig ? (
+              // Reel animado: ReelSlideshow con botón de descarga integrado
               <ReelSlideshow
                 propertyData={propertyData as PropertyData}
                 aliadoConfig={aliadoConfig}
-                onDownload={handleDownloadImage}
               />
             ) : selectedContentType === "reel-video" && aliadoConfig ? (
               <VideoPreview
@@ -376,17 +376,18 @@ const Index = () => {
                 aliadoConfig={aliadoConfig}
               />
             ) : (
+              // Post/Historia: imagen estática con opciones de exportación
               <Card className="p-6">
                 <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
                 <div className="flex justify-center mb-6">
-            {aliadoConfig && (
-              <CanvasPreview
-                propertyData={propertyData as PropertyData}
-                aliadoConfig={aliadoConfig}
-                contentType={selectedContentType!}
-                template={selectedTemplate}
-              />
-            )}
+                  {aliadoConfig && (
+                    <CanvasPreview
+                      propertyData={propertyData as PropertyData}
+                      aliadoConfig={aliadoConfig}
+                      contentType={selectedContentType!}
+                      template={selectedTemplate}
+                    />
+                  )}
                 </div>
                 <Button 
                   onClick={handleDownloadImage} 
@@ -403,7 +404,7 @@ const Index = () => {
                   ) : (
                     <>
                       <Download className="w-5 h-5 mr-2" />
-                      Descargar Imagen
+                      Descargar Imagen ({exportOptions.format.toUpperCase()})
                     </>
                   )}
                 </Button>
