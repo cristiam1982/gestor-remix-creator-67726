@@ -86,15 +86,15 @@ export const generateReelVideo = async (
     // Detectar número de workers según capacidad del dispositivo
     const numWorkers = Math.min(navigator.hardwareConcurrency || 2, 8);
 
-    // Crear instancia de GIF optimizada para colores vivos
+    // Crear instancia de GIF optimizada para colores vivos y naturales
     const gif = new GIF({
       workers: numWorkers,
-      quality: 1, // 1 = mejor calidad de color (1-30, menor = mejor)
-      dither: true, // Mejora transiciones de color
+      quality: 10, // Balance entre velocidad y calidad (1-30, menor = mejor)
       width: 1080,
       height: 1920,
       workerScript: "/gif.worker.js",
-      repeat: 0, // Loop infinito
+      repeat: 0,
+      transparent: null, // Sin transparencia
     });
 
     onProgress({
