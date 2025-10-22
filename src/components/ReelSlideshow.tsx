@@ -402,7 +402,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         {/* Canvas de captura OCULTO - Escalado 2.5x para generar 1080x1920 */}
       <div 
         id="reel-capture-canvas" 
-        className="fixed pointer-events-none"
+        className="absolute pointer-events-none"
         style={{ 
           width: '432px', 
           height: '768px',

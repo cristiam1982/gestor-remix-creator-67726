@@ -60,18 +60,33 @@ const captureFrame = async (
 
     let canvas: HTMLCanvasElement;
     
-    // Intentar primero con foreignObjectRendering para mejor calidad
+    // Intentar primero con modo estándar (más confiable)
     try {
       canvas = await html2canvas(element, {
         ...commonOptions,
-        foreignObjectRendering: true,
+        foreignObjectRendering: false,
       });
+      
+      // Verificar que el canvas no esté vacío/negro
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        const imageData = ctx.getImageData(canvas.width / 2, canvas.height / 2, 1, 1);
+        const isBlack = imageData.data[0] === 0 && imageData.data[1] === 0 && imageData.data[2] === 0;
+        
+        if (isBlack) {
+          console.warn("Canvas negro detectado, reintentando con foreignObjectRendering");
+          canvas = await html2canvas(element, {
+            ...commonOptions,
+            foreignObjectRendering: true,
+          });
+        }
+      }
     } catch (firstError) {
-      // Si falla (por CORS o compatibilidad), usar modo estándar
-      console.warn("Captura con foreignObject falló, usando modo estándar");
+      // Si falla (por CORS), intentar con foreignObjectRendering
+      console.warn("Captura estándar falló, intentando con foreignObjectRendering");
       canvas = await html2canvas(element, {
         ...commonOptions,
-        foreignObjectRendering: false,
+        foreignObjectRendering: true,
       });
     }
 
