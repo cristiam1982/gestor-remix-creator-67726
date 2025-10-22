@@ -33,18 +33,18 @@ const captureFrame = async (
 
   try {
     const canvas = await html2canvas(element, {
-      scale: 1,
+      scale: 2.5,
       backgroundColor: "#000000",
       logging: false,
-      width: 1080,
-      height: 1920,
+      width: 432,
+      height: 768,
       useCORS: true,
       allowTaint: false,
       imageTimeout: 30000, // Más tiempo para cargar imágenes
       removeContainer: false,
       foreignObjectRendering: false,
-      windowWidth: 1080,
-      windowHeight: 1920,
+      windowWidth: 432,
+      windowHeight: 768,
       onclone: (clonedDoc) => {
         // Forzar que las imágenes se capturen con colores reales
         const imgs = clonedDoc.querySelectorAll('img');

@@ -399,35 +399,39 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           )}
         </div>
 
-        {/* Canvas de captura OCULTO - 1080x1920px para GIF */}
+        {/* Canvas de captura OCULTO - Escalado 2.5x para generar 1080x1920 */}
         <div 
           id="reel-capture-canvas" 
           className="fixed pointer-events-none"
           style={{ 
-            width: '1080px', 
-            height: '1920px',
+            width: '432px', 
+            height: '768px',
+            transform: 'scale(2.5)',
+            transformOrigin: 'top left',
             left: '-9999px',
             top: '-9999px',
             backgroundColor: '#000000'
           }}
         >
-          {/* Foto actual */}
-          <img
-            src={photos[currentPhotoIndex]}
-            alt="Captura"
-            className="absolute inset-0 w-full h-full object-cover"
-            crossOrigin="anonymous"
-            referrerPolicy="no-referrer"
-          />
-          {/* Sin overlay oscuro - colores naturales */}
+          {/* Foto actual con overlay - CÓDIGO IDÉNTICO AL PREVIEW */}
+          <div className="absolute inset-0">
+            <img
+              src={photos[currentPhotoIndex]}
+              alt={`Foto ${currentPhotoIndex + 1}`}
+              className="w-full h-full object-cover"
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
+            />
+            {/* Sin overlay oscuro - colores naturales */}
+          </div>
 
-          {/* Logo del aliado - ESCALADO PARA 1080x1920 */}
-          <div className="absolute top-16 left-8 z-10">
+          {/* Logo del aliado */}
+          <div className="absolute top-8 left-4 z-10">
             {(safeLogoUrl || aliadoConfig.logo) && (
               <img
                 src={safeLogoUrl || aliadoConfig.logo}
                 alt={aliadoConfig.nombre}
-                className="w-40 h-40 rounded-full border-4 border-white object-contain p-2 shadow-2xl"
+                className="w-16 h-16 rounded-full border-2 border-white object-contain p-1 shadow-xl"
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
                 data-ally-logo="true"
@@ -435,43 +439,43 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             )}
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 px-12 pb-16 z-10">
-            <h3 className="text-white text-6xl font-bold mb-4" style={{ textShadow: '4px 4px 12px rgba(0,0,0,0.95)' }}>
+          <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+            <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h3>
             {propertyData.ubicacion && (
-              <p className="text-white text-3xl mb-6" style={{ textShadow: '4px 4px 12px rgba(0,0,0,0.95)' }}>📍 {propertyData.ubicacion}</p>
+              <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
             )}
             {propertyData.canon && (
-              <p className="text-white text-5xl font-bold mb-6" style={{ textShadow: '4px 4px 12px rgba(0,0,0,0.95)' }}>
+              <p className="text-white text-xl font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
                 💰 {propertyData.canon}/mes
               </p>
             )}
-            <div className="flex gap-6 text-2xl">
+            <div className="flex gap-3 text-sm">
               {propertyData.habitaciones && (
-                <span className="bg-white text-black px-8 py-3 rounded-full font-semibold shadow-lg">
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
                   🛏️ {propertyData.habitaciones}
                 </span>
               )}
               {propertyData.banos && (
-                <span className="bg-white text-black px-8 py-3 rounded-full font-semibold shadow-lg">
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
                   🚿 {propertyData.banos}
                 </span>
               )}
               {propertyData.area && (
-                <span className="bg-white text-black px-8 py-3 rounded-full font-semibold shadow-lg">
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
                   📐 {propertyData.area}m²
                 </span>
               )}
             </div>
           </div>
 
-          {/* Logo El Gestor - ESCALADO */}
-          <div className="absolute bottom-10 right-10 z-30">
+          {/* Logo El Gestor */}
+          <div className="absolute bottom-4 right-4 z-30">
             <img 
               src={elGestorLogo} 
               alt="El Gestor" 
-              className="h-20 object-contain opacity-80 drop-shadow-lg"
+              className="h-8 object-contain opacity-80 drop-shadow-lg"
             />
           </div>
         </div>
