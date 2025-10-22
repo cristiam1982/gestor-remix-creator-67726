@@ -41,6 +41,10 @@ const captureFrame = async (
       useCORS: true,
       allowTaint: false,
       imageTimeout: 15000,
+      removeContainer: false,
+      foreignObjectRendering: false,
+      windowWidth: 1080,
+      windowHeight: 1920,
     });
 
     return canvas;
@@ -80,15 +84,17 @@ export const generateReelVideo = async (
     });
 
     // Detectar número de workers según capacidad del dispositivo
-    const numWorkers = Math.min(navigator.hardwareConcurrency || 2, 4);
+    const numWorkers = Math.min(navigator.hardwareConcurrency || 2, 8);
 
-    // Crear instancia de GIF optimizada (usando worker local para evitar CORS)
+    // Crear instancia de GIF optimizada para colores vivos
     const gif = new GIF({
       workers: numWorkers,
-      quality: 20, // Mayor número = más rápido en gif.js
+      quality: 1, // 1 = mejor calidad de color (1-30, menor = mejor)
+      dither: true, // Mejora transiciones de color
       width: 1080,
       height: 1920,
       workerScript: "/gif.worker.js",
+      repeat: 0, // Loop infinito
     });
 
     onProgress({
