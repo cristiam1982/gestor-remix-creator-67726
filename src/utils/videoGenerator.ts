@@ -319,7 +319,6 @@ export const generateReelVideo = async (
       ctx.stroke();
       ctx.restore();
 
-      // Dibujo del logo o fallback
       try {
         if (eg.bitmap) {
           ctx.drawImage(eg.bitmap, x, y, targetW, targetH);
@@ -340,6 +339,16 @@ export const generateReelVideo = async (
         ctx.textAlign = "center";
         ctx.fillText("EL GESTOR", plateX + plateW / 2, plateY + plateH / 2);
       }
+
+      // Verificación de píxel en el centro de la placa (debug)
+      try {
+        const cx = Math.min(cw - 1, Math.max(0, Math.round(plateX + plateW / 2)));
+        const cy = Math.min(ch - 1, Math.max(0, Math.round(plateY + plateH / 2)));
+        const rgba = ctx.getImageData(cx, cy, 1, 1).data;
+        console.log(`Verificación placa frame ${index + 1}: RGBA(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3]})`);
+      } catch (e) {
+        console.warn(`No se pudo verificar píxel en frame ${index + 1}`, e);
+      }
     });
 
     onProgress({
@@ -349,9 +358,21 @@ export const generateReelVideo = async (
       message: "Generando reel animado...",
     });
 
-    // Agregar frames al GIF (2.5 segundos por foto)
-    frames.forEach((canvas) => {
-      gif.addFrame(canvas, { delay: 2500 });
+    // Agregar frames al GIF usando snapshots PNG (garantiza inclusión del logo)
+    const snapshotPromises = frames.map((canvas, idx) => {
+      return new Promise<HTMLImageElement>((resolve) => {
+        const dataUrl = canvas.toDataURL('image/png');
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.src = dataUrl;
+        console.log(`Snapshot creado para frame ${idx + 1}`);
+      });
+    });
+
+    const snapshots = await Promise.all(snapshotPromises);
+
+    snapshots.forEach((img, idx) => {
+      gif.addFrame(img, { delay: 2500, copy: true });
     });
 
     // Renderizar GIF
