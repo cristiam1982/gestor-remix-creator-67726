@@ -41,9 +41,9 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
       const dur = videoRef.current.duration;
       setDuration(dur);
       
-      // Validar duración máxima de 20 segundos
-      if (dur > 20) {
-        setError("⚠️ El video excede los 20 segundos recomendados para reels.");
+      // Validar duración máxima de 60 segundos
+      if (dur > 60) {
+        setError("⚠️ El video excede los 60 segundos máximos permitidos.");
       } else {
         setError(null);
       }
@@ -185,7 +185,7 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
         {/* Instrucciones */}
         <div className="p-3 bg-accent/50 rounded-lg">
           <p className="text-sm text-muted-foreground text-center">
-            💡 Duración recomendada: 15-20 segundos. El texto se superpone automáticamente al video.
+            💡 Duración recomendada: 30-60 segundos. Se generará un GIF animado con todos los overlays integrados.
           </p>
         </div>
 

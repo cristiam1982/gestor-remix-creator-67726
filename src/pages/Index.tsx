@@ -7,7 +7,7 @@ import { PhotoManager } from "@/components/PhotoManager";
 import { CanvasPreview } from "@/components/CanvasPreview";
 import { SocialMockup } from "@/components/SocialMockup";
 import { ReelSlideshow } from "@/components/ReelSlideshow";
-import { VideoPreview } from "@/components/VideoPreview";
+import { VideoToGifConverter } from "@/components/VideoToGifConverter";
 import { TemplateSelector } from "@/components/TemplateSelector";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { ExportOptions } from "@/components/ExportOptions";
@@ -370,9 +370,15 @@ const Index = () => {
                 aliadoConfig={aliadoConfig}
               />
             ) : selectedContentType === "reel-video" && aliadoConfig ? (
-              <VideoPreview
+              <VideoToGifConverter
                 propertyData={propertyData as PropertyData}
                 aliadoConfig={aliadoConfig}
+                onComplete={(blob) => {
+                  toast({
+                    title: "✨ GIF generado exitosamente",
+                    description: `Tamaño: ${(blob.size / (1024 * 1024)).toFixed(1)} MB - Listo para redes sociales`,
+                  });
+                }}
               />
             ) : (
               // Post/Historia: imagen estática con opciones de exportación

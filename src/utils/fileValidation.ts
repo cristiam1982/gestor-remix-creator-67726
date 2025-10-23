@@ -25,13 +25,13 @@ export const validateImageFile = (file: File): FileValidationResult => {
 };
 
 export const validateVideoFile = async (file: File): Promise<FileValidationResult> => {
-  const maxSize = 50 * 1024 * 1024; // 50MB
-  const maxDuration = 20; // 20 seconds
+  const maxSize = 100 * 1024 * 1024; // 100MB
+  const maxDuration = 60; // 60 seconds
 
   if (file.size > maxSize) {
     return {
       valid: false,
-      error: "El video no puede superar 50MB. Comprime el video o usa uno más corto.",
+      error: "El video no puede superar 100MB. Comprime el video o usa uno más corto.",
     };
   }
 

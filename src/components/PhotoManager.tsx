@@ -28,7 +28,7 @@ export const PhotoManager = ({ photos, onPhotosChange, contentType }: PhotoManag
       case "reel-fotos":
         return "Sube 3-10 fotos para el slideshow (máx. 5MB cada una)";
       case "reel-video":
-        return "Sube un video (máx. 20 seg, 50MB)";
+        return "Sube un video (máx. 60 seg, 100MB)";
       default:
         return "Sube tus archivos aquí";
     }
