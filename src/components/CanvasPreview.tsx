@@ -330,6 +330,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
         <img 
           src={elGestorLogo} 
           alt="El Gestor" 
+          data-eg-logo="true"
           className="h-8 object-contain drop-shadow-lg"
         />
       </div>

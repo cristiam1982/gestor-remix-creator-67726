@@ -481,14 +481,15 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                )}
              </div>
 
-             {/* Logo El Gestor - inferior derecha */}
-             <div className="absolute bottom-8 right-4 z-40">
-               <img 
-                 src={elGestorLogo} 
-                 alt="El Gestor" 
-                 className="h-8 object-contain drop-shadow-lg"
-               />
-             </div>
+              {/* Logo El Gestor - inferior derecha */}
+              <div className="absolute bottom-8 right-4 z-40">
+                <img 
+                  src={elGestorLogo} 
+                  alt="El Gestor" 
+                  data-eg-logo="true"
+                  className="h-8 object-contain drop-shadow-lg"
+                />
+              </div>
            </div>
 
           {/* Play/Pause overlay */}

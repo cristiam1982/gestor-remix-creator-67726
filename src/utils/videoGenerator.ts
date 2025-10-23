@@ -208,6 +208,11 @@ export const generateReelVideo = async (
       }
     }
 
+    // Debug: dimensiones del primer frame capturado (si existe)
+    if (frames[0]) {
+      console.log("Dimensiones del primer frame:", frames[0].width + "x" + frames[0].height);
+    }
+
     onProgress({
       stage: "encoding",
       progress: 60,
@@ -219,24 +224,42 @@ export const generateReelVideo = async (
     const egLogo = await loadImage(elGestorLogo);
 
     // Dibujar el logo de El Gestor sobre cada frame capturado
-    frames.forEach((canvas) => {
+    frames.forEach((canvas, index) => {
       const ctx = canvas.getContext('2d');
-      if (ctx) {
-        // Configurar renderizado de alta calidad
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
+      if (!ctx) {
+        console.warn(`No se pudo obtener contexto del frame ${index + 1}`);
+        return;
+      }
 
-        // Calcular tamaño proporcional del logo (altura ~90px en 1920px de alto)
-        const targetHeight = Math.round(canvas.height * (90 / 1920));
-        const aspect = egLogo.width / egLogo.height;
-        const targetWidth = Math.round(targetHeight * aspect);
+      // Configurar renderizado de alta calidad
+      ctx.imageSmoothingEnabled = true;
+      // @ts-ignore - compatibilidad de tipos
+      ctx.imageSmoothingQuality = "high" as any;
 
-        // Posición: esquina inferior derecha con margen (40px en escala 2.5x = 100px en 1080x1920)
-        const x = canvas.width - targetWidth - Math.round(canvas.width * (40 / 1080));
-        const y = canvas.height - targetHeight - Math.round(canvas.height * (40 / 1920));
+      // Cálculo robusto basado en dimensiones reales del canvas
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      console.log(`Frame ${index + 1}: ${canvasWidth}x${canvasHeight}`);
 
-        // Dibujar el logo sobre el frame
+      // Altura del logo ~4.7% de la altura del canvas (≈90px en 1920px)
+      const targetHeight = Math.max(10, Math.round(canvasHeight * 0.047));
+      const logoAspect = egLogo.width / egLogo.height;
+      const targetWidth = Math.max(10, Math.round(targetHeight * logoAspect));
+
+      // Márgenes proporcionales (≈40px en 1080x1920)
+      const marginRight = Math.round(canvasWidth * 0.037);
+      const marginBottom = Math.round(canvasHeight * 0.021);
+
+      // Posición final
+      const x = canvasWidth - targetWidth - marginRight;
+      const y = canvasHeight - targetHeight - marginBottom;
+
+      console.log(`Logo en frame ${index + 1}: pos(${x}, ${y}), size(${targetWidth}x${targetHeight})`);
+
+      try {
         ctx.drawImage(egLogo, x, y, targetWidth, targetHeight);
+      } catch (drawError) {
+        console.error(`Error dibujando logo en frame ${index + 1}:`, drawError);
       }
     });
 
