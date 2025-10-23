@@ -108,7 +108,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           <img 
             src={aliadoConfig.logo} 
             alt={aliadoConfig.nombre}
-            className="w-20 h-20 rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
+            className={`${isStory ? "w-24 h-24" : "w-20 h-20"} rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1`}
           />
         )}
         <div>
@@ -326,7 +326,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           src={elGestorLogo} 
           alt="El Gestor" 
           data-eg-logo="true"
-          className="h-8 object-contain drop-shadow-lg"
+          className={`${isStory ? "h-10" : "h-8"} object-contain drop-shadow-lg`}
         />
       </div>
     </div>
