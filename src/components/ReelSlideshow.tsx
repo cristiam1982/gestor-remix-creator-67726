@@ -363,7 +363,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 <span 
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -375,7 +375,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 <span 
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -387,7 +387,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 <span 
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -399,7 +399,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 <span 
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -411,7 +411,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 <span 
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -423,7 +423,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 <span 
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -435,7 +435,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 <span 
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -447,7 +447,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 <span 
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -459,7 +459,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 <span 
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -471,25 +471,25 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 <span 
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
                 >
                   📐 {propertyData.area}m²
-                </span>
-              )}
-            </div>
-          </div>
+                 </span>
+               )}
+             </div>
 
-            {/* Logo El Gestor - inferior derecha */}
-            <div className="absolute bottom-8 right-4 z-30">
-              <img 
-                src={elGestorLogo} 
-                alt="El Gestor" 
-                className="h-8 object-contain drop-shadow-lg"
-              />
-            </div>
+             {/* Logo El Gestor - inferior derecha */}
+             <div className="absolute bottom-8 right-4 z-40">
+               <img 
+                 src={elGestorLogo} 
+                 alt="El Gestor" 
+                 className="h-8 object-contain drop-shadow-lg"
+               />
+             </div>
+           </div>
 
           {/* Play/Pause overlay */}
           {!isPlaying && (
@@ -555,11 +555,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               </p>
             )}
             <div className="flex flex-wrap gap-2 text-sm">
-              {propertyData.habitaciones && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+               {propertyData.habitaciones && (
+                 <span 
+                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                   style={{ 
+                     backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -567,11 +567,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   🛏️ {propertyData.habitaciones}
                 </span>
               )}
-              {propertyData.banos && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+               {propertyData.banos && (
+                 <span 
+                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                   style={{ 
+                     backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -579,11 +579,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   🚿 {propertyData.banos}
                 </span>
               )}
-              {propertyData.parqueaderos && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+               {propertyData.parqueaderos && (
+                 <span 
+                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                   style={{ 
+                     backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -591,11 +591,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   🚗 {propertyData.parqueaderos}
                 </span>
               )}
-              {propertyData.estrato && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+               {propertyData.estrato && (
+                 <span 
+                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                   style={{ 
+                     backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -603,11 +603,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   🏢 Estrato {propertyData.estrato}
                 </span>
               )}
-              {propertyData.piso && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+               {propertyData.piso && (
+                 <span 
+                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                   style={{ 
+                     backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -615,11 +615,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   🏢 Piso {propertyData.piso}
                 </span>
               )}
-              {propertyData.trafico && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+               {propertyData.trafico && (
+                 <span 
+                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                   style={{ 
+                     backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -627,11 +627,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   🚦 Tráfico {propertyData.trafico}
                 </span>
               )}
-              {propertyData.alturaLibre && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+               {propertyData.alturaLibre && (
+                 <span 
+                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                   style={{ 
+                     backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -639,11 +639,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   📏 {propertyData.alturaLibre}m altura
                 </span>
               )}
-              {propertyData.vitrina && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+               {propertyData.vitrina && (
+                 <span 
+                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                   style={{ 
+                     backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -651,11 +651,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   🪟 Con vitrina
                 </span>
               )}
-              {propertyData.uso && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+               {propertyData.uso && (
+                 <span 
+                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                   style={{ 
+                     backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
@@ -663,30 +663,30 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   🏗️ Uso {propertyData.uso}
                 </span>
               )}
-              {propertyData.area && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+               {propertyData.area && (
+                 <span 
+                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                   style={{ 
+                     backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
                 >
                   📐 {propertyData.area}m²
-                </span>
-              )}
-            </div>
-          </div>
+                 </span>
+               )}
+             </div>
 
-            {/* Logo El Gestor - inferior derecha */}
-            <div className="absolute bottom-8 right-4 z-30">
-              <img 
-                src={elGestorLogo} 
-                alt="El Gestor" 
-                className="h-8 object-contain drop-shadow-lg"
-              />
-            </div>
-        </div>
+             {/* Logo El Gestor - inferior derecha */}
+             <div className="absolute bottom-8 right-4 z-40">
+               <img 
+                 src={elGestorLogo} 
+                 alt="El Gestor" 
+                 className="h-8 object-contain drop-shadow-lg"
+               />
+             </div>
+           </div>
+         </div>
 
         {/* Miniaturas con drag & drop */}
         <div>
