@@ -232,6 +232,90 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
                 </span>
               </div>
             )}
+            
+            {propertyData.estrato && (
+              <div 
+                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
+              >
+                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                  🏢 Estrato {propertyData.estrato}
+                </span>
+              </div>
+            )}
+            
+            {propertyData.piso && (
+              <div 
+                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
+              >
+                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                  🏢 Piso {propertyData.piso}
+                </span>
+              </div>
+            )}
+            
+            {propertyData.trafico && (
+              <div 
+                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
+              >
+                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                  🚦 Tráfico {propertyData.trafico}
+                </span>
+              </div>
+            )}
+            
+            {propertyData.alturaLibre && (
+              <div 
+                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
+              >
+                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                  📏 {propertyData.alturaLibre}m altura
+                </span>
+              </div>
+            )}
+            
+            {propertyData.vitrina && (
+              <div 
+                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
+              >
+                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                  🪟 Con vitrina
+                </span>
+              </div>
+            )}
+            
+            {propertyData.uso && (
+              <div 
+                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
+              >
+                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                  🏗️ Uso {propertyData.uso}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* WhatsApp */}

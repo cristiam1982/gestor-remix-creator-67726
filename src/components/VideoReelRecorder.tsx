@@ -150,9 +150,23 @@ export const VideoReelRecorder = ({
     ctx.font = "32px Poppins, sans-serif";
 
     const features = [];
+    
+    // Características residenciales
     if (propertyData.habitaciones) features.push(`🛏️ ${propertyData.habitaciones} hab`);
     if (propertyData.banos) features.push(`🚿 ${propertyData.banos} baños`);
     if (propertyData.parqueaderos) features.push(`🚗 ${propertyData.parqueaderos} parq`);
+    if (propertyData.estrato) features.push(`🏢 Estrato ${propertyData.estrato}`);
+    
+    // Características comerciales
+    if (propertyData.piso) features.push(`🏢 Piso ${propertyData.piso}`);
+    if (propertyData.trafico) features.push(`🚦 Tráfico ${propertyData.trafico}`);
+    if (propertyData.alturaLibre) features.push(`📏 ${propertyData.alturaLibre}m altura`);
+    if (propertyData.vitrina) features.push(`🪟 Con vitrina`);
+    
+    // Características de lote
+    if (propertyData.uso) features.push(`🏗️ Uso ${propertyData.uso}`);
+    
+    // Área (siempre al final)
     if (propertyData.area) features.push(`📐 ${propertyData.area}m²`);
 
     features.forEach((feature) => {
@@ -461,6 +475,84 @@ export const VideoReelRecorder = ({
                     }}
                   >
                     📐 {propertyData.area}m²
+                  </div>
+                )}
+                
+                {propertyData.estrato && (
+                  <div 
+                    className="inline-block rounded-lg"
+                    style={{ 
+                      padding: '6px 7px', 
+                      marginLeft: '7px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                    }}
+                  >
+                    🏢 Estrato {propertyData.estrato}
+                  </div>
+                )}
+                
+                {propertyData.piso && (
+                  <div 
+                    className="inline-block rounded-lg"
+                    style={{ 
+                      padding: '6px 7px', 
+                      marginTop: '7px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                    }}
+                  >
+                    🏢 Piso {propertyData.piso}
+                  </div>
+                )}
+                
+                {propertyData.trafico && (
+                  <div 
+                    className="inline-block rounded-lg"
+                    style={{ 
+                      padding: '6px 7px', 
+                      marginLeft: '7px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                    }}
+                  >
+                    🚦 Tráfico {propertyData.trafico}
+                  </div>
+                )}
+                
+                {propertyData.alturaLibre && (
+                  <div 
+                    className="inline-block rounded-lg"
+                    style={{ 
+                      padding: '6px 7px', 
+                      marginTop: '7px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                    }}
+                  >
+                    📏 {propertyData.alturaLibre}m altura
+                  </div>
+                )}
+                
+                {propertyData.vitrina && (
+                  <div 
+                    className="inline-block rounded-lg"
+                    style={{ 
+                      padding: '6px 7px', 
+                      marginLeft: '7px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                    }}
+                  >
+                    🪟 Con vitrina
+                  </div>
+                )}
+                
+                {propertyData.uso && (
+                  <div 
+                    className="inline-block rounded-lg"
+                    style={{ 
+                      padding: '6px 7px', 
+                      marginTop: '7px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                    }}
+                  >
+                    🏗️ Uso {propertyData.uso}
                   </div>
                 )}
               </div>
