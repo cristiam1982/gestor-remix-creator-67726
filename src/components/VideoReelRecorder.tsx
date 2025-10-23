@@ -211,9 +211,14 @@ export const VideoReelRecorder = ({
     ctx.fillStyle = "#E0E0E0";
     ctx.fillText(aliadoConfig.nombre, 40, bottomY + 130);
 
-    // Logo El Gestor (inferior derecha) - sin opacidad
+    // Logo El Gestor (inferior derecha) - sin opacidad, proporción correcta
     if (elGestorLogoImage) {
-      ctx.drawImage(elGestorLogoImage, 900, 1590, 140, 90);
+      const logoHeight = 90; // Altura deseada
+      const logoAspectRatio = elGestorLogoImage.width / elGestorLogoImage.height;
+      const logoWidth = logoHeight * logoAspectRatio; // Calcular ancho proporcional
+      const logoX = 1080 - logoWidth - 30; // Posición X ajustada al ancho real
+      
+      ctx.drawImage(elGestorLogoImage, logoX, 1590, logoWidth, logoHeight);
     }
 
     // Reset shadow
