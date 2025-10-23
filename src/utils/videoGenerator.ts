@@ -2,6 +2,20 @@ import html2canvas from "html2canvas";
 // @ts-ignore - gif.js doesn't have TypeScript definitions
 import GIF from "gif.js";
 import { waitForNextFrame } from "./imageUtils";
+import elGestorLogo from "@/assets/el-gestor-logo.png";
+
+/**
+ * Carga una imagen y devuelve HTMLImageElement
+ */
+const loadImage = (src: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+};
 
 export interface VideoGenerationProgress {
   stage: "initializing" | "capturing" | "encoding" | "complete" | "error";
@@ -50,6 +64,11 @@ const captureFrame = async (
       windowWidth: 432,
       windowHeight: 768,
       onclone: (clonedDoc: Document) => {
+        // Ocultar el logo de El Gestor para dibujarlo después manualmente
+        clonedDoc.querySelectorAll('[data-eg-logo]').forEach(el => {
+          (el as HTMLElement).style.display = 'none';
+        });
+        
         // Forzar que las imágenes se capturen con colores reales
         const imgs = clonedDoc.querySelectorAll('img');
         imgs.forEach(img => {
@@ -193,6 +212,38 @@ export const generateReelVideo = async (
       stage: "encoding",
       progress: 60,
       totalFrames: photos.length,
+      message: "Dibujando logo de El Gestor...",
+    });
+
+    // Cargar el logo de El Gestor
+    const egLogo = await loadImage(elGestorLogo);
+
+    // Dibujar el logo de El Gestor sobre cada frame capturado
+    frames.forEach((canvas) => {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        // Configurar renderizado de alta calidad
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+
+        // Calcular tamaño proporcional del logo (altura ~90px en 1920px de alto)
+        const targetHeight = Math.round(canvas.height * (90 / 1920));
+        const aspect = egLogo.width / egLogo.height;
+        const targetWidth = Math.round(targetHeight * aspect);
+
+        // Posición: esquina inferior derecha con margen (40px en escala 2.5x = 100px en 1080x1920)
+        const x = canvas.width - targetWidth - Math.round(canvas.width * (40 / 1080));
+        const y = canvas.height - targetHeight - Math.round(canvas.height * (40 / 1920));
+
+        // Dibujar el logo sobre el frame
+        ctx.drawImage(egLogo, x, y, targetWidth, targetHeight);
+      }
+    });
+
+    onProgress({
+      stage: "encoding",
+      progress: 70,
+      totalFrames: photos.length,
       message: "Generando reel animado...",
     });
 
@@ -219,7 +270,7 @@ export const generateReelVideo = async (
         
         onProgress({
           stage: "encoding",
-          progress: 60 + p * 38,
+          progress: 70 + p * 28,
           currentFrame: Math.round(p * photos.length),
           totalFrames: photos.length,
           message: `Generando reel... ${Math.round(p * 100)}%`,

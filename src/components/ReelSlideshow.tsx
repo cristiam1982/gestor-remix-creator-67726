@@ -346,7 +346,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             )}
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+          <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
             <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h3>
@@ -542,7 +542,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             )}
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+          <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
             <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h3>
@@ -677,12 +677,13 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                )}
              </div>
 
-             {/* Logo El Gestor - inferior derecha */}
+             {/* Logo El Gestor - inferior derecha (se oculta en captura y se dibuja manualmente) */}
              <div className="absolute bottom-8 right-4 z-40">
                <img 
                  src={elGestorLogo} 
                  alt="El Gestor" 
-                 className="h-8 object-contain drop-shadow-lg"
+                 data-eg-logo="true"
+                 className="h-8 object-contain"
                />
              </div>
            </div>

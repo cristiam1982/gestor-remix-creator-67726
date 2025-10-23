@@ -119,7 +119,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
       </div>
 
       {/* Información inferior - diseño reel minimalista */}
-      <div className="absolute bottom-6 left-6 right-6 z-20">
+      <div className="absolute bottom-6 left-6 right-6 pr-24 pb-12 z-20">
         <div className="space-y-3">
           {/* Título y ubicación */}
           <div>
@@ -141,7 +141,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             <div 
               className="inline-block px-4 py-2 rounded-xl shadow-xl"
               style={{ 
-                backgroundColor: `${aliadoConfig.colorAccent}F0`,
+                backgroundColor: aliadoConfig.colorAccent,
                 border: '2px solid rgba(255, 255, 255, 0.3)'
               }}
             >
@@ -165,7 +165,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
                 style={{ 
-                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -183,7 +183,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
                 style={{ 
-                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -201,7 +201,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
                 style={{ 
-                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -219,7 +219,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
                 style={{ 
-                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -237,7 +237,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
                 style={{ 
-                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -251,7 +251,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
                 style={{ 
-                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -265,7 +265,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
                 style={{ 
-                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -279,7 +279,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
                 style={{ 
-                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -293,7 +293,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
                 style={{ 
-                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -307,7 +307,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
                 style={{ 
-                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  backgroundColor: aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
