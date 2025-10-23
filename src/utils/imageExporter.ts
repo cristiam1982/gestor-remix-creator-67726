@@ -47,6 +47,30 @@ export const exportToImage = async (
             }
           });
           
+          // Force render canon block
+          const canonBlocks = clonedElement.querySelectorAll('[data-canon-value]');
+          canonBlocks.forEach((node) => {
+            const el = node as HTMLElement;
+            el.style.boxShadow = 'none';
+            el.style.setProperty('box-shadow', 'none', 'important');
+            el.style.filter = 'none';
+            el.style.backdropFilter = 'none';
+            el.style.mixBlendMode = 'normal';
+            el.style.opacity = '1';
+            el.style.position = 'relative';
+            el.style.zIndex = '99999';
+
+            el.querySelectorAll('p, span').forEach((p) => {
+              const pe = p as HTMLElement;
+              pe.style.color = '#FFFFFF';
+              pe.style.textShadow = 'none';
+              pe.style.filter = 'none';
+              pe.style.mixBlendMode = 'normal';
+              (pe.style as any)['-webkit-text-stroke'] = '0';
+              pe.style.opacity = '1';
+            });
+          });
+          
           // Ensure font is loaded in clone
           (clonedElement as HTMLElement).style.fontFamily = 'Poppins, sans-serif';
         }
