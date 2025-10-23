@@ -181,6 +181,13 @@ const Index = () => {
 
   const handleDownloadImage = async () => {
     setIsDownloading(true);
+    
+    // Mostrar feedback inmediato
+    toast({
+      title: "🎨 Generando imagen...",
+      description: "Esto tomará unos segundos",
+    });
+    
     try {
       // Para reels con video, descargar el video original
       if (selectedContentType === "reel-video" && propertyData.fotos && propertyData.fotos[0]) {
@@ -192,11 +199,14 @@ const Index = () => {
         return;
       }
 
+      // Esperar para asegurar renderizado completo
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       const filename = `publicacion-${propertyData.tipo}-${Date.now()}.${exportOptions.format}`;
       await exportToImage("canvas-preview", filename, exportOptions);
       toast({
-        title: "✅ Imagen descargada",
-        description: "Tu publicación se guardó correctamente.",
+        title: "✅ Descarga lista",
+        description: "Tu publicación se ha guardado correctamente.",
       });
     } catch (error) {
       console.error("Error al descargar:", error);

@@ -21,12 +21,36 @@ export const exportToImage = async (
   }
 
   try {
+    // Wait for fonts to load
+    await document.fonts.ready;
+    
+    // Small delay to ensure all styles are applied
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
     const canvas = await html2canvas(element, {
-      scale: 2,
+      scale: 3,
       useCORS: true,
       allowTaint: true,
       backgroundColor: null,
       logging: false,
+      onclone: (clonedDoc) => {
+        const clonedElement = clonedDoc.getElementById(elementId);
+        if (clonedElement) {
+          // Remove backdrop-blur (not supported by html2canvas)
+          const blurElements = clonedElement.querySelectorAll('[class*="backdrop-blur"]');
+          blurElements.forEach((el) => {
+            (el as HTMLElement).style.backdropFilter = 'none';
+            // Increase background opacity to compensate
+            const currentBg = window.getComputedStyle(el as HTMLElement).backgroundColor;
+            if (currentBg.includes('rgba')) {
+              (el as HTMLElement).style.backgroundColor = currentBg.replace(/[\d.]+\)$/g, '0.95)');
+            }
+          });
+          
+          // Ensure font is loaded in clone
+          (clonedElement as HTMLElement).style.fontFamily = 'Poppins, sans-serif';
+        }
+      }
     });
 
     // Add watermark if requested

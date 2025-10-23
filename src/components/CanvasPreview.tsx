@@ -136,60 +136,100 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             )}
           </div>
 
-          {/* Precio con fondo semitransparente */}
+          {/* Precio destacado con fondo más sólido */}
           {(propertyData.canon || propertyData.valorVenta) && (
             <div 
-              className="inline-block px-4 py-2 rounded-xl backdrop-blur-md"
-              style={{ backgroundColor: `${aliadoConfig.colorAccent}CC` }}
+              className="inline-block px-4 py-2 rounded-xl shadow-xl"
+              style={{ 
+                backgroundColor: `${aliadoConfig.colorAccent}F0`,
+                border: '2px solid rgba(255, 255, 255, 0.3)'
+              }}
             >
-              <p className="text-xs text-white/80">
+              <p className="text-xs text-white/90 font-medium">
                 {propertyData.canon ? "Canon mensual" : "Valor venta"}
               </p>
-              <p className="text-2xl font-bold text-white">
+              <p 
+                className="text-2xl font-bold text-white"
+                style={{
+                  textShadow: '2px 2px 8px rgba(0,0,0,0.8), 0 0 4px rgba(0,0,0,0.5)'
+                }}
+              >
                 {propertyData.canon || propertyData.valorVenta}
               </p>
             </div>
           )}
 
-          {/* Iconos de atributos con color personalizable */}
+          {/* Iconos de atributos con fondo más opaco */}
           <div className="flex flex-wrap gap-2">
             {propertyData.habitaciones && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md"
-                style={{ backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}DD` }}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
               >
-                <Bed className="w-4 h-4 text-white" />
-                <span className="text-sm font-semibold text-white">{propertyData.habitaciones}</span>
+                <Bed className="w-4 h-4 text-white drop-shadow-lg" />
+                <span 
+                  className="text-sm font-semibold text-white"
+                  style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
+                >
+                  {propertyData.habitaciones}
+                </span>
               </div>
             )}
             
             {propertyData.banos && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md"
-                style={{ backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}DD` }}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
               >
-                <Bath className="w-4 h-4 text-white" />
-                <span className="text-sm font-semibold text-white">{propertyData.banos}</span>
+                <Bath className="w-4 h-4 text-white drop-shadow-lg" />
+                <span 
+                  className="text-sm font-semibold text-white"
+                  style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
+                >
+                  {propertyData.banos}
+                </span>
               </div>
             )}
             
             {propertyData.parqueaderos && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md"
-                style={{ backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}DD` }}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
               >
-                <Car className="w-4 h-4 text-white" />
-                <span className="text-sm font-semibold text-white">{propertyData.parqueaderos}</span>
+                <Car className="w-4 h-4 text-white drop-shadow-lg" />
+                <span 
+                  className="text-sm font-semibold text-white"
+                  style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
+                >
+                  {propertyData.parqueaderos}
+                </span>
               </div>
             )}
             
             {propertyData.area && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md"
-                style={{ backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}DD` }}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
               >
-                <Square className="w-4 h-4 text-white" />
-                <span className="text-sm font-semibold text-white">{propertyData.area}m²</span>
+                <Square className="w-4 h-4 text-white drop-shadow-lg" />
+                <span 
+                  className="text-sm font-semibold text-white"
+                  style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
+                >
+                  {propertyData.area}m²
+                </span>
               </div>
             )}
           </div>
