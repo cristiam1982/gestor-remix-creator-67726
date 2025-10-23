@@ -8,7 +8,6 @@ import { CanvasPreview } from "@/components/CanvasPreview";
 import { SocialMockup } from "@/components/SocialMockup";
 import { ReelSlideshow } from "@/components/ReelSlideshow";
 import { VideoPreview } from "@/components/VideoPreview";
-import { DownloadInstructions } from "@/components/DownloadInstructions";
 import { TemplateSelector } from "@/components/TemplateSelector";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { ExportOptions } from "@/components/ExportOptions";
@@ -475,8 +474,6 @@ const Index = () => {
               />
             )}
 
-            {/* Instrucciones de descarga */}
-            <DownloadInstructions contentType={selectedContentType!} />
           </div>
         )}
       </div>
