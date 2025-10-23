@@ -103,61 +103,91 @@ export const VideoReelRecorder = ({
 
   // Dibujar overlays en canvas
   const drawOverlays = (ctx: CanvasRenderingContext2D) => {
-    // Logo del aliado (superior izquierda)
+    // Sombra para mejorar legibilidad
+    ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+
+    // Logo del aliado (superior izquierda) - más grande
     if (logoImage) {
-      ctx.drawImage(logoImage, 40, 40, 100, 100);
+      // Fondo semi-transparente para el logo
+      ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+      ctx.fillRect(30, 30, 160, 160);
+      ctx.drawImage(logoImage, 40, 40, 140, 140);
     }
 
-    // Tipo de inmueble
+    // Reset shadow para el resto
+    ctx.shadowBlur = 15;
+
+    // Tipo de inmueble - badge más grande y redondeado
+    const badgeY = logoImage ? 220 : 50;
     ctx.fillStyle = aliadoConfig.colorPrimario;
-    ctx.fillRect(40, 180, 240, 50);
+    ctx.beginPath();
+    ctx.roundRect(40, badgeY, 300, 70, 15);
+    ctx.fill();
+    
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 28px Poppins, sans-serif";
-    ctx.fillText(propertyData.tipo.toUpperCase(), 60, 213);
+    ctx.font = "bold 38px Poppins, sans-serif";
+    ctx.fillText(propertyData.tipo.toUpperCase(), 60, badgeY + 48);
 
-    // Ubicación
+    // Ubicación - más prominente
+    const ubicacionY = badgeY + 100;
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "32px Poppins, sans-serif";
-    ctx.fillText(`📍 ${propertyData.ubicacion || ""}`, 40, 280);
+    ctx.font = "bold 42px Poppins, sans-serif";
+    ctx.fillText(`📍 ${propertyData.ubicacion || ""}`, 40, ubicacionY);
 
-    // Canon/Precio
-    ctx.font = "bold 56px Poppins, sans-serif";
+    // Canon/Precio - mucho más grande y visible
+    const precioY = ubicacionY + 80;
+    ctx.font = "bold 72px Poppins, sans-serif";
     const precio = propertyData.canon || propertyData.valorVenta || "";
-    ctx.fillText(precio, 40, 370);
+    ctx.fillText(precio, 40, precioY);
 
-    // Características (habitaciones, baños, etc.)
-    let yPos = 450;
-    const iconSize = 24;
-    ctx.font = "24px Poppins, sans-serif";
+    // Características - con fondo semi-transparente
+    let yPos = precioY + 80;
+    ctx.font = "32px Poppins, sans-serif";
 
-    if (propertyData.habitaciones) {
-      ctx.fillText(`🛏️ ${propertyData.habitaciones} hab`, 40, yPos);
-      yPos += 40;
-    }
+    const features = [];
+    if (propertyData.habitaciones) features.push(`🛏️ ${propertyData.habitaciones} hab`);
+    if (propertyData.banos) features.push(`🚿 ${propertyData.banos} baños`);
+    if (propertyData.parqueaderos) features.push(`🚗 ${propertyData.parqueaderos} parq`);
+    if (propertyData.area) features.push(`📐 ${propertyData.area}m²`);
 
-    if (propertyData.banos) {
-      ctx.fillText(`🚿 ${propertyData.banos} baños`, 40, yPos);
-      yPos += 40;
-    }
+    features.forEach((feature) => {
+      // Fondo para cada característica
+      ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+      ctx.fillRect(30, yPos - 35, 320, 50);
+      
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillText(feature, 40, yPos);
+      yPos += 60;
+    });
 
-    if (propertyData.parqueaderos) {
-      ctx.fillText(`🚗 ${propertyData.parqueaderos} parq`, 40, yPos);
-      yPos += 40;
-    }
+    // Sección inferior con información de contacto
+    const bottomY = 1700;
+    
+    // Fondo semi-transparente para la sección inferior
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.fillRect(0, bottomY, 1080, 220);
 
-    if (propertyData.area) {
-      ctx.fillText(`📐 ${propertyData.area}m²`, 40, yPos);
-    }
-
-    // Logo El Gestor (inferior derecha)
-    if (elGestorLogoImage) {
-      ctx.drawImage(elGestorLogoImage, 880, 1780, 160, 100);
-    }
-
-    // WhatsApp del aliado (inferior izquierda)
+    // WhatsApp del aliado (inferior izquierda) - más grande
+    ctx.shadowBlur = 10;
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 28px Poppins, sans-serif";
-    ctx.fillText(`📱 ${aliadoConfig.whatsapp}`, 40, 1860);
+    ctx.font = "bold 40px Poppins, sans-serif";
+    ctx.fillText(`📱 ${aliadoConfig.whatsapp}`, 40, bottomY + 80);
+
+    // Nombre del aliado debajo del WhatsApp
+    ctx.font = "28px Poppins, sans-serif";
+    ctx.fillStyle = "#E0E0E0";
+    ctx.fillText(aliadoConfig.nombre, 40, bottomY + 130);
+
+    // Logo El Gestor (inferior derecha) - más grande y mejor posicionado
+    if (elGestorLogoImage) {
+      ctx.drawImage(elGestorLogoImage, 850, bottomY + 40, 190, 120);
+    }
+
+    // Reset shadow
+    ctx.shadowBlur = 0;
   };
 
   // Iniciar grabación
@@ -299,48 +329,79 @@ export const VideoReelRecorder = ({
           />
           
           {/* Overlays preview */}
-          <div className="absolute inset-0 pointer-events-none text-white p-4">
-            {/* Logo aliado */}
+          <div className="absolute inset-0 pointer-events-none text-white">
+            {/* Logo aliado - más grande */}
             {aliadoConfig.logo && (
-              <img
-                src={aliadoConfig.logo}
-                alt="Logo"
-                className="w-20 h-20 object-contain rounded-lg bg-white/10 backdrop-blur-sm p-2"
-              />
+              <div className="absolute top-3 left-3 w-32 h-32 bg-black/30 rounded-lg p-2">
+                <img
+                  src={aliadoConfig.logo}
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
             )}
 
-            {/* Tipo de inmueble */}
-            <div className="mt-4">
+            {/* Contenido superior */}
+            <div className="absolute top-3 left-3 right-3" style={{ top: aliadoConfig.logo ? '140px' : '12px' }}>
+              {/* Tipo de inmueble - badge más grande */}
               <Badge
                 style={{ backgroundColor: aliadoConfig.colorPrimario }}
-                className="text-white text-lg px-4 py-2"
+                className="text-white text-xl px-6 py-3 rounded-xl shadow-lg"
               >
                 {propertyData.tipo.toUpperCase()}
               </Badge>
+
+              {/* Ubicación - más prominente */}
+              <p className="text-3xl font-bold mt-4 drop-shadow-lg">
+                📍 {propertyData.ubicacion}
+              </p>
+
+              {/* Precio - más grande */}
+              <p className="text-5xl font-bold mt-4 drop-shadow-lg">
+                {propertyData.canon || propertyData.valorVenta}
+              </p>
+
+              {/* Características con fondo */}
+              <div className="mt-4 space-y-2 text-2xl">
+                {propertyData.habitaciones && (
+                  <div className="bg-black/40 inline-block px-4 py-2 rounded-lg">
+                    🛏️ {propertyData.habitaciones} hab
+                  </div>
+                )}
+                {propertyData.banos && (
+                  <div className="bg-black/40 inline-block px-4 py-2 rounded-lg ml-2">
+                    🚿 {propertyData.banos} baños
+                  </div>
+                )}
+                {propertyData.parqueaderos && (
+                  <div className="bg-black/40 inline-block px-4 py-2 rounded-lg mt-2">
+                    🚗 {propertyData.parqueaderos} parq
+                  </div>
+                )}
+                {propertyData.area && (
+                  <div className="bg-black/40 inline-block px-4 py-2 rounded-lg ml-2">
+                    📐 {propertyData.area}m²
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Ubicación */}
-            <p className="text-2xl font-semibold mt-3">
-              📍 {propertyData.ubicacion}
-            </p>
-
-            {/* Precio */}
-            <p className="text-4xl font-bold mt-3">
-              {propertyData.canon || propertyData.valorVenta}
-            </p>
-
-            {/* Características */}
-            <div className="mt-4 space-y-2 text-lg">
-              {propertyData.habitaciones && <p>🛏️ {propertyData.habitaciones} hab</p>}
-              {propertyData.banos && <p>🚿 {propertyData.banos} baños</p>}
-              {propertyData.parqueaderos && <p>🚗 {propertyData.parqueaderos} parq</p>}
-              {propertyData.area && <p>📐 {propertyData.area}m²</p>}
-            </div>
-
-            {/* WhatsApp y logo El Gestor abajo */}
-            <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-              <p className="text-xl font-bold">📱 {aliadoConfig.whatsapp}</p>
-              <img src={elGestorLogo} alt="El Gestor" className="h-16 object-contain" />
+            {/* Sección inferior con fondo */}
+            <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-4">
+              <div className="flex justify-between items-center">
+                {/* WhatsApp y nombre */}
+                <div>
+                  <p className="text-3xl font-bold drop-shadow-lg">📱 {aliadoConfig.whatsapp}</p>
+                  <p className="text-lg text-gray-200 mt-1">{aliadoConfig.nombre}</p>
+                </div>
+                
+                {/* Logo El Gestor */}
+                <img 
+                  src={elGestorLogo} 
+                  alt="El Gestor" 
+                  className="h-20 object-contain drop-shadow-lg" 
+                />
+              </div>
             </div>
           </div>
 
