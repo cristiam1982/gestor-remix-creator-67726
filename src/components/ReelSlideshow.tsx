@@ -482,14 +482,14 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </div>
           </div>
 
-          {/* Logo El Gestor */}
-          <div className="absolute top-8 right-4 z-30">
-            <img 
-              src={elGestorLogo} 
-              alt="El Gestor" 
-              className="h-8 object-contain opacity-80 drop-shadow-lg"
-            />
-          </div>
+            {/* Logo El Gestor - inferior derecha */}
+            <div className="absolute bottom-8 right-4 z-30">
+              <img 
+                src={elGestorLogo} 
+                alt="El Gestor" 
+                className="h-8 object-contain drop-shadow-lg"
+              />
+            </div>
 
           {/* Play/Pause overlay */}
           {!isPlaying && (
@@ -678,14 +678,14 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </div>
           </div>
 
-          {/* Logo El Gestor */}
-          <div className="absolute top-8 right-4 z-30">
-            <img 
-              src={elGestorLogo} 
-              alt="El Gestor" 
-              className="h-8 object-contain opacity-80 drop-shadow-lg"
-            />
-          </div>
+            {/* Logo El Gestor - inferior derecha */}
+            <div className="absolute bottom-8 right-4 z-30">
+              <img 
+                src={elGestorLogo} 
+                alt="El Gestor" 
+                className="h-8 object-contain drop-shadow-lg"
+              />
+            </div>
         </div>
 
         {/* Miniaturas con drag & drop */}
