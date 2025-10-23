@@ -181,9 +181,9 @@ export const VideoReelRecorder = ({
     ctx.fillStyle = "#E0E0E0";
     ctx.fillText(aliadoConfig.nombre, 40, bottomY + 130);
 
-    // Logo El Gestor (inferior derecha) - más grande y mejor posicionado
+    // Logo El Gestor (inferior derecha) - proporción balanceada
     if (elGestorLogoImage) {
-      ctx.drawImage(elGestorLogoImage, 850, bottomY + 40, 190, 120);
+      ctx.drawImage(elGestorLogoImage, 880, bottomY + 60, 140, 90);
     }
 
     // Reset shadow
@@ -395,11 +395,11 @@ export const VideoReelRecorder = ({
                   <p className="text-lg text-gray-200 mt-1">{aliadoConfig.nombre}</p>
                 </div>
                 
-                {/* Logo El Gestor */}
+                {/* Logo El Gestor - proporción balanceada */}
                 <img 
                   src={elGestorLogo} 
                   alt="El Gestor" 
-                  className="h-20 object-contain drop-shadow-lg" 
+                  className="h-16 object-contain drop-shadow-lg" 
                 />
               </div>
             </div>
