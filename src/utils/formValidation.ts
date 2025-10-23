@@ -36,6 +36,10 @@ export const comercialSchema = propertyBaseSchema.extend({
   alturaLibre: z.string().optional(),
   servicios: z.boolean().optional(),
   vitrina: z.boolean().optional(),
+  banos: z.number().min(0).max(10, "Máximo 10 baños").optional(),
+  parqueaderos: z.number().min(0).max(10, "Máximo 10 parqueaderos").optional(),
+  piso: z.number().min(0).max(100, "Máximo piso 100").optional(),
+  amoblado: z.boolean().optional(),
 });
 
 export const loteSchema = propertyBaseSchema.extend({

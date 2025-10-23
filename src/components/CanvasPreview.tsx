@@ -128,8 +128,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           {/* Título y ubicación */}
           <div>
             <h2 
-              className="text-3xl font-bold mb-2 drop-shadow-lg"
-              style={{ color: aliadoConfig.colorPrimario }}
+              className="text-3xl font-bold mb-2 drop-shadow-lg text-white"
             >
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h2>

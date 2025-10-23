@@ -5,15 +5,12 @@ import { AliadoConfigForm } from "@/components/AliadoConfigForm";
 import { PropertyForm } from "@/components/PropertyForm";
 import { PhotoManager } from "@/components/PhotoManager";
 import { CanvasPreview } from "@/components/CanvasPreview";
-import { SocialMockup } from "@/components/SocialMockup";
 import { ReelSlideshow } from "@/components/ReelSlideshow";
 import { VideoReelRecorder } from "@/components/VideoReelRecorder";
-import { TemplateSelector } from "@/components/TemplateSelector";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { ExportOptions } from "@/components/ExportOptions";
 import { LoadingState } from "@/components/LoadingState";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
-import { TemplateTheme } from "@/types/templates";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,7 +33,6 @@ const Index = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [generatedCaption, setGeneratedCaption] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateTheme>("residencial");
   const [exportOptions, setExportOptions] = useState<ExportOptionsType>({ 
     format: "png", 
     quality: 0.95 
@@ -136,14 +132,14 @@ const Index = () => {
       const caption = generateCaption(
         propertyData as PropertyData, 
         aliadoConfig, 
-        selectedTemplate,
+        "residencial",
         true
       );
       setGeneratedCaption(caption);
       setCurrentStep(3);
       
       // Guardar métrica
-      savePublicationMetric(propertyData.tipo, selectedContentType!, selectedTemplate);
+      savePublicationMetric(propertyData.tipo, selectedContentType!, "residencial");
       
       toast({
         title: "✨ Tu publicación está lista",
@@ -173,7 +169,7 @@ const Index = () => {
       const newCaption = regenerateCaption(
         propertyData as PropertyData,
         aliadoConfig,
-        selectedTemplate
+        "residencial"
       );
       setGeneratedCaption(newCaption);
       toast({
@@ -313,11 +309,6 @@ const Index = () => {
 
         {currentStep === 2 && (
           <div className="space-y-6 animate-fade-in">
-            <TemplateSelector
-              selectedTheme={selectedTemplate}
-              onThemeChange={setSelectedTemplate}
-            />
-            
             <PropertyForm 
               data={propertyData} 
               onDataChange={setPropertyData}
@@ -391,7 +382,7 @@ const Index = () => {
                       propertyData={propertyData as PropertyData}
                       aliadoConfig={aliadoConfig}
                       contentType={selectedContentType!}
-                      template={selectedTemplate}
+                      template="residencial"
                     />
                   )}
                 </div>
@@ -470,17 +461,6 @@ const Index = () => {
                 </Button>
               </div>
             </Card>
-
-            {/* Vista previa en redes sociales */}
-            {aliadoConfig && (selectedContentType === "post" || selectedContentType === "historia") && (
-              <SocialMockup
-                propertyData={propertyData as PropertyData}
-                aliadoConfig={aliadoConfig}
-                contentType={selectedContentType!}
-                caption={generatedCaption}
-              />
-            )}
-
           </div>
         )}
       </div>

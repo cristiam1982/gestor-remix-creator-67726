@@ -114,6 +114,45 @@ export const PropertyForm = ({ onDataChange, data }: PropertyFormProps) => {
 
         {isComercial && (
           <>
+            {/* Campos comunes para oficinas */}
+            {data.tipo === "oficina" && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="banos">Baños</Label>
+                  <Input
+                    id="banos"
+                    type="number"
+                    value={data.banos || ""}
+                    onChange={(e) => updateField("banos", parseInt(e.target.value))}
+                    placeholder="2"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="parqueaderos">Parqueaderos</Label>
+                  <Input
+                    id="parqueaderos"
+                    type="number"
+                    value={data.parqueaderos || ""}
+                    onChange={(e) => updateField("parqueaderos", parseInt(e.target.value))}
+                    placeholder="1"
+                  />
+                </div>
+              </div>
+            )}
+
+            {data.tipo === "oficina" && (
+              <div>
+                <Label htmlFor="piso">Piso</Label>
+                <Input
+                  id="piso"
+                  type="number"
+                  value={data.piso || ""}
+                  onChange={(e) => updateField("piso", parseInt(e.target.value))}
+                  placeholder="5"
+                />
+              </div>
+            )}
+            
             <div>
               <Label htmlFor="trafico">Nivel de Tráfico</Label>
               <Select value={data.trafico || ""} onValueChange={(val) => updateField("trafico", val)}>
@@ -150,6 +189,19 @@ export const PropertyForm = ({ onDataChange, data }: PropertyFormProps) => {
                 Incluye servicios
               </Label>
             </div>
+
+            {data.tipo === "oficina" && (
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="amoblado"
+                  checked={data.amoblado || false}
+                  onCheckedChange={(checked) => updateField("amoblado", checked)}
+                />
+                <Label htmlFor="amoblado" className="cursor-pointer">
+                  Amoblado
+                </Label>
+              </div>
+            )}
 
             {data.tipo === "local" && (
               <div className="flex items-center space-x-2">

@@ -38,5 +38,7 @@ export interface PropertyData {
   vitrina?: boolean;
   uso?: "residencial" | "comercial";
   valorVenta?: string;
+  piso?: number;
+  amoblado?: boolean;
   fotos: string[];
 }

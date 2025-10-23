@@ -122,7 +122,7 @@ export const VideoReelRecorder = ({
 
     // Tipo de inmueble - badge más grande y redondeado
     const badgeY = logoImage ? 220 : 50;
-    ctx.fillStyle = aliadoConfig.colorPrimario;
+    ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
     ctx.beginPath();
     ctx.roundRect(40, badgeY, 300, 70, 15);
     ctx.fill();
@@ -358,7 +358,7 @@ export const VideoReelRecorder = ({
               {/* Tipo de inmueble - Canvas: 300x70px, font 38px → Preview: 111x26px, font 14px */}
               <Badge
                 style={{ 
-                  backgroundColor: aliadoConfig.colorPrimario,
+                  backgroundColor: 'rgba(0, 0, 0, 0.4)',
                   fontSize: '14px',
                   fontWeight: 'bold',
                   padding: '10px 22px',
