@@ -328,11 +328,20 @@ export const VideoReelRecorder = ({
             onTimeUpdate={(e) => !isRecording && setCurrentTime(e.currentTarget.currentTime)}
           />
           
-          {/* Overlays preview */}
+          {/* Overlays preview - Sincronizado con canvas (factor 2.7x) */}
           <div className="absolute inset-0 pointer-events-none text-white">
-            {/* Logo aliado - más grande */}
+            {/* Logo aliado - Canvas: 140x140px → Preview: 52x52px */}
             {aliadoConfig.logo && (
-              <div className="absolute top-3 left-3 w-32 h-32 bg-black/30 rounded-lg p-2">
+              <div 
+                className="absolute bg-black/30 rounded-lg"
+                style={{ 
+                  top: '11px', 
+                  left: '11px', 
+                  width: '52px', 
+                  height: '52px',
+                  padding: '2px'
+                }}
+              >
                 <img
                   src={aliadoConfig.logo}
                   alt="Logo"
@@ -342,60 +351,118 @@ export const VideoReelRecorder = ({
             )}
 
             {/* Contenido superior */}
-            <div className="absolute top-3 left-3 right-3" style={{ top: aliadoConfig.logo ? '140px' : '12px' }}>
-              {/* Tipo de inmueble - badge más grande */}
+            <div 
+              className="absolute left-[11px] right-[11px]" 
+              style={{ top: aliadoConfig.logo ? '81px' : '18px' }}
+            >
+              {/* Tipo de inmueble - Canvas: 300x70px, font 38px → Preview: 111x26px, font 14px */}
               <Badge
-                style={{ backgroundColor: aliadoConfig.colorPrimario }}
-                className="text-white text-xl px-6 py-3 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: aliadoConfig.colorPrimario,
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  padding: '10px 22px',
+                  borderRadius: '6px'
+                }}
+                className="text-white shadow-lg inline-block"
               >
                 {propertyData.tipo.toUpperCase()}
               </Badge>
 
-              {/* Ubicación - más prominente */}
-              <p className="text-3xl font-bold mt-4 drop-shadow-lg">
+              {/* Ubicación - Canvas: font 42px → Preview: font 16px */}
+              <p 
+                className="font-bold drop-shadow-lg"
+                style={{ 
+                  fontSize: '16px',
+                  marginTop: '15px'
+                }}
+              >
                 📍 {propertyData.ubicacion}
               </p>
 
-              {/* Precio - más grande */}
-              <p className="text-5xl font-bold mt-4 drop-shadow-lg">
+              {/* Precio - Canvas: font 72px → Preview: font 27px */}
+              <p 
+                className="font-bold drop-shadow-lg leading-tight"
+                style={{ 
+                  fontSize: '27px',
+                  marginTop: '12px'
+                }}
+              >
                 {propertyData.canon || propertyData.valorVenta}
               </p>
 
-              {/* Características con fondo */}
-              <div className="mt-4 space-y-2 text-2xl">
+              {/* Características - Canvas: font 32px → Preview: font 12px */}
+              <div 
+                className="space-y-[7px]"
+                style={{ 
+                  marginTop: '12px',
+                  fontSize: '12px',
+                  fontWeight: '600'
+                }}
+              >
                 {propertyData.habitaciones && (
-                  <div className="bg-black/40 inline-block px-4 py-2 rounded-lg">
+                  <div 
+                    className="bg-black/40 inline-block rounded-lg"
+                    style={{ padding: '6px 7px' }}
+                  >
                     🛏️ {propertyData.habitaciones} hab
                   </div>
                 )}
                 {propertyData.banos && (
-                  <div className="bg-black/40 inline-block px-4 py-2 rounded-lg ml-2">
+                  <div 
+                    className="bg-black/40 inline-block rounded-lg"
+                    style={{ padding: '6px 7px', marginLeft: '7px' }}
+                  >
                     🚿 {propertyData.banos} baños
                   </div>
                 )}
                 {propertyData.parqueaderos && (
-                  <div className="bg-black/40 inline-block px-4 py-2 rounded-lg mt-2">
+                  <div 
+                    className="bg-black/40 inline-block rounded-lg"
+                    style={{ padding: '6px 7px', marginTop: '7px' }}
+                  >
                     🚗 {propertyData.parqueaderos} parq
                   </div>
                 )}
                 {propertyData.area && (
-                  <div className="bg-black/40 inline-block px-4 py-2 rounded-lg ml-2">
+                  <div 
+                    className="bg-black/40 inline-block rounded-lg"
+                    style={{ padding: '6px 7px', marginLeft: '7px' }}
+                  >
                     📐 {propertyData.area}m²
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Sección inferior con fondo */}
-            <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-4">
+            {/* Sección inferior - Canvas: Y=1700, height 220px */}
+            <div 
+              className="absolute bottom-0 left-0 right-0 bg-black/50"
+              style={{ padding: '11px' }}
+            >
               <div className="flex justify-between items-center">
                 {/* WhatsApp y nombre */}
                 <div>
-                  <p className="text-3xl font-bold drop-shadow-lg">📱 {aliadoConfig.whatsapp}</p>
-                  <p className="text-lg text-gray-200 mt-1">{aliadoConfig.nombre}</p>
+                  {/* WhatsApp - Canvas: font 40px → Preview: font 15px */}
+                  <p 
+                    className="font-bold drop-shadow-lg"
+                    style={{ fontSize: '15px' }}
+                  >
+                    📱 {aliadoConfig.whatsapp}
+                  </p>
+                  {/* Nombre - Canvas: font 28px → Preview: font 10px */}
+                  <p 
+                    className="text-gray-200"
+                    style={{ 
+                      fontSize: '10px',
+                      marginTop: '2px'
+                    }}
+                  >
+                    {aliadoConfig.nombre}
+                  </p>
                 </div>
                 
-                {/* Logo El Gestor - proporción balanceada */}
+                {/* Logo El Gestor - Canvas: 140x90px → Preview: h-16 (64px para balance visual) */}
                 <img 
                   src={elGestorLogo} 
                   alt="El Gestor" 
