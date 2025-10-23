@@ -358,7 +358,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 💰 {propertyData.canon}/mes
               </p>
             )}
-            <div className="flex gap-3 text-sm">
+            <div className="flex flex-wrap gap-2 text-sm">
               {propertyData.habitaciones && (
                 <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
                   🛏️ {propertyData.habitaciones}
@@ -367,6 +367,41 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               {propertyData.banos && (
                 <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
                   🚿 {propertyData.banos}
+                </span>
+              )}
+              {propertyData.parqueaderos && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🚗 {propertyData.parqueaderos}
+                </span>
+              )}
+              {propertyData.estrato && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🏢 Estrato {propertyData.estrato}
+                </span>
+              )}
+              {propertyData.piso && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🏢 Piso {propertyData.piso}
+                </span>
+              )}
+              {propertyData.trafico && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🚦 Tráfico {propertyData.trafico}
+                </span>
+              )}
+              {propertyData.alturaLibre && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  📏 {propertyData.alturaLibre}m altura
+                </span>
+              )}
+              {propertyData.vitrina && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🪟 Con vitrina
+                </span>
+              )}
+              {propertyData.uso && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🏗️ Uso {propertyData.uso}
                 </span>
               )}
               {propertyData.area && (
@@ -449,7 +484,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 💰 {propertyData.canon}/mes
               </p>
             )}
-            <div className="flex gap-3 text-sm">
+            <div className="flex flex-wrap gap-2 text-sm">
               {propertyData.habitaciones && (
                 <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
                   🛏️ {propertyData.habitaciones}
@@ -458,6 +493,41 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               {propertyData.banos && (
                 <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
                   🚿 {propertyData.banos}
+                </span>
+              )}
+              {propertyData.parqueaderos && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🚗 {propertyData.parqueaderos}
+                </span>
+              )}
+              {propertyData.estrato && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🏢 Estrato {propertyData.estrato}
+                </span>
+              )}
+              {propertyData.piso && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🏢 Piso {propertyData.piso}
+                </span>
+              )}
+              {propertyData.trafico && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🚦 Tráfico {propertyData.trafico}
+                </span>
+              )}
+              {propertyData.alturaLibre && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  📏 {propertyData.alturaLibre}m altura
+                </span>
+              )}
+              {propertyData.vitrina && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🪟 Con vitrina
+                </span>
+              )}
+              {propertyData.uso && (
+                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                  🏗️ Uso {propertyData.uso}
                 </span>
               )}
               {propertyData.area && (

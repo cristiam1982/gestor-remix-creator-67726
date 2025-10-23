@@ -29,7 +29,7 @@ export const generateCaption = (
   template: TemplateTheme = "residencial",
   includeViralIdeas: boolean = true
 ): string => {
-  const { tipo, ubicacion, habitaciones, banos, canon, area, trafico } = property;
+  const { tipo, ubicacion, habitaciones, banos, canon, area, trafico, estrato, piso, alturaLibre, vitrina, uso } = property;
   const { ciudad } = aliado;
   const tone = TONES[template];
   
@@ -48,7 +48,9 @@ export const generateCaption = (
   switch (tipo) {
     case "apartamento":
       caption = hook || `${tone.prefix} ¡El hogar ${tone.adjectives[0]} que ${tone.verbs[0]} en ${ubicacion || ciudad}!\n`;
-      caption += `Apartamento de ${habitaciones} habitaciones y ${banos} baños.\n`;
+      caption += `Apartamento de ${habitaciones} habitaciones y ${banos} baños`;
+      if (estrato) caption += `, estrato ${estrato}`;
+      caption += `.\n`;
       caption += template === "premium" 
         ? `Vive con distinción en ${aliado.nombre}.\n`
         : `Arrienda con confianza y respaldo de ${aliado.nombre}.\n`;
@@ -58,7 +60,9 @@ export const generateCaption = (
 
     case "casa":
       caption = hook || `${tone.prefix} La casa ${tone.adjectives[0]} que ${tone.verbs[1]} en ${ubicacion || ciudad}!\n`;
-      caption += `${habitaciones} habitaciones, ${banos} baños y mucho espacio para tu familia.\n`;
+      caption += `${habitaciones} habitaciones, ${banos} baños`;
+      if (estrato) caption += `, estrato ${estrato}`;
+      caption += ` y mucho espacio para tu familia.\n`;
       caption += template === "premium"
         ? `${tone.adjectives[1].charAt(0).toUpperCase() + tone.adjectives[1].slice(1)} exclusividad con ${aliado.nombre}.\n`
         : `Haz realidad tu hogar con ${aliado.nombre}.\n`;
@@ -68,7 +72,10 @@ export const generateCaption = (
 
     case "local":
       caption = hook || `${tone.prefix} Espacio ${tone.adjectives[2]} para ${tone.verbs[2]} tu negocio en ${ubicacion || ciudad}.\n`;
-      caption += `Local de ${area} m² con tráfico ${trafico} y excelente visibilidad.\n`;
+      caption += `Local de ${area} m²`;
+      if (trafico) caption += ` con tráfico ${trafico}`;
+      if (vitrina) caption += ` y vitrina frontal`;
+      caption += `.\n`;
       caption += template === "comercial"
         ? `${tone.verbs[0].charAt(0).toUpperCase() + tone.verbs[0].slice(1)} tu marca con ${aliado.nombre}.\n`
         : `Haz crecer tu negocio con el respaldo de ${aliado.nombre}.\n`;
@@ -78,7 +85,10 @@ export const generateCaption = (
 
     case "oficina":
       caption = hook || `${tone.prefix} Oficina ${tone.adjectives[1]} en ${ubicacion || ciudad}.\n`;
-      caption += `${area} m² ideales para tu empresa.\n`;
+      caption += `${area} m²`;
+      if (piso) caption += ` en piso ${piso}`;
+      if (trafico) caption += `, tráfico ${trafico}`;
+      caption += ` ideales para tu empresa.\n`;
       caption += template === "comercial"
         ? `${tone.verbs[3].charAt(0).toUpperCase() + tone.verbs[3].slice(1)} tu éxito con ${aliado.nombre}.\n`
         : `Con ${aliado.nombre}, tu éxito empresarial empieza aquí.\n`;
@@ -88,7 +98,10 @@ export const generateCaption = (
 
     case "bodega":
       caption = hook || `${tone.prefix} Bodega ${tone.adjectives[2]} en ${ubicacion || ciudad}.\n`;
-      caption += `${area} m² para almacenamiento y logística.\n`;
+      caption += `${area} m²`;
+      if (alturaLibre) caption += ` con ${alturaLibre}m de altura libre`;
+      if (trafico) caption += `, tráfico ${trafico}`;
+      caption += ` para almacenamiento y logística.\n`;
       caption += template === "comercial"
         ? `Optimiza y ${tone.verbs[0]} tu operación con ${aliado.nombre}.\n`
         : `Optimiza tu operación con ${aliado.nombre}.\n`;
