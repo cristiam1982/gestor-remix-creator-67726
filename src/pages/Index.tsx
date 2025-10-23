@@ -7,7 +7,7 @@ import { PhotoManager } from "@/components/PhotoManager";
 import { CanvasPreview } from "@/components/CanvasPreview";
 import { SocialMockup } from "@/components/SocialMockup";
 import { ReelSlideshow } from "@/components/ReelSlideshow";
-import { VideoToGifConverter } from "@/components/VideoToGifConverter";
+import { VideoReelRecorder } from "@/components/VideoReelRecorder";
 import { TemplateSelector } from "@/components/TemplateSelector";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { ExportOptions } from "@/components/ExportOptions";
@@ -369,14 +369,15 @@ const Index = () => {
                 propertyData={propertyData as PropertyData}
                 aliadoConfig={aliadoConfig}
               />
-            ) : selectedContentType === "reel-video" && aliadoConfig ? (
-              <VideoToGifConverter
+            ) : selectedContentType === "reel-video" && aliadoConfig && propertyData.fotos?.[0] ? (
+              <VideoReelRecorder
+                videoUrl={propertyData.fotos[0]}
                 propertyData={propertyData as PropertyData}
                 aliadoConfig={aliadoConfig}
-                onComplete={(blob) => {
+                onComplete={(blob, duration) => {
                   toast({
-                    title: "✨ GIF generado exitosamente",
-                    description: `Tamaño: ${(blob.size / (1024 * 1024)).toFixed(1)} MB - Listo para redes sociales`,
+                    title: "✨ Video procesado en tiempo real",
+                    description: `${(blob.size / (1024 * 1024)).toFixed(1)} MB - Procesado en ${Math.round(duration)}s`,
                   });
                 }}
               />
