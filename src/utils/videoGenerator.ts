@@ -2,7 +2,6 @@ import html2canvas from "html2canvas";
 // @ts-ignore - gif.js doesn't have TypeScript definitions
 import GIF from "gif.js";
 import { waitForNextFrame } from "./imageUtils";
-import elGestorLogo from "@/assets/el-gestor-logo.png";
 
 /**
  * Carga una imagen y devuelve HTMLImageElement
@@ -64,11 +63,6 @@ const captureFrame = async (
       windowWidth: 432,
       windowHeight: 768,
       onclone: (clonedDoc: Document) => {
-        // Ocultar el logo de El Gestor para dibujarlo después manualmente
-        clonedDoc.querySelectorAll('[data-eg-logo]').forEach(el => {
-          (el as HTMLElement).style.display = 'none';
-        });
-        
         // Forzar que las imágenes se capturen con colores reales
         const imgs = clonedDoc.querySelectorAll('img');
         imgs.forEach(img => {
@@ -212,144 +206,6 @@ export const generateReelVideo = async (
     if (frames[0]) {
       console.log("Dimensiones del primer frame:", frames[0].width + "x" + frames[0].height);
     }
-
-    onProgress({
-      stage: "encoding",
-      progress: 60,
-      totalFrames: photos.length,
-      message: "Dibujando logo de El Gestor...",
-    });
-
-    // Cargar el logo de El Gestor (robusto con createImageBitmap y fallback)
-    const loadEgLogoBitmap = async (): Promise<{
-      bitmap?: ImageBitmap;
-      img?: HTMLImageElement;
-      width: number;
-      height: number;
-    }> => {
-      try {
-        const res = await fetch(elGestorLogo, { cache: "force-cache" });
-        const blob = await res.blob();
-        const bmp = await createImageBitmap(blob);
-        return { bitmap: bmp, width: bmp.width, height: bmp.height };
-      } catch (e) {
-        console.warn("createImageBitmap falló, usando loadImage()", e);
-        const img = await loadImage(elGestorLogo);
-        const w = (img as any).naturalWidth || img.width;
-        const h = (img as any).naturalHeight || img.height;
-        return { img, width: w, height: h };
-      }
-    };
-
-    // Helper para dibujar rectángulos redondeados
-    const roundRect = (
-      ctx: CanvasRenderingContext2D,
-      x: number,
-      y: number,
-      w: number,
-      h: number,
-      r: number
-    ) => {
-      const radius = Math.max(2, r);
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.arcTo(x + w, y, x + w, y + h, radius);
-      ctx.arcTo(x + w, y + h, x, y + h, radius);
-      ctx.arcTo(x, y + h, x, y, radius);
-      ctx.arcTo(x, y, x + w, y, radius);
-      ctx.closePath();
-    };
-
-    const eg = await loadEgLogoBitmap();
-
-    // Dibujar el logo de El Gestor sobre cada frame capturado con placa de contraste
-    frames.forEach((canvas, index) => {
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        console.warn(`No se pudo obtener contexto del frame ${index + 1}`);
-        return;
-      }
-
-      ctx.imageSmoothingEnabled = true;
-      // @ts-ignore - compatibilidad de tipos
-      ctx.imageSmoothingQuality = "high" as any;
-
-      const cw = canvas.width;
-      const ch = canvas.height;
-      console.log(`Frame ${index + 1}: ${cw}x${ch}`);
-
-      // Tamaño del logo ~4.7% de la altura (≈90px en 1920)
-      const targetH = Math.max(10, Math.round(ch * 0.047));
-      const aspect = eg.width / eg.height;
-      const targetW = Math.max(10, Math.round(targetH * aspect));
-
-      // Márgenes proporcionales (≈40px en 1080x1920)
-      const mR = Math.round(cw * 0.037);
-      const mB = Math.round(ch * 0.021);
-
-      // Posición final
-      const x = cw - targetW - mR;
-      const y = ch - targetH - mB;
-
-      console.log(`Logo en frame ${index + 1}: pos(${x}, ${y}), size(${targetW}x${targetH})`);
-
-      // Placa de contraste (con padding)
-      const padX = Math.max(8, Math.round(cw * 0.018)); // ~20px
-      const padY = Math.max(6, Math.round(ch * 0.009)); // ~17px
-      const plateX = x - padX;
-      const plateY = y - padY;
-      const plateW = targetW + padX * 2;
-      const plateH = targetH + padY * 2;
-      const radius = Math.round(Math.min(plateW, plateH) * 0.2);
-
-      // Sombra + relleno
-      ctx.save();
-      ctx.shadowColor = "rgba(0,0,0,0.6)";
-      ctx.shadowBlur = Math.max(6, Math.round(cw * 0.007));
-      roundRect(ctx, plateX, plateY, plateW, plateH, radius);
-      ctx.fillStyle = "rgba(0,0,0,0.6)";
-      ctx.fill();
-      ctx.restore();
-
-      // Borde tenue
-      ctx.save();
-      roundRect(ctx, plateX, plateY, plateW, plateH, radius);
-      ctx.strokeStyle = "rgba(255,255,255,0.12)";
-      ctx.lineWidth = Math.max(1, Math.round(cw * 0.0015));
-      ctx.stroke();
-      ctx.restore();
-
-      try {
-        if (eg.bitmap) {
-          ctx.drawImage(eg.bitmap, x, y, targetW, targetH);
-        } else if (eg.img) {
-          ctx.drawImage(eg.img, x, y, targetW, targetH);
-        } else {
-          ctx.fillStyle = "#FFFFFF";
-          ctx.font = `bold ${Math.round(targetH * 0.7)}px Inter, Poppins, sans-serif`;
-          ctx.textBaseline = "middle";
-          ctx.textAlign = "center";
-          ctx.fillText("EL GESTOR", plateX + plateW / 2, plateY + plateH / 2);
-        }
-      } catch (drawError) {
-        console.error(`Error dibujando logo en frame ${index + 1}:`, drawError);
-        ctx.fillStyle = "#FFFFFF";
-        ctx.font = `bold ${Math.round(targetH * 0.7)}px Inter, Poppins, sans-serif`;
-        ctx.textBaseline = "middle";
-        ctx.textAlign = "center";
-        ctx.fillText("EL GESTOR", plateX + plateW / 2, plateY + plateH / 2);
-      }
-
-      // Verificación de píxel en el centro de la placa (debug)
-      try {
-        const cx = Math.min(cw - 1, Math.max(0, Math.round(plateX + plateW / 2)));
-        const cy = Math.min(ch - 1, Math.max(0, Math.round(plateY + plateH / 2)));
-        const rgba = ctx.getImageData(cx, cy, 1, 1).data;
-        console.log(`Verificación placa frame ${index + 1}: RGBA(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3]})`);
-      } catch (e) {
-        console.warn(`No se pudo verificar píxel en frame ${index + 1}`, e);
-      }
-    });
 
     onProgress({
       stage: "encoding",
