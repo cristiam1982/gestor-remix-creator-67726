@@ -136,28 +136,19 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             )}
           </div>
 
-          {/* Precio destacado con fondo más sólido y visible */}
+          {/* Precio destacado - fondo opaco sin sombras */}
           {(propertyData.canon || propertyData.valorVenta) && (
             <div 
               data-canon-value={propertyData.canon || propertyData.valorVenta}
-              className="inline-block px-5 py-3 rounded-xl z-30"
+              className="inline-block px-5 py-3 rounded-xl z-[60] ring-2 ring-white/70"
               style={{ 
-                backgroundColor: `${aliadoConfig.colorAccent}ee`,
-                border: '3px solid rgba(255, 255, 255, 0.6)',
-                backdropFilter: 'blur(4px)',
-                boxShadow: '0 0 20px rgba(255, 255, 255, 0.3), 0 4px 6px rgba(0, 0, 0, 0.3)'
+                backgroundColor: aliadoConfig.colorAccent
               }}
             >
-              <p className="text-xs text-white font-bold mb-1 uppercase tracking-wide">
+              <p className="text-xs text-white font-semibold mb-1 uppercase tracking-wide">
                 {propertyData.canon ? "Canon mensual" : "Valor venta"}
               </p>
-              <p 
-                className="text-4xl font-black text-white"
-                style={{
-                  textShadow: '3px 3px 12px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.5)',
-                  letterSpacing: '0.5px'
-                }}
-              >
+              <p className="text-5xl font-extrabold text-white leading-tight">
                 {propertyData.canon || propertyData.valorVenta}
               </p>
             </div>
