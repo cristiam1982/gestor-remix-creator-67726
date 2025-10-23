@@ -140,11 +140,12 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           {(propertyData.canon || propertyData.valorVenta) && (
             <div 
               data-canon-value={propertyData.canon || propertyData.valorVenta}
-              className="inline-block px-5 py-3 rounded-xl shadow-2xl z-30"
+              className="inline-block px-5 py-3 rounded-xl z-30"
               style={{ 
                 backgroundColor: `${aliadoConfig.colorAccent}ee`,
                 border: '3px solid rgba(255, 255, 255, 0.6)',
-                backdropFilter: 'blur(4px)'
+                backdropFilter: 'blur(4px)',
+                boxShadow: '0 0 20px rgba(255, 255, 255, 0.3), 0 4px 6px rgba(0, 0, 0, 0.3)'
               }}
             >
               <p className="text-xs text-white font-bold mb-1 uppercase tracking-wide">
