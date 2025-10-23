@@ -109,21 +109,27 @@ export const VideoReelRecorder = ({
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 4;
 
-    // Logo del aliado (superior izquierda) - formato cuadrado más grande
+    // Logo del aliado (superior izquierda) - formato cuadrado
     if (logoImage) {
       // Fondo semi-transparente para el logo
-      ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
       ctx.beginPath();
-      ctx.roundRect(30, 30, 220, 220, 20);
+      ctx.roundRect(30, 30, 160, 160, 16);
       ctx.fill();
-      ctx.drawImage(logoImage, 40, 40, 200, 200);
+      
+      // Borde blanco
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      
+      ctx.drawImage(logoImage, 38, 38, 144, 144);
     }
 
     // Reset shadow para el resto
     ctx.shadowBlur = 15;
 
     // Tipo de inmueble - badge más grande y redondeado
-    const badgeY = logoImage ? 280 : 50;
+    const badgeY = logoImage ? 220 : 50;
     ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
     ctx.beginPath();
     ctx.roundRect(40, badgeY, 300, 70, 15);
@@ -170,10 +176,17 @@ export const VideoReelRecorder = ({
     if (propertyData.area) features.push(`📐 ${propertyData.area}m²`);
 
     features.forEach((feature) => {
-      // Fondo para cada característica - usar color personalizado
-      const bgColor = aliadoConfig.colorCaracteristicas || "#000000";
-      ctx.fillStyle = `${bgColor}66`;
-      ctx.fillRect(30, yPos - 35, 320, 50);
+      // Fondo para cada característica con borde blanco semitransparente
+      const bgColor = aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || "#000000";
+      ctx.fillStyle = `${bgColor}F0`;
+      ctx.beginPath();
+      ctx.roundRect(30, yPos - 35, 320, 50, 12);
+      ctx.fill();
+      
+      // Borde blanco semitransparente
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
       
       ctx.fillStyle = "#FFFFFF";
       ctx.fillText(feature, 40, yPos);
@@ -198,9 +211,11 @@ export const VideoReelRecorder = ({
     ctx.fillStyle = "#E0E0E0";
     ctx.fillText(aliadoConfig.nombre, 40, bottomY + 130);
 
-    // Logo El Gestor (inferior derecha) - proporción balanceada
+    // Logo El Gestor (superior derecha) - unificado con otros formatos
     if (elGestorLogoImage) {
-      ctx.drawImage(elGestorLogoImage, 880, bottomY + 60, 140, 90);
+      ctx.globalAlpha = 0.8;
+      ctx.drawImage(elGestorLogoImage, 880, 60, 140, 90);
+      ctx.globalAlpha = 1.0;
     }
 
     // Reset shadow
@@ -347,16 +362,17 @@ export const VideoReelRecorder = ({
           
           {/* Overlays preview - Sincronizado con canvas */}
           <div className="absolute inset-0 pointer-events-none text-white">
-            {/* Logo aliado - Canvas: 200x200px → Preview: 74x74px (cuadrado) */}
+            {/* Logo aliado - Canvas: 160x160px → Preview: 59px (cuadrado con diseño unificado) */}
             {aliadoConfig.logo && (
               <div 
-                className="absolute bg-black/30 rounded-xl"
+                className="absolute rounded-xl border-2 bg-white/90"
                 style={{ 
                   top: '11px', 
                   left: '11px', 
-                  width: '74px', 
-                  height: '74px',
-                  padding: '2px'
+                  width: '59px', 
+                  height: '59px',
+                  padding: '2px',
+                  borderColor: 'rgba(255, 255, 255, 0.8)'
                 }}
               >
                 <img
@@ -371,8 +387,8 @@ export const VideoReelRecorder = ({
             <div 
               className="absolute"
               style={{ 
-                left: '95px', 
-                top: '30px'
+                left: '78px', 
+                top: '26px'
               }}
             >
               <p className="text-sm font-semibold text-white drop-shadow-lg">
@@ -383,7 +399,7 @@ export const VideoReelRecorder = ({
             {/* Contenido superior */}
             <div 
               className="absolute left-[11px] right-[11px]" 
-              style={{ top: aliadoConfig.logo ? '104px' : '18px' }}
+              style={{ top: aliadoConfig.logo ? '82px' : '18px' }}
             >
               {/* Tipo de inmueble - Canvas: 300x70px, font 38px → Preview: 111x26px, font 14px */}
               <Badge
@@ -432,10 +448,11 @@ export const VideoReelRecorder = ({
               >
                 {propertyData.habitaciones && (
                   <div 
-                    className="inline-block rounded-lg"
+                    className="inline-block rounded-xl"
                     style={{ 
-                      padding: '6px 7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                      padding: '8px 12px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
                     🛏️ {propertyData.habitaciones} hab
@@ -443,11 +460,12 @@ export const VideoReelRecorder = ({
                 )}
                 {propertyData.banos && (
                   <div 
-                    className="inline-block rounded-lg"
+                    className="inline-block rounded-xl"
                     style={{ 
-                      padding: '6px 7px', 
+                      padding: '8px 12px', 
                       marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
                     🚿 {propertyData.banos} baños
@@ -455,11 +473,12 @@ export const VideoReelRecorder = ({
                 )}
                 {propertyData.parqueaderos && (
                   <div 
-                    className="inline-block rounded-lg"
+                    className="inline-block rounded-xl"
                     style={{ 
-                      padding: '6px 7px', 
+                      padding: '8px 12px', 
                       marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
                     🚗 {propertyData.parqueaderos} parq
@@ -467,11 +486,12 @@ export const VideoReelRecorder = ({
                 )}
                 {propertyData.area && (
                   <div 
-                    className="inline-block rounded-lg"
+                    className="inline-block rounded-xl"
                     style={{ 
-                      padding: '6px 7px', 
+                      padding: '8px 12px', 
                       marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
                     📐 {propertyData.area}m²
@@ -480,11 +500,12 @@ export const VideoReelRecorder = ({
                 
                 {propertyData.estrato && (
                   <div 
-                    className="inline-block rounded-lg"
+                    className="inline-block rounded-xl"
                     style={{ 
-                      padding: '6px 7px', 
+                      padding: '8px 12px', 
                       marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
                     🏢 Estrato {propertyData.estrato}
@@ -493,11 +514,12 @@ export const VideoReelRecorder = ({
                 
                 {propertyData.piso && (
                   <div 
-                    className="inline-block rounded-lg"
+                    className="inline-block rounded-xl"
                     style={{ 
-                      padding: '6px 7px', 
+                      padding: '8px 12px', 
                       marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
                     🏢 Piso {propertyData.piso}
@@ -506,11 +528,12 @@ export const VideoReelRecorder = ({
                 
                 {propertyData.trafico && (
                   <div 
-                    className="inline-block rounded-lg"
+                    className="inline-block rounded-xl"
                     style={{ 
-                      padding: '6px 7px', 
+                      padding: '8px 12px', 
                       marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
                     🚦 Tráfico {propertyData.trafico}
@@ -519,11 +542,12 @@ export const VideoReelRecorder = ({
                 
                 {propertyData.alturaLibre && (
                   <div 
-                    className="inline-block rounded-lg"
+                    className="inline-block rounded-xl"
                     style={{ 
-                      padding: '6px 7px', 
+                      padding: '8px 12px', 
                       marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
                     📏 {propertyData.alturaLibre}m altura
@@ -532,11 +556,12 @@ export const VideoReelRecorder = ({
                 
                 {propertyData.vitrina && (
                   <div 
-                    className="inline-block rounded-lg"
+                    className="inline-block rounded-xl"
                     style={{ 
-                      padding: '6px 7px', 
+                      padding: '8px 12px', 
                       marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
                     🪟 Con vitrina
@@ -545,11 +570,12 @@ export const VideoReelRecorder = ({
                 
                 {propertyData.uso && (
                   <div 
-                    className="inline-block rounded-lg"
+                    className="inline-block rounded-xl"
                     style={{ 
-                      padding: '6px 7px', 
+                      padding: '8px 12px', 
                       marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
                     🏗️ Uso {propertyData.uso}
@@ -558,12 +584,21 @@ export const VideoReelRecorder = ({
               </div>
             </div>
 
+            {/* Logo El Gestor - superior derecha (unificado) */}
+            <div className="absolute top-[22px] right-[15px] z-30">
+              <img 
+                src={elGestorLogo} 
+                alt="El Gestor" 
+                className="h-8 object-contain opacity-80 drop-shadow-lg" 
+              />
+            </div>
+
             {/* Sección inferior - Canvas: Y=1700, height 220px */}
             <div 
               className="absolute bottom-0 left-0 right-0 bg-black/50"
               style={{ padding: '11px' }}
             >
-              <div className="flex justify-between items-center">
+              <div className="flex items-center">
                 {/* WhatsApp y nombre */}
                 <div>
                   {/* WhatsApp - Canvas: font 40px → Preview: font 15px */}
@@ -584,13 +619,6 @@ export const VideoReelRecorder = ({
                     {aliadoConfig.nombre}
                   </p>
                 </div>
-                
-                {/* Logo El Gestor - Canvas: 140x90px → Preview: h-16 (64px para balance visual) */}
-                <img 
-                  src={elGestorLogo} 
-                  alt="El Gestor" 
-                  className="h-16 object-contain drop-shadow-lg" 
-                />
               </div>
             </div>
           </div>

@@ -330,16 +330,16 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
             />
-            {/* Sin overlay oscuro - colores naturales */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
           </div>
 
           {/* Logo del aliado */}
-          <div className="absolute top-8 left-4 z-10">
+          <div className="absolute top-6 left-6 z-20">
             {(safeLogoUrl || aliadoConfig.logo) && (
               <img
                 src={safeLogoUrl || aliadoConfig.logo}
                 alt={aliadoConfig.nombre}
-                className="w-16 h-16 rounded-full border-2 border-white object-contain p-1 shadow-xl"
+                className="w-20 h-20 rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
               />
@@ -360,52 +360,122 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             )}
             <div className="flex flex-wrap gap-2 text-sm">
               {propertyData.habitaciones && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🛏️ {propertyData.habitaciones}
                 </span>
               )}
               {propertyData.banos && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🚿 {propertyData.banos}
                 </span>
               )}
               {propertyData.parqueaderos && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🚗 {propertyData.parqueaderos}
                 </span>
               )}
               {propertyData.estrato && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🏢 Estrato {propertyData.estrato}
                 </span>
               )}
               {propertyData.piso && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🏢 Piso {propertyData.piso}
                 </span>
               )}
               {propertyData.trafico && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🚦 Tráfico {propertyData.trafico}
                 </span>
               )}
               {propertyData.alturaLibre && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   📏 {propertyData.alturaLibre}m altura
                 </span>
               )}
               {propertyData.vitrina && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🪟 Con vitrina
                 </span>
               )}
               {propertyData.uso && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🏗️ Uso {propertyData.uso}
                 </span>
               )}
               {propertyData.area && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   📐 {propertyData.area}m²
                 </span>
               )}
@@ -413,11 +483,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           </div>
 
           {/* Logo El Gestor */}
-          <div className="absolute bottom-4 right-4 z-30 shadow-lg rounded-lg">
+          <div className="absolute top-8 right-4 z-30">
             <img 
               src={elGestorLogo} 
               alt="El Gestor" 
-              className="h-8 object-contain opacity-80"
+              className="h-8 object-contain opacity-80 drop-shadow-lg"
             />
           </div>
 
@@ -455,16 +525,16 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
             />
-            {/* Sin overlay oscuro - colores naturales */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
           </div>
 
           {/* Logo del aliado */}
-          <div className="absolute top-8 left-4 z-10">
+          <div className="absolute top-6 left-6 z-20">
             {(safeLogoUrl || aliadoConfig.logo) && (
               <img
                 src={safeLogoUrl || aliadoConfig.logo}
                 alt={aliadoConfig.nombre}
-                className="w-16 h-16 rounded-full border-2 border-white object-contain p-1 shadow-xl"
+                className="w-20 h-20 rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
                 data-ally-logo="true"
@@ -486,52 +556,122 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             )}
             <div className="flex flex-wrap gap-2 text-sm">
               {propertyData.habitaciones && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🛏️ {propertyData.habitaciones}
                 </span>
               )}
               {propertyData.banos && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🚿 {propertyData.banos}
                 </span>
               )}
               {propertyData.parqueaderos && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🚗 {propertyData.parqueaderos}
                 </span>
               )}
               {propertyData.estrato && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🏢 Estrato {propertyData.estrato}
                 </span>
               )}
               {propertyData.piso && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🏢 Piso {propertyData.piso}
                 </span>
               )}
               {propertyData.trafico && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🚦 Tráfico {propertyData.trafico}
                 </span>
               )}
               {propertyData.alturaLibre && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   📏 {propertyData.alturaLibre}m altura
                 </span>
               )}
               {propertyData.vitrina && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🪟 Con vitrina
                 </span>
               )}
               {propertyData.uso && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   🏗️ Uso {propertyData.uso}
                 </span>
               )}
               {propertyData.area && (
-                <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                <span 
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}F0`,
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
+                  }}
+                >
                   📐 {propertyData.area}m²
                 </span>
               )}
@@ -539,11 +679,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           </div>
 
           {/* Logo El Gestor */}
-          <div className="absolute bottom-4 right-4 z-30 shadow-lg rounded-lg">
+          <div className="absolute top-8 right-4 z-30">
             <img 
               src={elGestorLogo} 
               alt="El Gestor" 
-              className="h-8 object-contain opacity-80"
+              className="h-8 object-contain opacity-80 drop-shadow-lg"
             />
           </div>
         </div>
