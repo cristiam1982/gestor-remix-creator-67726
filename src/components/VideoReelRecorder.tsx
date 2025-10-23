@@ -211,11 +211,9 @@ export const VideoReelRecorder = ({
     ctx.fillStyle = "#E0E0E0";
     ctx.fillText(aliadoConfig.nombre, 40, bottomY + 130);
 
-    // Logo El Gestor (superior derecha) - unificado con otros formatos
+    // Logo El Gestor (inferior derecha) - sin opacidad
     if (elGestorLogoImage) {
-      ctx.globalAlpha = 0.8;
-      ctx.drawImage(elGestorLogoImage, 880, 60, 140, 90);
-      ctx.globalAlpha = 1.0;
+      ctx.drawImage(elGestorLogoImage, 900, 1590, 140, 90);
     }
 
     // Reset shadow
@@ -584,12 +582,12 @@ export const VideoReelRecorder = ({
               </div>
             </div>
 
-            {/* Logo El Gestor - superior derecha (unificado) */}
-            <div className="absolute top-[22px] right-[15px] z-30">
+            {/* Logo El Gestor - inferior derecha */}
+            <div className="absolute bottom-[100px] right-[15px] z-30">
               <img 
                 src={elGestorLogo} 
                 alt="El Gestor" 
-                className="h-8 object-contain opacity-80 drop-shadow-lg" 
+                className="h-8 object-contain drop-shadow-lg" 
               />
             </div>
 
