@@ -109,19 +109,21 @@ export const VideoReelRecorder = ({
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 4;
 
-    // Logo del aliado (superior izquierda) - más grande
+    // Logo del aliado (superior izquierda) - formato cuadrado más grande
     if (logoImage) {
       // Fondo semi-transparente para el logo
       ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
-      ctx.fillRect(30, 30, 160, 160);
-      ctx.drawImage(logoImage, 40, 40, 140, 140);
+      ctx.beginPath();
+      ctx.roundRect(30, 30, 220, 220, 20);
+      ctx.fill();
+      ctx.drawImage(logoImage, 40, 40, 200, 200);
     }
 
     // Reset shadow para el resto
     ctx.shadowBlur = 15;
 
     // Tipo de inmueble - badge más grande y redondeado
-    const badgeY = logoImage ? 220 : 50;
+    const badgeY = logoImage ? 280 : 50;
     ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
     ctx.beginPath();
     ctx.roundRect(40, badgeY, 300, 70, 15);
@@ -154,8 +156,9 @@ export const VideoReelRecorder = ({
     if (propertyData.area) features.push(`📐 ${propertyData.area}m²`);
 
     features.forEach((feature) => {
-      // Fondo para cada característica
-      ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+      // Fondo para cada característica - usar color personalizado
+      const bgColor = aliadoConfig.colorCaracteristicas || "#000000";
+      ctx.fillStyle = `${bgColor}66`;
       ctx.fillRect(30, yPos - 35, 320, 50);
       
       ctx.fillStyle = "#FFFFFF";
@@ -328,17 +331,17 @@ export const VideoReelRecorder = ({
             onTimeUpdate={(e) => !isRecording && setCurrentTime(e.currentTarget.currentTime)}
           />
           
-          {/* Overlays preview - Sincronizado con canvas (factor 2.7x) */}
+          {/* Overlays preview - Sincronizado con canvas */}
           <div className="absolute inset-0 pointer-events-none text-white">
-            {/* Logo aliado - Canvas: 140x140px → Preview: 52x52px */}
+            {/* Logo aliado - Canvas: 200x200px → Preview: 74x74px (cuadrado) */}
             {aliadoConfig.logo && (
               <div 
-                className="absolute bg-black/30 rounded-lg"
+                className="absolute bg-black/30 rounded-xl"
                 style={{ 
                   top: '11px', 
                   left: '11px', 
-                  width: '52px', 
-                  height: '52px',
+                  width: '74px', 
+                  height: '74px',
                   padding: '2px'
                 }}
               >
@@ -350,10 +353,23 @@ export const VideoReelRecorder = ({
               </div>
             )}
 
+            {/* Ciudad junto al logo */}
+            <div 
+              className="absolute"
+              style={{ 
+                left: '95px', 
+                top: '30px'
+              }}
+            >
+              <p className="text-sm font-semibold text-white drop-shadow-lg">
+                {aliadoConfig.ciudad}
+              </p>
+            </div>
+
             {/* Contenido superior */}
             <div 
               className="absolute left-[11px] right-[11px]" 
-              style={{ top: aliadoConfig.logo ? '81px' : '18px' }}
+              style={{ top: aliadoConfig.logo ? '104px' : '18px' }}
             >
               {/* Tipo de inmueble - Canvas: 300x70px, font 38px → Preview: 111x26px, font 14px */}
               <Badge
@@ -402,32 +418,47 @@ export const VideoReelRecorder = ({
               >
                 {propertyData.habitaciones && (
                   <div 
-                    className="bg-black/40 inline-block rounded-lg"
-                    style={{ padding: '6px 7px' }}
+                    className="inline-block rounded-lg"
+                    style={{ 
+                      padding: '6px 7px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                    }}
                   >
                     🛏️ {propertyData.habitaciones} hab
                   </div>
                 )}
                 {propertyData.banos && (
                   <div 
-                    className="bg-black/40 inline-block rounded-lg"
-                    style={{ padding: '6px 7px', marginLeft: '7px' }}
+                    className="inline-block rounded-lg"
+                    style={{ 
+                      padding: '6px 7px', 
+                      marginLeft: '7px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                    }}
                   >
                     🚿 {propertyData.banos} baños
                   </div>
                 )}
                 {propertyData.parqueaderos && (
                   <div 
-                    className="bg-black/40 inline-block rounded-lg"
-                    style={{ padding: '6px 7px', marginTop: '7px' }}
+                    className="inline-block rounded-lg"
+                    style={{ 
+                      padding: '6px 7px', 
+                      marginTop: '7px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                    }}
                   >
                     🚗 {propertyData.parqueaderos} parq
                   </div>
                 )}
                 {propertyData.area && (
                   <div 
-                    className="bg-black/40 inline-block rounded-lg"
-                    style={{ padding: '6px 7px', marginLeft: '7px' }}
+                    className="inline-block rounded-lg"
+                    style={{ 
+                      padding: '6px 7px', 
+                      marginLeft: '7px',
+                      backgroundColor: `${aliadoConfig.colorCaracteristicas || '#000000'}66`
+                    }}
                   >
                     📐 {propertyData.area}m²
                   </div>

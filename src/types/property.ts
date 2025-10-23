@@ -19,6 +19,7 @@ export interface AliadoConfig {
   colorPrimario: string;    // Color principal (textos, botones)
   colorSecundario: string;  // Color secundario (acentos, iconos)
   colorAccent: string;      // Color de acento (fondos, gradientes)
+  colorCaracteristicas?: string; // Color de fondo para características
   whatsapp: string;
   ciudad: string;
 }

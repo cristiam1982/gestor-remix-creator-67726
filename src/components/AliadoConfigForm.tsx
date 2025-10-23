@@ -23,6 +23,7 @@ export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: Al
       colorPrimario: "#00A5BD",
       colorSecundario: "#8BC53F",
       colorAccent: "#192A56",
+      colorCaracteristicas: "#000000",
       whatsapp: "",
       ciudad: "",
     }
@@ -184,6 +185,25 @@ export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: Al
               />
             </div>
             <p className="text-xs text-muted-foreground mt-1">Para fondos y gradientes</p>
+          </div>
+
+          <div>
+            <Label htmlFor="colorCaracteristicas">Color de Fondo de Características</Label>
+            <div className="flex gap-2">
+              <Input
+                id="colorCaracteristicas"
+                type="color"
+                value={config.colorCaracteristicas || "#000000"}
+                onChange={(e) => setConfig({ ...config, colorCaracteristicas: e.target.value })}
+                className="w-20 h-10 cursor-pointer"
+              />
+              <Input
+                value={config.colorCaracteristicas || "#000000"}
+                onChange={(e) => setConfig({ ...config, colorCaracteristicas: e.target.value })}
+                placeholder="#000000"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Color de fondo para habitaciones, baños, parqueaderos, etc.</p>
           </div>
 
           <div>

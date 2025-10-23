@@ -108,17 +108,13 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           <img 
             src={aliadoConfig.logo} 
             alt={aliadoConfig.nombre}
-            className="w-12 h-12 rounded-full border-2 border-white/80 object-contain bg-white/90 p-1"
+            className="w-20 h-20 rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
           />
         )}
         <div>
-          <p 
-            className="font-bold text-sm drop-shadow-lg"
-            style={{ color: aliadoConfig.colorPrimario }}
-          >
-            {aliadoConfig.nombre}
+          <p className="text-sm font-semibold text-white drop-shadow-lg">
+            {aliadoConfig.ciudad}
           </p>
-          <p className="text-xs text-white/90 drop-shadow-lg">{aliadoConfig.ciudad}</p>
         </div>
       </div>
 
@@ -155,12 +151,12 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             </div>
           )}
 
-          {/* Iconos de atributos con color secundario */}
+          {/* Iconos de atributos con color personalizable */}
           <div className="flex flex-wrap gap-2">
             {propertyData.habitaciones && (
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md"
-                style={{ backgroundColor: `${aliadoConfig.colorSecundario}DD` }}
+                style={{ backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}DD` }}
               >
                 <Bed className="w-4 h-4 text-white" />
                 <span className="text-sm font-semibold text-white">{propertyData.habitaciones}</span>
@@ -170,7 +166,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             {propertyData.banos && (
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md"
-                style={{ backgroundColor: `${aliadoConfig.colorSecundario}DD` }}
+                style={{ backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}DD` }}
               >
                 <Bath className="w-4 h-4 text-white" />
                 <span className="text-sm font-semibold text-white">{propertyData.banos}</span>
@@ -180,7 +176,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             {propertyData.parqueaderos && (
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md"
-                style={{ backgroundColor: `${aliadoConfig.colorSecundario}DD` }}
+                style={{ backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}DD` }}
               >
                 <Car className="w-4 h-4 text-white" />
                 <span className="text-sm font-semibold text-white">{propertyData.parqueaderos}</span>
@@ -190,7 +186,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             {propertyData.area && (
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md"
-                style={{ backgroundColor: `${aliadoConfig.colorSecundario}DD` }}
+                style={{ backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario}DD` }}
               >
                 <Square className="w-4 h-4 text-white" />
                 <span className="text-sm font-semibold text-white">{propertyData.area}m²</span>
