@@ -22,8 +22,6 @@ export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: Al
       logo: "",
       colorPrimario: "#00A5BD",
       colorSecundario: "#8BC53F",
-      colorAccent: "#192A56",
-      colorCaracteristicas: "#000000",
       whatsapp: "",
       ciudad: "",
     }
@@ -146,7 +144,7 @@ export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: Al
                 placeholder="#00A5BD"
               />
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Para textos principales y precios</p>
+            <p className="text-xs text-muted-foreground mt-1">Para precio/canon y elementos destacados</p>
           </div>
 
           <div>
@@ -165,45 +163,7 @@ export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: Al
                 placeholder="#8BC53F"
               />
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Para iconos y badges</p>
-          </div>
-
-          <div>
-            <Label htmlFor="colorAccent">Color de Acento</Label>
-            <div className="flex gap-2">
-              <Input
-                id="colorAccent"
-                type="color"
-                value={config.colorAccent}
-                onChange={(e) => setConfig({ ...config, colorAccent: e.target.value })}
-                className="w-20 h-10 cursor-pointer"
-              />
-              <Input
-                value={config.colorAccent}
-                onChange={(e) => setConfig({ ...config, colorAccent: e.target.value })}
-                placeholder="#192A56"
-              />
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">Para fondos y gradientes</p>
-          </div>
-
-          <div>
-            <Label htmlFor="colorCaracteristicas">Color de Fondo de Características</Label>
-            <div className="flex gap-2">
-              <Input
-                id="colorCaracteristicas"
-                type="color"
-                value={config.colorCaracteristicas || "#000000"}
-                onChange={(e) => setConfig({ ...config, colorCaracteristicas: e.target.value })}
-                className="w-20 h-10 cursor-pointer"
-              />
-              <Input
-                value={config.colorCaracteristicas || "#000000"}
-                onChange={(e) => setConfig({ ...config, colorCaracteristicas: e.target.value })}
-                placeholder="#000000"
-              />
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">Color de fondo para habitaciones, baños, parqueaderos, etc.</p>
+            <p className="text-xs text-muted-foreground mt-1">Para características (habitaciones, baños, área, etc.)</p>
           </div>
 
           <div>

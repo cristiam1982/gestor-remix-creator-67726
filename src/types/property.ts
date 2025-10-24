@@ -16,10 +16,8 @@ export type ContentType =
 export interface AliadoConfig {
   nombre: string;
   logo: string;
-  colorPrimario: string;    // Color principal (textos, botones)
-  colorSecundario: string;  // Color secundario (acentos, iconos)
-  colorAccent: string;      // Color de acento (fondos, gradientes)
-  colorCaracteristicas?: string; // Color de fondo para características
+  colorPrimario: string;    // Color principal (canon/precio y destacados)
+  colorSecundario: string;  // Color secundario (características: habitaciones, baños, etc.)
   whatsapp: string;
   ciudad: string;
 }

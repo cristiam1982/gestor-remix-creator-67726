@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Square, Smartphone, Image as ImageIcon, Video, Download, RefreshCw } from "lucide-react";
 import { ContentTypeCard } from "@/components/ContentTypeCard";
+import { BrandedHeroSection } from "@/components/BrandedHeroSection";
 import { AliadoConfigForm } from "@/components/AliadoConfigForm";
 import { PropertyForm } from "@/components/PropertyForm";
 import { PhotoManager } from "@/components/PhotoManager";
@@ -240,19 +241,7 @@ const Index = () => {
         />
         
         <div className="max-w-6xl w-full animate-fade-in">
-          <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold text-white mb-4">
-              🎨 Creador Inmobiliario de El Gestor
-            </h1>
-            <p className="text-xl text-white/90">
-              Crea tu publicación profesional en minutos
-            </p>
-            <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-xl inline-block">
-              <p className="text-white font-medium">
-                🏢 {aliadoConfig.nombre} | 📍 {aliadoConfig.ciudad}
-              </p>
-            </div>
-          </div>
+          <BrandedHeroSection aliadoConfig={aliadoConfig} />
 
           {/* Métricas */}
           <MetricsPanel onClearMetrics={handleClearMetrics} />
@@ -262,28 +251,32 @@ const Index = () => {
               icon={Square}
               title="Post Cuadrado"
               description="1:1 para feed de Instagram y Facebook"
-              gradient="gradient-primary"
+              primaryColor={aliadoConfig.colorPrimario}
+              secondaryColor={aliadoConfig.colorSecundario}
               onClick={() => handleContentTypeSelect("post")}
             />
             <ContentTypeCard
               icon={Smartphone}
               title="Historia"
               description="9:16 para Stories de Instagram"
-              gradient="gradient-secondary"
+              primaryColor={aliadoConfig.colorPrimario}
+              secondaryColor={aliadoConfig.colorSecundario}
               onClick={() => handleContentTypeSelect("historia")}
             />
             <ContentTypeCard
               icon={ImageIcon}
               title="Reel con Fotos"
               description="Slideshow automático con música"
-              gradient="gradient-accent"
+              primaryColor={aliadoConfig.colorPrimario}
+              secondaryColor={aliadoConfig.colorSecundario}
               onClick={() => handleContentTypeSelect("reel-fotos")}
             />
             <ContentTypeCard
               icon={Video}
               title="Reel con Video"
               description="Hasta 20 segundos de video"
-              gradient="gradient-primary"
+              primaryColor={aliadoConfig.colorPrimario}
+              secondaryColor={aliadoConfig.colorSecundario}
               onClick={() => handleContentTypeSelect("reel-video")}
             />
           </div>

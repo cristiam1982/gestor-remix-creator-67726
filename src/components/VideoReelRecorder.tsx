@@ -177,7 +177,7 @@ export const VideoReelRecorder = ({
 
     features.forEach((feature) => {
       // Fondo para cada característica con borde blanco semitransparente
-      const bgColor = aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || "#000000";
+      const bgColor = aliadoConfig.colorSecundario || "#000000";
       ctx.fillStyle = `${bgColor}F0`;
       ctx.beginPath();
       ctx.roundRect(30, yPos - 35, 320, 50, 12);
@@ -454,7 +454,7 @@ export const VideoReelRecorder = ({
                     className="inline-block rounded-xl"
                     style={{ 
                       padding: '8px 12px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -467,7 +467,7 @@ export const VideoReelRecorder = ({
                     style={{ 
                       padding: '8px 12px', 
                       marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -480,7 +480,7 @@ export const VideoReelRecorder = ({
                     style={{ 
                       padding: '8px 12px', 
                       marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -493,7 +493,7 @@ export const VideoReelRecorder = ({
                     style={{ 
                       padding: '8px 12px', 
                       marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -507,7 +507,7 @@ export const VideoReelRecorder = ({
                     style={{ 
                       padding: '8px 12px', 
                       marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -521,7 +521,7 @@ export const VideoReelRecorder = ({
                     style={{ 
                       padding: '8px 12px', 
                       marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -535,7 +535,7 @@ export const VideoReelRecorder = ({
                     style={{ 
                       padding: '8px 12px', 
                       marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -549,7 +549,7 @@ export const VideoReelRecorder = ({
                     style={{ 
                       padding: '8px 12px', 
                       marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -563,7 +563,7 @@ export const VideoReelRecorder = ({
                     style={{ 
                       padding: '8px 12px', 
                       marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -577,7 +577,7 @@ export const VideoReelRecorder = ({
                     style={{ 
                       padding: '8px 12px', 
                       marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorCaracteristicas || aliadoConfig.colorSecundario || '#000000'}F0`,
+                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
