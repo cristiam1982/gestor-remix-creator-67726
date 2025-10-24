@@ -20,16 +20,17 @@ export const BrandedHeroSection = ({
         🎨 Creador Inmobiliario
       </h1>
       
-      <p className="text-xl text-white/90 mb-6">
+      <p className="text-xl text-gray-700 mb-6">
         Crea tu publicación profesional en minutos
       </p>
 
       {/* Badge con identidad del aliado */}
-      <div className="inline-block px-6 py-3 rounded-xl backdrop-blur-sm border-2" style={{
-      backgroundColor: `${aliadoConfig.colorPrimario}20`,
-      borderColor: `${aliadoConfig.colorPrimario}40`
+      <div className="inline-block px-6 py-3 rounded-xl border-2" style={{
+      backgroundColor: `${aliadoConfig.colorPrimario}15`,
+      borderColor: aliadoConfig.colorPrimario,
+      color: aliadoConfig.colorPrimario
     }}>
-        
+        <span className="font-semibold">{aliadoConfig.nombre} • {aliadoConfig.ciudad}</span>
       </div>
     </div>;
 };

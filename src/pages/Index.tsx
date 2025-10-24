@@ -233,7 +233,7 @@ const Index = () => {
 
   if (!selectedContentType) {
     return (
-      <div className="min-h-screen gradient-hero flex items-center justify-center p-4">
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
         <AliadoConfigForm 
           onSave={handleConfigSave} 
           initialConfig={aliadoConfig}
