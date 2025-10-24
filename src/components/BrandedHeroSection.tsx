@@ -24,9 +24,19 @@ export const BrandedHeroSection = ({ aliadoConfig }: BrandedHeroSectionProps) =>
         🎨 Creador Inmobiliario
       </h1>
 
-      <p className="text-xl text-white/90 mb-6">Crea tu publicación profesional en minutos</p>
+      <p className="text-xl text-gray-700 mb-6">Crea tu publicación profesional en minutos</p>
 
       {/* Badge con identidad del aliado */}
+      <div 
+        className="inline-block px-6 py-3 rounded-xl border-2 font-semibold"
+        style={{
+          backgroundColor: `${aliadoConfig.colorPrimario}15`,
+          borderColor: aliadoConfig.colorPrimario,
+          color: aliadoConfig.colorPrimario
+        }}
+      >
+        {aliadoConfig.nombre} • {aliadoConfig.ciudad}
+      </div>
     </div>
   );
 };
