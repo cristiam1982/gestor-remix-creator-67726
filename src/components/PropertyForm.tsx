@@ -10,6 +10,7 @@ import { Building2, Home, Store, Briefcase, Warehouse, Trees } from "lucide-reac
 interface PropertyFormProps {
   onDataChange: (data: Partial<PropertyData>) => void;
   data: Partial<PropertyData>;
+  errors?: Record<string, string>;
 }
 
 const propertyTypeIcons = {
@@ -21,7 +22,7 @@ const propertyTypeIcons = {
   lote: Trees,
 };
 
-export const PropertyForm = ({ onDataChange, data }: PropertyFormProps) => {
+export const PropertyForm = ({ onDataChange, data, errors }: PropertyFormProps) => {
   const updateField = (field: string, value: any) => {
     onDataChange({ ...data, [field]: value });
   };
@@ -45,7 +46,9 @@ export const PropertyForm = ({ onDataChange, data }: PropertyFormProps) => {
                 value={data.canon || ""}
                 onChange={(e) => updateField("canon", e.target.value)}
                 placeholder="2.500.000"
+                className={errors?.canon ? "border-destructive" : ""}
               />
+              {errors?.canon && <p className="text-xs text-destructive mt-1">{errors.canon}</p>}
             </div>
 
             <div>
@@ -55,7 +58,9 @@ export const PropertyForm = ({ onDataChange, data }: PropertyFormProps) => {
                 value={data.ubicacion || ""}
                 onChange={(e) => updateField("ubicacion", e.target.value)}
                 placeholder="Ej: Chapinero, Calle 63 #10-20"
+                className={errors?.ubicacion ? "border-destructive" : ""}
               />
+              {errors?.ubicacion && <p className="text-xs text-destructive mt-1">{errors.ubicacion}</p>}
             </div>
           </>
         )}
@@ -69,9 +74,11 @@ export const PropertyForm = ({ onDataChange, data }: PropertyFormProps) => {
                   id="habitaciones"
                   type="number"
                   value={data.habitaciones || ""}
-                  onChange={(e) => updateField("habitaciones", parseInt(e.target.value))}
+                  onChange={(e) => updateField("habitaciones", e.target.value === "" ? undefined : parseInt(e.target.value))}
                   placeholder="3"
+                  className={errors?.habitaciones ? "border-destructive" : ""}
                 />
+                {errors?.habitaciones && <p className="text-xs text-destructive mt-1">{errors.habitaciones}</p>}
               </div>
               <div>
                 <Label htmlFor="banos">Baños</Label>
@@ -79,9 +86,11 @@ export const PropertyForm = ({ onDataChange, data }: PropertyFormProps) => {
                   id="banos"
                   type="number"
                   value={data.banos || ""}
-                  onChange={(e) => updateField("banos", parseInt(e.target.value))}
+                  onChange={(e) => updateField("banos", e.target.value === "" ? undefined : parseInt(e.target.value))}
                   placeholder="2"
+                  className={errors?.banos ? "border-destructive" : ""}
                 />
+                {errors?.banos && <p className="text-xs text-destructive mt-1">{errors.banos}</p>}
               </div>
             </div>
 

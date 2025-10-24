@@ -315,6 +315,7 @@ const Index = () => {
             <PropertyForm 
               data={propertyData} 
               onDataChange={setPropertyData}
+              errors={validationErrors}
             />
 
             <PhotoManager
