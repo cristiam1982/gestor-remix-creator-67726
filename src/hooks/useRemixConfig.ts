@@ -21,9 +21,9 @@ export const useRemixConfig = () => {
         const decoded = JSON.parse(atob(remixData));
         setRemixConfig(decoded);
         
-        // Save to localStorage if not locked
+        // Save to localStorage if not locked (using consistent key)
         if (!locked) {
-          localStorage.setItem("aliado_config", JSON.stringify(decoded));
+          localStorage.setItem("aliado-config", JSON.stringify(decoded));
         }
       } catch (error) {
         console.error("Error al decodificar remix:", error);

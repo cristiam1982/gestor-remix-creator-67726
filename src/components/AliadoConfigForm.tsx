@@ -35,6 +35,7 @@ export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: Al
     const validation = validateAliadoConfig(config);
     
     if (!validation.success) {
+      console.log("Errores de validación:", validation.errors);
       setErrors(validation.errors);
       toast({
         title: "❌ Errores en el formulario",
@@ -142,8 +143,10 @@ export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: Al
                 value={config.colorPrimario}
                 onChange={(e) => setConfig({ ...config, colorPrimario: e.target.value })}
                 placeholder="#00A5BD"
+                className={errors.colorPrimario ? "border-destructive" : ""}
               />
             </div>
+            {errors.colorPrimario && <p className="text-xs text-destructive mt-1">{errors.colorPrimario}</p>}
             <p className="text-xs text-muted-foreground mt-1">Para precio/canon y elementos destacados</p>
           </div>
 
@@ -161,8 +164,10 @@ export const AliadoConfigForm = ({ onSave, initialConfig, isLocked = false }: Al
                 value={config.colorSecundario}
                 onChange={(e) => setConfig({ ...config, colorSecundario: e.target.value })}
                 placeholder="#8BC53F"
+                className={errors.colorSecundario ? "border-destructive" : ""}
               />
             </div>
+            {errors.colorSecundario && <p className="text-xs text-destructive mt-1">{errors.colorSecundario}</p>}
             <p className="text-xs text-muted-foreground mt-1">Para características (habitaciones, baños, área, etc.)</p>
           </div>
 
