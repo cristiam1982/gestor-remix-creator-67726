@@ -4,10 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
+import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { useToast } from "@/hooks/use-toast";
-import { urlToDataURL } from "@/utils/imageUtils";
 import {
   DndContext,
   closestCenter,
@@ -95,7 +95,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [generationProgress, setGenerationProgress] = useState<VideoGenerationProgress | null>(null);
-  const [safeLogoUrl, setSafeLogoUrl] = useState<string | null>(null);
   const [photos, setPhotos] = useState<string[]>(propertyData.fotos || []);
   const { toast } = useToast();
   
@@ -113,25 +112,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   useEffect(() => {
     setPhotos(propertyData.fotos || []);
   }, [propertyData.fotos]);
-
-  // Convertir logo del aliado a dataURL para evitar CORS
-  useEffect(() => {
-    const convertLogoToDataURL = async () => {
-      if (aliadoConfig.logo && aliadoConfig.logo.startsWith("http")) {
-        try {
-          const dataURL = await urlToDataURL(aliadoConfig.logo);
-          setSafeLogoUrl(dataURL);
-        } catch (error) {
-          console.warn("No se pudo convertir el logo a dataURL:", error);
-          setSafeLogoUrl(null);
-        }
-      } else {
-        setSafeLogoUrl(aliadoConfig.logo);
-      }
-    };
-
-    convertLogoToDataURL();
-  }, [aliadoConfig.logo]);
 
   useEffect(() => {
     if (!isPlaying || photos.length === 0) return;
@@ -335,15 +315,13 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
           {/* Logo del aliado */}
           <div className="absolute top-6 left-6 z-20">
-            {(safeLogoUrl || aliadoConfig.logo) && (
-              <img
-                src={safeLogoUrl || aliadoConfig.logo}
-                alt={aliadoConfig.nombre}
-                className="w-20 h-20 rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
-                crossOrigin="anonymous"
-                referrerPolicy="no-referrer"
-              />
-            )}
+            <img
+              src={logoRubyMorales}
+              alt={aliadoConfig.nombre}
+              className="w-20 h-20 rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
+            />
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
@@ -531,16 +509,14 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
           {/* Logo del aliado */}
           <div className="absolute top-6 left-6 z-20">
-            {(safeLogoUrl || aliadoConfig.logo) && (
-              <img
-                src={safeLogoUrl || aliadoConfig.logo}
-                alt={aliadoConfig.nombre}
-                className="w-20 h-20 rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
-                crossOrigin="anonymous"
-                referrerPolicy="no-referrer"
-                data-ally-logo="true"
-              />
-            )}
+            <img
+              src={logoRubyMorales}
+              alt={aliadoConfig.nombre}
+              className="w-20 h-20 rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
+              data-ally-logo="true"
+            />
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">

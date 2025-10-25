@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Volume2, VolumeX, AlertCircle } from "lucide-react";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
+import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
 interface VideoPreviewProps {
   propertyData: PropertyData;
@@ -113,13 +114,11 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
             {/* Header */}
             <div className="absolute top-4 left-0 right-0 p-4">
               <div className="flex items-center gap-3">
-                {aliadoConfig.logo && (
-                  <img
-                    src={aliadoConfig.logo}
-                    alt={aliadoConfig.nombre}
-                    className="w-10 h-10 rounded-full border-2 border-white object-contain"
-                  />
-                )}
+                <img
+                  src={logoRubyMorales}
+                  alt={aliadoConfig.nombre}
+                  className="w-10 h-10 rounded-full border-2 border-white object-contain"
+                />
                 <div>
                   <p className="text-white font-bold text-sm">{aliadoConfig.nombre}</p>
                   <p className="text-white/80 text-xs">{aliadoConfig.ciudad}</p>

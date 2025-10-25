@@ -4,6 +4,7 @@ import { TemplateTheme, TEMPLATE_THEMES } from "@/types/templates";
 import { Bed, Bath, Car, MapPin, Square, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
+import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
 interface CanvasPreviewProps {
   propertyData: PropertyData;
@@ -104,13 +105,11 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
 
       {/* Header con logo del aliado - diseño reel */}
       <div className="absolute top-6 left-6 z-20 flex items-center gap-3">
-        {aliadoConfig.logo && (
-          <img 
-            src={aliadoConfig.logo} 
-            alt={aliadoConfig.nombre}
-            className={`${isStory ? "w-24 h-24" : "w-20 h-20"} rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1`}
-          />
-        )}
+        <img 
+          src={logoRubyMorales} 
+          alt={aliadoConfig.nombre}
+          className={`${isStory ? "w-24 h-24" : "w-20 h-20"} rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1`}
+        />
         <div>
           <p className="text-sm font-semibold text-white drop-shadow-lg">
             {aliadoConfig.ciudad}

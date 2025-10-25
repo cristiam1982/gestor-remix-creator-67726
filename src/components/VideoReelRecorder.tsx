@@ -7,6 +7,7 @@ import { PropertyData, AliadoConfig } from "@/types/property";
 import { VideoRecordingProgress } from "@/components/VideoRecordingProgress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
+import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
 interface VideoReelRecorderProps {
   videoUrl: string;
@@ -50,16 +51,14 @@ export const VideoReelRecorder = ({
   useEffect(() => {
     const loadLogos = async () => {
       // Logo del aliado
-      if (aliadoConfig.logo) {
-        try {
-          const img = new Image();
-          img.crossOrigin = "anonymous";
-          img.src = aliadoConfig.logo;
-          await img.decode();
-          setLogoImage(img);
-        } catch (error) {
-          console.error("Error loading aliado logo:", error);
-        }
+      try {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = logoRubyMorales;
+        await img.decode();
+        setLogoImage(img);
+      } catch (error) {
+        console.error("Error loading aliado logo:", error);
       }
 
       // Logo de El Gestor
@@ -74,7 +73,7 @@ export const VideoReelRecorder = ({
     };
 
     loadLogos();
-  }, [aliadoConfig.logo]);
+  }, []);
 
   // Configurar video cuando cargue
   useEffect(() => {
@@ -366,25 +365,23 @@ export const VideoReelRecorder = ({
           {/* Overlays preview - Sincronizado con canvas */}
           <div className="absolute inset-0 pointer-events-none text-white">
             {/* Logo aliado - Canvas: 160x160px → Preview: 59px (cuadrado con diseño unificado) */}
-            {aliadoConfig.logo && (
-              <div 
-                className="absolute rounded-xl border-2 bg-white/90"
-                style={{ 
-                  top: '11px', 
-                  left: '11px', 
-                  width: '59px', 
-                  height: '59px',
-                  padding: '2px',
-                  borderColor: 'rgba(255, 255, 255, 0.8)'
-                }}
-              >
-                <img
-                  src={aliadoConfig.logo}
-                  alt="Logo"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            )}
+            <div 
+              className="absolute rounded-xl border-2 bg-white/90"
+              style={{ 
+                top: '11px', 
+                left: '11px', 
+                width: '59px', 
+                height: '59px',
+                padding: '2px',
+                borderColor: 'rgba(255, 255, 255, 0.8)'
+              }}
+            >
+              <img
+                src={logoRubyMorales}
+                alt="Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
 
             {/* Ciudad junto al logo */}
             <div 
@@ -402,7 +399,7 @@ export const VideoReelRecorder = ({
             {/* Contenido superior */}
             <div 
               className="absolute left-[11px] right-[11px]" 
-              style={{ top: aliadoConfig.logo ? '82px' : '18px' }}
+              style={{ top: '82px' }}
             >
               {/* Tipo de inmueble - Canvas: 300x70px, font 38px → Preview: 111x26px, font 14px */}
               <Badge
