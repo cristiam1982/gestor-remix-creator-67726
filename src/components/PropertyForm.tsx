@@ -100,10 +100,12 @@ export const PropertyForm = ({ onDataChange, data, errors }: PropertyFormProps) 
                 <Input
                   id="parqueaderos"
                   type="number"
-                  value={data.parqueaderos || ""}
-                  onChange={(e) => updateField("parqueaderos", parseInt(e.target.value))}
+                  value={data.parqueaderos ?? ""}
+                  onChange={(e) => updateField("parqueaderos", e.target.value === "" ? 0 : parseInt(e.target.value))}
                   placeholder="1"
+                  className={errors?.parqueaderos ? "border-destructive" : ""}
                 />
+                {errors?.parqueaderos && <p className="text-xs text-destructive mt-1">{errors.parqueaderos}</p>}
               </div>
               <div>
                 <Label htmlFor="estrato">Estrato</Label>
@@ -111,11 +113,13 @@ export const PropertyForm = ({ onDataChange, data, errors }: PropertyFormProps) 
                   id="estrato"
                   type="number"
                   value={data.estrato || ""}
-                  onChange={(e) => updateField("estrato", parseInt(e.target.value))}
+                  onChange={(e) => updateField("estrato", e.target.value === "" ? undefined : parseInt(e.target.value))}
                   placeholder="3"
                   min="1"
                   max="6"
+                  className={errors?.estrato ? "border-destructive" : ""}
                 />
+                {errors?.estrato && <p className="text-xs text-destructive mt-1">{errors.estrato}</p>}
               </div>
             </div>
           </>
@@ -236,13 +240,15 @@ export const PropertyForm = ({ onDataChange, data, errors }: PropertyFormProps) 
                 value={data.valorVenta || ""}
                 onChange={(e) => updateField("valorVenta", e.target.value)}
                 placeholder="350.000.000"
+                className={errors?.valorVenta ? "border-destructive" : ""}
               />
+              {errors?.valorVenta && <p className="text-xs text-destructive mt-1">{errors.valorVenta}</p>}
             </div>
 
             <div>
               <Label htmlFor="uso">Uso del Lote</Label>
               <Select value={data.uso || ""} onValueChange={(val) => updateField("uso", val as "residencial" | "comercial")}>
-                <SelectTrigger>
+                <SelectTrigger className={errors?.uso ? "border-destructive" : ""}>
                   <SelectValue placeholder="Seleccionar..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -250,6 +256,7 @@ export const PropertyForm = ({ onDataChange, data, errors }: PropertyFormProps) 
                   <SelectItem value="comercial">Comercial</SelectItem>
                 </SelectContent>
               </Select>
+              {errors?.uso && <p className="text-xs text-destructive mt-1">{errors.uso}</p>}
             </div>
 
             <div>
@@ -259,7 +266,9 @@ export const PropertyForm = ({ onDataChange, data, errors }: PropertyFormProps) 
                 value={data.ubicacion || ""}
                 onChange={(e) => updateField("ubicacion", e.target.value)}
                 placeholder="Ej: Chia, Vereda La Balsa"
+                className={errors?.ubicacion ? "border-destructive" : ""}
               />
+              {errors?.ubicacion && <p className="text-xs text-destructive mt-1">{errors.ubicacion}</p>}
             </div>
           </>
         )}
@@ -270,9 +279,11 @@ export const PropertyForm = ({ onDataChange, data, errors }: PropertyFormProps) 
             id="area"
             type="number"
             value={data.area || ""}
-            onChange={(e) => updateField("area", parseInt(e.target.value))}
+            onChange={(e) => updateField("area", e.target.value === "" ? undefined : parseInt(e.target.value))}
             placeholder="80"
+            className={errors?.area ? "border-destructive" : ""}
           />
+          {errors?.area && <p className="text-xs text-destructive mt-1">{errors.area}</p>}
         </div>
       </div>
     );
