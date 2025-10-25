@@ -9,7 +9,7 @@ export const BrandedHeroSection = ({
   return <div className="text-center mb-12 animate-fade-in">
       {/* Logos - Aliado y El Gestor */}
       <div className="flex items-center justify-between max-w-4xl mx-auto mb-8 px-4">
-        {aliadoConfig.logo && <img src={aliadoConfig.logo} alt={aliadoConfig.nombre} className="h-28 md:h-20 object-contain" />}
+        {aliadoConfig.logo && <img src={aliadoConfig.logo} alt={aliadoConfig.nombre} className="h-32 md:h-24 object-contain" />}
         <img src={elGestorLogo} alt="El Gestor" className="h-20 md:h-16 object-contain opacity-80" />
       </div>
 
