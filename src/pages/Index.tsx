@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Square, Smartphone, Image as ImageIcon, Video, Download, RefreshCw } from "lucide-react";
 import { ContentTypeCard } from "@/components/ContentTypeCard";
 import { BrandedHeroSection } from "@/components/BrandedHeroSection";
-import { AliadoConfigForm } from "@/components/AliadoConfigForm";
 import { PropertyForm } from "@/components/PropertyForm";
 import { PhotoManager } from "@/components/PhotoManager";
 import { CanvasPreview } from "@/components/CanvasPreview";
@@ -21,14 +20,12 @@ import { exportToImage, exportVideo, ExportOptions as ExportOptionsType } from "
 import { validatePropertyData } from "@/utils/formValidation";
 import { savePublicationMetric, clearMetrics } from "@/utils/metricsManager";
 import { useAutoSave } from "@/hooks/useAutoSave";
-import { useRemixConfig } from "@/hooks/useRemixConfig";
 import { useToast } from "@/hooks/use-toast";
+import { ALIADO_CONFIG } from "@/config/aliadoConfig";
 
 const Index = () => {
   const { toast } = useToast();
-  const { remixConfig, isRemixLocked, lockRemix } = useRemixConfig();
-  const [aliadoConfig, setAliadoConfig] = useState<AliadoConfig | null>(null);
-  const [showConfig, setShowConfig] = useState(true);
+  const [aliadoConfig, setAliadoConfig] = useState<AliadoConfig>(ALIADO_CONFIG);
   const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
   const [propertyData, setPropertyData] = useState<Partial<PropertyData>>({ fotos: [] });
   const [currentStep, setCurrentStep] = useState(1);
@@ -43,25 +40,7 @@ const Index = () => {
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
   useEffect(() => {
-    // Check for remix config first
-    if (remixConfig && !isRemixLocked) {
-      setAliadoConfig(remixConfig);
-      setShowConfig(false);
-      toast({
-        title: "🎨 Configuración de Remix cargada",
-        description: `Bienvenido, ${remixConfig.nombre}`,
-      });
-      return;
-    }
-
-    const savedConfig = localStorage.getItem("aliado-config");
-    if (savedConfig) {
-      const config = JSON.parse(savedConfig);
-      setAliadoConfig(config);
-      setShowConfig(false);
-    }
-
-    // Cargar datos autoguardados si existen (solo una vez al montar)
+    // Cargar datos autoguardados si existen
     try {
       const saved = localStorage.getItem("property-form-autosave");
       const autoSaved = saved ? JSON.parse(saved) : null;
@@ -75,22 +54,8 @@ const Index = () => {
     } catch (error) {
       console.error("Error loading auto-saved data:", error);
     }
-  }, [remixConfig, isRemixLocked]);
+  }, []);
 
-  const handleConfigSave = (config: AliadoConfig) => {
-    setAliadoConfig(config);
-    setShowConfig(false);
-    
-    // Lock remix after first save
-    if (remixConfig) {
-      lockRemix();
-    }
-    
-    toast({
-      title: "✨ Identidad guardada",
-      description: "Tu configuración se aplicará automáticamente a todas tus publicaciones.",
-    });
-  };
 
   const handleContentTypeSelect = (type: ContentType) => {
     setSelectedContentType(type);
@@ -221,25 +186,9 @@ const Index = () => {
     }
   };
 
-  if (showConfig || !aliadoConfig) {
-    return (
-      <AliadoConfigForm 
-        onSave={handleConfigSave} 
-        initialConfig={aliadoConfig || remixConfig || undefined}
-        isLocked={isRemixLocked}
-      />
-    );
-  }
-
   if (!selectedContentType) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center p-4">
-        <AliadoConfigForm 
-          onSave={handleConfigSave} 
-          initialConfig={aliadoConfig}
-          isLocked={isRemixLocked}
-        />
-        
         <div className="max-w-6xl w-full animate-fade-in">
           <BrandedHeroSection aliadoConfig={aliadoConfig} />
 

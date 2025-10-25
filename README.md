@@ -71,3 +71,19 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Configuración del Aliado
+
+Este proyecto está configurado para un solo aliado inmobiliario. Para cambiar la identidad corporativa:
+
+1. Abre el archivo `src/config/aliadoConfig.ts`
+2. Actualiza los valores:
+   - `nombre`: Nombre de tu empresa
+   - `logo`: URL del logo corporativo
+   - `colorPrimario`: Color principal (hex)
+   - `colorSecundario`: Color secundario (hex)
+   - `whatsapp`: Número de WhatsApp con código de país
+   - `ciudad`: Ciudad de operación
+3. Guarda los cambios y recarga la aplicación
+
+No es necesario crear bases de datos ni sistemas de autenticación. La configuración está completamente integrada en el código.
