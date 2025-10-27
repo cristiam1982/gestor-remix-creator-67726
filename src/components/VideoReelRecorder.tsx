@@ -140,7 +140,7 @@ export const VideoReelRecorder = ({
       const mainColor = variant === "arrendado" 
         ? aliadoConfig.colorPrimario 
         : aliadoConfig.colorSecundario;
-      const badgeText = variant === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
+      const badgeText = variant === "arrendado" ? "¡RENTADO!" : "¡VENDIDO!";
       
       // Logo del aliado (superior izquierda) - MÁS GRANDE
       if (logoImage) {
@@ -216,7 +216,7 @@ export const VideoReelRecorder = ({
       // CTA inferior - MÁS GRANDE
       ctx.font = "bold 42px Inter, sans-serif";
       ctx.fillText(
-        `💪 ¿Quieres ${variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`,
+        `💪 ¿Quieres ${variant === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?`,
         canvas.width / 2,
         1580
       );
@@ -293,32 +293,16 @@ export const VideoReelRecorder = ({
       });
     }
 
-    // Sección inferior con información de contacto (común para ambas variantes)
-    const bottomY = 1700;
-    
-    // Fondo semi-transparente para la sección inferior
-    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-    ctx.fillRect(0, bottomY, 1080, 220);
-
-    // WhatsApp del aliado (inferior izquierda) - más grande
-    ctx.shadowBlur = 10;
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 40px Poppins, sans-serif";
-    ctx.fillText(`📱 ${aliadoConfig.whatsapp}`, 40, bottomY + 80);
-
-    // Nombre del aliado debajo del WhatsApp
-    ctx.font = "28px Poppins, sans-serif";
-    ctx.fillStyle = "#E0E0E0";
-    ctx.fillText(aliadoConfig.nombre, 40, bottomY + 130);
-
-    // Logo El Gestor (inferior derecha) - MÁS GRANDE
+    // Logo El Gestor (secundario, más discreto)
     if (elGestorLogoImage) {
-      const logoHeight = 106; // Reducido 10% desde 118
+      const logoHeight = 80; // Reducido 25% (marca secundaria)
       const logoAspectRatio = elGestorLogoImage.width / elGestorLogoImage.height;
-      const logoWidth = logoHeight * logoAspectRatio; // Calcular ancho proporcional
-      const logoX = 1080 - logoWidth - 30; // Posición X ajustada al ancho real
+      const logoWidth = logoHeight * logoAspectRatio;
+      const logoX = (1080 - logoWidth) / 2; // Centrado horizontalmente
       
-      ctx.drawImage(elGestorLogoImage, logoX, 1670, logoWidth, logoHeight);
+      ctx.globalAlpha = 0.75; // Transparencia para marca de respaldo
+      ctx.drawImage(elGestorLogoImage, logoX, 1780, logoWidth, logoHeight);
+      ctx.globalAlpha = 1.0; // Restaurar opacidad
     }
 
     // Reset shadow
@@ -509,7 +493,7 @@ export const VideoReelRecorder = ({
                     fontSize: '24px'  // Canvas: 56px → 24px (aumentado para legibilidad)
                   }}
                 >
-                  {variant === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!"}
+                  {variant === "arrendado" ? "¡RENTADO!" : "¡VENDIDO!"}
                 </div>
 
                 {/* Precio prominente (centro) */}
@@ -562,19 +546,19 @@ export const VideoReelRecorder = ({
                   style={{ bottom: '75px' }}
                 >
                   <p className="text-[16px] font-bold drop-shadow-lg">
-                    💪 ¿Quieres {variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
+                    💪 ¿Quieres {variant === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
                   </p>
                 </div>
 
-                {/* Logo El Gestor inferior */}
+                {/* Logo El Gestor inferior (marca secundaria) */}
                 <div 
                   className="absolute left-1/2 -translate-x-1/2"
-                  style={{ bottom: '40px' }}
+                  style={{ bottom: '18px' }}
                 >
                   <img 
                     src={elGestorLogo}
                     alt="El Gestor"
-                    className="h-[40px] object-contain opacity-90"
+                    className="h-[30px] object-contain opacity-75"
                   />
                 </div>
               </>

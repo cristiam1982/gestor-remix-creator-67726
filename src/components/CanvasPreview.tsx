@@ -319,13 +319,13 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
         </div>
       </div>
 
-      {/* Logo El Gestor - inferior derecha */}
+      {/* Logo El Gestor - inferior derecha (marca secundaria) */}
       <div className="absolute bottom-4 right-4 z-30">
         <img 
           src={elGestorLogo} 
           alt="El Gestor" 
           data-eg-logo="true"
-          className={`${isStory ? "h-10" : "h-8"} object-contain drop-shadow-lg`}
+          className={`${isStory ? "h-10" : "h-8"} object-contain drop-shadow-lg opacity-70`}
         />
       </div>
     </div>

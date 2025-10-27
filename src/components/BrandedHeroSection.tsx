@@ -8,10 +8,13 @@ export const BrandedHeroSection = ({
   aliadoConfig
 }: BrandedHeroSectionProps) => {
   return <div className="text-center mb-12 animate-fade-in">
-      {/* Logos - Aliado y El Gestor */}
+      {/* Logos - Aliado (principal) y El Gestor (secundario) */}
       <div className="flex items-center justify-between max-w-4xl mx-auto mb-8 px-4">
-        <img src={logoRubyMorales} alt={aliadoConfig.nombre} className="h-32 md:h-24 object-contain" />
-        <img src={elGestorLogo} alt="El Gestor" className="h-20 md:h-16 object-contain opacity-80" />
+        <img src={logoRubyMorales} alt={aliadoConfig.nombre} className="h-36 md:h-28 object-contain" />
+        <div className="text-right">
+          <p className="text-xs text-muted-foreground mb-1">Powered by</p>
+          <img src={elGestorLogo} alt="El Gestor" className="h-14 md:h-10 object-contain opacity-60" />
+        </div>
       </div>
 
       {/* Título con gradiente personalizado */}

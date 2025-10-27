@@ -153,12 +153,12 @@ export const ArrendadoPreview = ({
               </p>
             </div>
 
-            {/* Logo El Gestor */}
+            {/* Logo El Gestor (marca secundaria) */}
             <div className="flex justify-center">
               <img 
                 src={elGestorLogo} 
                 alt="El Gestor"
-                className="h-10 object-contain opacity-90"
+                className="h-10 object-contain opacity-70"
               />
             </div>
           </div>
