@@ -51,6 +51,7 @@ export const ArrendadoPreview = ({
     <Card className="w-full max-w-2xl mx-auto p-4">
       <div 
         ref={canvasRef}
+        id="canvas-preview"
         className="relative overflow-hidden rounded-2xl"
         style={{
           width: "100%",
