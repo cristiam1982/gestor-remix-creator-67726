@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Pause, Volume2, VolumeX, AlertCircle } from "lucide-react";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
+import { formatPrecioColombia } from "@/utils/formatters";
 
 interface VideoPreviewProps {
   propertyData: PropertyData;
@@ -134,11 +135,16 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
               {propertyData.ubicacion && (
                 <p className="text-white/90 text-sm mb-3">📍 {propertyData.ubicacion}</p>
               )}
-              {propertyData.canon && (
-                <p className="text-white text-xl font-bold mb-3">
-                  💰 {propertyData.canon}/mes
-                </p>
-              )}
+              {(() => {
+                const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
+                const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
+                if (!precio) return null;
+                return (
+                  <p className="text-white text-xl font-bold mb-3">
+                    💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
+                  </p>
+                );
+              })()}
               <div className="flex gap-3 text-white text-sm">
                 {propertyData.habitaciones && (
                   <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">

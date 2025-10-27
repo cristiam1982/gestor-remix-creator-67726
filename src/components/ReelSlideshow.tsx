@@ -7,6 +7,7 @@ import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
+import { formatPrecioColombia } from "@/utils/formatters";
 import { useToast } from "@/hooks/use-toast";
 import {
   DndContext,
@@ -331,11 +332,16 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             {propertyData.ubicacion && (
               <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
             )}
-            {propertyData.canon && (
-              <p className="text-white text-xl font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                💰 {propertyData.canon}/mes
-              </p>
-            )}
+            {(() => {
+              const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
+              const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
+              if (!precio) return null;
+              return (
+                <p className="text-white text-xl font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                  💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
+                </p>
+              );
+            })()}
             <div className="flex flex-wrap gap-2 text-sm">
               {propertyData.habitaciones && (
                 <span 
@@ -526,11 +532,16 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             {propertyData.ubicacion && (
               <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
             )}
-            {propertyData.canon && (
-              <p className="text-white text-xl font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                💰 {propertyData.canon}/mes
-              </p>
-            )}
+            {(() => {
+              const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
+              const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
+              if (!precio) return null;
+              return (
+                <p className="text-white text-xl font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                  💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
+                </p>
+              );
+            })()}
             <div className="flex flex-wrap gap-2 text-sm">
                {propertyData.habitaciones && (
                  <span 

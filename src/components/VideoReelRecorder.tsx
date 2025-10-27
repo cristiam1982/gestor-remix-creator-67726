@@ -269,8 +269,10 @@ export const VideoReelRecorder = ({
       // Canon/Precio
       const precioY = ubicacionY + 80;
       ctx.font = "bold 72px Poppins, sans-serif";
-      const precio = propData.canon || propData.valorVenta || "";
-      ctx.fillText(precio, 40, precioY);
+      const esVenta = propData.modalidad === "venta" || (!!propData.valorVenta && !propData.canon);
+      const precioRaw = esVenta ? propData.valorVenta : propData.canon;
+      const precioFmt = formatPrecioColombia(precioRaw || "");
+      ctx.fillText(`${precioFmt}${esVenta ? "" : "/mes"}`, 40, precioY);
 
       // Características
       let yPos = precioY + 80;
@@ -645,7 +647,12 @@ export const VideoReelRecorder = ({
                       marginTop: '12px'
                     }}
                   >
-                    {'canon' in propertyData ? propertyData.canon || propertyData.valorVenta : ''}
+                    {'canon' in propertyData ? (() => {
+                      const propData = propertyData as PropertyData;
+                      const esVenta = propData.modalidad === "venta" || (!!propData.valorVenta && !propData.canon);
+                      const raw = esVenta ? (propData.valorVenta || "") : (propData.canon || "");
+                      return `${formatPrecioColombia(raw)}${esVenta ? "" : "/mes"}`;
+                    })() : ''}
                   </p>
 
                    {/* Características */}
