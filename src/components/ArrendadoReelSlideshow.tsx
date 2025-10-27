@@ -320,9 +320,9 @@ export const ArrendadoReelSlideshow = ({
           {/* Contenido superpuesto */}
           <div className="absolute inset-0 flex flex-col justify-between p-6 text-white z-10">
             {/* Badge celebratorio */}
-            <div className="flex justify-center pt-4">
+            <div className="flex justify-center items-center pt-4">
               <div 
-                className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl"
+                className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center"
                 style={{ backgroundColor: "white", color: mainColor }}
               >
                 {badgeText}
@@ -332,9 +332,6 @@ export const ArrendadoReelSlideshow = ({
             {/* Centro: Precio + Info */}
             <div className="flex flex-col items-center gap-4 my-auto">
               <div className="text-center">
-                <p className="text-sm font-semibold drop-shadow-lg opacity-90 mb-1">
-                  {tipo === "arrendado" ? "Rentado por:" : "Vendido por:"}
-                </p>
                 <p className="text-5xl font-black drop-shadow-2xl leading-none">
                   {formatPrecioColombia(data.precio)}
                 </p>
@@ -373,23 +370,23 @@ export const ArrendadoReelSlideshow = ({
                   />
                 </div>
               )}
+
+              {/* CTA - AHORA DENTRO del contenedor my-auto */}
+              <div className="mt-6">
+                <p className="text-xl font-black text-center drop-shadow-lg">
+                  💪 ¿Quieres {tipo === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
+                </p>
+              </div>
             </div>
 
-            {/* Footer: CTA */}
-            <div className="space-y-3 pb-6">
-              <p className="text-xl font-black text-center drop-shadow-lg">
-                💪 ¿Quieres {tipo === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
-              </p>
-              
-              {/* Logo El Gestor */}
-              <div className="flex justify-center">
-                <img 
-                  src={elGestorLogo}
-                  alt="El Gestor"
-                  className="h-7 object-contain opacity-90"
-                  crossOrigin="anonymous"
-                />
-              </div>
+            {/* Footer: Solo Logo El Gestor */}
+            <div className="pb-6 flex justify-center">
+              <img 
+                src={elGestorLogo}
+                alt="El Gestor"
+                className="h-7 object-contain opacity-90"
+                crossOrigin="anonymous"
+              />
             </div>
           </div>
 
@@ -429,9 +426,9 @@ export const ArrendadoReelSlideshow = ({
           </div>
 
           <div className="absolute inset-0 flex flex-col justify-between p-6 text-white">
-            <div className="flex justify-center pt-4">
+            <div className="flex justify-center items-center pt-4">
               <div 
-                className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl"
+                className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center"
                 style={{ backgroundColor: "white", color: mainColor }}
               >
                 {badgeText}
@@ -440,9 +437,6 @@ export const ArrendadoReelSlideshow = ({
 
             <div className="flex flex-col items-center gap-4 my-auto">
               <div className="text-center">
-                <p className="text-sm font-semibold drop-shadow-lg opacity-90 mb-1">
-                  {tipo === "arrendado" ? "Rentado por:" : "Vendido por:"}
-                </p>
                 <p className="text-5xl font-black drop-shadow-2xl leading-none">
                   {formatPrecioColombia(data.precio)}
                 </p>
@@ -481,22 +475,22 @@ export const ArrendadoReelSlideshow = ({
                   />
                 </div>
               )}
+
+              {/* CTA - AHORA DENTRO del contenedor my-auto */}
+              <div className="mt-6">
+                <p className="text-xl font-black text-center drop-shadow-lg">
+                  💪 ¿Quieres {tipo === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-3 pb-6">
-              <p className="text-xl font-black text-center drop-shadow-lg">
-                💪 ¿Quieres {tipo === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
-              </p>
-              
-              {/* Logo El Gestor */}
-              <div className="flex justify-center">
-                <img 
-                  src={elGestorLogo}
-                  alt="El Gestor"
-                  className="h-7 object-contain opacity-90"
-                  crossOrigin="anonymous"
-                />
-              </div>
+            <div className="pb-6 flex justify-center">
+              <img 
+                src={elGestorLogo}
+                alt="El Gestor"
+                className="h-7 object-contain opacity-90"
+                crossOrigin="anonymous"
+              />
             </div>
           </div>
         </div>
