@@ -1,0 +1,69 @@
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { ArrendadoData } from "@/types/arrendado";
+import { PropertyType } from "@/types/property";
+
+interface ArrendadoFormProps {
+  data: Partial<ArrendadoData>;
+  updateField: (field: keyof ArrendadoData, value: any) => void;
+  errors?: Partial<Record<keyof ArrendadoData, string>>;
+}
+
+export const ArrendadoForm = ({ data, updateField, errors }: ArrendadoFormProps) => {
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="tipo">Tipo de Inmueble *</Label>
+          <Select 
+            value={data.tipo || ""} 
+            onValueChange={(val) => updateField("tipo", val as PropertyType)}
+          >
+            <SelectTrigger className={errors?.tipo ? "border-destructive" : ""}>
+              <SelectValue placeholder="Seleccionar..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="apartamento">Apartamento</SelectItem>
+              <SelectItem value="casa">Casa</SelectItem>
+              <SelectItem value="local">Local Comercial</SelectItem>
+              <SelectItem value="oficina">Oficina</SelectItem>
+              <SelectItem value="bodega">Bodega</SelectItem>
+              <SelectItem value="lote">Lote</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors?.tipo && <p className="text-xs text-destructive mt-1">{errors.tipo}</p>}
+        </div>
+
+        <div>
+          <Label htmlFor="ubicacion">Ubicación/Barrio *</Label>
+          <Input
+            id="ubicacion"
+            value={data.ubicacion || ""}
+            onChange={(e) => updateField("ubicacion", e.target.value)}
+            placeholder="Ej: Ciudad Jardín, Cali"
+            className={errors?.ubicacion ? "border-destructive" : ""}
+          />
+          {errors?.ubicacion && <p className="text-xs text-destructive mt-1">{errors.ubicacion}</p>}
+        </div>
+
+        <div>
+          <Label htmlFor="diasEnMercado">Días en Mercado *</Label>
+          <Input
+            id="diasEnMercado"
+            type="number"
+            value={data.diasEnMercado ?? ""}
+            onChange={(e) => updateField("diasEnMercado", e.target.value === "" ? 0 : parseInt(e.target.value))}
+            placeholder="5"
+            min="1"
+            className={errors?.diasEnMercado ? "border-destructive" : ""}
+          />
+          {errors?.diasEnMercado && <p className="text-xs text-destructive mt-1">{errors.diasEnMercado}</p>}
+          <p className="text-xs text-muted-foreground mt-1">
+            ¿Cuántos días tardó en arrendarse/venderse?
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -11,7 +11,9 @@ export type ContentType =
   | "post" 
   | "historia" 
   | "reel-fotos" 
-  | "reel-video";
+  | "reel-video"
+  | "arrendado"
+  | "vendido";
 
 export interface AliadoConfig {
   nombre: string;

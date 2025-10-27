@@ -1,5 +1,6 @@
 import { PropertyData, AliadoConfig } from "@/types/property";
 import { TemplateTheme } from "@/types/templates";
+import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
 import { getViralIdeas } from "./viralIdeas";
 
 const TONES = {
@@ -133,4 +134,56 @@ export const regenerateCaption = (
 ): string => {
   // Generate alternative version without viral hook
   return generateCaption(property, aliado, template, false);
+};
+
+export const generateArrendadoCaption = (
+  data: ArrendadoData,
+  aliado: AliadoConfig,
+  tipo: ArrendadoType
+): string => {
+  const { diasEnMercado, ubicacion } = data;
+  const { ciudad, whatsapp, nombre } = aliado;
+  
+  let caption = "";
+  let velocidadText = "";
+  
+  // Texto según velocidad
+  if (diasEnMercado <= 7) {
+    velocidadText = `🚀 ¡RÉCORD! ${tipo === "arrendado" ? "Arrendado" : "Vendido"} en solo ${diasEnMercado} día${diasEnMercado === 1 ? '' : 's'}`;
+  } else if (diasEnMercado <= 15) {
+    velocidadText = `⚡ ¡${tipo === "arrendado" ? "Arrendado" : "Vendido"} en solo ${diasEnMercado} días!`;
+  } else {
+    velocidadText = `🎉 ¡Otro inmueble ${tipo === "arrendado" ? "arrendado" : "vendido"}!`;
+  }
+  
+  const tipoLabel = {
+    apartamento: "Apartamento",
+    casa: "Casa",
+    local: "Local",
+    oficina: "Oficina",
+    bodega: "Bodega",
+    lote: "Lote"
+  }[data.tipo];
+  
+  caption = `${velocidadText}\n\n`;
+  caption += `${tipoLabel} en ${ubicacion} - ¡Otro propietario feliz con ${nombre}! 🏡✨\n\n`;
+  
+  if (tipo === "arrendado") {
+    caption += `💪 ¿Quieres arrendar tu inmueble rápido y seguro?\n`;
+    caption += `Con nosotros, tu propiedad NO se queda esperando.\n\n`;
+  } else {
+    caption += `💪 ¿Quieres vender tu inmueble rápido y al mejor precio?\n`;
+    caption += `Te garantizamos resultados efectivos.\n\n`;
+  }
+  
+  caption += `📱 Contáctanos: ${whatsapp}\n\n`;
+  
+  // Hashtags
+  const hashtags = tipo === "arrendado"
+    ? `#PropiedadArrendada #${ciudad.replace(/\s/g, "")} #ElGestor #ArriendoRápido #${ubicacion.replace(/\s/g, "")}`
+    : `#PropiedadVendida #${ciudad.replace(/\s/g, "")} #ElGestor #VentaRápida #${ubicacion.replace(/\s/g, "")}`;
+  
+  caption += hashtags;
+  
+  return caption;
 };

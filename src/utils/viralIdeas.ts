@@ -12,6 +12,41 @@ export const getViralIdeas = (
   propertyType: PropertyType,
   contentType: ContentType
 ): ViralIdea[] => {
+  // Ideas específicas para contenido "arrendado" o "vendido"
+  if (contentType === "arrendado" || contentType === "vendido") {
+    return [
+      {
+        title: "🚀 Récord de velocidad",
+        description: "Enfatiza que se arrendó/vendió en tiempo récord (1-7 días)",
+        hashtags: ["#ArriendoRápido", "#Récord", "#Efectividad"],
+        captionStyle: "Urgente + celebración + CTA a propietarios",
+        callToAction: "¿Quieres los mismos resultados?"
+      },
+      {
+        title: "🎉 Cliente satisfecho",
+        description: "Muestra testimonio o agradecimiento del propietario (si es posible)",
+        hashtags: ["#ClienteFeliz", "#Confianza"],
+        captionStyle: "Prueba social + credibilidad",
+        callToAction: "Únete a nuestros propietarios felices"
+      },
+      {
+        title: "💪 Resultados garantizados",
+        description: "Destaca efectividad del equipo inmobiliario",
+        hashtags: ["#ResultadosReales", "#EquipoExperto"],
+        captionStyle: "Autoridad + efectividad comprobada",
+        callToAction: "Confia en los expertos"
+      },
+      {
+        title: "📊 Estrategia efectiva",
+        description: "Menciona brevemente qué estrategia se usó (fotos pro, precio correcto, etc.)",
+        hashtags: ["#EstrategiaGanadora", "#Marketing"],
+        captionStyle: "Educativo + resultados",
+        callToAction: "Aplicamos las mejores prácticas"
+      }
+    ];
+  }
+  
+
   const baseIdeas: Record<PropertyType, ViralIdea[]> = {
     apartamento: [
       {
@@ -162,6 +197,8 @@ export const getContentTypeStrategy = (contentType: ContentType): string => {
     historia: "Visual vertical + texto mínimo + sticker de contacto + swipe up",
     "reel-fotos": "Slideshow dinámico 3-5 seg/foto + música trending + texto superpuesto",
     "reel-video": "Hook en 2 seg + tour fluido + CTA final + audio ambiental",
+    arrendado: "Imagen celebratorio + velocidad de arriendo + CTA a propietarios",
+    vendido: "Imagen celebratorio + velocidad de venta + CTA a propietarios",
   };
 
   return strategies[contentType];

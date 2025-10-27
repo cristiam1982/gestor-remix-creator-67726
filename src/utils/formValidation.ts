@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PropertyType } from "@/types/property";
+import { ArrendadoData } from "@/types/arrendado";
 
 export const aliadoConfigSchema = z.object({
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
@@ -48,6 +49,13 @@ export const loteSchema = propertyBaseSchema.extend({
   uso: z.enum(["residencial", "comercial"]).optional(),
 });
 
+export const arrendadoSchema = z.object({
+  tipo: z.enum(["apartamento", "casa", "local", "oficina", "bodega", "lote"]),
+  ubicacion: z.string().min(5, "La ubicación debe ser más específica"),
+  diasEnMercado: z.number().min(1, "Mínimo 1 día").max(365, "Máximo 365 días"),
+  fotos: z.array(z.string()).min(1, "Debes subir al menos 1 foto"),
+});
+
 export const validatePropertyData = (data: any, tipo: PropertyType) => {
   try {
     if (tipo === "apartamento" || tipo === "casa") {
@@ -77,6 +85,23 @@ export const validatePropertyData = (data: any, tipo: PropertyType) => {
 export const validateAliadoConfig = (config: any) => {
   try {
     aliadoConfigSchema.parse(config);
+    return { success: true, errors: {} };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errors: Record<string, string> = {};
+      error.errors.forEach((err) => {
+        const path = err.path.join(".");
+        errors[path] = err.message;
+      });
+      return { success: false, errors };
+    }
+    return { success: false, errors: { general: "Error de validación" } };
+  }
+};
+
+export const validateArrendadoData = (data: Partial<ArrendadoData>) => {
+  try {
+    arrendadoSchema.parse(data);
     return { success: true, errors: {} };
   } catch (error) {
     if (error instanceof z.ZodError) {

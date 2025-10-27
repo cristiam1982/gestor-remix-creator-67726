@@ -1,23 +1,26 @@
 import { useState, useEffect } from "react";
-import { Square, Smartphone, Image as ImageIcon, Video, Download, RefreshCw } from "lucide-react";
+import { Square, Smartphone, Image as ImageIcon, Video, Download, RefreshCw, CheckCircle, DollarSign } from "lucide-react";
 import { ContentTypeCard } from "@/components/ContentTypeCard";
 import { BrandedHeroSection } from "@/components/BrandedHeroSection";
 import { PropertyForm } from "@/components/PropertyForm";
+import { ArrendadoForm } from "@/components/ArrendadoForm";
 import { PhotoManager } from "@/components/PhotoManager";
 import { CanvasPreview } from "@/components/CanvasPreview";
+import { ArrendadoPreview } from "@/components/ArrendadoPreview";
 import { ReelSlideshow } from "@/components/ReelSlideshow";
 import { VideoReelRecorder } from "@/components/VideoReelRecorder";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { ExportOptions } from "@/components/ExportOptions";
 import { LoadingState } from "@/components/LoadingState";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
+import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { generateCaption, regenerateCaption } from "@/utils/captionGenerator";
+import { generateCaption, regenerateCaption, generateArrendadoCaption } from "@/utils/captionGenerator";
 import { exportToImage, exportVideo, ExportOptions as ExportOptionsType } from "@/utils/imageExporter";
-import { validatePropertyData } from "@/utils/formValidation";
+import { validatePropertyData, validateArrendadoData } from "@/utils/formValidation";
 import { savePublicationMetric, clearMetrics } from "@/utils/metricsManager";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +31,7 @@ const Index = () => {
   const [aliadoConfig, setAliadoConfig] = useState<AliadoConfig>(ALIADO_CONFIG);
   const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
   const [propertyData, setPropertyData] = useState<Partial<PropertyData>>({ fotos: [] });
+  const [arrendadoData, setArrendadoData] = useState<Partial<ArrendadoData>>({ fotos: [] });
   const [currentStep, setCurrentStep] = useState(1);
   const [generatedCaption, setGeneratedCaption] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -38,6 +42,8 @@ const Index = () => {
   const [isDownloading, setIsDownloading] = useState(false);
   
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
+
+  const isArrendadoType = selectedContentType === "arrendado" || selectedContentType === "vendido";
 
   useEffect(() => {
     // Cargar datos autoguardados si existen
@@ -65,12 +71,52 @@ const Index = () => {
   const handleBackToHub = () => {
     setSelectedContentType(null);
     setPropertyData({ fotos: [] });
+    setArrendadoData({ fotos: [] });
     setCurrentStep(1);
     setGeneratedCaption("");
+    setValidationErrors({});
     clearAutoSavedData();
   };
 
   const handleGeneratePreview = () => {
+    // Flujo para Arrendado/Vendido
+    if (isArrendadoType) {
+      if (!arrendadoData.tipo || !arrendadoData.ubicacion || !arrendadoData.diasEnMercado) {
+        toast({
+          title: "⚠️ Completa el formulario",
+          description: "Todos los campos son requeridos.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!arrendadoData.fotos || arrendadoData.fotos.length === 0) {
+        toast({
+          title: "⚠️ Sube al menos una foto",
+          description: "Se requiere al menos 1 imagen.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const caption = generateArrendadoCaption(
+        arrendadoData as ArrendadoData,
+        aliadoConfig,
+        selectedContentType as ArrendadoType
+      );
+      setGeneratedCaption(caption);
+      setCurrentStep(3);
+      
+      savePublicationMetric(arrendadoData.tipo!, selectedContentType!, "celebratorio");
+      
+      toast({
+        title: "🎉 ¡Publicación celebratoria lista!",
+        description: "Comparte tu éxito en redes sociales.",
+      });
+      return;
+    }
+
+    // Flujo normal para propiedades disponibles
     if (!propertyData.tipo) {
       toast({
         title: "⚠️ Selecciona un tipo de inmueble",
@@ -104,7 +150,6 @@ const Index = () => {
       setGeneratedCaption(caption);
       setCurrentStep(3);
       
-      // Guardar métrica
       savePublicationMetric(propertyData.tipo, selectedContentType!, "residencial");
       
       toast({
@@ -148,14 +193,12 @@ const Index = () => {
   const handleDownloadImage = async () => {
     setIsDownloading(true);
     
-    // Mostrar feedback inmediato
     toast({
       title: "🎨 Generando imagen...",
       description: "Esto tomará unos segundos",
     });
     
     try {
-      // Para reels con video, descargar el video original
       if (selectedContentType === "reel-video" && propertyData.fotos && propertyData.fotos[0]) {
         await exportVideo(propertyData.fotos[0], `reel-${propertyData.tipo}-${Date.now()}.mp4`);
         toast({
@@ -165,10 +208,10 @@ const Index = () => {
         return;
       }
 
-      // Esperar para asegurar renderizado completo
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      const filename = `publicacion-${propertyData.tipo}-${Date.now()}.${exportOptions.format}`;
+      const tipo = isArrendadoType ? arrendadoData.tipo : propertyData.tipo;
+      const filename = `publicacion-${tipo}-${Date.now()}.${exportOptions.format}`;
       await exportToImage("canvas-preview", filename, exportOptions);
       toast({
         title: "✅ Descarga lista",
@@ -229,6 +272,34 @@ const Index = () => {
               onClick={() => handleContentTypeSelect("reel-video")}
             />
           </div>
+
+          {/* Nueva sección: Publicaciones de éxito */}
+          <div className="mt-12">
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold mb-2">🎉 Publicaciones de Éxito</h3>
+              <p className="text-muted-foreground">
+                Celebra tus arriendos y ventas para atraer nuevos propietarios
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ContentTypeCard
+                icon={CheckCircle}
+                title="Inmueble Arrendado"
+                description="Celebra arriendos exitosos"
+                primaryColor="#10B981"
+                secondaryColor="#059669"
+                onClick={() => handleContentTypeSelect("arrendado")}
+              />
+              <ContentTypeCard
+                icon={DollarSign}
+                title="Inmueble Vendido"
+                description="Celebra ventas exitosas"
+                primaryColor="#3B82F6"
+                secondaryColor="#2563EB"
+                onClick={() => handleContentTypeSelect("vendido")}
+              />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -261,38 +332,76 @@ const Index = () => {
 
         {currentStep === 2 && (
           <div className="space-y-6 animate-fade-in">
-            <PropertyForm 
-              data={propertyData} 
-              onDataChange={setPropertyData}
-              errors={validationErrors}
-            />
+            {isArrendadoType ? (
+              <>
+                <Card className="p-6">
+                  <h3 className="text-xl font-semibold mb-4 text-primary">
+                    🎉 Datos de la Propiedad {selectedContentType === "arrendado" ? "Arrendada" : "Vendida"}
+                  </h3>
+                  <ArrendadoForm
+                    data={arrendadoData}
+                    updateField={(field, value) => setArrendadoData({ ...arrendadoData, [field]: value })}
+                    errors={validationErrors}
+                  />
+                </Card>
 
-            <PhotoManager
-              photos={propertyData.fotos || []}
-              onPhotosChange={(photos) => setPropertyData({ ...propertyData, fotos: photos })}
-              contentType={selectedContentType!}
-            />
+                <PhotoManager
+                  photos={arrendadoData.fotos || []}
+                  onPhotosChange={(photos) => setArrendadoData({ ...arrendadoData, fotos: photos })}
+                  contentType="post"
+                />
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={handleGeneratePreview}
-                    className="w-full"
-                    variant="hero"
-                    size="lg"
-                    disabled={!propertyData.tipo || propertyData.fotos?.length === 0}
-                  >
-                    Generar Vista Previa
-                  </Button>
-                </TooltipTrigger>
-                {(!propertyData.tipo || propertyData.fotos?.length === 0) && (
-                  <TooltipContent>
-                    <p>Completa el formulario y sube al menos una foto</p>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
+                <Button
+                  onClick={handleGeneratePreview}
+                  className="w-full"
+                  variant="hero"
+                  size="lg"
+                  disabled={
+                    !arrendadoData.tipo || 
+                    !arrendadoData.ubicacion || 
+                    !arrendadoData.diasEnMercado || 
+                    arrendadoData.fotos?.length === 0
+                  }
+                >
+                  Generar Publicación Celebratoria
+                </Button>
+              </>
+            ) : (
+              <>
+                <PropertyForm 
+                  data={propertyData} 
+                  onDataChange={setPropertyData}
+                  errors={validationErrors}
+                />
+
+                <PhotoManager
+                  photos={propertyData.fotos || []}
+                  onPhotosChange={(photos) => setPropertyData({ ...propertyData, fotos: photos })}
+                  contentType={selectedContentType!}
+                />
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={handleGeneratePreview}
+                        className="w-full"
+                        variant="hero"
+                        size="lg"
+                        disabled={!propertyData.tipo || propertyData.fotos?.length === 0}
+                      >
+                        Generar Vista Previa
+                      </Button>
+                    </TooltipTrigger>
+                    {(!propertyData.tipo || propertyData.fotos?.length === 0) && (
+                      <TooltipContent>
+                        <p>Completa el formulario y sube al menos una foto</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
+              </>
+            )}
           </div>
         )}
 
@@ -307,7 +416,41 @@ const Index = () => {
             )}
 
             {/* Vista previa según tipo de contenido */}
-            {selectedContentType === "reel-fotos" && aliadoConfig ? (
+            {isArrendadoType && aliadoConfig ? (
+              // Vista previa para Arrendado/Vendido
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-4 text-primary">
+                  🎉 Vista Previa Celebratoria
+                </h3>
+                <div className="flex justify-center mb-6">
+                  <ArrendadoPreview
+                    data={arrendadoData as ArrendadoData}
+                    aliadoConfig={aliadoConfig}
+                    tipo={selectedContentType as ArrendadoType}
+                    size="post"
+                  />
+                </div>
+                <Button 
+                  onClick={handleDownloadImage} 
+                  variant="hero" 
+                  size="lg"
+                  className="w-full"
+                  disabled={isDownloading}
+                >
+                  {isDownloading ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                      Descargando...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-5 h-5 mr-2" />
+                      Descargar Imagen ({exportOptions.format.toUpperCase()})
+                    </>
+                  )}
+                </Button>
+              </Card>
+            ) : selectedContentType === "reel-fotos" && aliadoConfig ? (
               // Reel animado: ReelSlideshow con botón de descarga integrado
               <ReelSlideshow
                 propertyData={propertyData as PropertyData}
