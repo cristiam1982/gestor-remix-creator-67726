@@ -19,17 +19,31 @@ export const propertyBaseSchema = z.object({
 });
 
 export const residencialSchema = propertyBaseSchema.extend({
-  canon: z.string().min(1, "El canon es requerido"),
+  modalidad: z.enum(["arriendo", "venta"]).optional(),
+  canon: z.string().optional(),
+  valorVenta: z.string().optional(),
   ubicacion: z.string().min(5, "La ubicación debe ser más específica"),
   habitaciones: z.number().min(1, "Mínimo 1 habitación").max(20, "Máximo 20 habitaciones"),
   banos: z.number().min(1, "Mínimo 1 baño").max(10, "Máximo 10 baños"),
   parqueaderos: z.number().min(0).max(10, "Máximo 10 parqueaderos"),
   area: z.number().min(10, "El área mínima es 10 m²").max(10000, "El área máxima es 10,000 m²"),
   estrato: z.number().min(1).max(6).optional(),
+}).refine((data) => {
+  if (data.modalidad === "arriendo") {
+    return !!data.canon && data.canon.length > 0;
+  } else if (data.modalidad === "venta") {
+    return !!data.valorVenta && data.valorVenta.length > 0;
+  }
+  return true;
+}, {
+  message: "Debes ingresar el precio según la modalidad seleccionada",
+  path: ["canon"]
 });
 
 export const comercialSchema = propertyBaseSchema.extend({
-  canon: z.string().min(1, "El canon es requerido"),
+  modalidad: z.enum(["arriendo", "venta"]).optional(),
+  canon: z.string().optional(),
+  valorVenta: z.string().optional(),
   ubicacion: z.string().min(5, "La ubicación debe ser más específica"),
   area: z.number().min(10, "El área mínima es 10 m²").max(50000, "El área máxima es 50,000 m²"),
   trafico: z.enum(["bajo", "medio", "alto"]).optional(),
@@ -40,6 +54,16 @@ export const comercialSchema = propertyBaseSchema.extend({
   parqueaderos: z.number().min(0).max(10, "Máximo 10 parqueaderos").optional(),
   piso: z.number().min(0).max(100, "Máximo piso 100").optional(),
   amoblado: z.boolean().optional(),
+}).refine((data) => {
+  if (data.modalidad === "arriendo") {
+    return !!data.canon && data.canon.length > 0;
+  } else if (data.modalidad === "venta") {
+    return !!data.valorVenta && data.valorVenta.length > 0;
+  }
+  return true;
+}, {
+  message: "Debes ingresar el precio según la modalidad seleccionada",
+  path: ["canon"]
 });
 
 export const loteSchema = propertyBaseSchema.extend({

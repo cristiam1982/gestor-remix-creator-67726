@@ -36,11 +36,30 @@ export const PropertyForm = ({
     const isComercial = data.tipo === "local" || data.tipo === "oficina" || data.tipo === "bodega";
     const isLote = data.tipo === "lote";
     return <div className="space-y-4 animate-fade-in">
-        {!isLote && <>
+        {!isLote && data.modalidad && <>
             <div>
-              <Label htmlFor="canon">Canon Mensual (COP)</Label>
-              <Input id="canon" type="text" value={data.canon || ""} onChange={e => updateField("canon", e.target.value)} placeholder="2.500.000" className={errors?.canon ? "border-destructive" : ""} />
-              {errors?.canon && <p className="text-xs text-destructive mt-1">{errors.canon}</p>}
+              <Label htmlFor="precio">
+                {data.modalidad === "arriendo" ? "Canon Mensual (COP)" : "Precio de Venta (COP)"}
+              </Label>
+              <Input 
+                id="precio" 
+                type="text" 
+                value={data.modalidad === "arriendo" ? (data.canon || "") : (data.valorVenta || "")} 
+                onChange={(e) => {
+                  if (data.modalidad === "arriendo") {
+                    updateField("canon", e.target.value);
+                  } else {
+                    updateField("valorVenta", e.target.value);
+                  }
+                }} 
+                placeholder={data.modalidad === "arriendo" ? "2.500.000" : "350.000.000"} 
+                className={errors?.canon || errors?.valorVenta ? "border-destructive" : ""} 
+              />
+              {(errors?.canon || errors?.valorVenta) && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.canon || errors.valorVenta}
+                </p>
+              )}
             </div>
 
             <div>
@@ -186,6 +205,43 @@ export const PropertyForm = ({
             })}
             </div>
           </div>
+
+          {/* Selector de Modalidad */}
+          {data.tipo && data.tipo !== "lote" && (
+            <div>
+              <Label>Modalidad</Label>
+              <p className="text-xs text-muted-foreground mb-2">
+                ¿Es para arriendo o venta?
+              </p>
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={() => updateField("modalidad", "arriendo")}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    data.modalidad === "arriendo"
+                      ? "border-secondary bg-secondary/10 shadow-md"
+                      : "border-border hover:border-secondary/50"
+                  }`}
+                >
+                  <span className="text-2xl mb-2 block">🏠</span>
+                  <span className="text-sm font-medium">Arriendo</span>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => updateField("modalidad", "venta")}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    data.modalidad === "venta"
+                      ? "border-secondary bg-secondary/10 shadow-md"
+                      : "border-border hover:border-secondary/50"
+                  }`}
+                >
+                  <span className="text-2xl mb-2 block">💰</span>
+                  <span className="text-sm font-medium">Venta</span>
+                </button>
+              </div>
+            </div>
+          )}
 
           {renderConditionalFields()}
         </div>

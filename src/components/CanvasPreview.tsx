@@ -145,7 +145,9 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               }}
             >
               <p className="text-xs text-white font-semibold mb-1 uppercase tracking-wide">
-                {propertyData.canon ? "Canon mensual" : "Valor venta"}
+                {propertyData.modalidad === "venta" || (propertyData.valorVenta && !propertyData.canon)
+                  ? "Precio de Venta" 
+                  : "Canon Mensual"}
               </p>
               <p className="text-3xl font-extrabold text-white leading-tight">
                 {propertyData.canon || propertyData.valorVenta}

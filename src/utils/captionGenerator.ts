@@ -30,12 +30,16 @@ export const generateCaption = (
   template: TemplateTheme = "residencial",
   includeViralIdeas: boolean = true
 ): string => {
-  const { tipo, ubicacion, habitaciones, banos, canon, area, trafico, estrato, piso, alturaLibre, vitrina, uso } = property;
+  const { tipo, ubicacion, habitaciones, banos, canon, valorVenta, modalidad, area, trafico, estrato, piso, alturaLibre, vitrina, uso } = property;
   const { ciudad } = aliado;
   const tone = TONES[template];
   
   let caption = "";
   let hashtags = "";
+  
+  const esVenta = modalidad === "venta" || (valorVenta && !canon);
+  const precio = esVenta ? valorVenta : canon;
+  const verboAccion = esVenta ? "comprar" : "arrendar";
 
   // Get viral hook if enabled
   let hook = "";
@@ -54,9 +58,11 @@ export const generateCaption = (
       caption += `.\n`;
       caption += template === "premium" 
         ? `Vive con distinción en ${aliado.nombre}.\n`
-        : `Arrienda con confianza y respaldo de ${aliado.nombre}.\n`;
-      if (canon) caption += `💰 $${canon} mensual\n`;
-      hashtags = `#Arriendos${ciudad.replace(/\s/g, "")} #Apartamentos${ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar`;
+        : `${esVenta ? 'Compra' : 'Arrienda'} con confianza y respaldo de ${aliado.nombre}.\n`;
+      if (precio) caption += `💰 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : ' mensual'}\n`;
+      hashtags = esVenta 
+        ? `#Venta${ciudad.replace(/\s/g, "")} #Apartamentos${ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar`
+        : `#Arriendos${ciudad.replace(/\s/g, "")} #Apartamentos${ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar`;
       break;
 
     case "casa":
@@ -67,8 +73,10 @@ export const generateCaption = (
       caption += template === "premium"
         ? `${tone.adjectives[1].charAt(0).toUpperCase() + tone.adjectives[1].slice(1)} exclusividad con ${aliado.nombre}.\n`
         : `Haz realidad tu hogar con ${aliado.nombre}.\n`;
-      if (canon) caption += `💰 $${canon} mensual\n`;
-      hashtags = `#Casas${ciudad.replace(/\s/g, "")} #Arriendos #ElGestor #HogarDulceHogar`;
+      if (precio) caption += `💰 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : ' mensual'}\n`;
+      hashtags = esVenta
+        ? `#Casas${ciudad.replace(/\s/g, "")} #Venta #ElGestor #HogarDulceHogar`
+        : `#Casas${ciudad.replace(/\s/g, "")} #Arriendos #ElGestor #HogarDulceHogar`;
       break;
 
     case "local":
@@ -80,8 +88,10 @@ export const generateCaption = (
       caption += template === "comercial"
         ? `${tone.verbs[0].charAt(0).toUpperCase() + tone.verbs[0].slice(1)} tu marca con ${aliado.nombre}.\n`
         : `Haz crecer tu negocio con el respaldo de ${aliado.nombre}.\n`;
-      if (canon) caption += `💼 $${canon} mensual\n`;
-      hashtags = `#LocalesComerciales #Negocios${ciudad.replace(/\s/g, "")} #ElGestor #EmprenderConConfianza`;
+      if (precio) caption += `💼 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : ' mensual'}\n`;
+      hashtags = esVenta
+        ? `#LocalesComerciales #Venta${ciudad.replace(/\s/g, "")} #ElGestor #EmprenderConConfianza`
+        : `#LocalesComerciales #Negocios${ciudad.replace(/\s/g, "")} #ElGestor #EmprenderConConfianza`;
       break;
 
     case "oficina":
@@ -93,8 +103,10 @@ export const generateCaption = (
       caption += template === "comercial"
         ? `${tone.verbs[3].charAt(0).toUpperCase() + tone.verbs[3].slice(1)} tu éxito con ${aliado.nombre}.\n`
         : `Con ${aliado.nombre}, tu éxito empresarial empieza aquí.\n`;
-      if (canon) caption += `📊 $${canon} mensual\n`;
-      hashtags = `#Oficinas${ciudad.replace(/\s/g, "")} #EspaciosProfesionales #ElGestor`;
+      if (precio) caption += `📊 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : ' mensual'}\n`;
+      hashtags = esVenta
+        ? `#Oficinas${ciudad.replace(/\s/g, "")} #Venta #ElGestor`
+        : `#Oficinas${ciudad.replace(/\s/g, "")} #EspaciosProfesionales #ElGestor`;
       break;
 
     case "bodega":
@@ -106,8 +118,10 @@ export const generateCaption = (
       caption += template === "comercial"
         ? `Optimiza y ${tone.verbs[0]} tu operación con ${aliado.nombre}.\n`
         : `Optimiza tu operación con ${aliado.nombre}.\n`;
-      if (canon) caption += `📦 $${canon} mensual\n`;
-      hashtags = `#Bodegas${ciudad.replace(/\s/g, "")} #Logistica #ElGestor`;
+      if (precio) caption += `📦 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : ' mensual'}\n`;
+      hashtags = esVenta
+        ? `#Bodegas${ciudad.replace(/\s/g, "")} #Venta #ElGestor`
+        : `#Bodegas${ciudad.replace(/\s/g, "")} #Logistica #ElGestor`;
       break;
 
     case "lote":

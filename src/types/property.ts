@@ -26,6 +26,7 @@ export interface AliadoConfig {
 
 export interface PropertyData {
   tipo: PropertyType;
+  modalidad?: "arriendo" | "venta";
   canon?: string;
   ubicacion?: string;
   habitaciones?: number;
