@@ -9,6 +9,16 @@ export interface GenerateMultiVideoOptions {
   onProgress?: (progress: number, stage: string) => void;
 }
 
+// Helper para añadir timeout a promesas
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(errorMessage)), timeoutMs)
+    ),
+  ]);
+}
+
 export async function generateMultiVideoReel(
   options: GenerateMultiVideoOptions
 ): Promise<Blob> {
@@ -21,28 +31,37 @@ export async function generateMultiVideoReel(
   const ffmpeg = FFmpegManager.getInstance();
 
   try {
-    // 1. Intentar cargar FFmpeg
+    // 1. Intentar cargar FFmpeg con timeout de 15 segundos
     if (!ffmpeg.isLoaded()) {
       onProgress?.(0, 'Cargando procesador de video avanzado...');
-      await ffmpeg.load((progress) => {
-        onProgress?.(progress * 0.2, `Cargando FFmpeg: ${progress}%`);
-      });
+      await withTimeout(
+        ffmpeg.load((progress) => {
+          onProgress?.(progress * 0.2, `Cargando FFmpeg: ${progress}%`);
+        }),
+        15000,
+        'Timeout al cargar FFmpeg'
+      );
     }
 
     onProgress?.(20, 'Procesando videos con FFmpeg...');
 
-    // 2. Concatenar videos con FFmpeg
-    const concatenatedBlob = await ffmpeg.concatenateVideos(
-      videoBlobs,
-      {
-        width: 1080,
-        height: 1920,
-        fps: 30
-      },
-      (progress, stage) => {
-        const mappedProgress = 20 + (progress * 0.75);
-        onProgress?.(mappedProgress, stage);
-      }
+    // 2. Concatenar videos con FFmpeg (timeout: 30s base + 15s por video)
+    const concatTimeout = 30000 + (videoBlobs.length * 15000);
+    const concatenatedBlob = await withTimeout(
+      ffmpeg.concatenateVideos(
+        videoBlobs,
+        {
+          width: 1080,
+          height: 1920,
+          fps: 24
+        },
+        (progress, stage) => {
+          const mappedProgress = 20 + (progress * 0.75);
+          onProgress?.(mappedProgress, stage);
+        }
+      ),
+      concatTimeout,
+      'Timeout al procesar videos con FFmpeg'
     );
 
     onProgress?.(100, '¡Completado!');

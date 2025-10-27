@@ -787,15 +787,20 @@ const Index = () => {
                           const a = document.createElement("a");
                           a.href = url;
                           const tipo = propertyData.tipo || 'inmueble';
-                          a.download = `reel-multi-video-${tipo}-${Date.now()}.mp4`;
+                          
+                          // Detectar formato del blob y usar extensión correcta
+                          const ext = generatedMultiVideoBlob.type.includes('webm') ? 'webm' : 'mp4';
+                          a.download = `reel-multi-video-${tipo}-${Date.now()}.${ext}`;
+                          
                           document.body.appendChild(a);
                           a.click();
                           document.body.removeChild(a);
                           URL.revokeObjectURL(url);
 
+                          const formatNote = ext === 'webm' ? ' (Formato WebM, compatible con Chrome/Android)' : '';
                           toast({
                             title: "✅ Descarga completada",
-                            description: "Tu reel multi-video se ha descargado correctamente.",
+                            description: `Tu reel multi-video se ha descargado correctamente.${formatNote}`,
                           });
                         }}
                         variant="hero"

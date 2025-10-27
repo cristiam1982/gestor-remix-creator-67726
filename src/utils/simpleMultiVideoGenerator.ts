@@ -18,14 +18,18 @@ export async function generateSimpleMultiVideoReel(
     throw new Error('No se pudo crear contexto de canvas');
   }
 
-  // Verificar soporte de MediaRecorder
-  if (!MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
-    throw new Error('Tu navegador no soporta grabación de video WebM');
+  // Verificar soporte de MediaRecorder con fallback de codec
+  let mimeType = 'video/webm;codecs=vp9';
+  if (!MediaRecorder.isTypeSupported(mimeType)) {
+    mimeType = 'video/webm;codecs=vp8';
+    if (!MediaRecorder.isTypeSupported(mimeType)) {
+      throw new Error('Tu navegador no soporta grabación de video WebM. Por favor usa Chrome, Edge o Firefox.');
+    }
   }
 
   const stream = canvas.captureStream(30);
   const recorder = new MediaRecorder(stream, {
-    mimeType: 'video/webm;codecs=vp9',
+    mimeType,
     videoBitsPerSecond: 5000000
   });
   
@@ -51,6 +55,9 @@ export async function generateSimpleMultiVideoReel(
         try {
           await video.play();
           
+          // Usar requestVideoFrameCallback si está disponible (mejor sincronía)
+          const supportsRVFC = 'requestVideoFrameCallback' in video;
+          
           const drawFrame = () => {
             if (!video.ended && !video.paused) {
               // Calcular escalado para mantener aspecto 9:16
@@ -67,24 +74,34 @@ export async function generateSimpleMultiVideoReel(
               // Dibujar video centrado
               ctx.drawImage(video, x, y, scaledWidth, scaledHeight);
               
-              requestAnimationFrame(drawFrame);
+              if (supportsRVFC) {
+                (video as any).requestVideoFrameCallback(drawFrame);
+              } else {
+                requestAnimationFrame(drawFrame);
+              }
             } else if (video.ended) {
               URL.revokeObjectURL(video.src);
               resolve();
             }
           };
           
-          drawFrame();
+          if (supportsRVFC) {
+            (video as any).requestVideoFrameCallback(drawFrame);
+          } else {
+            drawFrame();
+          }
           
           const progress = 10 + ((i + 1) / videoFiles.length) * 80;
           onProgress(progress, `Grabando video ${i + 1}/${videoFiles.length}`);
           
         } catch (error) {
+          URL.revokeObjectURL(video.src);
           reject(error);
         }
       };
       
       video.onerror = () => {
+        URL.revokeObjectURL(video.src);
         reject(new Error(`Error al cargar video ${i + 1}`));
       };
     });
@@ -95,11 +112,12 @@ export async function generateSimpleMultiVideoReel(
   return new Promise<Blob>((resolve, reject) => {
     recorder.onstop = () => {
       onProgress(100, '¡Completado!');
-      const finalBlob = new Blob(chunks, { type: 'video/webm' });
+      const finalBlob = new Blob(chunks, { type: mimeType });
       
       if (finalBlob.size === 0) {
         reject(new Error('El video generado está vacío'));
       } else {
+        console.log(`✅ Video WebM generado: ${(finalBlob.size / (1024 * 1024)).toFixed(2)} MB`);
         resolve(finalBlob);
       }
     };

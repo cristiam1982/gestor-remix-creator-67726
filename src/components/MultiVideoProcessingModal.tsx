@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Loader2, CheckCircle } from "lucide-react";
 
@@ -15,9 +15,15 @@ export const MultiVideoProcessingModal = ({
   stage,
   isComplete,
 }: MultiVideoProcessingModalProps) => {
+  const descriptionId = "multi-video-progress-description";
+  
   return (
     <Dialog open={isOpen}>
-      <DialogContent className="sm:max-w-md"  onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent 
+        className="sm:max-w-md" 
+        onInteractOutside={(e) => e.preventDefault()}
+        aria-describedby={descriptionId}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {isComplete ? (
@@ -32,6 +38,9 @@ export const MultiVideoProcessingModal = ({
               </>
             )}
           </DialogTitle>
+          <DialogDescription id={descriptionId} className="sr-only">
+            {isComplete ? 'El video ha sido procesado exitosamente' : `Procesando video: ${stage}`}
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 py-4">

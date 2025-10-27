@@ -111,14 +111,16 @@ class FFmpegManager {
 
       onProgress?.(30, 'Normalizando videos...');
 
-      // 2. Normalizar cada video (resolución, fps, formato)
+      // 2. Normalizar cada video (resolución, fps, formato) - optimizado para velocidad
       for (let i = 0; i < videoBlobs.length; i++) {
         await this.ffmpeg.exec([
           '-i', `input${i}.mp4`,
-          '-vf', `scale=${options.width}:${options.height}:force_original_aspect_ratio=decrease,pad=${options.width}:${options.height}:(ow-iw)/2:(oh-ih)/2:black,setsar=1,fps=${options.fps}`,
+          '-vf', `scale=${options.width}:${options.height}:force_original_aspect_ratio=decrease,pad=${options.width}:${options.height}:(ow-iw)/2:(oh-ih)/2:black,setsar=1,fps=24`,
           '-c:v', 'libx264',
           '-preset', 'ultrafast',
-          '-crf', '23',
+          '-crf', '28', // Mayor compresión para velocidad
+          '-pix_fmt', 'yuv420p', // Formato de píxeles compatible
+          '-movflags', '+faststart', // Optimizar para streaming
           '-an', // Sin audio por ahora
           `normalized${i}.mp4`
         ]);
