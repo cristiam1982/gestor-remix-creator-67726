@@ -33,29 +33,60 @@ class FFmpegManager {
     }
 
     this.loading = true;
+    const maxRetries = 3;
+    let lastError: Error | null = null;
 
-    try {
-      if (onProgress) {
-        this.ffmpeg.on('progress', ({ progress }) => {
-          onProgress(Math.round(progress * 100));
-        });
+    // CDNs alternativas en orden de prioridad
+    const cdnUrls = [
+      'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd',
+      'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd'
+    ];
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      for (const baseURL of cdnUrls) {
+        try {
+          console.log(`🔄 Intento ${attempt}/${maxRetries} desde ${baseURL.includes('jsdelivr') ? 'JSDelivr' : 'Unpkg'}...`);
+
+          if (onProgress) {
+            this.ffmpeg.on('progress', ({ progress }) => {
+              onProgress(Math.round(progress * 100));
+            });
+          }
+          
+          await this.ffmpeg.load({
+            coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+            wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+          });
+
+          this.loaded = true;
+          console.log('✅ FFmpeg cargado correctamente desde', baseURL);
+          this.loading = false;
+          return;
+
+        } catch (error) {
+          lastError = error as Error;
+          console.error(`❌ Intento ${attempt} falló desde ${baseURL}:`, error);
+          
+          // Si este no es el último CDN, probar el siguiente
+          if (baseURL !== cdnUrls[cdnUrls.length - 1]) {
+            continue;
+          }
+        }
       }
 
-      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-      
-      await this.ffmpeg.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-      });
-
-      this.loaded = true;
-      console.log('✅ FFmpeg cargado correctamente');
-    } catch (error) {
-      console.error('❌ Error al cargar FFmpeg:', error);
-      throw error;
-    } finally {
-      this.loading = false;
+      // Si no es el último intento, esperar antes de reintentar
+      if (attempt < maxRetries) {
+        console.log(`⏳ Reintentando en 2 segundos...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
     }
+
+    // Si llegamos aquí, todos los intentos fallaron
+    this.loading = false;
+    throw new Error(
+      `No se pudo cargar FFmpeg después de ${maxRetries} intentos desde múltiples CDNs. ` +
+      `Error: ${lastError?.message}. Verifica tu conexión a internet.`
+    );
   }
 
   public async concatenateVideos(

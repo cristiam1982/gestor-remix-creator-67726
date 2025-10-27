@@ -1,4 +1,5 @@
 import FFmpegManager from './ffmpegManager';
+import { generateSimpleMultiVideoReel } from './simpleMultiVideoGenerator';
 import { PropertyData, AliadoConfig } from '@/types/property';
 
 export interface GenerateMultiVideoOptions {
@@ -20,17 +21,17 @@ export async function generateMultiVideoReel(
   const ffmpeg = FFmpegManager.getInstance();
 
   try {
-    // 1. Cargar FFmpeg si no está cargado
+    // 1. Intentar cargar FFmpeg
     if (!ffmpeg.isLoaded()) {
-      onProgress?.(0, 'Cargando procesador de video...');
+      onProgress?.(0, 'Cargando procesador de video avanzado...');
       await ffmpeg.load((progress) => {
         onProgress?.(progress * 0.2, `Cargando FFmpeg: ${progress}%`);
       });
     }
 
-    onProgress?.(20, 'Procesando videos...');
+    onProgress?.(20, 'Procesando videos con FFmpeg...');
 
-    // 2. Concatenar videos
+    // 2. Concatenar videos con FFmpeg
     const concatenatedBlob = await ffmpeg.concatenateVideos(
       videoBlobs,
       {
@@ -39,18 +40,42 @@ export async function generateMultiVideoReel(
         fps: 30
       },
       (progress, stage) => {
-        // Mapear progreso de 20% a 95%
         const mappedProgress = 20 + (progress * 0.75);
         onProgress?.(mappedProgress, stage);
       }
     );
 
     onProgress?.(100, '¡Completado!');
-
     return concatenatedBlob;
-  } catch (error) {
-    console.error('Error al generar multi-video:', error);
-    throw error;
+
+  } catch (ffmpegError) {
+    console.warn('⚠️ FFmpeg no disponible, usando método alternativo...', ffmpegError);
+    
+    // FALLBACK: Usar método simple sin FFmpeg
+    onProgress?.(0, 'Usando procesador alternativo...');
+    
+    try {
+      // Convertir Blobs a Files
+      const files = await Promise.all(
+        videoBlobs.map(async (blob, index) => {
+          return new File([blob], `video-${index}.mp4`, { type: 'video/mp4' });
+        })
+      );
+      
+      const resultBlob = await generateSimpleMultiVideoReel(files, (progress, stage) => {
+        onProgress?.(progress, `[Modo alternativo] ${stage}`);
+      });
+      
+      console.log('✅ Video generado con método alternativo');
+      return resultBlob;
+      
+    } catch (fallbackError) {
+      console.error('❌ Error en método alternativo:', fallbackError);
+      throw new Error(
+        `No se pudo generar el video. Error FFmpeg: ${(ffmpegError as Error).message}. ` +
+        `Error alternativo: ${(fallbackError as Error).message}`
+      );
+    }
   }
 }
 
