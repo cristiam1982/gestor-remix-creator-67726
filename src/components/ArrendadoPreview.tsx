@@ -84,7 +84,7 @@ export const ArrendadoPreview = ({
           {/* Header: Badge celebratorio */}
           <div className="flex flex-col items-center gap-3 -mt-2">
             <div 
-              className="px-10 py-5 rounded-3xl font-black text-5xl text-center shadow-2xl animate-scale-in"
+              className="px-12 py-6 rounded-3xl font-black text-6xl text-center shadow-2xl animate-scale-in"
               style={{ 
                 backgroundColor: "white",
                 color: mainColor
@@ -95,18 +95,15 @@ export const ArrendadoPreview = ({
           </div>
 
           {/* Centro: PRECIO + Velocidad + Info */}
-          <div className="flex flex-col items-center gap-6 mt-auto mb-16">
+          <div className="flex flex-col items-center gap-5 mt-auto mb-10">
             
             {/* PRECIO - El elemento MÁS IMPORTANTE */}
-            <div className="text-center space-y-2">
-              <p className="text-base font-semibold drop-shadow-lg opacity-90">
-                {tipo === "arrendado" ? "Arrendado por:" : "Vendido por:"}
+            <div className="text-center">
+              <p className="text-7xl font-black drop-shadow-2xl leading-none">
+                {formatPrecioColombia(data.precio)}
               </p>
-        <p className="text-6xl font-black drop-shadow-2xl leading-none">
-          {formatPrecioColombia(data.precio)}
-        </p>
               {tipo === "arrendado" && (
-                <p className="text-lg font-medium opacity-80">/mes</p>
+                <p className="text-xl font-semibold opacity-90 mt-2">/mes</p>
               )}
             </div>
 
@@ -114,42 +111,42 @@ export const ArrendadoPreview = ({
             <div className="w-32 h-1 bg-white/50 rounded-full" />
 
             {/* Velocidad */}
-            <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-xl">
-              <p className="text-2xl font-bold drop-shadow-lg">
+            <div className="bg-white/25 px-8 py-4 rounded-xl">
+              <p className="text-3xl font-black drop-shadow-lg">
                 {getVelocidadText()}
               </p>
             </div>
 
             {/* Tipo + Ubicación */}
             <div className="text-center space-y-1">
-              <p className="text-2xl font-extrabold drop-shadow-lg">
+              <p className="text-3xl font-black drop-shadow-lg">
                 {tipoLabel}
               </p>
               <div className="flex items-center justify-center gap-2">
-                <span className="text-xl">📍</span>
-                <p className="text-xl font-semibold drop-shadow-lg">
+                <span className="text-2xl">📍</span>
+                <p className="text-2xl font-bold drop-shadow-lg">
                   {data.ubicacion}
                 </p>
               </div>
             </div>
 
-        {/* Logo del aliado */}
-        {aliadoConfig.logo && (
-          <div className="bg-white/10 backdrop-blur-sm px-10 py-6 rounded-xl">
-            <img 
-              src={aliadoConfig.logo} 
-              alt={aliadoConfig.nombre}
-              className="h-24 object-contain"
-              crossOrigin="anonymous"
-            />
-          </div>
-        )}
+            {/* Logo del aliado */}
+            {aliadoConfig.logo && (
+              <div className="bg-white/25 px-8 py-4 rounded-xl">
+                <img 
+                  src={aliadoConfig.logo} 
+                  alt={aliadoConfig.nombre}
+                  className="h-20 object-contain"
+                  crossOrigin="anonymous"
+                />
+              </div>
+            )}
           </div>
 
           {/* Footer: CTA para propietarios */}
-          <div className="space-y-4 pb-2">
+          <div className="space-y-3 pb-2">
             <div className="text-center">
-              <p className="text-2xl font-black drop-shadow-lg">
+              <p className="text-2xl font-black drop-shadow-lg leading-tight">
                 💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
               </p>
             </div>
