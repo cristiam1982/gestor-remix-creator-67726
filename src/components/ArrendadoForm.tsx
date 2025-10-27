@@ -12,6 +12,21 @@ interface ArrendadoFormProps {
   format?: "historia" | "reel-fotos" | "reel-video";
 }
 
+const formatPrecio = (value: string): string => {
+  // Remover todo excepto números
+  const numericValue = value.replace(/\D/g, '');
+  
+  // Formatear con separador de miles
+  if (numericValue === '') return '';
+  const formatted = parseInt(numericValue).toLocaleString('es-CO');
+  return `$ ${formatted}`;
+};
+
+const parsePrecio = (formattedValue: string): string => {
+  // Extraer solo números para guardar en el estado
+  return formattedValue.replace(/\D/g, '');
+};
+
 export const ArrendadoForm = ({ data, updateField, errors, tipo }: ArrendadoFormProps) => {
   return (
     <div className="space-y-6">
@@ -70,8 +85,11 @@ export const ArrendadoForm = ({ data, updateField, errors, tipo }: ArrendadoForm
           <Label htmlFor="precio">{tipo === "arrendado" ? "Canon Mensual" : "Valor de Venta"} *</Label>
           <Input
             id="precio"
-            value={data.precio || ""}
-            onChange={(e) => updateField("precio", e.target.value)}
+            value={formatPrecio(data.precio || "")}
+            onChange={(e) => {
+              const parsed = parsePrecio(e.target.value);
+              updateField("precio", parsed);
+            }}
             placeholder="$ 2.500.000"
             className={errors?.precio ? "border-destructive" : ""}
           />

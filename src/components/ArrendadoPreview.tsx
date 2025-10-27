@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
 import { AliadoConfig } from "@/types/property";
 import { Card } from "@/components/ui/card";
+import { formatPrecioColombia } from "@/utils/formatters";
+import elGestorLogo from "@/assets/el-gestor-logo.png";
 
 interface ArrendadoPreviewProps {
   data: ArrendadoData;
@@ -97,9 +99,9 @@ export const ArrendadoPreview = ({
               <p className="text-base font-semibold drop-shadow-lg opacity-90">
                 {tipo === "arrendado" ? "Arrendado por:" : "Vendido por:"}
               </p>
-              <p className="text-6xl font-black drop-shadow-2xl leading-none">
-                {data.precio}
-              </p>
+        <p className="text-6xl font-black drop-shadow-2xl leading-none">
+          {formatPrecioColombia(data.precio)}
+        </p>
               {tipo === "arrendado" && (
                 <p className="text-lg font-medium opacity-80">/mes</p>
               )}
@@ -128,23 +130,23 @@ export const ArrendadoPreview = ({
               </div>
             </div>
 
-            {/* Logo del aliado */}
-            {aliadoConfig.logo && (
-              <div className="bg-white/10 backdrop-blur-sm px-8 py-5 rounded-xl">
-                <img 
-                  src={aliadoConfig.logo} 
-                  alt={aliadoConfig.nombre}
-                  className="h-20 object-contain"
-                  crossOrigin="anonymous"
-                />
-              </div>
-            )}
+        {/* Logo del aliado */}
+        {aliadoConfig.logo && (
+          <div className="bg-white/10 backdrop-blur-sm px-10 py-6 rounded-xl">
+            <img 
+              src={aliadoConfig.logo} 
+              alt={aliadoConfig.nombre}
+              className="h-24 object-contain"
+              crossOrigin="anonymous"
+            />
+          </div>
+        )}
           </div>
 
           {/* Footer: CTA para propietarios */}
           <div className="space-y-3">
             <div className="text-center">
-              <p className="text-xl font-black drop-shadow-lg">
+              <p className="text-2xl font-black drop-shadow-lg">
                 💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
               </p>
             </div>
@@ -152,9 +154,9 @@ export const ArrendadoPreview = ({
             {/* Logo El Gestor */}
             <div className="flex justify-center">
               <img 
-                src="/src/assets/el-gestor-logo.png" 
+                src={elGestorLogo} 
                 alt="El Gestor"
-                className="h-8 object-contain opacity-90"
+                className="h-10 object-contain opacity-90"
               />
             </div>
           </div>

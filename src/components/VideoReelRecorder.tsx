@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Play, Pause, Download, AlertCircle } from "lucide-react";
 import { PropertyData, AliadoConfig } from "@/types/property";
 import { ArrendadoData } from "@/types/arrendado";
+import { formatPrecioColombia } from "@/utils/formatters";
 import { VideoRecordingProgress } from "@/components/VideoRecordingProgress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
@@ -143,6 +144,12 @@ export const VideoReelRecorder = ({
       ctx.textAlign = "center";
       ctx.fillText(badgeText, canvas.width / 2, 320);
       
+      // Validar que los datos estén completos
+      if (!arrendadoData.precio || !arrendadoData.diasEnMercado) {
+        console.error("Datos de arrendado incompletos");
+        return;
+      }
+      
       // Precio prominente
       ctx.textAlign = "center";
       ctx.fillStyle = "white";
@@ -153,7 +160,7 @@ export const VideoReelRecorder = ({
         canvas.height / 2 - 80
       );
       ctx.font = "bold 84px Inter, sans-serif";
-      ctx.fillText(arrendadoData.precio, canvas.width / 2, canvas.height / 2);
+      ctx.fillText(formatPrecioColombia(arrendadoData.precio), canvas.width / 2, canvas.height / 2);
       if (variant === "arrendado") {
         ctx.font = "28px Inter, sans-serif";
         ctx.fillText("/mes", canvas.width / 2, canvas.height / 2 + 50);

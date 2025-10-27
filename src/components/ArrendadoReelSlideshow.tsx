@@ -8,6 +8,7 @@ import elGestorLogo from "@/assets/el-gestor-logo.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { useToast } from "@/hooks/use-toast";
+import { formatPrecioColombia } from "@/utils/formatters";
 import {
   DndContext,
   closestCenter,
@@ -333,7 +334,7 @@ export const ArrendadoReelSlideshow = ({
                   {tipo === "arrendado" ? "Arrendado por:" : "Vendido por:"}
                 </p>
                 <p className="text-5xl font-black drop-shadow-2xl leading-none">
-                  {data.precio}
+                  {formatPrecioColombia(data.precio)}
                 </p>
                 {tipo === "arrendado" && (
                   <p className="text-base font-medium opacity-80 mt-1">/mes</p>
@@ -365,7 +366,7 @@ export const ArrendadoReelSlideshow = ({
                   <img 
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-18 object-contain"
+                    className="h-14 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
@@ -441,7 +442,7 @@ export const ArrendadoReelSlideshow = ({
                   {tipo === "arrendado" ? "Arrendado por:" : "Vendido por:"}
                 </p>
                 <p className="text-5xl font-black drop-shadow-2xl leading-none">
-                  {data.precio}
+                  {formatPrecioColombia(data.precio)}
                 </p>
                 {tipo === "arrendado" && (
                   <p className="text-base font-medium opacity-80 mt-1">/mes</p>
@@ -473,7 +474,7 @@ export const ArrendadoReelSlideshow = ({
                   <img 
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-18 object-contain"
+                    className="h-14 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>

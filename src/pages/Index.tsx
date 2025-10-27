@@ -558,13 +558,16 @@ const Index = () => {
                       const url = URL.createObjectURL(blob);
                       const a = document.createElement("a");
                       a.href = url;
-                      a.download = `reel-${selectedContentType}-${Date.now()}.webm`;
+                      const ubicacion = arrendadoData.ubicacion?.toLowerCase().replace(/\s+/g, '-') || 'inmueble';
+                      a.download = `reel-${selectedContentType}-${ubicacion}-${Date.now()}.webm`;
+                      document.body.appendChild(a);
                       a.click();
+                      document.body.removeChild(a);
                       URL.revokeObjectURL(url);
                       
                       toast({
-                        title: "✨ Video celebratorio procesado",
-                        description: `${(blob.size / (1024 * 1024)).toFixed(1)} MB - Procesado en ${Math.round(duration)}s`,
+                        title: "🎉 Video generado exitosamente",
+                        description: `Tu reel celebratorio se ha descargado correctamente. ${(blob.size / (1024 * 1024)).toFixed(1)} MB en ${Math.round(duration)}s`,
                       });
                     }}
                   />
