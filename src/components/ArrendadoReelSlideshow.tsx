@@ -368,7 +368,7 @@ export const ArrendadoReelSlideshow = ({
                   <img 
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-22 object-contain"
+                    className="h-[88px] object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
@@ -476,7 +476,7 @@ export const ArrendadoReelSlideshow = ({
                   <img 
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-22 object-contain"
+                    className="h-[88px] object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
