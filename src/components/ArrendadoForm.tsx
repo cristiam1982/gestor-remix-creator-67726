@@ -9,6 +9,7 @@ interface ArrendadoFormProps {
   updateField: (field: keyof ArrendadoData, value: any) => void;
   errors?: Partial<Record<keyof ArrendadoData, string>>;
   tipo: "arrendado" | "vendido";
+  format?: "historia" | "reel-fotos" | "reel-video";
 }
 
 export const ArrendadoForm = ({ data, updateField, errors, tipo }: ArrendadoFormProps) => {

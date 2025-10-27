@@ -6,6 +6,7 @@ export interface ArrendadoData {
   diasEnMercado: number;
   precio: string;
   fotos: string[];
+  videoUrl?: string;
 }
 
 export type ArrendadoType = "arrendado" | "vendido";

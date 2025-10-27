@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, Pause, Download, AlertCircle } from "lucide-react";
 import { PropertyData, AliadoConfig } from "@/types/property";
+import { ArrendadoData } from "@/types/arrendado";
 import { VideoRecordingProgress } from "@/components/VideoRecordingProgress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
@@ -11,8 +12,9 @@ import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
 interface VideoReelRecorderProps {
   videoUrl: string;
-  propertyData: PropertyData;
+  propertyData: PropertyData | ArrendadoData;
   aliadoConfig: AliadoConfig;
+  variant?: "disponible" | "arrendado" | "vendido";
   onComplete: (blob: Blob, duration: number) => void;
 }
 
@@ -20,6 +22,7 @@ export const VideoReelRecorder = ({
   videoUrl,
   propertyData,
   aliadoConfig,
+  variant = "disponible",
   onComplete,
 }: VideoReelRecorderProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -102,97 +105,178 @@ export const VideoReelRecorder = ({
 
   // Dibujar overlays en canvas
   const drawOverlays = (ctx: CanvasRenderingContext2D) => {
+    const isArrendadoVariant = variant === "arrendado" || variant === "vendido";
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
     // Sombra para mejorar legibilidad
     ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
     ctx.shadowBlur = 20;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 4;
 
-    // Logo del aliado (superior izquierda) - formato cuadrado
-    if (logoImage) {
-      // Fondo semi-transparente para el logo
-      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    if (isArrendadoVariant) {
+      // ===== DISEÑO CELEBRATORIO PARA ARRENDADO/VENDIDO =====
+      const arrendadoData = propertyData as ArrendadoData;
+      const mainColor = variant === "arrendado" ? "#10B981" : "#3B82F6";
+      const badgeText = variant === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
+      
+      // Logo del aliado (superior izquierda)
+      if (logoImage) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.beginPath();
+        ctx.roundRect(30, 30, 160, 160, 16);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.drawImage(logoImage, 38, 38, 144, 144);
+      }
+      
+      ctx.shadowBlur = 15;
+      
+      // Badge celebratorio grande
+      ctx.fillStyle = "white";
+      ctx.fillRect(canvas.width / 2 - 200, 250, 400, 100);
+      ctx.fillStyle = mainColor;
+      ctx.font = "bold 56px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(badgeText, canvas.width / 2, 320);
+      
+      // Precio prominente
+      ctx.textAlign = "center";
+      ctx.fillStyle = "white";
+      ctx.font = "20px Inter, sans-serif";
+      ctx.fillText(
+        variant === "arrendado" ? "Arrendado por:" : "Vendido por:",
+        canvas.width / 2,
+        canvas.height / 2 - 80
+      );
+      ctx.font = "bold 84px Inter, sans-serif";
+      ctx.fillText(arrendadoData.precio, canvas.width / 2, canvas.height / 2);
+      if (variant === "arrendado") {
+        ctx.font = "28px Inter, sans-serif";
+        ctx.fillText("/mes", canvas.width / 2, canvas.height / 2 + 50);
+      }
+      
+      // Velocidad
+      const diasTexto = arrendadoData.diasEnMercado <= 7 
+        ? `🚀 En solo ${arrendadoData.diasEnMercado} día${arrendadoData.diasEnMercado === 1 ? '' : 's'}`
+        : arrendadoData.diasEnMercado <= 15
+        ? `⚡ En ${arrendadoData.diasEnMercado} días`
+        : `🎉 En ${arrendadoData.diasEnMercado} días`;
+      ctx.font = "bold 32px Inter, sans-serif";
+      ctx.fillText(diasTexto, canvas.width / 2, canvas.height / 2 + 120);
+      
+      // Tipo + Ubicación
+      const tipoLabel = {
+        apartamento: "Apartamento",
+        casa: "Casa",
+        local: "Local Comercial",
+        oficina: "Oficina",
+        bodega: "Bodega",
+        lote: "Lote"
+      }[arrendadoData.tipo] || arrendadoData.tipo;
+      
+      ctx.font = "bold 36px Inter, sans-serif";
+      ctx.fillText(tipoLabel, canvas.width / 2, canvas.height / 2 + 180);
+      ctx.fillText(
+        `📍 ${arrendadoData.ubicacion}`,
+        canvas.width / 2,
+        canvas.height / 2 + 230
+      );
+      
+      // CTA inferior
+      ctx.font = "bold 28px Inter, sans-serif";
+      ctx.fillText(
+        `💪 ¿Quieres ${variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`,
+        canvas.width / 2,
+        1620
+      );
+      
+      ctx.fillStyle = "white";
+      ctx.fillRect(canvas.width / 2 - 150, 1650, 300, 60);
+      ctx.fillStyle = mainColor;
+      ctx.font = "bold 24px Inter, sans-serif";
+      ctx.fillText(
+        `📱 ${aliadoConfig.whatsapp}`,
+        canvas.width / 2,
+        1690
+      );
+      
+    } else {
+      // ===== DISEÑO ACTUAL PARA INMUEBLES DISPONIBLES =====
+      const propData = propertyData as PropertyData;
+      
+      // Logo del aliado (superior izquierda) - formato cuadrado
+      if (logoImage) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.beginPath();
+        ctx.roundRect(30, 30, 160, 160, 16);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.drawImage(logoImage, 38, 38, 144, 144);
+      }
+
+      ctx.shadowBlur = 15;
+
+      // Tipo de inmueble
+      const badgeY = logoImage ? 220 : 50;
+      ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
       ctx.beginPath();
-      ctx.roundRect(30, 30, 160, 160, 16);
+      ctx.roundRect(40, badgeY, 300, 70, 15);
       ctx.fill();
-      
-      // Borde blanco
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
-      ctx.lineWidth = 4;
-      ctx.stroke();
-      
-      ctx.drawImage(logoImage, 38, 38, 144, 144);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 38px Poppins, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(propData.tipo.toUpperCase(), 60, badgeY + 48);
+
+      // Ubicación
+      const ubicacionY = badgeY + 100;
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 42px Poppins, sans-serif";
+      ctx.fillText(`📍 ${propData.ubicacion || ""}`, 40, ubicacionY);
+
+      // Canon/Precio
+      const precioY = ubicacionY + 80;
+      ctx.font = "bold 72px Poppins, sans-serif";
+      const precio = propData.canon || propData.valorVenta || "";
+      ctx.fillText(precio, 40, precioY);
+
+      // Características
+      let yPos = precioY + 80;
+      ctx.font = "32px Poppins, sans-serif";
+
+      const features = [];
+      if (propData.habitaciones) features.push(`🛏️ ${propData.habitaciones} hab`);
+      if (propData.banos) features.push(`🚿 ${propData.banos} baños`);
+      if (propData.parqueaderos) features.push(`🚗 ${propData.parqueaderos} parq`);
+      if (propData.estrato) features.push(`🏢 Estrato ${propData.estrato}`);
+      if (propData.piso) features.push(`🏢 Piso ${propData.piso}`);
+      if (propData.trafico) features.push(`🚦 Tráfico ${propData.trafico}`);
+      if (propData.alturaLibre) features.push(`📏 ${propData.alturaLibre}m altura`);
+      if (propData.vitrina) features.push(`🪟 Con vitrina`);
+      if (propData.uso) features.push(`🏗️ Uso ${propData.uso}`);
+      if (propData.area) features.push(`📐 ${propData.area}m²`);
+
+      features.forEach((feature) => {
+        const bgColor = aliadoConfig.colorSecundario || "#000000";
+        ctx.fillStyle = `${bgColor}F0`;
+        ctx.beginPath();
+        ctx.roundRect(30, yPos - 35, 320, 50, 12);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(feature, 40, yPos);
+        yPos += 60;
+      });
     }
 
-    // Reset shadow para el resto
-    ctx.shadowBlur = 15;
-
-    // Tipo de inmueble - badge más grande y redondeado
-    const badgeY = logoImage ? 220 : 50;
-    ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
-    ctx.beginPath();
-    ctx.roundRect(40, badgeY, 300, 70, 15);
-    ctx.fill();
-    
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 38px Poppins, sans-serif";
-    ctx.fillText(propertyData.tipo.toUpperCase(), 60, badgeY + 48);
-
-    // Ubicación - más prominente
-    const ubicacionY = badgeY + 100;
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 42px Poppins, sans-serif";
-    ctx.fillText(`📍 ${propertyData.ubicacion || ""}`, 40, ubicacionY);
-
-    // Canon/Precio - mucho más grande y visible
-    const precioY = ubicacionY + 80;
-    ctx.font = "bold 72px Poppins, sans-serif";
-    const precio = propertyData.canon || propertyData.valorVenta || "";
-    ctx.fillText(precio, 40, precioY);
-
-    // Características - con fondo semi-transparente
-    let yPos = precioY + 80;
-    ctx.font = "32px Poppins, sans-serif";
-
-    const features = [];
-    
-    // Características residenciales
-    if (propertyData.habitaciones) features.push(`🛏️ ${propertyData.habitaciones} hab`);
-    if (propertyData.banos) features.push(`🚿 ${propertyData.banos} baños`);
-    if (propertyData.parqueaderos) features.push(`🚗 ${propertyData.parqueaderos} parq`);
-    if (propertyData.estrato) features.push(`🏢 Estrato ${propertyData.estrato}`);
-    
-    // Características comerciales
-    if (propertyData.piso) features.push(`🏢 Piso ${propertyData.piso}`);
-    if (propertyData.trafico) features.push(`🚦 Tráfico ${propertyData.trafico}`);
-    if (propertyData.alturaLibre) features.push(`📏 ${propertyData.alturaLibre}m altura`);
-    if (propertyData.vitrina) features.push(`🪟 Con vitrina`);
-    
-    // Características de lote
-    if (propertyData.uso) features.push(`🏗️ Uso ${propertyData.uso}`);
-    
-    // Área (siempre al final)
-    if (propertyData.area) features.push(`📐 ${propertyData.area}m²`);
-
-    features.forEach((feature) => {
-      // Fondo para cada característica con borde blanco semitransparente
-      const bgColor = aliadoConfig.colorSecundario || "#000000";
-      ctx.fillStyle = `${bgColor}F0`;
-      ctx.beginPath();
-      ctx.roundRect(30, yPos - 35, 320, 50, 12);
-      ctx.fill();
-      
-      // Borde blanco semitransparente
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillText(feature, 40, yPos);
-      yPos += 60;
-    });
-
-    // Sección inferior con información de contacto
+    // Sección inferior con información de contacto (común para ambas variantes)
     const bottomY = 1700;
     
     // Fondo semi-transparente para la sección inferior
@@ -434,7 +518,7 @@ export const VideoReelRecorder = ({
                   marginTop: '12px'
                 }}
               >
-                {propertyData.canon || propertyData.valorVenta}
+                {'canon' in propertyData ? propertyData.canon || propertyData.valorVenta : ''}
               </p>
 
               {/* Características - Canvas: font 32px → Preview: font 12px */}
@@ -446,7 +530,7 @@ export const VideoReelRecorder = ({
                   fontWeight: '600'
                 }}
               >
-                {propertyData.habitaciones && (
+                {'habitaciones' in propertyData && propertyData.habitaciones && (
                   <div 
                     className="inline-block rounded-xl"
                     style={{ 
@@ -458,7 +542,7 @@ export const VideoReelRecorder = ({
                     🛏️ {propertyData.habitaciones} hab
                   </div>
                 )}
-                {propertyData.banos && (
+                {'banos' in propertyData && propertyData.banos && (
                   <div 
                     className="inline-block rounded-xl"
                     style={{ 
@@ -471,7 +555,7 @@ export const VideoReelRecorder = ({
                     🚿 {propertyData.banos} baños
                   </div>
                 )}
-                {propertyData.parqueaderos && (
+                {'parqueaderos' in propertyData && propertyData.parqueaderos && (
                   <div 
                     className="inline-block rounded-xl"
                     style={{ 
@@ -484,7 +568,7 @@ export const VideoReelRecorder = ({
                     🚗 {propertyData.parqueaderos} parq
                   </div>
                 )}
-                {propertyData.area && (
+                {'area' in propertyData && propertyData.area && (
                   <div 
                     className="inline-block rounded-xl"
                     style={{ 
@@ -498,7 +582,7 @@ export const VideoReelRecorder = ({
                   </div>
                 )}
                 
-                {propertyData.estrato && (
+                {'estrato' in propertyData && propertyData.estrato && (
                   <div 
                     className="inline-block rounded-xl"
                     style={{ 
@@ -512,7 +596,7 @@ export const VideoReelRecorder = ({
                   </div>
                 )}
                 
-                {propertyData.piso && (
+                {'piso' in propertyData && propertyData.piso && (
                   <div 
                     className="inline-block rounded-xl"
                     style={{ 
@@ -526,7 +610,7 @@ export const VideoReelRecorder = ({
                   </div>
                 )}
                 
-                {propertyData.trafico && (
+                {'trafico' in propertyData && propertyData.trafico && (
                   <div 
                     className="inline-block rounded-xl"
                     style={{ 
@@ -540,7 +624,7 @@ export const VideoReelRecorder = ({
                   </div>
                 )}
                 
-                {propertyData.alturaLibre && (
+                {'alturaLibre' in propertyData && propertyData.alturaLibre && (
                   <div 
                     className="inline-block rounded-xl"
                     style={{ 
@@ -554,7 +638,7 @@ export const VideoReelRecorder = ({
                   </div>
                 )}
                 
-                {propertyData.vitrina && (
+                {'vitrina' in propertyData && propertyData.vitrina && (
                   <div 
                     className="inline-block rounded-xl"
                     style={{ 
@@ -568,7 +652,7 @@ export const VideoReelRecorder = ({
                   </div>
                 )}
                 
-                {propertyData.uso && (
+                {'uso' in propertyData && propertyData.uso && (
                   <div 
                     className="inline-block rounded-xl"
                     style={{ 

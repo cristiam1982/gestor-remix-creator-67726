@@ -8,6 +8,7 @@ import { PhotoManager } from "@/components/PhotoManager";
 import { CanvasPreview } from "@/components/CanvasPreview";
 import { ArrendadoPreview } from "@/components/ArrendadoPreview";
 import { ReelSlideshow } from "@/components/ReelSlideshow";
+import { ArrendadoReelSlideshow } from "@/components/ArrendadoReelSlideshow";
 import { VideoReelRecorder } from "@/components/VideoReelRecorder";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { ExportOptions } from "@/components/ExportOptions";
@@ -34,7 +35,9 @@ const Index = () => {
   const [arrendadoData, setArrendadoData] = useState<Partial<ArrendadoData>>({
     fotos: [],
     precio: "",
+    videoUrl: "",
   });
+  const [arrendadoFormat, setArrendadoFormat] = useState<"historia" | "reel-fotos" | "reel-video">("historia");
   const [currentStep, setCurrentStep] = useState(1);
   const [generatedCaption, setGeneratedCaption] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -93,7 +96,28 @@ const Index = () => {
         return;
       }
 
-      if (!arrendadoData.fotos || arrendadoData.fotos.length === 0) {
+      // Validación específica para reel-video
+      if (arrendadoFormat === "reel-video" && !arrendadoData.videoUrl) {
+        toast({
+          title: "⚠️ Falta video",
+          description: "Sube un video para generar el reel con video.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validación para reel-fotos
+      if (arrendadoFormat === "reel-fotos" && (!arrendadoData.fotos || arrendadoData.fotos.length < 2)) {
+        toast({
+          title: "⚠️ Faltan fotos",
+          description: "Sube al menos 2 fotos para generar el slideshow.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validación para historia (al menos 1 foto)
+      if (arrendadoFormat === "historia" && (!arrendadoData.fotos || arrendadoData.fotos.length === 0)) {
         toast({
           title: "⚠️ Sube al menos una foto",
           description: "Se requiere al menos 1 imagen.",
@@ -346,13 +370,70 @@ const Index = () => {
                     updateField={(field, value) => setArrendadoData({ ...arrendadoData, [field]: value })}
                     errors={validationErrors}
                     tipo={selectedContentType as "arrendado" | "vendido"}
+                    format={arrendadoFormat}
                   />
+                </Card>
+
+                {/* Selector de formato */}
+                <Card className="p-6">
+                  <h3 className="font-semibold mb-4 text-primary">
+                    📱 Elige el formato de tu publicación
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Button
+                      variant={arrendadoFormat === "historia" ? "default" : "outline"}
+                      onClick={() => setArrendadoFormat("historia")}
+                      className="h-auto py-6 flex flex-col gap-3 hover:scale-105 transition-transform"
+                    >
+                      <Smartphone className="w-10 h-10" />
+                      <div className="text-center">
+                        <div className="font-bold text-base">Historia Estática</div>
+                        <div className="text-xs opacity-70 mt-1">Imagen 9:16 para stories</div>
+                      </div>
+                    </Button>
+                    
+                    <Button
+                      variant={arrendadoFormat === "reel-fotos" ? "default" : "outline"}
+                      onClick={() => setArrendadoFormat("reel-fotos")}
+                      className="h-auto py-6 flex flex-col gap-3 hover:scale-105 transition-transform"
+                    >
+                      <ImageIcon className="w-10 h-10" />
+                      <div className="text-center">
+                        <div className="font-bold text-base">Reel con Fotos</div>
+                        <div className="text-xs opacity-70 mt-1">Slideshow GIF animado</div>
+                      </div>
+                    </Button>
+                    
+                    <Button
+                      variant={arrendadoFormat === "reel-video" ? "default" : "outline"}
+                      onClick={() => setArrendadoFormat("reel-video")}
+                      className="h-auto py-6 flex flex-col gap-3 hover:scale-105 transition-transform"
+                    >
+                      <Video className="w-10 h-10" />
+                      <div className="text-center">
+                        <div className="font-bold text-base">Reel con Video</div>
+                        <div className="text-xs opacity-70 mt-1">Video con overlays</div>
+                      </div>
+                    </Button>
+                  </div>
+                  
+                  <div className="mt-4 p-3 bg-muted rounded-lg">
+                    <p className="text-sm text-muted-foreground">
+                      {arrendadoFormat === "historia" && "📸 Generarás una imagen estática optimizada para historias de Instagram."}
+                      {arrendadoFormat === "reel-fotos" && "🎬 Generarás un GIF animado con todas las fotos que subiste."}
+                      {arrendadoFormat === "reel-video" && "🎥 Generarás un video con overlays celebratorios sobre tu video subido."}
+                    </p>
+                  </div>
                 </Card>
 
                 <PhotoManager
                   photos={arrendadoData.fotos || []}
                   onPhotosChange={(photos) => setArrendadoData({ ...arrendadoData, fotos: photos })}
-                  contentType="post"
+                  contentType={
+                    arrendadoFormat === "reel-video" ? "reel-video" :
+                    arrendadoFormat === "reel-fotos" ? "reel-fotos" : "historia"
+                  }
+                  context="arrendado"
                 />
 
                 <Button
@@ -365,7 +446,7 @@ const Index = () => {
                     !arrendadoData.ubicacion || 
                     !arrendadoData.diasEnMercado ||
                     !arrendadoData.precio ||
-                    arrendadoData.fotos?.length === 0
+                    (arrendadoFormat === "reel-video" ? !arrendadoData.videoUrl : arrendadoData.fotos?.length === 0)
                   }
                 >
                   Generar Publicación Celebratoria
@@ -422,38 +503,73 @@ const Index = () => {
 
             {/* Vista previa según tipo de contenido */}
             {isArrendadoType && aliadoConfig ? (
-              // Vista previa para Arrendado/Vendido
-              <Card className="p-6">
-                <h3 className="text-xl font-semibold mb-4 text-primary">
-                  🎉 Vista Previa Celebratoria
-                </h3>
-                <div className="flex justify-center mb-6">
-                  <ArrendadoPreview
+              // Vista previa para Arrendado/Vendido según formato
+              <>
+                {arrendadoFormat === "historia" && (
+                  <Card className="p-6">
+                    <h3 className="text-xl font-semibold mb-4 text-primary">
+                      🎉 Vista Previa Celebratoria
+                    </h3>
+                    <div className="flex justify-center mb-6">
+                      <ArrendadoPreview
+                        data={arrendadoData as ArrendadoData}
+                        aliadoConfig={aliadoConfig}
+                        tipo={selectedContentType as ArrendadoType}
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleDownloadImage} 
+                      variant="hero" 
+                      size="lg"
+                      className="w-full"
+                      disabled={isDownloading}
+                    >
+                      {isDownloading ? (
+                        <>
+                          <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                          Descargando...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-5 h-5 mr-2" />
+                          Descargar Imagen ({exportOptions.format.toUpperCase()})
+                        </>
+                      )}
+                    </Button>
+                  </Card>
+                )}
+
+                {arrendadoFormat === "reel-fotos" && (
+                  <ArrendadoReelSlideshow
                     data={arrendadoData as ArrendadoData}
                     aliadoConfig={aliadoConfig}
                     tipo={selectedContentType as ArrendadoType}
+                    onDownload={handleDownloadImage}
                   />
-                </div>
-                <Button 
-                  onClick={handleDownloadImage} 
-                  variant="hero" 
-                  size="lg"
-                  className="w-full"
-                  disabled={isDownloading}
-                >
-                  {isDownloading ? (
-                    <>
-                      <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                      Descargando...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="w-5 h-5 mr-2" />
-                      Descargar Imagen ({exportOptions.format.toUpperCase()})
-                    </>
-                  )}
-                </Button>
-              </Card>
+                )}
+
+                {arrendadoFormat === "reel-video" && arrendadoData.videoUrl && (
+                  <VideoReelRecorder
+                    videoUrl={arrendadoData.videoUrl}
+                    propertyData={arrendadoData as ArrendadoData}
+                    aliadoConfig={aliadoConfig}
+                    variant={selectedContentType as "arrendado" | "vendido"}
+                    onComplete={(blob, duration) => {
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `reel-${selectedContentType}-${Date.now()}.webm`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      
+                      toast({
+                        title: "✨ Video celebratorio procesado",
+                        description: `${(blob.size / (1024 * 1024)).toFixed(1)} MB - Procesado en ${Math.round(duration)}s`,
+                      });
+                    }}
+                  />
+                )}
+              </>
             ) : selectedContentType === "reel-fotos" && aliadoConfig ? (
               // Reel animado: ReelSlideshow con botón de descarga integrado
               <ReelSlideshow

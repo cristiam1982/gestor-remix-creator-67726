@@ -12,23 +12,31 @@ interface PhotoManagerProps {
   photos: string[];
   onPhotosChange: (photos: string[]) => void;
   contentType: ContentType;
+  context?: "disponible" | "arrendado";
 }
 
-export const PhotoManager = ({ photos, onPhotosChange, contentType }: PhotoManagerProps) => {
+export const PhotoManager = ({ photos, onPhotosChange, contentType, context = "disponible" }: PhotoManagerProps) => {
   const { toast } = useToast();
   const isVideoContent = contentType === "reel-video";
   const maxFiles = isVideoContent ? 1 : contentType === "reel-fotos" ? 10 : 3;
   
   const getHelpText = () => {
+    const isArrendado = context === "arrendado";
+    
     switch (contentType) {
       case "post":
-        return "Sube 1-3 fotos del inmueble (máx. 5MB cada una)";
       case "historia":
-        return "Sube 1-3 fotos del inmueble (máx. 5MB cada una)";
+        return isArrendado 
+          ? "Sube 1-3 fotos del inmueble arrendado (máx. 5MB cada una)"
+          : "Sube 1-3 fotos del inmueble (máx. 5MB cada una)";
       case "reel-fotos":
-        return "Sube 3-10 fotos para el slideshow (máx. 5MB cada una)";
+        return isArrendado
+          ? "Sube 2-10 fotos del inmueble arrendado para el slideshow"
+          : "Sube 3-10 fotos para el slideshow (máx. 5MB cada una)";
       case "reel-video":
-        return "Sube un video (máx. 60 seg, 100MB)";
+        return isArrendado
+          ? "Sube un video del inmueble arrendado (máx. 60 seg, 100MB)"
+          : "Sube un video (máx. 60 seg, 100MB)";
       default:
         return "Sube tus archivos aquí";
     }

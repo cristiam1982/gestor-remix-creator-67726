@@ -1,4 +1,5 @@
 import { AliadoConfig } from "@/types/property";
+import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
 /**
  * Configuración fija del aliado
@@ -6,7 +7,7 @@ import { AliadoConfig } from "@/types/property";
  */
 export const ALIADO_CONFIG: AliadoConfig = {
   nombre: "Ruby Morales Inmobiliaria",
-  logo: "", // El logo se importa directamente en los componentes
+  logo: logoRubyMorales,
   colorPrimario: "#FF8C42", // Naranja del logo
   colorSecundario: "#2B3FD6", // Azul del logo
   whatsapp: "+573126041877",
