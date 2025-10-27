@@ -120,18 +120,18 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
 
       {/* Información inferior - diseño reel minimalista */}
       <div className="absolute bottom-6 left-6 right-6 pr-24 pb-12 z-20">
-        <div className="space-y-3">
+        <div className="space-y-2">
           {/* Título y ubicación */}
           <div>
             <h2 
-              className="text-3xl font-bold mb-2 drop-shadow-lg text-white"
+              className="text-2xl font-bold mb-1 drop-shadow-lg text-white"
             >
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h2>
             {propertyData.ubicacion && (
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-white drop-shadow-lg" />
-                <span className="text-sm text-white drop-shadow-lg">{propertyData.ubicacion}</span>
+                <span className="text-base font-semibold text-white drop-shadow-lg">{propertyData.ubicacion}</span>
               </div>
             )}
           </div>
@@ -140,17 +140,17 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           {(propertyData.canon || propertyData.valorVenta) && (
             <div 
               data-canon-value={propertyData.canon || propertyData.valorVenta}
-              className="inline-block px-5 py-3 rounded-xl z-[60] ring-2 ring-white/70"
+              className="inline-block px-4 py-2 rounded-xl z-[60] ring-2 ring-white/70"
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario
               }}
             >
-              <p className="text-xs text-white font-semibold mb-1 uppercase tracking-wide">
+              <p className="text-[10px] text-white font-semibold mb-0.5 uppercase tracking-wide">
                 {propertyData.modalidad === "venta" || (propertyData.valorVenta && !propertyData.canon)
                   ? "Precio de Venta" 
                   : "Canon Mensual"}
               </p>
-              <p className="text-3xl font-extrabold text-white leading-tight">
+              <p className="text-2xl font-extrabold text-white leading-tight">
                 {formatPrecioColombia(
                   propertyData.modalidad === "venta" 
                     ? propertyData.valorVenta 
@@ -161,18 +161,18 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           )}
 
           {/* Iconos de atributos con fondo más opaco */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {propertyData.habitaciones && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Bed className="w-4 h-4 text-white drop-shadow-lg" />
+                <Bed className="w-3.5 h-3.5 text-white drop-shadow-lg" />
                 <span 
-                  className="text-sm font-semibold text-white"
+                  className="text-xs font-semibold text-white"
                   style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
                 >
                   {propertyData.habitaciones}
@@ -182,15 +182,15 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             
             {propertyData.banos && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Bath className="w-4 h-4 text-white drop-shadow-lg" />
+                <Bath className="w-3.5 h-3.5 text-white drop-shadow-lg" />
                 <span 
-                  className="text-sm font-semibold text-white"
+                  className="text-xs font-semibold text-white"
                   style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
                 >
                   {propertyData.banos}
@@ -200,15 +200,15 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             
             {propertyData.parqueaderos && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Car className="w-4 h-4 text-white drop-shadow-lg" />
+                <Car className="w-3.5 h-3.5 text-white drop-shadow-lg" />
                 <span 
-                  className="text-sm font-semibold text-white"
+                  className="text-xs font-semibold text-white"
                   style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
                 >
                   {propertyData.parqueaderos}
@@ -218,15 +218,15 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             
             {propertyData.area && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Square className="w-4 h-4 text-white drop-shadow-lg" />
+                <Square className="w-3.5 h-3.5 text-white drop-shadow-lg" />
                 <span 
-                  className="text-sm font-semibold text-white"
+                  className="text-xs font-semibold text-white"
                   style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
                 >
                   {propertyData.area}m²
@@ -236,13 +236,13 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             
             {propertyData.estrato && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span className="text-xs font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
                   🏢 Estrato {propertyData.estrato}
                 </span>
               </div>
@@ -250,13 +250,13 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             
             {propertyData.piso && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span className="text-xs font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
                   🏢 Piso {propertyData.piso}
                 </span>
               </div>
@@ -264,13 +264,13 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             
             {propertyData.trafico && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span className="text-xs font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
                   🚦 Tráfico {propertyData.trafico}
                 </span>
               </div>
@@ -278,13 +278,13 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             
             {propertyData.alturaLibre && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span className="text-xs font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
                   📏 {propertyData.alturaLibre}m altura
                 </span>
               </div>
@@ -292,13 +292,13 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             
             {propertyData.vitrina && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span className="text-xs font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
                   🪟 Con vitrina
                 </span>
               </div>
@@ -306,13 +306,13 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             
             {propertyData.uso && (
               <div 
-                className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span className="text-xs font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
                   🏗️ Uso {propertyData.uso}
                 </span>
               </div>
