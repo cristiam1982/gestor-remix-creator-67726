@@ -235,22 +235,22 @@ export const VideoReelRecorder = ({
       // ===== DISEÑO ACTUAL PARA INMUEBLES DISPONIBLES =====
       const propData = propertyData as PropertyData;
       
-      // Logo del aliado (superior izquierda) - formato cuadrado
+      // Logo del aliado (superior izquierda) - formato cuadrado AMPLIADO
       if (logoImage) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
         ctx.beginPath();
-        ctx.roundRect(30, 30, 160, 160, 16);
+        ctx.roundRect(30, 30, 240, 240, 20);
         ctx.fill();
         ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
         ctx.lineWidth = 4;
         ctx.stroke();
-        ctx.drawImage(logoImage, 38, 38, 144, 144);
+        ctx.drawImage(logoImage, 42, 42, 216, 216);
       }
 
       ctx.shadowBlur = 15;
 
       // Tipo de inmueble
-      const badgeY = logoImage ? 220 : 50;
+      const badgeY = logoImage ? 290 : 50;
       ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
       ctx.beginPath();
       ctx.roundRect(40, badgeY, 300, 70, 15);
@@ -268,7 +268,7 @@ export const VideoReelRecorder = ({
 
       // Canon/Precio
       const precioY = ubicacionY + 80;
-      ctx.font = "bold 72px Poppins, sans-serif";
+      ctx.font = "bold 56px Poppins, sans-serif";
       const esVenta = propData.modalidad === "venta" || (!!propData.valorVenta && !propData.canon);
       const precioRaw = esVenta ? propData.valorVenta : propData.canon;
       const precioFmt = formatPrecioColombia(precioRaw || "");
@@ -577,14 +577,14 @@ export const VideoReelRecorder = ({
             ) : (
               // ===== PREVIEW DISPONIBLE =====
               <>
-                {/* Logo aliado - Canvas: 160x160px → Preview: 59px */}
+                {/* Logo aliado - Canvas: 240x240px → Preview: 88px */}
                 <div 
                   className="absolute rounded-xl border-2 bg-white/90"
                   style={{ 
                     top: '11px', 
                     left: '11px', 
-                    width: '59px', 
-                    height: '59px',
+                    width: '88px', 
+                    height: '88px',
                     padding: '2px',
                     borderColor: 'rgba(255, 255, 255, 0.8)'
                   }}
@@ -600,7 +600,7 @@ export const VideoReelRecorder = ({
                 <div 
                   className="absolute"
                   style={{ 
-                    left: '78px', 
+                    left: '103px', 
                     top: '26px'
                   }}
                 >
@@ -612,7 +612,7 @@ export const VideoReelRecorder = ({
                 {/* Contenido superior */}
                 <div 
                   className="absolute left-[11px] right-[11px]" 
-                  style={{ top: '82px' }}
+                  style={{ top: '107px' }}
                 >
                   {/* Tipo de inmueble */}
                   <Badge
@@ -651,7 +651,7 @@ export const VideoReelRecorder = ({
                       <p 
                         className="font-bold drop-shadow-lg leading-tight"
                         style={{ 
-                          fontSize: '27px',
+                          fontSize: '21px',
                           marginTop: '12px'
                         }}
                       >
