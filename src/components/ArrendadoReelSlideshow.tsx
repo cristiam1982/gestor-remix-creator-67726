@@ -376,8 +376,8 @@ export const ArrendadoReelSlideshow = ({
             </div>
 
             {/* Footer: CTA */}
-            <div className="space-y-6 pb-6">
-              <p className="text-lg font-black text-center drop-shadow-lg">
+            <div className="space-y-3 pb-6">
+              <p className="text-xl font-black text-center drop-shadow-lg">
                 💪 ¿Quieres {tipo === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
               </p>
               
@@ -483,8 +483,8 @@ export const ArrendadoReelSlideshow = ({
               )}
             </div>
 
-            <div className="space-y-6 pb-6">
-              <p className="text-lg font-black text-center drop-shadow-lg">
+            <div className="space-y-3 pb-6">
+              <p className="text-xl font-black text-center drop-shadow-lg">
                 💪 ¿Quieres {tipo === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
               </p>
               
