@@ -43,9 +43,11 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
       const dur = videoRef.current.duration;
       setDuration(dur);
       
-      // Validar duración máxima de 60 segundos
-      if (dur > 60) {
-        setError("⚠️ El video excede los 60 segundos máximos permitidos.");
+      // Validar duración máxima de 100 segundos
+      if (dur > 100) {
+        setError("⚠️ El video excede los 100 segundos máximos permitidos.");
+      } else if (dur > 60) {
+        setError("ℹ️ Tu video dura más de 60s. Funcionará en Instagram y TikTok, pero NO en YouTube Shorts (máx 60s).");
       } else {
         setError(null);
       }
@@ -71,9 +73,33 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
           <div>
             <h3 className="text-xl font-semibold text-primary">Reel con Video</h3>
             {duration > 0 && (
-              <p className="text-sm text-muted-foreground">
-                ⏱️ Duración: {duration.toFixed(1)} segundos
-              </p>
+              <>
+                <p className="text-sm text-muted-foreground">
+                  ⏱️ Duración: {duration.toFixed(1)} segundos
+                </p>
+                <div className="flex gap-2 mt-2 flex-wrap">
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    duration <= 100 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  }`}>
+                    Instagram {duration <= 100 ? '✓' : '✗'}
+                  </span>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    duration <= 100 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  }`}>
+                    TikTok {duration <= 100 ? '✓' : '✗'}
+                  </span>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    duration <= 60 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                  }`}>
+                    YouTube Shorts {duration <= 60 ? '✓' : '✗'}
+                  </span>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    duration <= 90 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                  }`}>
+                    Facebook {duration <= 90 ? '✓' : '⚠️'}
+                  </span>
+                </div>
+              </>
             )}
           </div>
           <div className="flex gap-2">
@@ -190,9 +216,18 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
         {/* Instrucciones */}
         <div className="p-3 bg-accent/50 rounded-lg">
           <p className="text-sm text-muted-foreground text-center">
-            💡 Duración recomendada: 30-60 segundos. Se generará un GIF animado con todos los overlays integrados.
+            💡 Duración recomendada: 30-60 segundos (óptimo para todas las redes). Máximo: 100s. Se generará un GIF animado con todos los overlays integrados.
           </p>
         </div>
+
+        {/* Advertencia de tiempo de procesamiento */}
+        {duration > 60 && (
+          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-800">
+              ⏳ <strong>Videos largos (&gt;60s):</strong> El procesamiento puede tardar 2-4 minutos. Ten paciencia mientras se genera tu reel.
+            </p>
+          </div>
+        )}
 
         {/* Botón de control visible */}
         <Button

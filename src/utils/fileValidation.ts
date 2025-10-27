@@ -26,7 +26,7 @@ export const validateImageFile = (file: File): FileValidationResult => {
 
 export const validateVideoFile = async (file: File): Promise<FileValidationResult> => {
   const maxSize = 100 * 1024 * 1024; // 100MB
-  const maxDuration = 60; // 60 seconds
+  const maxDuration = 100; // 100 seconds
 
   if (file.size > maxSize) {
     return {
@@ -49,7 +49,7 @@ export const validateVideoFile = async (file: File): Promise<FileValidationResul
     if (duration > maxDuration) {
       return {
         valid: false,
-        error: `El video debe durar máximo ${maxDuration} segundos. Tu video dura ${Math.round(duration)}s.`,
+        error: `El video debe durar máximo ${maxDuration} segundos. Tu video dura ${Math.round(duration)}s. Nota: Videos >60s no son compatibles con YouTube Shorts.`,
       };
     }
   } catch (error) {
