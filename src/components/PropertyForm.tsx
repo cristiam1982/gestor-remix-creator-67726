@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
 import { Building2, Home, Store, Briefcase, Warehouse, Trees } from "lucide-react";
+import { formatPrecioColombia } from "@/utils/formatters";
 interface PropertyFormProps {
   onDataChange: (data: Partial<PropertyData>) => void;
   data: Partial<PropertyData>;
@@ -44,15 +45,22 @@ export const PropertyForm = ({
               <Input 
                 id="precio" 
                 type="text" 
-                value={data.modalidad === "arriendo" ? (data.canon || "") : (data.valorVenta || "")} 
+                value={
+                  data.modalidad === "arriendo" 
+                    ? formatPrecioColombia(data.canon || "") 
+                    : formatPrecioColombia(data.valorVenta || "")
+                } 
                 onChange={(e) => {
+                  // Eliminar todo excepto números
+                  const rawValue = e.target.value.replace(/\D/g, '');
+                  
                   if (data.modalidad === "arriendo") {
-                    updateField("canon", e.target.value);
+                    updateField("canon", rawValue);
                   } else {
-                    updateField("valorVenta", e.target.value);
+                    updateField("valorVenta", rawValue);
                   }
                 }} 
-                placeholder={data.modalidad === "arriendo" ? "2.500.000" : "350.000.000"} 
+                placeholder={data.modalidad === "arriendo" ? "$ 2.500.000" : "$ 350.000.000"} 
                 className={errors?.canon || errors?.valorVenta ? "border-destructive" : ""} 
               />
               {(errors?.canon || errors?.valorVenta) && (
@@ -149,7 +157,16 @@ export const PropertyForm = ({
         {isLote && <>
             <div>
               <Label htmlFor="valorVenta">Valor de Venta o Canon (COP)</Label>
-              <Input id="valorVenta" value={data.valorVenta || ""} onChange={e => updateField("valorVenta", e.target.value)} placeholder="350.000.000" className={errors?.valorVenta ? "border-destructive" : ""} />
+              <Input 
+                id="valorVenta" 
+                value={formatPrecioColombia(data.valorVenta || "")} 
+                onChange={e => {
+                  const rawValue = e.target.value.replace(/\D/g, '');
+                  updateField("valorVenta", rawValue);
+                }} 
+                placeholder="$ 350.000.000" 
+                className={errors?.valorVenta ? "border-destructive" : ""} 
+              />
               {errors?.valorVenta && <p className="text-xs text-destructive mt-1">{errors.valorVenta}</p>}
             </div>
 

@@ -3,6 +3,7 @@ import { PropertyData, AliadoConfig, ContentType } from "@/types/property";
 import { TemplateTheme, TEMPLATE_THEMES } from "@/types/templates";
 import { Bed, Bath, Car, MapPin, Square, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatPrecioColombia } from "@/utils/formatters";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
@@ -150,7 +151,11 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
                   : "Canon Mensual"}
               </p>
               <p className="text-3xl font-extrabold text-white leading-tight">
-                {propertyData.canon || propertyData.valorVenta}
+                {formatPrecioColombia(
+                  propertyData.modalidad === "venta" 
+                    ? propertyData.valorVenta 
+                    : propertyData.canon
+                )}
               </p>
             </div>
           )}
