@@ -427,8 +427,20 @@ const Index = () => {
                 </Card>
 
                 <PhotoManager
-                  photos={arrendadoData.fotos || []}
-                  onPhotosChange={(photos) => setArrendadoData({ ...arrendadoData, fotos: photos })}
+                  photos={
+                    arrendadoFormat === "reel-video" 
+                      ? (arrendadoData.videoUrl ? [arrendadoData.videoUrl] : [])
+                      : (arrendadoData.fotos || [])
+                  }
+                  onPhotosChange={(photos) => {
+                    if (arrendadoFormat === "reel-video") {
+                      // Para reel-video, guardar en videoUrl
+                      setArrendadoData({ ...arrendadoData, videoUrl: photos[0] || "" });
+                    } else {
+                      // Para historia/reel-fotos, guardar en fotos
+                      setArrendadoData({ ...arrendadoData, fotos: photos });
+                    }
+                  }}
                   contentType={
                     arrendadoFormat === "reel-video" ? "reel-video" :
                     arrendadoFormat === "reel-fotos" ? "reel-fotos" : "historia"

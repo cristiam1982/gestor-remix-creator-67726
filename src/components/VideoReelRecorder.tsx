@@ -8,6 +8,7 @@ import { ArrendadoData } from "@/types/arrendado";
 import { formatPrecioColombia } from "@/utils/formatters";
 import { VideoRecordingProgress } from "@/components/VideoRecordingProgress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
@@ -31,6 +32,8 @@ export const VideoReelRecorder = ({
   const hiddenVideoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  
+  const { toast } = useToast();
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -79,6 +82,20 @@ export const VideoReelRecorder = ({
     loadLogos();
   }, []);
 
+  // Log para debugging
+  useEffect(() => {
+    console.log('[VideoReelRecorder] Estado actual:', {
+      variant,
+      hasVideoUrl: !!videoUrl,
+      videoUrlLength: videoUrl?.length,
+      videoUrlPreview: videoUrl?.substring(0, 50) + '...',
+      hasLogoImage: !!logoImage,
+      hasElGestorLogo: !!elGestorLogoImage,
+      propertyDataKeys: Object.keys(propertyData),
+      isArrendado: variant === "arrendado" || variant === "vendido"
+    });
+  }, [variant, videoUrl, logoImage, elGestorLogoImage, propertyData]);
+
   // Configurar video cuando cargue
   useEffect(() => {
     const video = videoRef.current;
@@ -86,6 +103,7 @@ export const VideoReelRecorder = ({
 
     const handleLoadedMetadata = () => {
       setDuration(video.duration);
+      console.log('[VideoReelRecorder] Video cargado correctamente, duración:', video.duration);
     };
 
     video.addEventListener("loadedmetadata", handleLoadedMetadata);
@@ -443,6 +461,17 @@ export const VideoReelRecorder = ({
             muted
             playsInline
             onTimeUpdate={(e) => !isRecording && setCurrentTime(e.currentTarget.currentTime)}
+            onError={(e) => {
+              console.error('[VideoReelRecorder] Error loading video:', e);
+              toast({
+                title: "❌ Error al cargar el video",
+                description: "El formato de video no es compatible. Intenta con MP4.",
+                variant: "destructive",
+              });
+            }}
+            onLoadedMetadata={() => {
+              console.log('[VideoReelRecorder] Video metadata cargada');
+            }}
           />
           
           {/* Overlays preview */}
@@ -822,15 +851,22 @@ export const VideoReelRecorder = ({
         {/* Botones de acción */}
         <div className="mt-6 space-y-3">
           {recordingStage === "idle" && (
-            <Button
-              onClick={startRecording}
-              variant="hero"
-              size="lg"
-              className="w-full"
-              disabled={isRecording || !logoImage}
-            >
-              🎬 Generar Video con Overlays
-            </Button>
+            <>
+              <Button
+                onClick={startRecording}
+                variant="hero"
+                size="lg"
+                className="w-full"
+                disabled={isRecording || !logoImage}
+              >
+                🎬 Generar Video con Overlays
+              </Button>
+              {!logoImage && (
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  ⏳ Cargando logos...
+                </p>
+              )}
+            </>
           )}
 
           {recordingStage === "complete" && generatedBlob && (
