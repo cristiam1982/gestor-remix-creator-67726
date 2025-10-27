@@ -141,49 +141,32 @@ export const generateArrendadoCaption = (
   aliado: AliadoConfig,
   tipo: ArrendadoType
 ): string => {
-  const { diasEnMercado, ubicacion } = data;
-  const { ciudad, whatsapp, nombre } = aliado;
-  
-  let caption = "";
-  let velocidadText = "";
-  
-  // Texto según velocidad
-  if (diasEnMercado <= 7) {
-    velocidadText = `🚀 ¡RÉCORD! ${tipo === "arrendado" ? "Arrendado" : "Vendido"} en solo ${diasEnMercado} día${diasEnMercado === 1 ? '' : 's'}`;
-  } else if (diasEnMercado <= 15) {
-    velocidadText = `⚡ ¡${tipo === "arrendado" ? "Arrendado" : "Vendido"} en solo ${diasEnMercado} días!`;
-  } else {
-    velocidadText = `🎉 ¡Otro inmueble ${tipo === "arrendado" ? "arrendado" : "vendido"}!`;
-  }
+  const { tipo: tipoInmueble, ubicacion, diasEnMercado, precio } = data;
   
   const tipoLabel = {
-    apartamento: "Apartamento",
-    casa: "Casa",
-    local: "Local",
-    oficina: "Oficina",
-    bodega: "Bodega",
-    lote: "Lote"
-  }[data.tipo];
-  
-  caption = `${velocidadText}\n\n`;
-  caption += `${tipoLabel} en ${ubicacion} - ¡Otro propietario feliz con ${nombre}! 🏡✨\n\n`;
-  
-  if (tipo === "arrendado") {
-    caption += `💪 ¿Quieres arrendar tu inmueble rápido y seguro?\n`;
-    caption += `Con nosotros, tu propiedad NO se queda esperando.\n\n`;
-  } else {
-    caption += `💪 ¿Quieres vender tu inmueble rápido y al mejor precio?\n`;
-    caption += `Te garantizamos resultados efectivos.\n\n`;
-  }
-  
-  caption += `📱 Contáctanos: ${whatsapp}\n\n`;
-  
-  // Hashtags
-  const hashtags = tipo === "arrendado"
-    ? `#PropiedadArrendada #${ciudad.replace(/\s/g, "")} #ElGestor #ArriendoRápido #${ubicacion.replace(/\s/g, "")}`
-    : `#PropiedadVendida #${ciudad.replace(/\s/g, "")} #ElGestor #VentaRápida #${ubicacion.replace(/\s/g, "")}`;
-  
-  caption += hashtags;
-  
+    apartamento: "apartamento",
+    casa: "casa",
+    local: "local comercial",
+    oficina: "oficina",
+    bodega: "bodega",
+    lote: "lote"
+  }[tipoInmueble];
+
+  const velocidad = diasEnMercado <= 7 
+    ? `🚀 ¡RÉCORD! En solo ${diasEnMercado} día${diasEnMercado === 1 ? '' : 's'}`
+    : diasEnMercado <= 15 
+    ? `⚡ En solo ${diasEnMercado} días`
+    : `🎉 En ${diasEnMercado} días`;
+
+  const accionInfinitivo = tipo === "arrendado" ? "arrendar" : "vender";
+
+  let caption = `🎉 ¡${tipo === "arrendado" ? "ARRENDADO" : "VENDIDO"}! ${velocidad}\n\n`;
+  caption += `${tipoLabel.charAt(0).toUpperCase() + tipoLabel.slice(1)} en ${ubicacion}\n`;
+  caption += `💰 ${tipo === "arrendado" ? "Canon:" : "Precio:"} ${precio}${tipo === "arrendado" ? "/mes" : ""}\n\n`;
+  caption += `✨ ¡Otro propietario feliz con ${aliado.nombre}!\n\n`;
+  caption += `💪 ¿Quieres ${accionInfinitivo} tu inmueble rápido y seguro?\n`;
+  caption += `📱 Contáctanos: ${aliado.whatsapp}\n\n`;
+  caption += `#Propiedad${tipo === "arrendado" ? "Arrendada" : "Vendida"} #${aliado.ciudad.replace(/\s/g, "")} #ElGestor #${accionInfinitivo}Rápido #${ubicacion.replace(/\s/g, "")}`;
+
   return caption;
 };

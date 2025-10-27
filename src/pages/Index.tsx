@@ -31,7 +31,10 @@ const Index = () => {
   const [aliadoConfig, setAliadoConfig] = useState<AliadoConfig>(ALIADO_CONFIG);
   const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
   const [propertyData, setPropertyData] = useState<Partial<PropertyData>>({ fotos: [] });
-  const [arrendadoData, setArrendadoData] = useState<Partial<ArrendadoData>>({ fotos: [] });
+  const [arrendadoData, setArrendadoData] = useState<Partial<ArrendadoData>>({
+    fotos: [],
+    precio: "",
+  });
   const [currentStep, setCurrentStep] = useState(1);
   const [generatedCaption, setGeneratedCaption] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -342,6 +345,7 @@ const Index = () => {
                     data={arrendadoData}
                     updateField={(field, value) => setArrendadoData({ ...arrendadoData, [field]: value })}
                     errors={validationErrors}
+                    tipo={selectedContentType as "arrendado" | "vendido"}
                   />
                 </Card>
 
@@ -359,7 +363,8 @@ const Index = () => {
                   disabled={
                     !arrendadoData.tipo || 
                     !arrendadoData.ubicacion || 
-                    !arrendadoData.diasEnMercado || 
+                    !arrendadoData.diasEnMercado ||
+                    !arrendadoData.precio ||
                     arrendadoData.fotos?.length === 0
                   }
                 >
@@ -427,7 +432,6 @@ const Index = () => {
                     data={arrendadoData as ArrendadoData}
                     aliadoConfig={aliadoConfig}
                     tipo={selectedContentType as ArrendadoType}
-                    size="post"
                   />
                 </div>
                 <Button 

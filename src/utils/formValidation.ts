@@ -53,6 +53,7 @@ export const arrendadoSchema = z.object({
   tipo: z.enum(["apartamento", "casa", "local", "oficina", "bodega", "lote"]),
   ubicacion: z.string().min(5, "La ubicación debe ser más específica"),
   diasEnMercado: z.number().min(1, "Mínimo 1 día").max(365, "Máximo 365 días"),
+  precio: z.string().min(1, "El precio es requerido"),
   fotos: z.array(z.string()).min(1, "Debes subir al menos 1 foto"),
 });
 

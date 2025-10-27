@@ -4,6 +4,7 @@ export interface ArrendadoData {
   tipo: PropertyType;
   ubicacion: string;
   diasEnMercado: number;
+  precio: string;
   fotos: string[];
 }
 
