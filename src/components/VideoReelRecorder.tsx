@@ -154,15 +154,25 @@ export const VideoReelRecorder = ({
         ctx.drawImage(logoImage, 40, 40, 240, 240);
       }
       
-      ctx.shadowBlur = 15;
+      // Resetear sombra antes del badge (sin sombra negra)
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
       
-      // Badge celebratorio grande
+      // Badge celebratorio grande (10% más grande, más abajo)
       ctx.fillStyle = "white";
-      ctx.fillRect(canvas.width / 2 - 200, 250, 400, 100);
+      ctx.fillRect(canvas.width / 2 - 220, 320, 440, 110);
       ctx.fillStyle = mainColor;
-      ctx.font = "bold 56px Inter, sans-serif";
+      ctx.font = "bold 62px Inter, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(badgeText, canvas.width / 2, 320);
+      ctx.fillText(badgeText, canvas.width / 2, 397);
+      
+      // Restaurar sombra para otros elementos
+      ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+      ctx.shadowBlur = 20;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 4;
       
       // Validar que los datos estén completos
       if (!arrendadoData.precio || !arrendadoData.diasEnMercado) {
@@ -482,15 +492,15 @@ export const VideoReelRecorder = ({
                   />
                 </div>
 
-                {/* Badge celebratorio */}
+                {/* Badge celebratorio (sin sombra negra, 10% más grande) */}
                 <div 
-                  className="absolute left-1/2 -translate-x-1/2 rounded-2xl font-black text-center shadow-2xl"
+                  className="absolute left-1/2 -translate-x-1/2 rounded-2xl font-black text-center"
                   style={{
-                    top: '92px',  // Canvas: 250px → 92px (ajustado para mejor legibilidad)
+                    top: '118px',  // Canvas: 320px → 118px (320 * 400/1080)
                     backgroundColor: 'white',
                     color: variant === "arrendado" ? aliadoConfig.colorPrimario : aliadoConfig.colorSecundario,
-                    padding: '12px 30px',
-                    fontSize: '24px'  // Canvas: 56px → 24px (aumentado para legibilidad)
+                    padding: '14px 35px',
+                    fontSize: '26px'  // Canvas: 62px → 26px (62 * 400/1080 + ajuste)
                   }}
                 >
                   {variant === "arrendado" ? "¡RENTADO!" : "¡VENDIDO!"}
