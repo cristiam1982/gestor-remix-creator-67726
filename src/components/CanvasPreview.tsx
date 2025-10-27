@@ -109,7 +109,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
         <img 
           src={logoRubyMorales} 
           alt={aliadoConfig.nombre}
-          className={`${isStory ? "w-[26px] h-[26px]" : "w-22 h-22"} rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1`}
+          className={`${isStory ? "w-[26px] h-[26px]" : "w-16 h-16"} rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1`}
         />
         <div>
           <p className="text-sm font-semibold text-white drop-shadow-lg">
