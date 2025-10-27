@@ -640,20 +640,25 @@ export const VideoReelRecorder = ({
                   </p>
 
                   {/* Precio */}
-                  <p 
-                    className="font-bold drop-shadow-lg leading-tight"
-                    style={{ 
-                      fontSize: '27px',
-                      marginTop: '12px'
-                    }}
-                  >
-                    {'canon' in propertyData ? (() => {
-                      const propData = propertyData as PropertyData;
-                      const esVenta = propData.modalidad === "venta" || (!!propData.valorVenta && !propData.canon);
-                      const raw = esVenta ? (propData.valorVenta || "") : (propData.canon || "");
-                      return `${formatPrecioColombia(raw)}${esVenta ? "" : "/mes"}`;
-                    })() : ''}
-                  </p>
+                  {(() => {
+                    const propData = propertyData as PropertyData;
+                    const esVenta = propData.modalidad === "venta" || (!!propData.valorVenta && !propData.canon);
+                    const precio = esVenta ? propData.valorVenta : propData.canon;
+                    
+                    if (!precio) return null;
+                    
+                    return (
+                      <p 
+                        className="font-bold drop-shadow-lg leading-tight"
+                        style={{ 
+                          fontSize: '27px',
+                          marginTop: '12px'
+                        }}
+                      >
+                        💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
+                      </p>
+                    );
+                  })()}
 
                    {/* Características */}
                    <div 
