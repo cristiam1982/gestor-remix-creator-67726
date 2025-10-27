@@ -173,17 +173,17 @@ export const VideoReelRecorder = ({
       // Precio prominente
       ctx.textAlign = "center";
       ctx.fillStyle = "white";
-      ctx.font = "20px Inter, sans-serif";
+      ctx.font = "bold 32px Inter, sans-serif";
       ctx.fillText(
         variant === "arrendado" ? "Arrendado por:" : "Vendido por:",
         canvas.width / 2,
-        canvas.height / 2 - 80
+        canvas.height / 2 - 100
       );
       ctx.font = "bold 84px Inter, sans-serif";
       ctx.fillText(formatPrecioColombia(arrendadoData.precio), canvas.width / 2, canvas.height / 2);
       if (variant === "arrendado") {
-        ctx.font = "28px Inter, sans-serif";
-        ctx.fillText("/mes", canvas.width / 2, canvas.height / 2 + 50);
+        ctx.font = "bold 36px Inter, sans-serif";
+        ctx.fillText("/mes", canvas.width / 2, canvas.height / 2 + 60);
       }
       
       // Velocidad
@@ -192,8 +192,8 @@ export const VideoReelRecorder = ({
         : arrendadoData.diasEnMercado <= 15
         ? `⚡ En ${arrendadoData.diasEnMercado} días`
         : `🎉 En ${arrendadoData.diasEnMercado} días`;
-      ctx.font = "bold 32px Inter, sans-serif";
-      ctx.fillText(diasTexto, canvas.width / 2, canvas.height / 2 + 120);
+      ctx.font = "bold 40px Inter, sans-serif";
+      ctx.fillText(diasTexto, canvas.width / 2, canvas.height / 2 + 140);
       
       // Tipo + Ubicación
       const tipoLabel = {
@@ -205,20 +205,20 @@ export const VideoReelRecorder = ({
         lote: "Lote"
       }[arrendadoData.tipo] || arrendadoData.tipo;
       
-      ctx.font = "bold 36px Inter, sans-serif";
-      ctx.fillText(tipoLabel, canvas.width / 2, canvas.height / 2 + 180);
+      ctx.font = "bold 44px Inter, sans-serif";
+      ctx.fillText(tipoLabel, canvas.width / 2, canvas.height / 2 + 210);
       ctx.fillText(
         `📍 ${arrendadoData.ubicacion}`,
         canvas.width / 2,
-        canvas.height / 2 + 230
+        canvas.height / 2 + 270
       );
       
       // CTA inferior - MÁS GRANDE
-      ctx.font = "bold 36px Inter, sans-serif";
+      ctx.font = "bold 42px Inter, sans-serif";
       ctx.fillText(
         `💪 ¿Quieres ${variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`,
         canvas.width / 2,
-        1600
+        1580
       );
       
     } else {
@@ -515,25 +515,25 @@ export const VideoReelRecorder = ({
                 {/* Precio prominente (centro) */}
                 <div 
                   className="absolute left-1/2 -translate-x-1/2 text-center"
-                  style={{ top: '355px' }}
+                  style={{ top: '350px' }}
                 >
-                  <p className="text-[9px] font-semibold drop-shadow-lg opacity-90">
+                  <p className="text-[12px] font-bold drop-shadow-lg opacity-90">
                     {variant === "arrendado" ? "Arrendado por:" : "Vendido por:"}
                   </p>
                   <p className="text-[36px] font-black drop-shadow-2xl leading-none">
                     {formatPrecioColombia(('precio' in propertyData) ? propertyData.precio : '')}
                   </p>
                   {variant === "arrendado" && (
-                    <p className="text-[12px] font-medium opacity-80">/mes</p>
+                    <p className="text-[13px] font-bold opacity-80">/mes</p>
                   )}
                 </div>
 
                 {/* Velocidad */}
                 <div 
                   className="absolute left-1/2 -translate-x-1/2"
-                  style={{ top: '425px' }}
+                  style={{ top: '435px' }}
                 >
-                  <p className="text-[14px] font-bold drop-shadow-lg">
+                  <p className="text-[15px] font-bold drop-shadow-lg">
                     {(() => {
                       const dias = ('diasEnMercado' in propertyData) ? propertyData.diasEnMercado : 0;
                       if (dias <= 7) return `🚀 En solo ${dias} día${dias === 1 ? '' : 's'}`;
@@ -546,12 +546,12 @@ export const VideoReelRecorder = ({
                 {/* Tipo + Ubicación */}
                 <div 
                   className="absolute left-1/2 -translate-x-1/2 text-center"
-                  style={{ top: '465px' }}
+                  style={{ top: '485px' }}
                 >
-                  <p className="text-[15px] font-extrabold drop-shadow-lg">
+                  <p className="text-[16px] font-extrabold drop-shadow-lg">
                     {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
                   </p>
-                  <p className="text-[15px] font-semibold drop-shadow-lg">
+                  <p className="text-[16px] font-semibold drop-shadow-lg">
                     📍 {propertyData.ubicacion}
                   </p>
                 </div>
@@ -559,9 +559,9 @@ export const VideoReelRecorder = ({
                 {/* CTA inferior */}
                 <div 
                   className="absolute left-1/2 -translate-x-1/2 text-center"
-                  style={{ bottom: '80px' }}
+                  style={{ bottom: '75px' }}
                 >
-                  <p className="text-[15px] font-bold drop-shadow-lg">
+                  <p className="text-[16px] font-bold drop-shadow-lg">
                     💪 ¿Quieres {variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
                   </p>
                 </div>
