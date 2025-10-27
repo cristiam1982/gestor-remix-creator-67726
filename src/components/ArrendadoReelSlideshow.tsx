@@ -102,11 +102,11 @@ export const ArrendadoReelSlideshow = ({
   const [photos, setPhotos] = useState<string[]>(data.fotos || []);
   const { toast } = useToast();
   
-  const slideDuration = 2500;
+  const slideDuration = 2000;
   const mainColor = tipo === "arrendado" 
     ? aliadoConfig.colorPrimario 
     : aliadoConfig.colorSecundario;
-  const badgeText = tipo === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
+  const badgeText = tipo === "arrendado" ? "¡RENTADO!" : "¡VENDIDO!";
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -276,7 +276,7 @@ export const ArrendadoReelSlideshow = ({
               Reel {tipo === "arrendado" ? "Arrendado" : "Vendido"}
             </h3>
             <p className="text-sm text-muted-foreground">
-              {photos.length} fotos · {(photos.length * 2.5).toFixed(1)}s total
+              {photos.length} fotos · {(photos.length * 2.0).toFixed(1)}s total
             </p>
           </div>
           <div className="flex gap-2">
@@ -333,7 +333,7 @@ export const ArrendadoReelSlideshow = ({
             <div className="flex flex-col items-center gap-4 my-auto">
               <div className="text-center">
                 <p className="text-sm font-semibold drop-shadow-lg opacity-90 mb-1">
-                  {tipo === "arrendado" ? "Arrendado por:" : "Vendido por:"}
+                  {tipo === "arrendado" ? "Rentado por:" : "Vendido por:"}
                 </p>
                 <p className="text-5xl font-black drop-shadow-2xl leading-none">
                   {formatPrecioColombia(data.precio)}
@@ -368,7 +368,7 @@ export const ArrendadoReelSlideshow = ({
                   <img 
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-20 object-contain"
+                    className="h-22 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
@@ -378,7 +378,7 @@ export const ArrendadoReelSlideshow = ({
             {/* Footer: CTA */}
             <div className="space-y-6 pb-6">
               <p className="text-lg font-black text-center drop-shadow-lg">
-                💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
+                💪 ¿Quieres {tipo === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
               </p>
               
               {/* Logo El Gestor */}
@@ -441,7 +441,7 @@ export const ArrendadoReelSlideshow = ({
             <div className="flex flex-col items-center gap-4 my-auto">
               <div className="text-center">
                 <p className="text-sm font-semibold drop-shadow-lg opacity-90 mb-1">
-                  {tipo === "arrendado" ? "Arrendado por:" : "Vendido por:"}
+                  {tipo === "arrendado" ? "Rentado por:" : "Vendido por:"}
                 </p>
                 <p className="text-5xl font-black drop-shadow-2xl leading-none">
                   {formatPrecioColombia(data.precio)}
@@ -476,7 +476,7 @@ export const ArrendadoReelSlideshow = ({
                   <img 
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-20 object-contain"
+                    className="h-22 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
@@ -485,7 +485,7 @@ export const ArrendadoReelSlideshow = ({
 
             <div className="space-y-6 pb-6">
               <p className="text-lg font-black text-center drop-shadow-lg">
-                💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
+                💪 ¿Quieres {tipo === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
               </p>
               
               {/* Logo El Gestor */}
