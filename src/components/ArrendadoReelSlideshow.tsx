@@ -103,7 +103,9 @@ export const ArrendadoReelSlideshow = ({
   const { toast } = useToast();
   
   const slideDuration = 2500;
-  const mainColor = tipo === "arrendado" ? "#10B981" : "#3B82F6";
+  const mainColor = tipo === "arrendado" 
+    ? aliadoConfig.colorPrimario 
+    : aliadoConfig.colorSecundario;
   const badgeText = tipo === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
 
   const sensors = useSensors(
@@ -362,11 +364,11 @@ export const ArrendadoReelSlideshow = ({
               </div>
 
               {aliadoConfig.logo && (
-                <div className="bg-white/10 backdrop-blur-sm px-6 py-4 rounded-xl">
+                <div className="bg-white/10 backdrop-blur-sm px-8 py-5 rounded-xl">
                   <img 
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-14 object-contain"
+                    className="h-20 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
@@ -374,7 +376,7 @@ export const ArrendadoReelSlideshow = ({
             </div>
 
             {/* Footer: CTA */}
-            <div className="space-y-3 pb-4">
+            <div className="space-y-6 pb-6">
               <p className="text-lg font-black text-center drop-shadow-lg">
                 💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
               </p>
@@ -470,18 +472,18 @@ export const ArrendadoReelSlideshow = ({
               </div>
 
               {aliadoConfig.logo && (
-                <div className="bg-white/10 backdrop-blur-sm px-6 py-4 rounded-xl">
+                <div className="bg-white/10 backdrop-blur-sm px-8 py-5 rounded-xl">
                   <img 
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-14 object-contain"
+                    className="h-20 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
               )}
             </div>
 
-            <div className="space-y-3 pb-4">
+            <div className="space-y-6 pb-6">
               <p className="text-lg font-black text-center drop-shadow-lg">
                 💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
               </p>

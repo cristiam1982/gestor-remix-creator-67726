@@ -34,7 +34,9 @@ export const ArrendadoPreview = ({
   };
 
   const badgeText = tipo === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
-  const mainColor = tipo === "arrendado" ? "#10B981" : "#3B82F6";
+  const mainColor = tipo === "arrendado" 
+    ? aliadoConfig.colorPrimario 
+    : aliadoConfig.colorSecundario;
 
   const tipoLabel = {
     apartamento: "Apartamento",
@@ -76,10 +78,10 @@ export const ArrendadoPreview = ({
         )}
 
         {/* Contenido principal */}
-        <div className="relative h-full flex flex-col justify-between p-8 text-white">
+        <div className="relative h-full flex flex-col justify-between px-8 pt-12 pb-6 text-white">
           
-          {/* Header: Badge celebratorio MÁS GRANDE */}
-          <div className="flex flex-col items-center gap-3">
+          {/* Header: Badge celebratorio */}
+          <div className="flex flex-col items-center gap-3 -mt-2">
             <div 
               className="px-10 py-5 rounded-3xl font-black text-5xl text-center shadow-2xl animate-scale-in"
               style={{ 
@@ -92,7 +94,7 @@ export const ArrendadoPreview = ({
           </div>
 
           {/* Centro: PRECIO + Velocidad + Info */}
-          <div className="flex flex-col items-center gap-6 my-auto">
+          <div className="flex flex-col items-center gap-6 mt-auto mb-16">
             
             {/* PRECIO - El elemento MÁS IMPORTANTE */}
             <div className="text-center space-y-2">
@@ -144,7 +146,7 @@ export const ArrendadoPreview = ({
           </div>
 
           {/* Footer: CTA para propietarios */}
-          <div className="space-y-3">
+          <div className="space-y-4 pb-2">
             <div className="text-center">
               <p className="text-2xl font-black drop-shadow-lg">
                 💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?

@@ -119,19 +119,21 @@ export const VideoReelRecorder = ({
     if (isArrendadoVariant) {
       // ===== DISEÑO CELEBRATORIO PARA ARRENDADO/VENDIDO =====
       const arrendadoData = propertyData as ArrendadoData;
-      const mainColor = variant === "arrendado" ? "#10B981" : "#3B82F6";
+      const mainColor = variant === "arrendado" 
+        ? aliadoConfig.colorPrimario 
+        : aliadoConfig.colorSecundario;
       const badgeText = variant === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
       
-      // Logo del aliado (superior izquierda)
+      // Logo del aliado (superior izquierda) - MÁS GRANDE
       if (logoImage) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
         ctx.beginPath();
-        ctx.roundRect(30, 30, 240, 240, 20);
+        ctx.roundRect(30, 30, 260, 260, 20);
         ctx.fill();
         ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
         ctx.lineWidth = 5;
         ctx.stroke();
-        ctx.drawImage(logoImage, 38, 38, 224, 224);
+        ctx.drawImage(logoImage, 40, 40, 240, 240);
       }
       
       ctx.shadowBlur = 15;
@@ -193,12 +195,12 @@ export const VideoReelRecorder = ({
         canvas.height / 2 + 230
       );
       
-      // CTA inferior
-      ctx.font = "bold 32px Inter, sans-serif";
+      // CTA inferior - MÁS GRANDE
+      ctx.font = "bold 36px Inter, sans-serif";
       ctx.fillText(
         `💪 ¿Quieres ${variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`,
         canvas.width / 2,
-        1640
+        1600
       );
       
     } else {
@@ -291,14 +293,14 @@ export const VideoReelRecorder = ({
     ctx.fillStyle = "#E0E0E0";
     ctx.fillText(aliadoConfig.nombre, 40, bottomY + 130);
 
-    // Logo El Gestor (inferior derecha) - sin opacidad, proporción correcta
+    // Logo El Gestor (inferior derecha) - MÁS GRANDE
     if (elGestorLogoImage) {
-      const logoHeight = 104; // Altura deseada (+15%)
+      const logoHeight = 118; // Altura aumentada
       const logoAspectRatio = elGestorLogoImage.width / elGestorLogoImage.height;
       const logoWidth = logoHeight * logoAspectRatio; // Calcular ancho proporcional
       const logoX = 1080 - logoWidth - 30; // Posición X ajustada al ancho real
       
-      ctx.drawImage(elGestorLogoImage, logoX, 1582, logoWidth, logoHeight);
+      ctx.drawImage(elGestorLogoImage, logoX, 1670, logoWidth, logoHeight);
     }
 
     // Reset shadow
@@ -443,265 +445,363 @@ export const VideoReelRecorder = ({
             onTimeUpdate={(e) => !isRecording && setCurrentTime(e.currentTarget.currentTime)}
           />
           
-          {/* Overlays preview - Sincronizado con canvas */}
+          {/* Overlays preview */}
           <div className="absolute inset-0 pointer-events-none text-white">
-            {/* Logo aliado - Canvas: 160x160px → Preview: 59px (cuadrado con diseño unificado) */}
-            <div 
-              className="absolute rounded-xl border-2 bg-white/90"
-              style={{ 
-                top: '11px', 
-                left: '11px', 
-                width: '59px', 
-                height: '59px',
-                padding: '2px',
-                borderColor: 'rgba(255, 255, 255, 0.8)'
-              }}
-            >
-              <img
-                src={logoRubyMorales}
-                alt="Logo"
-                className="w-full h-full object-contain"
-              />
-            </div>
+            {variant === "arrendado" || variant === "vendido" ? (
+              // ===== PREVIEW CELEBRATORIO =====
+              <>
+                {/* Logo aliado más grande */}
+                <div 
+                  className="absolute rounded-2xl border-[3px] bg-white/90"
+                  style={{ 
+                    top: '11px', 
+                    left: '11px', 
+                    width: '96px',  // Canvas: 260px → 96px (260 * 400/1080)
+                    height: '96px',
+                    padding: '4px',
+                    borderColor: 'rgba(255, 255, 255, 0.8)'
+                  }}
+                >
+                  <img
+                    src={logoRubyMorales}
+                    alt="Logo"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
 
-            {/* Ciudad junto al logo */}
-            <div 
-              className="absolute"
-              style={{ 
-                left: '78px', 
-                top: '26px'
-              }}
-            >
-              <p className="text-sm font-semibold text-white drop-shadow-lg">
-                {aliadoConfig.ciudad}
-              </p>
-            </div>
+                {/* Badge celebratorio */}
+                <div 
+                  className="absolute left-1/2 -translate-x-1/2 rounded-2xl font-black text-center shadow-2xl"
+                  style={{
+                    top: '106px',  // Canvas: 250px → 106px
+                    backgroundColor: 'white',
+                    color: variant === "arrendado" ? aliadoConfig.colorPrimario : aliadoConfig.colorSecundario,
+                    padding: '12px 30px',
+                    fontSize: '21px'  // Canvas: 56px → 21px
+                  }}
+                >
+                  {variant === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!"}
+                </div>
 
-            {/* Contenido superior */}
-            <div 
-              className="absolute left-[11px] right-[11px]" 
-              style={{ top: '82px' }}
-            >
-              {/* Tipo de inmueble - Canvas: 300x70px, font 38px → Preview: 111x26px, font 14px */}
-              <Badge
-                style={{ 
-                  backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  padding: '10px 22px',
-                  borderRadius: '6px'
-                }}
-                className="text-white shadow-lg inline-block"
-              >
-                {propertyData.tipo.toUpperCase()}
-              </Badge>
-
-              {/* Ubicación - Canvas: font 42px → Preview: font 16px */}
-              <p 
-                className="font-bold drop-shadow-lg"
-                style={{ 
-                  fontSize: '16px',
-                  marginTop: '15px'
-                }}
-              >
-                📍 {propertyData.ubicacion}
-              </p>
-
-              {/* Precio - Canvas: font 72px → Preview: font 27px */}
-              <p 
-                className="font-bold drop-shadow-lg leading-tight"
-                style={{ 
-                  fontSize: '27px',
-                  marginTop: '12px'
-                }}
-              >
-                {'canon' in propertyData ? propertyData.canon || propertyData.valorVenta : ''}
-              </p>
-
-              {/* Características - Canvas: font 32px → Preview: font 12px */}
-              <div 
-                className="space-y-[7px]"
-                style={{ 
-                  marginTop: '12px',
-                  fontSize: '12px',
-                  fontWeight: '600'
-                }}
-              >
-                {'habitaciones' in propertyData && propertyData.habitaciones && (
-                  <div 
-                    className="inline-block rounded-xl"
-                    style={{ 
-                      padding: '8px 12px',
-                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
-                  >
-                    🛏️ {propertyData.habitaciones} hab
-                  </div>
-                )}
-                {'banos' in propertyData && propertyData.banos && (
-                  <div 
-                    className="inline-block rounded-xl"
-                    style={{ 
-                      padding: '8px 12px', 
-                      marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
-                  >
-                    🚿 {propertyData.banos} baños
-                  </div>
-                )}
-                {'parqueaderos' in propertyData && propertyData.parqueaderos && (
-                  <div 
-                    className="inline-block rounded-xl"
-                    style={{ 
-                      padding: '8px 12px', 
-                      marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
-                  >
-                    🚗 {propertyData.parqueaderos} parq
-                  </div>
-                )}
-                {'area' in propertyData && propertyData.area && (
-                  <div 
-                    className="inline-block rounded-xl"
-                    style={{ 
-                      padding: '8px 12px', 
-                      marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
-                  >
-                    📐 {propertyData.area}m²
-                  </div>
-                )}
-                
-                {'estrato' in propertyData && propertyData.estrato && (
-                  <div 
-                    className="inline-block rounded-xl"
-                    style={{ 
-                      padding: '8px 12px', 
-                      marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
-                  >
-                    🏢 Estrato {propertyData.estrato}
-                  </div>
-                )}
-                
-                {'piso' in propertyData && propertyData.piso && (
-                  <div 
-                    className="inline-block rounded-xl"
-                    style={{ 
-                      padding: '8px 12px', 
-                      marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
-                  >
-                    🏢 Piso {propertyData.piso}
-                  </div>
-                )}
-                
-                {'trafico' in propertyData && propertyData.trafico && (
-                  <div 
-                    className="inline-block rounded-xl"
-                    style={{ 
-                      padding: '8px 12px', 
-                      marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
-                  >
-                    🚦 Tráfico {propertyData.trafico}
-                  </div>
-                )}
-                
-                {'alturaLibre' in propertyData && propertyData.alturaLibre && (
-                  <div 
-                    className="inline-block rounded-xl"
-                    style={{ 
-                      padding: '8px 12px', 
-                      marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
-                  >
-                    📏 {propertyData.alturaLibre}m altura
-                  </div>
-                )}
-                
-                {'vitrina' in propertyData && propertyData.vitrina && (
-                  <div 
-                    className="inline-block rounded-xl"
-                    style={{ 
-                      padding: '8px 12px', 
-                      marginLeft: '7px',
-                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
-                  >
-                    🪟 Con vitrina
-                  </div>
-                )}
-                
-                {'uso' in propertyData && propertyData.uso && (
-                  <div 
-                    className="inline-block rounded-xl"
-                    style={{ 
-                      padding: '8px 12px', 
-                      marginTop: '7px',
-                      backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
-                  >
-                    🏗️ Uso {propertyData.uso}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Logo El Gestor - inferior derecha */}
-            <div className="absolute bottom-[100px] right-[15px] z-30">
-              <img 
-                src={elGestorLogo} 
-                alt="El Gestor" 
-                className="h-8 object-contain drop-shadow-lg" 
-              />
-            </div>
-
-            {/* Sección inferior - Canvas: Y=1700, height 220px */}
-            <div 
-              className="absolute bottom-0 left-0 right-0 bg-black/50"
-              style={{ padding: '11px' }}
-            >
-              <div className="flex items-center">
-                {/* WhatsApp y nombre */}
-                <div>
-                  {/* WhatsApp - Canvas: font 40px → Preview: font 15px */}
-                  <p 
-                    className="font-bold drop-shadow-lg"
-                    style={{ fontSize: '15px' }}
-                  >
-                    📱 {aliadoConfig.whatsapp}
+                {/* Precio prominente (centro) */}
+                <div 
+                  className="absolute left-1/2 -translate-x-1/2 text-center"
+                  style={{ top: '360px' }}
+                >
+                  <p className="text-[7px] font-semibold drop-shadow-lg opacity-90">
+                    {variant === "arrendado" ? "Arrendado por:" : "Vendido por:"}
                   </p>
-                  {/* Nombre - Canvas: font 28px → Preview: font 10px */}
-                  <p 
-                    className="text-gray-200"
-                    style={{ 
-                      fontSize: '10px',
-                      marginTop: '2px'
-                    }}
-                  >
-                    {aliadoConfig.nombre}
+                  <p className="text-[31px] font-black drop-shadow-2xl leading-none">
+                    {formatPrecioColombia(('precio' in propertyData) ? propertyData.precio : '')}
+                  </p>
+                  {variant === "arrendado" && (
+                    <p className="text-[10px] font-medium opacity-80">/mes</p>
+                  )}
+                </div>
+
+                {/* Velocidad */}
+                <div 
+                  className="absolute left-1/2 -translate-x-1/2"
+                  style={{ top: '445px' }}
+                >
+                  <p className="text-[12px] font-bold drop-shadow-lg">
+                    {(() => {
+                      const dias = ('diasEnMercado' in propertyData) ? propertyData.diasEnMercado : 0;
+                      if (dias <= 7) return `🚀 En solo ${dias} día${dias === 1 ? '' : 's'}`;
+                      if (dias <= 15) return `⚡ En ${dias} días`;
+                      return `🎉 En ${dias} días`;
+                    })()}
                   </p>
                 </div>
-              </div>
-            </div>
+
+                {/* Tipo + Ubicación */}
+                <div 
+                  className="absolute left-1/2 -translate-x-1/2 text-center"
+                  style={{ top: '480px' }}
+                >
+                  <p className="text-[13px] font-extrabold drop-shadow-lg">
+                    {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
+                  </p>
+                  <p className="text-[13px] font-semibold drop-shadow-lg">
+                    📍 {propertyData.ubicacion}
+                  </p>
+                </div>
+
+                {/* CTA inferior */}
+                <div 
+                  className="absolute left-1/2 -translate-x-1/2 text-center"
+                  style={{ bottom: '85px' }}
+                >
+                  <p className="text-[13px] font-bold drop-shadow-lg">
+                    💪 ¿Quieres {variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
+                  </p>
+                </div>
+
+                {/* Logo El Gestor inferior */}
+                <div 
+                  className="absolute left-1/2 -translate-x-1/2"
+                  style={{ bottom: '46px' }}
+                >
+                  <img 
+                    src={elGestorLogo}
+                    alt="El Gestor"
+                    className="h-[17px] object-contain opacity-90"
+                  />
+                </div>
+              </>
+            ) : (
+              // ===== PREVIEW DISPONIBLE =====
+              <>
+                {/* Logo aliado - Canvas: 160x160px → Preview: 59px */}
+                <div 
+                  className="absolute rounded-xl border-2 bg-white/90"
+                  style={{ 
+                    top: '11px', 
+                    left: '11px', 
+                    width: '59px', 
+                    height: '59px',
+                    padding: '2px',
+                    borderColor: 'rgba(255, 255, 255, 0.8)'
+                  }}
+                >
+                  <img
+                    src={logoRubyMorales}
+                    alt="Logo"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+
+                {/* Ciudad junto al logo */}
+                <div 
+                  className="absolute"
+                  style={{ 
+                    left: '78px', 
+                    top: '26px'
+                  }}
+                >
+                  <p className="text-sm font-semibold text-white drop-shadow-lg">
+                    {aliadoConfig.ciudad}
+                  </p>
+                </div>
+
+                {/* Contenido superior */}
+                <div 
+                  className="absolute left-[11px] right-[11px]" 
+                  style={{ top: '82px' }}
+                >
+                  {/* Tipo de inmueble */}
+                  <Badge
+                    style={{ 
+                      backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      padding: '10px 22px',
+                      borderRadius: '6px'
+                    }}
+                    className="text-white shadow-lg inline-block"
+                  >
+                    {propertyData.tipo.toUpperCase()}
+                  </Badge>
+
+                  {/* Ubicación */}
+                  <p 
+                    className="font-bold drop-shadow-lg"
+                    style={{ 
+                      fontSize: '16px',
+                      marginTop: '15px'
+                    }}
+                  >
+                    📍 {propertyData.ubicacion}
+                  </p>
+
+                  {/* Precio */}
+                  <p 
+                    className="font-bold drop-shadow-lg leading-tight"
+                    style={{ 
+                      fontSize: '27px',
+                      marginTop: '12px'
+                    }}
+                  >
+                    {'canon' in propertyData ? propertyData.canon || propertyData.valorVenta : ''}
+                  </p>
+
+                   {/* Características */}
+                   <div 
+                     className="space-y-[7px]"
+                     style={{ 
+                       marginTop: '12px',
+                       fontSize: '12px',
+                       fontWeight: '600'
+                     }}
+                   >
+                     {'habitaciones' in propertyData && propertyData.habitaciones && (
+                       <div 
+                         className="inline-block rounded-xl"
+                         style={{ 
+                           padding: '8px 12px',
+                           backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
+                           border: '1px solid rgba(255, 255, 255, 0.2)'
+                         }}
+                       >
+                         🛏️ {propertyData.habitaciones} hab
+                       </div>
+                     )}
+                     {'banos' in propertyData && propertyData.banos && (
+                       <div 
+                         className="inline-block rounded-xl"
+                         style={{ 
+                           padding: '8px 12px', 
+                           marginLeft: '7px',
+                           backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
+                           border: '1px solid rgba(255, 255, 255, 0.2)'
+                         }}
+                       >
+                         🚿 {propertyData.banos} baños
+                       </div>
+                     )}
+                     {'parqueaderos' in propertyData && propertyData.parqueaderos && (
+                       <div 
+                         className="inline-block rounded-xl"
+                         style={{ 
+                           padding: '8px 12px', 
+                           marginTop: '7px',
+                           backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
+                           border: '1px solid rgba(255, 255, 255, 0.2)'
+                         }}
+                       >
+                         🚗 {propertyData.parqueaderos} parq
+                       </div>
+                     )}
+                     {'area' in propertyData && propertyData.area && (
+                       <div 
+                         className="inline-block rounded-xl"
+                         style={{ 
+                           padding: '8px 12px', 
+                           marginLeft: '7px',
+                           backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
+                           border: '1px solid rgba(255, 255, 255, 0.2)'
+                         }}
+                       >
+                         📐 {propertyData.area}m²
+                       </div>
+                     )}
+                     {'estrato' in propertyData && propertyData.estrato && (
+                       <div 
+                         className="inline-block rounded-xl"
+                         style={{ 
+                           padding: '8px 12px', 
+                           marginLeft: '7px',
+                           backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
+                           border: '1px solid rgba(255, 255, 255, 0.2)'
+                         }}
+                       >
+                         🏢 Estrato {propertyData.estrato}
+                       </div>
+                     )}
+                     {'piso' in propertyData && propertyData.piso && (
+                       <div 
+                         className="inline-block rounded-xl"
+                         style={{ 
+                           padding: '8px 12px', 
+                           marginTop: '7px',
+                           backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
+                           border: '1px solid rgba(255, 255, 255, 0.2)'
+                         }}
+                       >
+                         🏢 Piso {propertyData.piso}
+                       </div>
+                     )}
+                     {'trafico' in propertyData && propertyData.trafico && (
+                       <div 
+                         className="inline-block rounded-xl"
+                         style={{ 
+                           padding: '8px 12px', 
+                           marginLeft: '7px',
+                           backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
+                           border: '1px solid rgba(255, 255, 255, 0.2)'
+                         }}
+                       >
+                         🚦 Tráfico {propertyData.trafico}
+                       </div>
+                     )}
+                     {'alturaLibre' in propertyData && propertyData.alturaLibre && (
+                       <div 
+                         className="inline-block rounded-xl"
+                         style={{ 
+                           padding: '8px 12px', 
+                           marginTop: '7px',
+                           backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
+                           border: '1px solid rgba(255, 255, 255, 0.2)'
+                         }}
+                       >
+                         📏 {propertyData.alturaLibre}m altura
+                       </div>
+                     )}
+                     {'vitrina' in propertyData && propertyData.vitrina && (
+                       <div 
+                         className="inline-block rounded-xl"
+                         style={{ 
+                           padding: '8px 12px', 
+                           marginLeft: '7px',
+                           backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
+                           border: '1px solid rgba(255, 255, 255, 0.2)'
+                         }}
+                       >
+                         🪟 Con vitrina
+                       </div>
+                     )}
+                     {'uso' in propertyData && propertyData.uso && (
+                       <div 
+                         className="inline-block rounded-xl"
+                         style={{ 
+                           padding: '8px 12px', 
+                           marginTop: '7px',
+                           backgroundColor: `${aliadoConfig.colorSecundario || '#000000'}F0`,
+                           border: '1px solid rgba(255, 255, 255, 0.2)'
+                         }}
+                       >
+                         🏗️ Uso {propertyData.uso}
+                       </div>
+                     )}
+                   </div>
+                </div>
+
+                {/* Logo El Gestor - inferior derecha */}
+                <div className="absolute bottom-[100px] right-[15px] z-30">
+                  <img 
+                    src={elGestorLogo} 
+                    alt="El Gestor" 
+                    className="h-8 object-contain drop-shadow-lg" 
+                  />
+                </div>
+
+                {/* Sección inferior */}
+                <div 
+                  className="absolute bottom-0 left-0 right-0 bg-black/50"
+                  style={{ padding: '11px' }}
+                >
+                  <div className="flex items-center">
+                    <div>
+                      <p 
+                        className="font-bold drop-shadow-lg"
+                        style={{ fontSize: '15px' }}
+                      >
+                        📱 {aliadoConfig.whatsapp}
+                      </p>
+                      <p 
+                        className="text-gray-200"
+                        style={{ 
+                          fontSize: '10px',
+                          marginTop: '2px'
+                        }}
+                      >
+                        {aliadoConfig.nombre}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Control de play/pause */}
