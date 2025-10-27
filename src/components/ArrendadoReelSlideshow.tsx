@@ -361,11 +361,11 @@ export const ArrendadoReelSlideshow = ({
               </div>
 
               {aliadoConfig.logo && (
-                <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-xl">
+                <div className="bg-white/10 backdrop-blur-sm px-6 py-4 rounded-xl">
                   <img 
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-12 object-contain"
+                    className="h-18 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
@@ -373,24 +373,18 @@ export const ArrendadoReelSlideshow = ({
             </div>
 
             {/* Footer: CTA */}
-            <div className="space-y-2 pb-4">
-              <p className="text-base font-bold text-center drop-shadow-lg">
+            <div className="space-y-3 pb-4">
+              <p className="text-lg font-black text-center drop-shadow-lg">
                 💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
               </p>
+              
+              {/* Logo El Gestor */}
               <div className="flex justify-center">
-                <div 
-                  className="px-4 py-2 rounded-xl font-bold text-sm"
-                  style={{ backgroundColor: "white", color: mainColor }}
-                >
-                  📱 {aliadoConfig.whatsapp}
-                </div>
-              </div>
-
-              <div className="flex justify-center mt-2">
                 <img 
                   src={elGestorLogo}
                   alt="El Gestor"
-                  className="h-6 object-contain opacity-90"
+                  className="h-7 object-contain opacity-90"
+                  crossOrigin="anonymous"
                 />
               </div>
             </div>
@@ -475,35 +469,29 @@ export const ArrendadoReelSlideshow = ({
               </div>
 
               {aliadoConfig.logo && (
-                <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-xl">
+                <div className="bg-white/10 backdrop-blur-sm px-6 py-4 rounded-xl">
                   <img 
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-12 object-contain"
+                    className="h-18 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
               )}
             </div>
 
-            <div className="space-y-2 pb-4">
-              <p className="text-base font-bold text-center drop-shadow-lg">
+            <div className="space-y-3 pb-4">
+              <p className="text-lg font-black text-center drop-shadow-lg">
                 💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
               </p>
+              
+              {/* Logo El Gestor */}
               <div className="flex justify-center">
-                <div 
-                  className="px-4 py-2 rounded-xl font-bold text-sm"
-                  style={{ backgroundColor: "white", color: mainColor }}
-                >
-                  📱 {aliadoConfig.whatsapp}
-                </div>
-              </div>
-
-              <div className="flex justify-center mt-2">
                 <img 
                   src={elGestorLogo}
                   alt="El Gestor"
-                  className="h-6 object-contain opacity-90"
+                  className="h-7 object-contain opacity-90"
+                  crossOrigin="anonymous"
                 />
               </div>
             </div>

@@ -130,11 +130,12 @@ export const ArrendadoPreview = ({
 
             {/* Logo del aliado */}
             {aliadoConfig.logo && (
-              <div className="bg-white/10 backdrop-blur-sm px-6 py-4 rounded-xl">
+              <div className="bg-white/10 backdrop-blur-sm px-8 py-5 rounded-xl">
                 <img 
                   src={aliadoConfig.logo} 
                   alt={aliadoConfig.nombre}
-                  className="h-14 object-contain"
+                  className="h-20 object-contain"
+                  crossOrigin="anonymous"
                 />
               </div>
             )}
@@ -142,16 +143,10 @@ export const ArrendadoPreview = ({
 
           {/* Footer: CTA para propietarios */}
           <div className="space-y-3">
-            <div className="text-center space-y-2">
-              <p className="text-lg font-bold drop-shadow-lg">
+            <div className="text-center">
+              <p className="text-xl font-black drop-shadow-lg">
                 💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
               </p>
-              <div 
-                className="inline-block px-5 py-2 rounded-xl font-bold text-base"
-                style={{ backgroundColor: "white", color: mainColor }}
-              >
-                📱 {aliadoConfig.whatsapp}
-              </div>
             </div>
 
             {/* Logo El Gestor */}
@@ -159,7 +154,7 @@ export const ArrendadoPreview = ({
               <img 
                 src="/src/assets/el-gestor-logo.png" 
                 alt="El Gestor"
-                className="h-7 object-contain opacity-90"
+                className="h-8 object-contain opacity-90"
               />
             </div>
           </div>

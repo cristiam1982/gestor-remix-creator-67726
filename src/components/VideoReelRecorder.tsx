@@ -125,12 +125,12 @@ export const VideoReelRecorder = ({
       if (logoImage) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
         ctx.beginPath();
-        ctx.roundRect(30, 30, 160, 160, 16);
+        ctx.roundRect(30, 30, 240, 240, 20);
         ctx.fill();
         ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
-        ctx.lineWidth = 4;
+        ctx.lineWidth = 5;
         ctx.stroke();
-        ctx.drawImage(logoImage, 38, 38, 144, 144);
+        ctx.drawImage(logoImage, 38, 38, 224, 224);
       }
       
       ctx.shadowBlur = 15;
@@ -187,21 +187,11 @@ export const VideoReelRecorder = ({
       );
       
       // CTA inferior
-      ctx.font = "bold 28px Inter, sans-serif";
+      ctx.font = "bold 32px Inter, sans-serif";
       ctx.fillText(
         `💪 ¿Quieres ${variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`,
         canvas.width / 2,
-        1620
-      );
-      
-      ctx.fillStyle = "white";
-      ctx.fillRect(canvas.width / 2 - 150, 1650, 300, 60);
-      ctx.fillStyle = mainColor;
-      ctx.font = "bold 24px Inter, sans-serif";
-      ctx.fillText(
-        `📱 ${aliadoConfig.whatsapp}`,
-        canvas.width / 2,
-        1690
+        1640
       );
       
     } else {
@@ -296,12 +286,12 @@ export const VideoReelRecorder = ({
 
     // Logo El Gestor (inferior derecha) - sin opacidad, proporción correcta
     if (elGestorLogoImage) {
-      const logoHeight = 90; // Altura deseada
+      const logoHeight = 104; // Altura deseada (+15%)
       const logoAspectRatio = elGestorLogoImage.width / elGestorLogoImage.height;
       const logoWidth = logoHeight * logoAspectRatio; // Calcular ancho proporcional
       const logoX = 1080 - logoWidth - 30; // Posición X ajustada al ancho real
       
-      ctx.drawImage(elGestorLogoImage, logoX, 1590, logoWidth, logoHeight);
+      ctx.drawImage(elGestorLogoImage, logoX, 1582, logoWidth, logoHeight);
     }
 
     // Reset shadow
