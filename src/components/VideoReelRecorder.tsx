@@ -313,7 +313,7 @@ export const VideoReelRecorder = ({
 
     // Logo El Gestor (inferior derecha) - MÁS GRANDE
     if (elGestorLogoImage) {
-      const logoHeight = 118; // Altura aumentada
+      const logoHeight = 106; // Reducido 10% desde 118
       const logoAspectRatio = elGestorLogoImage.width / elGestorLogoImage.height;
       const logoWidth = logoHeight * logoAspectRatio; // Calcular ancho proporcional
       const logoX = 1080 - logoWidth - 30; // Posición X ajustada al ancho real
@@ -502,11 +502,11 @@ export const VideoReelRecorder = ({
                 <div 
                   className="absolute left-1/2 -translate-x-1/2 rounded-2xl font-black text-center shadow-2xl"
                   style={{
-                    top: '106px',  // Canvas: 250px → 106px
+                    top: '92px',  // Canvas: 250px → 92px (ajustado para mejor legibilidad)
                     backgroundColor: 'white',
                     color: variant === "arrendado" ? aliadoConfig.colorPrimario : aliadoConfig.colorSecundario,
                     padding: '12px 30px',
-                    fontSize: '21px'  // Canvas: 56px → 21px
+                    fontSize: '24px'  // Canvas: 56px → 24px (aumentado para legibilidad)
                   }}
                 >
                   {variant === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!"}
@@ -515,25 +515,25 @@ export const VideoReelRecorder = ({
                 {/* Precio prominente (centro) */}
                 <div 
                   className="absolute left-1/2 -translate-x-1/2 text-center"
-                  style={{ top: '360px' }}
+                  style={{ top: '355px' }}
                 >
-                  <p className="text-[7px] font-semibold drop-shadow-lg opacity-90">
+                  <p className="text-[9px] font-semibold drop-shadow-lg opacity-90">
                     {variant === "arrendado" ? "Arrendado por:" : "Vendido por:"}
                   </p>
-                  <p className="text-[31px] font-black drop-shadow-2xl leading-none">
+                  <p className="text-[36px] font-black drop-shadow-2xl leading-none">
                     {formatPrecioColombia(('precio' in propertyData) ? propertyData.precio : '')}
                   </p>
                   {variant === "arrendado" && (
-                    <p className="text-[10px] font-medium opacity-80">/mes</p>
+                    <p className="text-[12px] font-medium opacity-80">/mes</p>
                   )}
                 </div>
 
                 {/* Velocidad */}
                 <div 
                   className="absolute left-1/2 -translate-x-1/2"
-                  style={{ top: '445px' }}
+                  style={{ top: '425px' }}
                 >
-                  <p className="text-[12px] font-bold drop-shadow-lg">
+                  <p className="text-[14px] font-bold drop-shadow-lg">
                     {(() => {
                       const dias = ('diasEnMercado' in propertyData) ? propertyData.diasEnMercado : 0;
                       if (dias <= 7) return `🚀 En solo ${dias} día${dias === 1 ? '' : 's'}`;
@@ -546,12 +546,12 @@ export const VideoReelRecorder = ({
                 {/* Tipo + Ubicación */}
                 <div 
                   className="absolute left-1/2 -translate-x-1/2 text-center"
-                  style={{ top: '480px' }}
+                  style={{ top: '465px' }}
                 >
-                  <p className="text-[13px] font-extrabold drop-shadow-lg">
+                  <p className="text-[15px] font-extrabold drop-shadow-lg">
                     {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
                   </p>
-                  <p className="text-[13px] font-semibold drop-shadow-lg">
+                  <p className="text-[15px] font-semibold drop-shadow-lg">
                     📍 {propertyData.ubicacion}
                   </p>
                 </div>
@@ -559,9 +559,9 @@ export const VideoReelRecorder = ({
                 {/* CTA inferior */}
                 <div 
                   className="absolute left-1/2 -translate-x-1/2 text-center"
-                  style={{ bottom: '85px' }}
+                  style={{ bottom: '80px' }}
                 >
-                  <p className="text-[13px] font-bold drop-shadow-lg">
+                  <p className="text-[15px] font-bold drop-shadow-lg">
                     💪 ¿Quieres {variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
                   </p>
                 </div>
@@ -569,12 +569,12 @@ export const VideoReelRecorder = ({
                 {/* Logo El Gestor inferior */}
                 <div 
                   className="absolute left-1/2 -translate-x-1/2"
-                  style={{ bottom: '46px' }}
+                  style={{ bottom: '40px' }}
                 >
                   <img 
                     src={elGestorLogo}
                     alt="El Gestor"
-                    className="h-[17px] object-contain opacity-90"
+                    className="h-[40px] object-contain opacity-90"
                   />
                 </div>
               </>
