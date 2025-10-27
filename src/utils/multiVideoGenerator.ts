@@ -28,10 +28,44 @@ export async function generateMultiVideoReel(
     throw new Error('Se requieren al menos 2 videos para concatenar');
   }
 
+  // Estrategia "fallback primero": usar MediaRecorder si está soportado
+  const supportsWebM = 
+    (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported) &&
+    (MediaRecorder.isTypeSupported('video/webm;codecs=vp9') || 
+     MediaRecorder.isTypeSupported('video/webm;codecs=vp8'));
+
+  if (supportsWebM) {
+    // MÉTODO RÁPIDO: Usar MediaRecorder por defecto
+    console.log('✅ MediaRecorder soportado, usando modo rápido...');
+    onProgress?.(0, 'Preparando generación rápida...');
+    
+    try {
+      // Convertir Blobs a Files
+      const files = await Promise.all(
+        videoBlobs.map(async (blob, index) => {
+          return new File([blob], `video-${index}.mp4`, { type: 'video/mp4' });
+        })
+      );
+      
+      const resultBlob = await generateSimpleMultiVideoReel(files, (progress, stage) => {
+        onProgress?.(progress, stage);
+      });
+      
+      console.log('✅ Video WebM generado con modo rápido');
+      return resultBlob;
+      
+    } catch (fallbackError) {
+      console.warn('⚠️ Modo rápido falló, intentando con FFmpeg...', fallbackError);
+      // Si el fallback falla, continuar con FFmpeg abajo
+    }
+  }
+
+  // MÉTODO AVANZADO: Usar FFmpeg (Safari o si MediaRecorder falló)
+  console.log('🔧 Usando FFmpeg para procesamiento avanzado...');
   const ffmpeg = FFmpegManager.getInstance();
 
   try {
-    // 1. Intentar cargar FFmpeg con timeout de 15 segundos
+    // 1. Cargar FFmpeg con timeout de 15 segundos
     if (!ffmpeg.isLoaded()) {
       onProgress?.(0, 'Cargando procesador de video avanzado...');
       await withTimeout(
@@ -45,8 +79,8 @@ export async function generateMultiVideoReel(
 
     onProgress?.(20, 'Procesando videos con FFmpeg...');
 
-    // 2. Concatenar videos con FFmpeg (timeout: 30s base + 15s por video)
-    const concatTimeout = 30000 + (videoBlobs.length * 15000);
+    // 2. Concatenar videos con FFmpeg (timeout más amplio: 180s base + 60s por video)
+    const concatTimeout = 180000 + (videoBlobs.length * 60000);
     const concatenatedBlob = await withTimeout(
       ffmpeg.concatenateVideos(
         videoBlobs,
@@ -68,33 +102,10 @@ export async function generateMultiVideoReel(
     return concatenatedBlob;
 
   } catch (ffmpegError) {
-    console.warn('⚠️ FFmpeg no disponible, usando método alternativo...', ffmpegError);
-    
-    // FALLBACK: Usar método simple sin FFmpeg
-    onProgress?.(0, 'Usando procesador alternativo...');
-    
-    try {
-      // Convertir Blobs a Files
-      const files = await Promise.all(
-        videoBlobs.map(async (blob, index) => {
-          return new File([blob], `video-${index}.mp4`, { type: 'video/mp4' });
-        })
-      );
-      
-      const resultBlob = await generateSimpleMultiVideoReel(files, (progress, stage) => {
-        onProgress?.(progress, `[Modo alternativo] ${stage}`);
-      });
-      
-      console.log('✅ Video generado con método alternativo');
-      return resultBlob;
-      
-    } catch (fallbackError) {
-      console.error('❌ Error en método alternativo:', fallbackError);
-      throw new Error(
-        `No se pudo generar el video. Error FFmpeg: ${(ffmpegError as Error).message}. ` +
-        `Error alternativo: ${(fallbackError as Error).message}`
-      );
-    }
+    console.error('❌ Error en FFmpeg:', ffmpegError);
+    throw new Error(
+      `No se pudo generar el video. ${(ffmpegError as Error).message}`
+    );
   }
 }
 

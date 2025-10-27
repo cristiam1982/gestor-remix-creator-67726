@@ -45,6 +45,9 @@ export async function generateSimpleMultiVideoReel(
   
   // Procesar cada video secuencialmente
   for (let i = 0; i < videoFiles.length; i++) {
+    const baseProgress = 10 + (i / videoFiles.length) * 80;
+    onProgress(baseProgress, `Grabando video ${i + 1}/${videoFiles.length}...`);
+    
     const video = document.createElement('video');
     video.src = URL.createObjectURL(videoFiles[i]);
     video.muted = true;
@@ -90,9 +93,6 @@ export async function generateSimpleMultiVideoReel(
           } else {
             drawFrame();
           }
-          
-          const progress = 10 + ((i + 1) / videoFiles.length) * 80;
-          onProgress(progress, `Grabando video ${i + 1}/${videoFiles.length}`);
           
         } catch (error) {
           URL.revokeObjectURL(video.src);

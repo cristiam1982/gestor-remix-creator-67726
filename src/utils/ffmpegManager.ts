@@ -106,7 +106,7 @@ class FFmpegManager {
       // 1. Escribir todos los videos al sistema de archivos virtual
       for (let i = 0; i < videoBlobs.length; i++) {
         await this.ffmpeg.writeFile(`input${i}.mp4`, await fetchFile(videoBlobs[i]));
-        onProgress?.(10 + (i / videoBlobs.length) * 20, `Video ${i + 1}/${videoBlobs.length} cargado`);
+        onProgress?.(10 + ((i + 1) / videoBlobs.length) * 20, `Video ${i + 1}/${videoBlobs.length} cargado`);
       }
 
       onProgress?.(30, 'Normalizando videos...');
@@ -124,10 +124,8 @@ class FFmpegManager {
           '-an', // Sin audio por ahora
           `normalized${i}.mp4`
         ]);
-        onProgress?.(30 + (i / videoBlobs.length) * 30, `Normalizando ${i + 1}/${videoBlobs.length}`);
+        onProgress?.(30 + ((i + 1) / videoBlobs.length) * 30, `Normalizando ${i + 1}/${videoBlobs.length}`);
       }
-
-      onProgress?.(60, 'Concatenando videos...');
 
       // 3. Crear archivo de lista para concatenación
       const listContent = videoBlobs
@@ -135,16 +133,30 @@ class FFmpegManager {
         .join('\n');
       await this.ffmpeg.writeFile('list.txt', new TextEncoder().encode(listContent));
 
-      // 4. Concatenar todos los videos
-      await this.ffmpeg.exec([
-        '-f', 'concat',
-        '-safe', '0',
-        '-i', 'list.txt',
-        '-c', 'copy',
-        'concatenated.mp4'
-      ]);
-
-      onProgress?.(80, 'Finalizando...');
+      // 4. Concatenar todos los videos con indicador de progreso visual
+      onProgress?.(60, 'Concatenando videos...');
+      
+      // Indicador de progreso "heartbeat" durante concatenación
+      let concatProgress = 60;
+      const progressInterval = setInterval(() => {
+        concatProgress = Math.min(concatProgress + 0.5, 95);
+        onProgress?.(concatProgress, 'Concatenando videos...');
+      }, 1500);
+      
+      try {
+        await this.ffmpeg.exec([
+          '-f', 'concat',
+          '-safe', '0',
+          '-i', 'list.txt',
+          '-c', 'copy',
+          'concatenated.mp4'
+        ]);
+        clearInterval(progressInterval);
+        onProgress?.(80, 'Finalizando...');
+      } catch (error) {
+        clearInterval(progressInterval);
+        throw error;
+      }
 
       // 5. Leer el resultado
       const data = await this.ffmpeg.readFile('concatenated.mp4');
