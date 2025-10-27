@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Square, Smartphone, Image as ImageIcon, Video, Download, RefreshCw, CheckCircle, DollarSign } from "lucide-react";
+import { Square, Smartphone, Image as ImageIcon, Video, Film, Download, RefreshCw, CheckCircle, DollarSign } from "lucide-react";
 import { ContentTypeCard } from "@/components/ContentTypeCard";
 import { BrandedHeroSection } from "@/components/BrandedHeroSection";
 import { PropertyForm } from "@/components/PropertyForm";
@@ -10,6 +10,8 @@ import { ArrendadoPreview } from "@/components/ArrendadoPreview";
 import { ReelSlideshow } from "@/components/ReelSlideshow";
 import { ArrendadoReelSlideshow } from "@/components/ArrendadoReelSlideshow";
 import { VideoReelRecorder } from "@/components/VideoReelRecorder";
+import { MultiVideoManager } from "@/components/MultiVideoManager";
+import { MultiVideoProcessingModal } from "@/components/MultiVideoProcessingModal";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { ExportOptions } from "@/components/ExportOptions";
 import { LoadingState } from "@/components/LoadingState";
@@ -26,6 +28,14 @@ import { savePublicationMetric, clearMetrics } from "@/utils/metricsManager";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useToast } from "@/hooks/use-toast";
 import { ALIADO_CONFIG } from "@/config/aliadoConfig";
+import { generateMultiVideoReel } from "@/utils/multiVideoGenerator";
+
+interface VideoInfo {
+  id: string;
+  url: string;
+  file: File;
+  duration: number;
+}
 
 const Index = () => {
   const { toast } = useToast();
@@ -46,6 +56,11 @@ const Index = () => {
     quality: 0.95 
   });
   const [isDownloading, setIsDownloading] = useState(false);
+  const [multiVideos, setMultiVideos] = useState<VideoInfo[]>([]);
+  const [isProcessingMultiVideo, setIsProcessingMultiVideo] = useState(false);
+  const [multiVideoProgress, setMultiVideoProgress] = useState(0);
+  const [multiVideoStage, setMultiVideoStage] = useState("");
+  const [generatedMultiVideoBlob, setGeneratedMultiVideoBlob] = useState<Blob | null>(null);
   
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
@@ -78,6 +93,8 @@ const Index = () => {
     setSelectedContentType(null);
     setPropertyData({ fotos: [] });
     setArrendadoData({ fotos: [] });
+    setMultiVideos([]);
+    setGeneratedMultiVideoBlob(null);
     setCurrentStep(1);
     setGeneratedCaption("");
     setValidationErrors({});
@@ -85,6 +102,44 @@ const Index = () => {
   };
 
   const handleGeneratePreview = () => {
+    // Flujo para multi-video
+    if (selectedContentType === "reel-multi-video") {
+      if (multiVideos.length < 2) {
+        toast({
+          title: "⚠️ Faltan videos",
+          description: "Sube al menos 2 videos para generar un reel multi-video.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const totalDuration = multiVideos.reduce((sum, v) => sum + v.duration, 0);
+      if (totalDuration > 100) {
+        toast({
+          title: "⚠️ Duración excedida",
+          description: "La duración total no puede superar 100 segundos.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!propertyData.tipo) {
+        toast({
+          title: "⚠️ Completa el formulario",
+          description: "Selecciona el tipo de inmueble antes de continuar.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setCurrentStep(3);
+      toast({
+        title: "✅ Multi-video listo",
+        description: "Ahora puedes generar y descargar tu reel.",
+      });
+      return;
+    }
+
     // Flujo para Arrendado/Vendido
     if (isArrendadoType) {
       if (!arrendadoData.tipo || !arrendadoData.ubicacion || !arrendadoData.diasEnMercado) {
@@ -293,11 +348,31 @@ const Index = () => {
             <ContentTypeCard
               icon={Video}
               title="Reel con Video"
-              description="Hasta 20 segundos de video"
+              description="Hasta 100 segundos de video"
               primaryColor={aliadoConfig.colorPrimario}
               secondaryColor={aliadoConfig.colorSecundario}
               onClick={() => handleContentTypeSelect("reel-video")}
             />
+          </div>
+
+          {/* Nueva sección: Reel Multi-Video */}
+          <div className="mt-12">
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold mb-2">🎬 Reel Avanzado</h3>
+              <p className="text-muted-foreground">
+                Concatena múltiples videos para crear un tour completo de tu propiedad
+              </p>
+            </div>
+            <div className="max-w-2xl mx-auto">
+              <ContentTypeCard
+                icon={Film}
+                title="Reel Multi-Video"
+                description="Concatena 2-10 videos en un solo reel profesional"
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
+                onClick={() => handleContentTypeSelect("reel-multi-video")}
+              />
+            </div>
           </div>
 
           {/* Nueva sección: Publicaciones de éxito */}
@@ -335,6 +410,12 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       {isDownloading && <LoadingState message="Generando tu publicación..." />}
+      <MultiVideoProcessingModal
+        isOpen={isProcessingMultiVideo}
+        progress={multiVideoProgress}
+        stage={multiVideoStage}
+        isComplete={generatedMultiVideoBlob !== null}
+      />
       
       <div className="max-w-4xl mx-auto">
         <div className="mb-6 flex items-center justify-between">
@@ -464,6 +545,42 @@ const Index = () => {
                   Generar Publicación Celebratoria
                 </Button>
               </>
+            ) : selectedContentType === "reel-multi-video" ? (
+              <>
+                <PropertyForm 
+                  data={propertyData} 
+                  onDataChange={setPropertyData}
+                  errors={validationErrors}
+                />
+
+                <MultiVideoManager
+                  videos={multiVideos}
+                  onVideosChange={setMultiVideos}
+                  maxVideos={10}
+                  maxTotalDuration={100}
+                />
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={handleGeneratePreview}
+                        className="w-full"
+                        variant="hero"
+                        size="lg"
+                        disabled={!propertyData.tipo || multiVideos.length < 2}
+                      >
+                        Continuar a Vista Previa
+                      </Button>
+                    </TooltipTrigger>
+                    {(!propertyData.tipo || multiVideos.length < 2) && (
+                      <TooltipContent>
+                        <p>Completa el formulario y sube al menos 2 videos</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
+              </>
             ) : (
               <>
                 <PropertyForm 
@@ -585,6 +702,113 @@ const Index = () => {
                   />
                 )}
               </>
+            ) : selectedContentType === "reel-multi-video" && aliadoConfig ? (
+              // Multi-video Reel
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-4 text-primary">
+                  🎬 Reel Multi-Video
+                </h3>
+                <div className="space-y-4">
+                  <div className="p-4 bg-accent rounded-lg">
+                    <p className="text-sm text-muted-foreground mb-2">
+                      <strong>{multiVideos.length} videos</strong> listos para concatenar
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Duración total: {Math.round(multiVideos.reduce((sum, v) => sum + v.duration, 0))} segundos
+                    </p>
+                  </div>
+
+                  {!generatedMultiVideoBlob ? (
+                    <Button
+                      onClick={async () => {
+                        setIsProcessingMultiVideo(true);
+                        setMultiVideoProgress(0);
+                        setMultiVideoStage("Iniciando...");
+
+                        try {
+                          const videoBlobs = await Promise.all(
+                            multiVideos.map(v => fetch(v.url).then(r => r.blob()))
+                          );
+
+                          const resultBlob = await generateMultiVideoReel({
+                            videoBlobs,
+                            propertyData: propertyData as PropertyData,
+                            aliadoConfig,
+                            onProgress: (progress, stage) => {
+                              setMultiVideoProgress(progress);
+                              setMultiVideoStage(stage);
+                            },
+                          });
+
+                          setGeneratedMultiVideoBlob(resultBlob);
+                          setIsProcessingMultiVideo(false);
+
+                          toast({
+                            title: "✅ Reel multi-video generado",
+                            description: `Tu video está listo. Tamaño: ${(resultBlob.size / (1024 * 1024)).toFixed(1)} MB`,
+                          });
+                        } catch (error) {
+                          console.error("Error generando multi-video:", error);
+                          setIsProcessingMultiVideo(false);
+                          toast({
+                            title: "❌ Error al generar video",
+                            description: "Intenta nuevamente o reduce la cantidad/duración de videos.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      variant="hero"
+                      size="lg"
+                      className="w-full"
+                      disabled={isProcessingMultiVideo}
+                    >
+                      {isProcessingMultiVideo ? (
+                        <>
+                          <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                          Procesando...
+                        </>
+                      ) : (
+                        <>
+                          <Video className="w-5 h-5 mr-2" />
+                          Generar Reel Multi-Video
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-green-800 font-medium">
+                          ✨ Tu reel multi-video está listo para descargar
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          const url = URL.createObjectURL(generatedMultiVideoBlob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          const tipo = propertyData.tipo || 'inmueble';
+                          a.download = `reel-multi-video-${tipo}-${Date.now()}.mp4`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                          URL.revokeObjectURL(url);
+
+                          toast({
+                            title: "✅ Descarga completada",
+                            description: "Tu reel multi-video se ha descargado correctamente.",
+                          });
+                        }}
+                        variant="hero"
+                        size="lg"
+                        className="w-full"
+                      >
+                        <Download className="w-5 h-5 mr-2" />
+                        Descargar Video MP4
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </Card>
             ) : selectedContentType === "reel-fotos" && aliadoConfig ? (
               // Reel animado: ReelSlideshow con botón de descarga integrado
               <ReelSlideshow

@@ -197,6 +197,7 @@ export const getContentTypeStrategy = (contentType: ContentType): string => {
     historia: "Visual vertical + texto mínimo + sticker de contacto + swipe up",
     "reel-fotos": "Slideshow dinámico 3-5 seg/foto + música trending + texto superpuesto",
     "reel-video": "Hook en 2 seg + tour fluido + CTA final + audio ambiental",
+    "reel-multi-video": "Concatenación múltiples ángulos + transiciones suaves + storytelling progresivo",
     arrendado: "Imagen celebratorio + velocidad de arriendo + CTA a propietarios",
     vendido: "Imagen celebratorio + velocidad de venta + CTA a propietarios",
   };

@@ -12,6 +12,7 @@ export type ContentType =
   | "historia" 
   | "reel-fotos" 
   | "reel-video"
+  | "reel-multi-video"
   | "arrendado"
   | "vendido";
 
