@@ -3,8 +3,14 @@
  * Usado como fallback cuando FFmpeg no está disponible
  */
 
+import { PropertyData, AliadoConfig } from "@/types/property";
+import { preloadImage } from "./imageUtils";
+
 export async function generateSimpleMultiVideoReel(
   videoFiles: File[],
+  subtitles: string[],
+  propertyData: PropertyData,
+  aliadoConfig: AliadoConfig,
   onProgress: (progress: number, stage: string) => void
 ): Promise<Blob> {
   onProgress(5, 'Preparando canvas de grabación...');
@@ -16,6 +22,19 @@ export async function generateSimpleMultiVideoReel(
   
   if (!ctx) {
     throw new Error('No se pudo crear contexto de canvas');
+  }
+
+  // Pre-cargar logos
+  let aliadoLogo: HTMLImageElement | null = null;
+  let elGestorLogo: HTMLImageElement | null = null;
+  
+  try {
+    [aliadoLogo, elGestorLogo] = await Promise.all([
+      preloadImage(aliadoConfig.logo),
+      preloadImage('/src/assets/el-gestor-logo.png')
+    ]);
+  } catch (error) {
+    console.warn('No se pudieron cargar los logos:', error);
   }
 
   // Verificar soporte de MediaRecorder con fallback de codec
@@ -43,9 +62,94 @@ export async function generateSimpleMultiVideoReel(
   recorder.start(4000);
   onProgress(10, 'Iniciando grabación...');
   
+  // Función helper para dibujar overlays
+  const drawOverlays = (currentSubtitle: string) => {
+    // Header con logos
+    if (aliadoLogo || elGestorLogo) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(0, 0, 1080, 120);
+      
+      if (aliadoLogo) {
+        const logoHeight = 80;
+        const logoWidth = (aliadoLogo.width / aliadoLogo.height) * logoHeight;
+        ctx.drawImage(aliadoLogo, 30, 20, logoWidth, logoHeight);
+      }
+      
+      if (elGestorLogo) {
+        const logoHeight = 80;
+        const logoWidth = (elGestorLogo.width / elGestorLogo.height) * logoHeight;
+        ctx.drawImage(elGestorLogo, 1080 - logoWidth - 30, 20, logoWidth, logoHeight);
+      }
+    }
+    
+    // Subtítulo (si existe)
+    if (currentSubtitle) {
+      ctx.font = 'bold 48px Poppins, sans-serif';
+      const textMetrics = ctx.measureText(currentSubtitle);
+      const padding = 40;
+      const bgWidth = textMetrics.width + padding * 2;
+      const bgHeight = 80;
+      const x = (1080 - bgWidth) / 2;
+      const y = 1920 * 0.70;
+      
+      // Fondo semi-transparente
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.beginPath();
+      ctx.roundRect(x, y, bgWidth, bgHeight, 20);
+      ctx.fill();
+      
+      // Texto
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(currentSubtitle, 1080 / 2, y + bgHeight / 2);
+    }
+    
+    // Footer con información de propiedad
+    const footerY = 1920 - 280;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, footerY, 1080, 280);
+    
+    // Canon/Precio
+    ctx.font = 'bold 56px Poppins, sans-serif';
+    ctx.fillStyle = aliadoConfig.colorPrimario;
+    ctx.textAlign = 'left';
+    ctx.fillText(
+      propertyData.canon || propertyData.valorVenta || '$0',
+      40,
+      footerY + 60
+    );
+    
+    // Ubicación
+    ctx.font = '32px Poppins, sans-serif';
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(
+      `📍 ${propertyData.ubicacion || 'Ubicación'}`,
+      40,
+      footerY + 120
+    );
+    
+    // Tipo de inmueble
+    ctx.font = '28px Poppins, sans-serif';
+    ctx.fillStyle = '#CCCCCC';
+    const tipoTexto = propertyData.tipo?.charAt(0).toUpperCase() + propertyData.tipo?.slice(1);
+    ctx.fillText(tipoTexto || '', 40, footerY + 170);
+    
+    // Atributos
+    ctx.font = '32px Poppins, sans-serif';
+    ctx.fillStyle = aliadoConfig.colorSecundario;
+    let atributos = '';
+    if (propertyData.habitaciones) atributos += `🛏️ ${propertyData.habitaciones}  `;
+    if (propertyData.banos) atributos += `🚿 ${propertyData.banos}  `;
+    if (propertyData.parqueaderos) atributos += `🚗 ${propertyData.parqueaderos}  `;
+    if (propertyData.area) atributos += `📐 ${propertyData.area}m²`;
+    ctx.fillText(atributos, 40, footerY + 220);
+  };
+
   // Procesar cada video secuencialmente
   for (let i = 0; i < videoFiles.length; i++) {
     const baseProgress = 10 + (i / videoFiles.length) * 80;
+    const currentSubtitle = subtitles[i] || '';
     onProgress(baseProgress, `Grabando video ${i + 1}/${videoFiles.length}...`);
     
     const video = document.createElement('video');
@@ -105,6 +209,9 @@ export async function generateSimpleMultiVideoReel(
               
               // Dibujar video centrado
               ctx.drawImage(video, x, y, scaledWidth, scaledHeight);
+              
+              // Dibujar overlays (logos, subtítulo, footer)
+              drawOverlays(currentSubtitle);
               
               if (supportsRVFC) {
                 (video as any).requestVideoFrameCallback(drawFrame);

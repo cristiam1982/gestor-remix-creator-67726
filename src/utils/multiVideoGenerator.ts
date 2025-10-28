@@ -4,6 +4,7 @@ import { PropertyData, AliadoConfig } from '@/types/property';
 
 export interface GenerateMultiVideoOptions {
   videoBlobs: Blob[];
+  subtitles: string[];
   propertyData: PropertyData;
   aliadoConfig: AliadoConfig;
   onProgress?: (progress: number, stage: string) => void;
@@ -22,7 +23,7 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, errorMessage: st
 export async function generateMultiVideoReel(
   options: GenerateMultiVideoOptions
 ): Promise<Blob> {
-  const { videoBlobs, onProgress } = options;
+  const { videoBlobs, subtitles, propertyData, aliadoConfig, onProgress } = options;
 
   if (videoBlobs.length < 2) {
     throw new Error('Se requieren al menos 2 videos para concatenar');
@@ -47,9 +48,15 @@ export async function generateMultiVideoReel(
         })
       );
       
-      const resultBlob = await generateSimpleMultiVideoReel(files, (progress, stage) => {
-        onProgress?.(progress, `[Modo rápido] ${stage}`);
-      });
+      const resultBlob = await generateSimpleMultiVideoReel(
+        files,
+        subtitles,
+        propertyData,
+        aliadoConfig,
+        (progress, stage) => {
+          onProgress?.(progress, `[Modo rápido] ${stage}`);
+        }
+      );
       
       console.log('✅ Video WebM generado con modo rápido');
       return resultBlob;

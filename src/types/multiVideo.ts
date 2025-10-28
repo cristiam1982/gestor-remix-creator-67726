@@ -11,6 +11,7 @@ export interface VideoInfo {
   url: string;
   duration: number;
   file?: File;
+  subtitle?: string;
 }
 
 export interface FFmpegProgress {

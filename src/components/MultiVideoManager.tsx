@@ -30,6 +30,7 @@ interface VideoInfo {
   url: string;
   file: File;
   duration: number;
+  subtitle?: string;
 }
 
 interface MultiVideoManagerProps {
@@ -43,9 +44,10 @@ interface SortableVideoItemProps {
   video: VideoInfo;
   index: number;
   onRemove: (id: string) => void;
+  onSubtitleChange: (id: string, subtitle: string) => void;
 }
 
-function SortableVideoItem({ video, index, onRemove }: SortableVideoItemProps) {
+function SortableVideoItem({ video, index, onRemove, onSubtitleChange }: SortableVideoItemProps) {
   const {
     attributes,
     listeners,
@@ -65,36 +67,53 @@ function SortableVideoItem({ video, index, onRemove }: SortableVideoItemProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 p-3 bg-accent rounded-lg border border-border"
+      className="flex flex-col gap-2 p-3 bg-accent rounded-lg border border-border"
     >
-      <button
-        className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="w-5 h-5" />
-      </button>
-      
-      <div className="flex items-center gap-3 flex-1">
-        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-          <Video className="w-6 h-6 text-primary" />
-        </div>
-        
-        <div className="flex-1 min-w-0">
-          <p className="font-medium text-sm truncate">Video {index + 1}</p>
-          <p className="text-xs text-muted-foreground">
-            {formatDuration(video.duration)}
-          </p>
-        </div>
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onRemove(video.id)}
-          className="text-destructive hover:text-destructive"
+      <div className="flex items-center gap-3">
+        <button
+          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+          {...attributes}
+          {...listeners}
         >
-          <X className="w-4 h-4" />
-        </Button>
+          <GripVertical className="w-5 h-5" />
+        </button>
+        
+        <div className="flex items-center gap-3 flex-1">
+          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+            <Video className="w-6 h-6 text-primary" />
+          </div>
+          
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-sm truncate">Video {index + 1}</p>
+            <p className="text-xs text-muted-foreground">
+              {formatDuration(video.duration)}
+            </p>
+          </div>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onRemove(video.id)}
+            className="text-destructive hover:text-destructive"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+      
+      <div className="ml-8 flex items-center gap-2">
+        <span className="text-xs text-muted-foreground">💬</span>
+        <input
+          type="text"
+          placeholder="Ej: Cocina moderna, Vista panorámica..."
+          value={video.subtitle || ""}
+          onChange={(e) => onSubtitleChange(video.id, e.target.value.slice(0, 40))}
+          maxLength={40}
+          className="flex-1 text-sm px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+        />
+        <span className="text-xs text-muted-foreground">
+          {(video.subtitle || "").length}/40
+        </span>
       </div>
     </div>
   );
@@ -222,6 +241,12 @@ export const MultiVideoManager = ({
     });
   };
 
+  const handleSubtitleChange = (id: string, subtitle: string) => {
+    onVideosChange(
+      videos.map((v) => (v.id === id ? { ...v, subtitle } : v))
+    );
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -333,6 +358,7 @@ export const MultiVideoManager = ({
                       video={video}
                       index={index}
                       onRemove={handleRemoveVideo}
+                      onSubtitleChange={handleSubtitleChange}
                     />
                   ))}
                 </div>

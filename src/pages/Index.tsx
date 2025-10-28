@@ -35,6 +35,7 @@ interface VideoInfo {
   url: string;
   file: File;
   duration: number;
+  subtitle?: string;
 }
 
 const Index = () => {
@@ -730,8 +731,11 @@ const Index = () => {
                             multiVideos.map(v => fetch(v.url).then(r => r.blob()))
                           );
 
+                          const subtitles = multiVideos.map(v => v.subtitle || "");
+
                           const resultBlob = await generateMultiVideoReel({
                             videoBlobs,
+                            subtitles,
                             propertyData: propertyData as PropertyData,
                             aliadoConfig,
                             onProgress: (progress, stage) => {
