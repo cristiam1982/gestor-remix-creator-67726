@@ -314,6 +314,17 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
           </div>
 
+          {/* Subtítulo si existe */}
+          {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
+            <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4 animate-fade-in">
+              <div className="bg-black/75 backdrop-blur-sm px-6 py-3 rounded-full shadow-2xl">
+                <p className="text-white text-xl font-bold text-center">
+                  {propertyData.subtitulos[currentPhotoIndex]}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Logo del aliado */}
           <div className="absolute top-6 left-6 z-20">
             <img
@@ -512,6 +523,17 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
           </div>
+
+          {/* Subtítulo si existe */}
+          {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
+            <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4">
+              <div className="bg-black/75 backdrop-blur-sm px-6 py-3 rounded-full shadow-2xl">
+                <p className="text-white text-xl font-bold text-center">
+                  {propertyData.subtitulos[currentPhotoIndex]}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Logo del aliado */}
           <div className="absolute top-6 left-6 z-20">

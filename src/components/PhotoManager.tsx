@@ -13,9 +13,18 @@ interface PhotoManagerProps {
   onPhotosChange: (photos: string[]) => void;
   contentType: ContentType;
   context?: "disponible" | "arrendado";
+  subtitulos?: string[];
+  onSubtitulosChange?: (subtitulos: string[]) => void;
 }
 
-export const PhotoManager = ({ photos, onPhotosChange, contentType, context = "disponible" }: PhotoManagerProps) => {
+export const PhotoManager = ({ 
+  photos, 
+  onPhotosChange, 
+  contentType, 
+  context = "disponible",
+  subtitulos = [],
+  onSubtitulosChange
+}: PhotoManagerProps) => {
   const { toast } = useToast();
   const isVideoContent = contentType === "reel-video";
   const maxFiles = isVideoContent ? 1 : contentType === "reel-fotos" ? 10 : 3;
@@ -86,6 +95,20 @@ export const PhotoManager = ({ photos, onPhotosChange, contentType, context = "d
   const handleRemovePhoto = (index: number) => {
     const newPhotos = photos.filter((_, i) => i !== index);
     onPhotosChange(newPhotos);
+    
+    // También actualizar subtítulos
+    if (onSubtitulosChange && subtitulos.length > 0) {
+      const newSubtitulos = subtitulos.filter((_, i) => i !== index);
+      onSubtitulosChange(newSubtitulos);
+    }
+  };
+
+  const handleSubtituloChange = (index: number, value: string) => {
+    if (onSubtitulosChange) {
+      const newSubtitulos = [...subtitulos];
+      newSubtitulos[index] = value;
+      onSubtitulosChange(newSubtitulos);
+    }
   };
 
   return (
@@ -136,27 +159,53 @@ export const PhotoManager = ({ photos, onPhotosChange, contentType, context = "d
 
         {/* Preview grid */}
         {photos.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {photos.map((photo, idx) => (
-              <div key={idx} className="relative group">
-                <img
-                  src={photo}
-                  alt={`${isVideoContent ? "Video" : "Foto"} ${idx + 1}`}
-                  className="w-full h-32 object-cover rounded-lg shadow-md"
-                />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2 w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => handleRemovePhoto(idx)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-                <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-semibold">
-                  {idx + 1}
-                </div>
+          <div className="space-y-4">
+            {contentType === "reel-fotos" && onSubtitulosChange && (
+              <div className="bg-accent/50 border border-border rounded-lg p-4">
+                <h4 className="text-sm font-semibold mb-2 text-primary">
+                  ✨ Subtítulos opcionales (para reel)
+                </h4>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Agrega texto corto para cada foto. Ejemplos: "Cocina integral", "Habitación principal", "Baño auxiliar"
+                </p>
               </div>
-            ))}
+            )}
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {photos.map((photo, idx) => (
+                <div key={idx} className="space-y-2">
+                  <div className="relative group">
+                    <img
+                      src={photo}
+                      alt={`${isVideoContent ? "Video" : "Foto"} ${idx + 1}`}
+                      className="w-full h-32 object-cover rounded-lg shadow-md"
+                    />
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2 w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleRemovePhoto(idx)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                    <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-semibold">
+                      {idx + 1}
+                    </div>
+                  </div>
+                  
+                  {contentType === "reel-fotos" && onSubtitulosChange && (
+                    <input
+                      type="text"
+                      placeholder="Subtítulo opcional..."
+                      value={subtitulos[idx] || ""}
+                      onChange={(e) => handleSubtituloChange(idx, e.target.value)}
+                      maxLength={30}
+                      className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

@@ -42,7 +42,7 @@ const Index = () => {
   const { toast } = useToast();
   const [aliadoConfig, setAliadoConfig] = useState<AliadoConfig>(ALIADO_CONFIG);
   const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
-  const [propertyData, setPropertyData] = useState<Partial<PropertyData>>({ fotos: [] });
+  const [propertyData, setPropertyData] = useState<Partial<PropertyData>>({ fotos: [], subtitulos: [] });
   const [arrendadoData, setArrendadoData] = useState<Partial<ArrendadoData>>({
     fotos: [],
     precio: "",
@@ -92,7 +92,7 @@ const Index = () => {
 
   const handleBackToHub = () => {
     setSelectedContentType(null);
-    setPropertyData({ fotos: [] });
+    setPropertyData({ fotos: [], subtitulos: [] });
     setArrendadoData({ fotos: [] });
     setMultiVideos([]);
     setGeneratedMultiVideoBlob(null);
@@ -594,6 +594,8 @@ const Index = () => {
                   photos={propertyData.fotos || []}
                   onPhotosChange={(photos) => setPropertyData({ ...propertyData, fotos: photos })}
                   contentType={selectedContentType!}
+                  subtitulos={propertyData.subtitulos || []}
+                  onSubtitulosChange={(subtitulos) => setPropertyData({ ...propertyData, subtitulos })}
                 />
 
                 <TooltipProvider>

@@ -44,4 +44,5 @@ export interface PropertyData {
   piso?: number;
   amoblado?: boolean;
   fotos: string[];
+  subtitulos?: string[];
 }
