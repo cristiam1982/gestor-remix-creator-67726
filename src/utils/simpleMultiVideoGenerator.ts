@@ -66,28 +66,14 @@ export async function generateSimpleMultiVideoReel(
   
   // Función helper para dibujar overlays
   const drawOverlays = (currentSubtitle: string) => {
-    // Header con logos
-    if (aliadoLogo || elGestorLogo) {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-      ctx.fillRect(0, 0, 1080, 120);
-      
-      if (aliadoLogo) {
-        const logoHeight = 80;
-        const logoWidth = Math.min(
-          (aliadoLogo.width / aliadoLogo.height) * logoHeight,
-          450
-        );
-        ctx.drawImage(aliadoLogo, 30, 20, logoWidth, logoHeight);
-      }
-      
-      if (elGestorLogo) {
-        const logoHeight = 80;
-        const logoWidth = Math.min(
-          (elGestorLogo.width / elGestorLogo.height) * logoHeight,
-          450
-        );
-        ctx.drawImage(elGestorLogo, 1080 - logoWidth - 30, 20, logoWidth, logoHeight);
-      }
+    // Logo del aliado (superior izquierda, sin fondo)
+    if (aliadoLogo) {
+      const logoHeight = 110;
+      const logoWidth = Math.min(
+        (aliadoLogo.width / aliadoLogo.height) * logoHeight,
+        600
+      );
+      ctx.drawImage(aliadoLogo, 30, 30, logoWidth, logoHeight);
     }
     
     // Subtítulo (si existe)
@@ -123,81 +109,64 @@ export async function generateSimpleMultiVideoReel(
       ctx.shadowBlur = 0;
     }
     
-    // Footer con información de propiedad
-    const footerY = 1920 - 310;
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-    ctx.fillRect(0, footerY, 1080, 310);
+  // Footer con información de propiedad
+  const footerY = 1920 - 310;
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.fillRect(0, footerY, 1080, 310);
     
-    // Canon/Precio
-    ctx.font = 'bold 76px Poppins, sans-serif';
-    ctx.fillStyle = aliadoConfig.colorPrimario;
-    ctx.textAlign = 'left';
+  // Canon/Precio
+  ctx.font = 'bold 76px Poppins, sans-serif';
+  ctx.fillStyle = aliadoConfig.colorPrimario;
+  ctx.textAlign = 'left';
+
+  ctx.fillText(
+    propertyData.canon || propertyData.valorVenta || '$0',
+    40,
+    footerY + 70
+  );
     
-    // Sombra para el precio
-    ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
+  // Ubicación
+  ctx.font = '42px Poppins, sans-serif';
+  ctx.fillStyle = '#333333';
+
+  ctx.fillText(
+    `📍 ${propertyData.ubicacion || 'Ubicación'}`,
+    40,
+    footerY + 135
+  );
     
-    ctx.fillText(
-      propertyData.canon || propertyData.valorVenta || '$0',
-      40,
-      footerY + 70
+  // Tipo de inmueble
+  ctx.font = '36px Poppins, sans-serif';
+  ctx.fillStyle = '#666666';
+
+  const tipoTexto = propertyData.tipo?.charAt(0).toUpperCase() + propertyData.tipo?.slice(1);
+  ctx.fillText(tipoTexto || '', 40, footerY + 185);
+    
+  // Atributos
+  ctx.font = '40px Poppins, sans-serif';
+  ctx.fillStyle = aliadoConfig.colorSecundario || '#333333';
+
+  let atributos = '';
+  if (propertyData.habitaciones) atributos += `🛏️ ${propertyData.habitaciones}  `;
+  if (propertyData.banos) atributos += `🚿 ${propertyData.banos}  `;
+  if (propertyData.parqueaderos) atributos += `🚗 ${propertyData.parqueaderos}  `;
+  if (propertyData.area) atributos += `📐 ${propertyData.area}m²`;
+
+  ctx.fillText(atributos, 40, footerY + 235);
+  
+  // Logo de El Gestor (esquina inferior derecha, sobre el footer)
+  if (elGestorLogo) {
+    const logoHeight = 70;
+    const logoWidth = Math.min(
+      (elGestorLogo.width / elGestorLogo.height) * logoHeight,
+      280
     );
     
-    // Resetear sombra
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
+    const x = 1080 - logoWidth - 30;
+    const y = 1920 - logoHeight - 30;
     
-    // Ubicación
-    ctx.font = '42px Poppins, sans-serif';
-    ctx.fillStyle = '#FFFFFF';
-    
-    // Sombra sutil
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-    ctx.shadowBlur = 6;
-    
-    ctx.fillText(
-      `📍 ${propertyData.ubicacion || 'Ubicación'}`,
-      40,
-      footerY + 135
-    );
-    
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    
-    // Tipo de inmueble
-    ctx.font = '36px Poppins, sans-serif';
-    ctx.fillStyle = '#DDDDDD';
-    
-    // Sombra
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-    ctx.shadowBlur = 4;
-    
-    const tipoTexto = propertyData.tipo?.charAt(0).toUpperCase() + propertyData.tipo?.slice(1);
-    ctx.fillText(tipoTexto || '', 40, footerY + 185);
-    
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    
-    // Atributos
-    ctx.font = '40px Poppins, sans-serif';
-    ctx.fillStyle = aliadoConfig.colorSecundario || '#FFFFFF';
-    
-    // Sombra
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-    ctx.shadowBlur = 6;
-    
-    let atributos = '';
-    if (propertyData.habitaciones) atributos += `🛏️ ${propertyData.habitaciones}  `;
-    if (propertyData.banos) atributos += `🚿 ${propertyData.banos}  `;
-    if (propertyData.parqueaderos) atributos += `🚗 ${propertyData.parqueaderos}  `;
-    if (propertyData.area) atributos += `📐 ${propertyData.area}m²`;
-    
-    ctx.fillText(atributos, 40, footerY + 235);
-    
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
+    ctx.drawImage(elGestorLogo, x, y, logoWidth, logoHeight);
+  }
   };
 
   // Procesar cada video secuencialmente
