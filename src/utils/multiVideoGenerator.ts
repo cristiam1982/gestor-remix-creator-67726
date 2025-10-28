@@ -37,7 +37,7 @@ export async function generateMultiVideoReel(
   if (supportsWebM) {
     // MÉTODO RÁPIDO: Usar MediaRecorder por defecto
     console.log('✅ MediaRecorder soportado, usando modo rápido...');
-    onProgress?.(0, 'Preparando generación rápida...');
+    onProgress?.(0, '[Modo rápido] Preparando generación...');
     
     try {
       // Convertir Blobs a Files
@@ -48,7 +48,7 @@ export async function generateMultiVideoReel(
       );
       
       const resultBlob = await generateSimpleMultiVideoReel(files, (progress, stage) => {
-        onProgress?.(progress, stage);
+        onProgress?.(progress, `[Modo rápido] ${stage}`);
       });
       
       console.log('✅ Video WebM generado con modo rápido');
@@ -56,6 +56,7 @@ export async function generateMultiVideoReel(
       
     } catch (fallbackError) {
       console.warn('⚠️ Modo rápido falló, intentando con FFmpeg...', fallbackError);
+      onProgress?.(5, 'Cambiando a modo avanzado (FFmpeg)...');
       // Si el fallback falla, continuar con FFmpeg abajo
     }
   }

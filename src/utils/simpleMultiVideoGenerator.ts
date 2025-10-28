@@ -27,7 +27,7 @@ export async function generateSimpleMultiVideoReel(
     }
   }
 
-  const stream = canvas.captureStream(30);
+  const stream = canvas.captureStream(24);
   const recorder = new MediaRecorder(stream, {
     mimeType,
     videoBitsPerSecond: 5000000
@@ -40,7 +40,7 @@ export async function generateSimpleMultiVideoReel(
     }
   };
   
-  recorder.start();
+  recorder.start(4000);
   onProgress(10, 'Iniciando grabación...');
   
   // Procesar cada video secuencialmente
@@ -61,8 +61,37 @@ export async function generateSimpleMultiVideoReel(
           // Usar requestVideoFrameCallback si está disponible (mejor sincronía)
           const supportsRVFC = 'requestVideoFrameCallback' in video;
           
+          // Watchdog para detectar video estancado
+          let lastTime = 0;
+          let lastAdvanceAt = performance.now();
+          
           const drawFrame = () => {
             if (!video.ended && !video.paused) {
+              // Detectar si el video no avanza (codec no soportado)
+              const now = performance.now();
+              if (video.currentTime === lastTime && now - lastAdvanceAt > 8000) {
+                URL.revokeObjectURL(video.src);
+                reject(new Error('El video no avanza, códec no soportado. Usaremos modo avanzado.'));
+                return;
+              }
+              
+              if (video.currentTime !== lastTime) {
+                lastTime = video.currentTime;
+                lastAdvanceAt = now;
+              }
+              
+              // Calcular progreso dentro del clip actual
+              const perClip = Math.min(video.currentTime / (video.duration || 1), 1);
+              
+              // Progreso global = base del video actual + avance dentro del clip
+              const globalProgress = 10 + ((i + perClip) / videoFiles.length) * 80;
+              
+              // Actualizar progreso en cada frame para feedback continuo
+              onProgress(
+                Math.round(globalProgress), 
+                `Grabando video ${i + 1}/${videoFiles.length}...`
+              );
+              
               // Calcular escalado para mantener aspecto 9:16
               const scale = Math.max(1080 / video.videoWidth, 1920 / video.videoHeight);
               const scaledWidth = video.videoWidth * scale;

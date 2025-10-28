@@ -808,7 +808,7 @@ const Index = () => {
                         className="w-full"
                       >
                         <Download className="w-5 h-5 mr-2" />
-                        Descargar Video MP4
+                        Descargar Video
                       </Button>
                     </div>
                   )}
