@@ -129,6 +129,11 @@ export async function generateSimpleMultiVideoReel(
         }
       };
       
+      video.onended = () => {
+        URL.revokeObjectURL(video.src);
+        resolve();
+      };
+      
       video.onerror = () => {
         URL.revokeObjectURL(video.src);
         reject(new Error(`Error al cargar video ${i + 1}`));
