@@ -68,10 +68,10 @@ export async function generateSimpleMultiVideoReel(
   const drawOverlays = (currentSubtitle: string) => {
     // Logo del aliado (superior izquierda, sin fondo)
     if (aliadoLogo) {
-      const logoHeight = 150;
+      const logoHeight = 165;
       const logoWidth = Math.min(
         (aliadoLogo.width / aliadoLogo.height) * logoHeight,
-        700
+        750
       );
       ctx.drawImage(aliadoLogo, 30, 30, logoWidth, logoHeight);
     }
@@ -114,16 +114,25 @@ export async function generateSimpleMultiVideoReel(
   ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
   ctx.fillRect(0, footerY, 1080, 310);
     
+  // Formatear precio con separador de miles
+  const formatPrice = (price: string) => {
+    const cleanPrice = price.replace(/[^\d]/g, '');
+    return '$' + cleanPrice.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+  
   // Canon/Precio
   ctx.font = 'bold 76px Poppins, sans-serif';
   ctx.fillStyle = aliadoConfig.colorPrimario;
   ctx.textAlign = 'left';
 
-  ctx.fillText(
-    propertyData.canon || propertyData.valorVenta || '$0',
-    40,
-    footerY + 75
-  );
+  const precioTexto = formatPrice(propertyData.canon || propertyData.valorVenta || '$0');
+  ctx.fillText(precioTexto, 40, footerY + 75);
+  
+  // Modalidad (En Arriendo / En Venta)
+  ctx.font = '38px Poppins, sans-serif';
+  ctx.fillStyle = '#666666';
+  const modalidadTexto = propertyData.modalidad === 'venta' ? 'En Venta' : 'En Arriendo';
+  ctx.fillText(modalidadTexto, 40, footerY + 120);
     
   // Ubicación
   ctx.font = '42px Poppins, sans-serif';
@@ -132,7 +141,7 @@ export async function generateSimpleMultiVideoReel(
   ctx.fillText(
     propertyData.ubicacion || 'Ubicación',
     40,
-    footerY + 145
+    footerY + 165
   );
     
   // Tipo de inmueble
@@ -140,19 +149,19 @@ export async function generateSimpleMultiVideoReel(
   ctx.fillStyle = '#666666';
 
   const tipoTexto = propertyData.tipo?.charAt(0).toUpperCase() + propertyData.tipo?.slice(1);
-  ctx.fillText(tipoTexto || '', 40, footerY + 195);
+  ctx.fillText(tipoTexto || '', 40, footerY + 215);
     
-  // Atributos
+  // Atributos con iconos Unicode
   ctx.font = '40px Poppins, sans-serif';
   ctx.fillStyle = aliadoConfig.colorSecundario || '#333333';
 
   let atributos = '';
-  if (propertyData.habitaciones) atributos += `${propertyData.habitaciones} Hab  `;
-  if (propertyData.banos) atributos += `${propertyData.banos} Baños  `;
-  if (propertyData.parqueaderos) atributos += `${propertyData.parqueaderos} Parq  `;
-  if (propertyData.area) atributos += `${propertyData.area}m²`;
+  if (propertyData.habitaciones) atributos += `🛏 ${propertyData.habitaciones} Hab  `;
+  if (propertyData.banos) atributos += `🚿 ${propertyData.banos} Baños  `;
+  if (propertyData.parqueaderos) atributos += `🚗 ${propertyData.parqueaderos} Parq  `;
+  if (propertyData.area) atributos += `📐 ${propertyData.area}m²`;
 
-  ctx.fillText(atributos, 40, footerY + 250);
+  ctx.fillText(atributos, 40, footerY + 270);
   
   // Logo de El Gestor (esquina inferior derecha, sobre el footer)
   if (elGestorLogo) {
