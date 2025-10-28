@@ -68,10 +68,10 @@ export async function generateSimpleMultiVideoReel(
   const drawOverlays = (currentSubtitle: string) => {
     // Logo del aliado (superior izquierda, sin fondo)
     if (aliadoLogo) {
-      const logoHeight = 165;
+      const logoHeight = 182;
       const logoWidth = Math.min(
         (aliadoLogo.width / aliadoLogo.height) * logoHeight,
-        750
+        800
       );
       ctx.drawImage(aliadoLogo, 30, 30, logoWidth, logoHeight);
     }
@@ -120,36 +120,33 @@ export async function generateSimpleMultiVideoReel(
     return '$' + cleanPrice.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
   
-  // Canon/Precio
-  ctx.font = 'bold 76px Poppins, sans-serif';
-  ctx.fillStyle = aliadoConfig.colorPrimario;
-  ctx.textAlign = 'left';
-
-  const precioTexto = formatPrice(propertyData.canon || propertyData.valorVenta || '$0');
-  ctx.fillText(precioTexto, 40, footerY + 75);
-  
-  // Modalidad (En Arriendo / En Venta)
-  ctx.font = '38px Poppins, sans-serif';
+  // Modalidad (En Arriendo / En Venta) - ARRIBA del precio
+  ctx.font = '36px Poppins, sans-serif';
   ctx.fillStyle = '#666666';
+  ctx.textAlign = 'left';
   const modalidadTexto = propertyData.modalidad === 'venta' ? 'En Venta' : 'En Arriendo';
-  ctx.fillText(modalidadTexto, 40, footerY + 120);
+  ctx.fillText(modalidadTexto, 40, footerY + 55);
+  
+  // Canon/Precio - ABAJO de la modalidad
+  ctx.font = 'bold 61px Poppins, sans-serif';
+  ctx.fillStyle = aliadoConfig.colorPrimario;
+  const precioTexto = formatPrice(propertyData.canon || propertyData.valorVenta || '$0');
+  ctx.fillText(precioTexto, 40, footerY + 110);
     
   // Ubicación
   ctx.font = '42px Poppins, sans-serif';
   ctx.fillStyle = '#333333';
-
   ctx.fillText(
     propertyData.ubicacion || 'Ubicación',
     40,
-    footerY + 165
+    footerY + 155
   );
     
   // Tipo de inmueble
   ctx.font = '36px Poppins, sans-serif';
   ctx.fillStyle = '#666666';
-
   const tipoTexto = propertyData.tipo?.charAt(0).toUpperCase() + propertyData.tipo?.slice(1);
-  ctx.fillText(tipoTexto || '', 40, footerY + 215);
+  ctx.fillText(tipoTexto || '', 40, footerY + 205);
     
   // Atributos con iconos Unicode
   ctx.font = '40px Poppins, sans-serif';
@@ -161,7 +158,7 @@ export async function generateSimpleMultiVideoReel(
   if (propertyData.parqueaderos) atributos += `🚗 ${propertyData.parqueaderos} Parq  `;
   if (propertyData.area) atributos += `📐 ${propertyData.area}m²`;
 
-  ctx.fillText(atributos, 40, footerY + 270);
+  ctx.fillText(atributos, 40, footerY + 260);
   
   // Logo de El Gestor (esquina inferior derecha, sobre el footer)
   if (elGestorLogo) {

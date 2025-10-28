@@ -747,6 +747,17 @@ const Index = () => {
                           setGeneratedMultiVideoBlob(resultBlob);
                           setIsProcessingMultiVideo(false);
 
+                          // Generar caption automáticamente
+                          if (!generatedCaption) {
+                            const caption = generateCaption(
+                              propertyData as PropertyData, 
+                              aliadoConfig, 
+                              "residencial",
+                              true
+                            );
+                            setGeneratedCaption(caption);
+                          }
+
                           toast({
                             title: "✅ Reel multi-video generado",
                             description: `Tu video está listo. Tamaño: ${(resultBlob.size / (1024 * 1024)).toFixed(1)} MB`,
