@@ -317,8 +317,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           {/* Subtítulo si existe */}
           {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
             <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4 animate-fade-in">
-              <div className="bg-black/75 backdrop-blur-sm px-6 py-3 rounded-full shadow-2xl">
-                <p className="text-white text-xl font-bold text-center">
+              <div className="bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-xl">
+                <p className="text-white text-lg font-bold text-center leading-tight">
                   {propertyData.subtitulos[currentPhotoIndex]}
                 </p>
               </div>
@@ -527,8 +527,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           {/* Subtítulo si existe */}
           {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
             <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4">
-              <div className="bg-black/75 backdrop-blur-sm px-6 py-3 rounded-full shadow-2xl">
-                <p className="text-white text-xl font-bold text-center">
+              <div className="bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-xl">
+                <p className="text-white text-lg font-bold text-center leading-tight">
                   {propertyData.subtitulos[currentPhotoIndex]}
                 </p>
               </div>

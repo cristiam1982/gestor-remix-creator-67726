@@ -8,6 +8,12 @@ import { ContentType } from "@/types/property";
 import { validateImageFile, validateVideoFile } from "@/utils/fileValidation";
 import { useToast } from "@/hooks/use-toast";
 
+const SUBTITLE_ICONS = {
+  espacios: ["🛋️", "🍳", "🛏️", "🚿", "🌳", "🚗", "🏊", "🏋️"],
+  caracteristicas: ["✨", "🌟", "💎", "🔑", "📍", "💰", "🏡", "🎯"],
+  otros: ["👉", "⭐", "🔥", "💫", "🎨", "🌈", "🏆", "💝"]
+};
+
 interface PhotoManagerProps {
   photos: string[];
   onPhotosChange: (photos: string[]) => void;
@@ -194,14 +200,40 @@ export const PhotoManager = ({
                   </div>
                   
                   {contentType === "reel-fotos" && onSubtitulosChange && (
-                    <input
-                      type="text"
-                      placeholder="Subtítulo opcional..."
-                      value={subtitulos[idx] || ""}
-                      onChange={(e) => handleSubtituloChange(idx, e.target.value)}
-                      maxLength={30}
-                      className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    <div className="space-y-2">
+                      <input
+                        type="text"
+                        placeholder="Ej: Sala principal"
+                        value={subtitulos[idx] || ""}
+                        onChange={(e) => handleSubtituloChange(idx, e.target.value)}
+                        maxLength={30}
+                        className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                      
+                      {/* Galería de iconos */}
+                      <div className="flex flex-wrap gap-1 items-center">
+                        <span className="text-xs text-muted-foreground">Iconos:</span>
+                        {Object.values(SUBTITLE_ICONS).flat().map((icon, iconIdx) => (
+                          <button
+                            key={iconIdx}
+                            type="button"
+                            onClick={() => {
+                              const currentText = subtitulos[idx] || "";
+                              // Si el texto ya empieza con emoji, reemplazarlo
+                              const emojiRegex = /^[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Emoji_Presentation}]+\s*/u;
+                              const newText = currentText.match(emojiRegex) 
+                                ? `${icon} ${currentText.replace(emojiRegex, '').trim()}`
+                                : `${icon} ${currentText}`.trim();
+                              handleSubtituloChange(idx, newText);
+                            }}
+                            className="text-base hover:scale-125 transition-transform p-1 rounded hover:bg-accent"
+                            title="Agregar icono"
+                          >
+                            {icon}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
               ))}
