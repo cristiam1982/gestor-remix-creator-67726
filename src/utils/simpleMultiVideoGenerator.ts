@@ -64,6 +64,22 @@ export async function generateSimpleMultiVideoReel(
   recorder.start(4000);
   onProgress(10, 'Iniciando grabación...');
   
+  // Helper para dividir subtítulos en líneas de máximo 30 caracteres
+  const splitSubtitle = (text: string, maxChars: number = 30): string[] => {
+    if (text.length <= maxChars) return [text];
+    
+    // Buscar el último espacio antes del límite
+    let splitIndex = text.lastIndexOf(' ', maxChars);
+    
+    // Si no hay espacio, cortar en el límite
+    if (splitIndex === -1) splitIndex = maxChars;
+    
+    const line1 = text.substring(0, splitIndex).trim();
+    const line2 = text.substring(splitIndex).trim();
+    
+    return [line1, line2];
+  };
+  
   // Función helper para dibujar overlays
   const drawOverlays = (currentSubtitle: string) => {
     // Logo del aliado (superior izquierda, sin fondo)
@@ -76,17 +92,23 @@ export async function generateSimpleMultiVideoReel(
       ctx.drawImage(aliadoLogo, 30, 30, logoWidth, logoHeight);
     }
     
-    // Subtítulo (si existe)
+    // Subtítulo (si existe) - CON SOPORTE MULTI-LÍNEA
     if (currentSubtitle) {
-      ctx.font = 'bold 56px Poppins, sans-serif';
-      const textMetrics = ctx.measureText(currentSubtitle);
-      const padding = 40;
-      const bgWidth = textMetrics.width + padding * 2;
-      const bgHeight = 90;
-      const x = (1080 - bgWidth) / 2;
-      const y = 1920 * 0.70;
+      const lines = splitSubtitle(currentSubtitle, 30);
       
-      // Fondo semi-transparente
+      ctx.font = 'bold 56px Poppins, sans-serif';
+      
+      // Calcular ancho máximo de todas las líneas
+      const maxWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
+      
+      const padding = 40;
+      const bgWidth = maxWidth + padding * 2;
+      const lineHeight = 70;
+      const bgHeight = lines.length * lineHeight + padding;
+      const x = (1080 - bgWidth) / 2;
+      const y = 1920 * 0.68;  // Subir un poco más arriba
+      
+      // Fondo semi-transparente (ajustado al número de líneas)
       ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
       ctx.beginPath();
       ctx.roundRect(x, y, bgWidth, bgHeight, 20);
@@ -98,11 +120,15 @@ export async function generateSimpleMultiVideoReel(
       ctx.shadowOffsetX = 2;
       ctx.shadowOffsetY = 2;
       
-      // Texto
+      // Renderizar cada línea centrada
       ctx.fillStyle = '#FFFFFF';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(currentSubtitle, 1080 / 2, y + bgHeight / 2);
+      
+      lines.forEach((line, index) => {
+        const lineY = y + padding / 2 + (index + 0.5) * lineHeight;
+        ctx.fillText(line, 1080 / 2, lineY);
+      });
       
       // Resetear sombra
       ctx.shadowColor = 'transparent';
@@ -160,7 +186,7 @@ export async function generateSimpleMultiVideoReel(
 
   ctx.fillText(atributos, 40, footerY + 260);
   
-  // Logo de El Gestor (esquina inferior derecha, sobre el footer)
+  // Logo de El Gestor (esquina inferior derecha, sobre el footer - MÁS ARRIBA)
   if (elGestorLogo) {
     const logoHeight = 90;
     const logoWidth = Math.min(
@@ -169,7 +195,7 @@ export async function generateSimpleMultiVideoReel(
     );
     
     const x = 1080 - logoWidth - 30;
-    const y = 1920 - logoHeight - 30;
+    const y = 1920 - logoHeight - 90;  // Subido 60px más arriba
     
     ctx.drawImage(elGestorLogo, x, y, logoWidth, logoHeight);
   }
