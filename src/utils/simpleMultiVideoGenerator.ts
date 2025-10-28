@@ -68,10 +68,10 @@ export async function generateSimpleMultiVideoReel(
   const drawOverlays = (currentSubtitle: string) => {
     // Logo del aliado (superior izquierda, sin fondo)
     if (aliadoLogo) {
-      const logoHeight = 110;
+      const logoHeight = 150;
       const logoWidth = Math.min(
         (aliadoLogo.width / aliadoLogo.height) * logoHeight,
-        600
+        700
       );
       ctx.drawImage(aliadoLogo, 30, 30, logoWidth, logoHeight);
     }
@@ -111,7 +111,7 @@ export async function generateSimpleMultiVideoReel(
     
   // Footer con información de propiedad
   const footerY = 1920 - 310;
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
   ctx.fillRect(0, footerY, 1080, 310);
     
   // Canon/Precio
@@ -156,10 +156,10 @@ export async function generateSimpleMultiVideoReel(
   
   // Logo de El Gestor (esquina inferior derecha, sobre el footer)
   if (elGestorLogo) {
-    const logoHeight = 70;
+    const logoHeight = 90;
     const logoWidth = Math.min(
       (elGestorLogo.width / elGestorLogo.height) * logoHeight,
-      280
+      350
     );
     
     const x = 1080 - logoWidth - 30;
