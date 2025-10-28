@@ -122,7 +122,7 @@ export async function generateSimpleMultiVideoReel(
   ctx.fillText(
     propertyData.canon || propertyData.valorVenta || '$0',
     40,
-    footerY + 70
+    footerY + 75
   );
     
   // Ubicación
@@ -130,9 +130,9 @@ export async function generateSimpleMultiVideoReel(
   ctx.fillStyle = '#333333';
 
   ctx.fillText(
-    `📍 ${propertyData.ubicacion || 'Ubicación'}`,
+    propertyData.ubicacion || 'Ubicación',
     40,
-    footerY + 135
+    footerY + 145
   );
     
   // Tipo de inmueble
@@ -140,19 +140,19 @@ export async function generateSimpleMultiVideoReel(
   ctx.fillStyle = '#666666';
 
   const tipoTexto = propertyData.tipo?.charAt(0).toUpperCase() + propertyData.tipo?.slice(1);
-  ctx.fillText(tipoTexto || '', 40, footerY + 185);
+  ctx.fillText(tipoTexto || '', 40, footerY + 195);
     
   // Atributos
   ctx.font = '40px Poppins, sans-serif';
   ctx.fillStyle = aliadoConfig.colorSecundario || '#333333';
 
   let atributos = '';
-  if (propertyData.habitaciones) atributos += `🛏️ ${propertyData.habitaciones}  `;
-  if (propertyData.banos) atributos += `🚿 ${propertyData.banos}  `;
-  if (propertyData.parqueaderos) atributos += `🚗 ${propertyData.parqueaderos}  `;
-  if (propertyData.area) atributos += `📐 ${propertyData.area}m²`;
+  if (propertyData.habitaciones) atributos += `${propertyData.habitaciones} Hab  `;
+  if (propertyData.banos) atributos += `${propertyData.banos} Baños  `;
+  if (propertyData.parqueaderos) atributos += `${propertyData.parqueaderos} Parq  `;
+  if (propertyData.area) atributos += `${propertyData.area}m²`;
 
-  ctx.fillText(atributos, 40, footerY + 235);
+  ctx.fillText(atributos, 40, footerY + 250);
   
   // Logo de El Gestor (esquina inferior derecha, sobre el footer)
   if (elGestorLogo) {
