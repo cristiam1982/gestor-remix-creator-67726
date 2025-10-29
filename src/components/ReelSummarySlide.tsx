@@ -120,7 +120,8 @@ export const ReelSummarySlide = ({
             <div 
               className="inline-block px-6 py-3 rounded-2xl shadow-2xl"
               style={{ 
-                backgroundColor: hexToRgba(brand, 0.95),
+                backgroundColor: '#FF8C42',
+                opacity: 0.95,
                 border: '2px solid rgba(255,255,255,0.25)'
               }}
             >

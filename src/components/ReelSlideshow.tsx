@@ -403,7 +403,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
             {/* Vista previa principal - RESPONSIVE */}
             <div 
-              className="relative aspect-[9/16] max-w-[340px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="relative aspect-[9/16] max-w-[380px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
               style={{ 
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
@@ -477,7 +477,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
           {/* Subtítulo centrado sobre el precio */}
           {!shouldShowSummary && propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-            <div className="absolute bottom-[160px] left-0 right-0 z-20 flex justify-center px-4 animate-slide-up-bounce">
+            <div className="absolute bottom-[240px] left-0 right-0 z-30 flex justify-center px-4 animate-slide-up-bounce">
               <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-xl max-w-[80%]`}>
                 <p className="text-white text-base font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                   {propertyData.subtitulos[currentPhotoIndex]}
@@ -506,7 +506,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
             
             return (
-              <div className="absolute bottom-6 left-0 right-0 p-6 pr-24 pb-14 z-10">
+              <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-20 z-10">
                 {/* Precio con máxima visibilidad */}
                 {precio && (
                   <div 
@@ -518,7 +518,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     }}
                   >
                     <p 
-                      className="text-2xl font-black text-white flex items-center gap-2" 
+                      className="text-xl font-black text-white flex items-center gap-2"
                       style={{ textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' }}
                     >
                       <span>💰</span>
@@ -616,7 +616,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
               {/* Subtítulo centrado sobre el precio - Canvas */}
               {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-                <div className="absolute bottom-[160px] left-0 right-0 z-20 flex justify-center px-4">
+                <div className="absolute bottom-[240px] left-0 right-0 z-30 flex justify-center px-4">
                   <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-xl max-w-[80%]`}>
                     <p className="text-white text-base font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                       {propertyData.subtitulos[currentPhotoIndex]}
@@ -643,7 +643,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
                 
                 return (
-                  <div className="absolute bottom-6 left-0 right-0 p-6 pr-24 pb-14 z-10">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-20 z-10">
                     {/* Precio con máxima visibilidad - Canvas */}
                     {precio && (
                       <div 
@@ -655,7 +655,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                         }}
                       >
                         <p 
-                          className="text-2xl font-black text-white flex items-center gap-2" 
+                          className="text-xl font-black text-white flex items-center gap-2"
                           style={{ textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' }}
                         >
                           <span>💰</span>
