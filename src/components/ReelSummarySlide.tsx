@@ -1,5 +1,6 @@
 import { PropertyData, AliadoConfig } from "@/types/property";
 import { formatPrecioColombia } from "@/utils/formatters";
+import { hexToRgba, isLightColor } from "@/utils/colorUtils";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
@@ -10,6 +11,7 @@ interface ReelSummarySlideProps {
   photos?: string[];
   backgroundStyle?: 'solid' | 'blur' | 'mosaic';
   solidColor?: string;
+  customHashtag?: string;
 }
 
 export const ReelSummarySlide = ({ 
@@ -18,12 +20,19 @@ export const ReelSummarySlide = ({
   isVisible,
   photos = [],
   backgroundStyle = 'solid',
-  solidColor
+  solidColor,
+  customHashtag
 }: ReelSummarySlideProps) => {
   if (!isVisible) return null;
 
   const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
   const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
+  
+  // Color de marca del aliado
+  const brand = aliadoConfig.colorPrimario || '#00A5BD';
+  
+  // Validación de contraste para fondo sólido
+  const textColor = solidColor && isLightColor(solidColor) ? '#000000' : '#FFFFFF';
 
   // Obtener características principales
   const caracteristicas = [];
@@ -75,8 +84,9 @@ export const ReelSummarySlide = ({
     <div 
       className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center"
       style={backgroundStyle === 'solid' ? {
-        background: solidColor || `linear-gradient(135deg, ${aliadoConfig.colorPrimario}15 0%, ${aliadoConfig.colorSecundario}15 100%)`,
-        backdropFilter: 'blur(20px)'
+        backgroundColor: solidColor || hexToRgba(brand, 0.12),
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.1)'
       } : {}}
     >
       {renderBackground()}
@@ -105,30 +115,40 @@ export const ReelSummarySlide = ({
             </p>
           )}
           
-          {/* Precio - más sutil */}
+          {/* Precio - single-brand color */}
           {precio && (
             <div 
-              className="inline-block px-5 py-2.5 rounded-2xl shadow-2xl"
+              className="inline-block px-6 py-3 rounded-2xl shadow-2xl"
               style={{ 
-                background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}DD, ${aliadoConfig.colorSecundario}DD)`
+                backgroundColor: hexToRgba(brand, 0.95),
+                border: '2px solid rgba(255,255,255,0.25)'
               }}
             >
-              <p className="text-xl font-black text-white drop-shadow-2xl">
+              <p 
+                className="text-2xl font-black drop-shadow-2xl"
+                style={{ 
+                  color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
+                  textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' 
+                }}
+              >
                 💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
               </p>
             </div>
           )}
         </div>
 
-        {/* Características clave - más juntas */}
+        {/* Características clave - single-brand color */}
         {caracteristicas.length > 0 && (
           <div className="flex flex-wrap gap-2 justify-center">
             {caracteristicas.map((car, idx) => (
               <span
                 key={idx}
-                className="px-4 py-1.5 rounded-2xl shadow-xl text-white font-bold text-base"
+                className="px-5 py-2.5 rounded-2xl shadow-xl font-bold text-lg"
                 style={{ 
-                  background: `linear-gradient(135deg, ${aliadoConfig.colorSecundario}CC, ${aliadoConfig.colorPrimario}CC)`
+                  backgroundColor: hexToRgba(brand, 0.88),
+                  border: '1.5px solid rgba(255,255,255,0.2)',
+                  color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
+                  textShadow: '0 2px 6px rgba(0,0,0,0.85)'
                 }}
               >
                 {car.icon} {car.text}
@@ -137,24 +157,43 @@ export const ReelSummarySlide = ({
           </div>
         )}
 
-        {/* Call to Action - menos dominante */}
+        {/* Call to Action - single-brand color */}
         <div 
-          className="px-6 py-3 rounded-2xl shadow-2xl"
+          className="px-8 py-4 rounded-2xl shadow-2xl"
           style={{ 
-            background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}EE, ${aliadoConfig.colorSecundario}EE)`
+            backgroundColor: hexToRgba(brand, 0.94),
+            border: '2px solid rgba(255,255,255,0.3)'
           }}
         >
-          <p className="text-lg font-bold text-white mb-1 drop-shadow-2xl">
-            📞 Agenda tu visita
+          <p 
+            className="font-bold text-lg mb-1" 
+            style={{ 
+              color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
+              textShadow: '0 2px 6px rgba(0,0,0,0.8)' 
+            }}
+          >
+            📱 Agenda tu visita
           </p>
-          <p className="text-xl font-black text-white drop-shadow-2xl">
+          <p 
+            className="text-base" 
+            style={{ 
+              color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
+              textShadow: '0 2px 6px rgba(0,0,0,0.8)' 
+            }}
+          >
             {aliadoConfig.whatsapp}
           </p>
         </div>
 
-        {/* Hashtag personalizado - más sutil */}
-        <p className="text-sm font-semibold text-white mt-6 drop-shadow-2xl">
-          #TuNuevoHogarEn{aliadoConfig.ciudad.charAt(0).toUpperCase() + aliadoConfig.ciudad.slice(1)} 🏡
+        {/* Hashtag personalizado */}
+        <p 
+          className="text-base font-semibold mt-6" 
+          style={{ 
+            color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
+            textShadow: '0 2px 8px rgba(0,0,0,0.9)' 
+          }}
+        >
+          {customHashtag || `#TuNuevoHogarEn${aliadoConfig.ciudad.charAt(0).toUpperCase() + aliadoConfig.ciudad.slice(1)}`} 🏡
         </p>
         
         {/* Logo El Gestor - más discreto al final */}

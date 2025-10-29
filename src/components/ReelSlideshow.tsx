@@ -12,6 +12,7 @@ import { TemplateSelector } from "./TemplateSelector";
 import { ReelControlsPanel } from "./ReelControlsPanel";
 import { ReelSummarySlide } from "./ReelSummarySlide";
 import { formatPrecioColombia } from "@/utils/formatters";
+import { hexToRgba } from "@/utils/colorUtils";
 import { useToast } from "@/hooks/use-toast";
 import { REEL_TEMPLATES, getTemplateForProperty, applyGradientIntensity } from "@/utils/reelTemplates";
 import {
@@ -126,7 +127,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [showSummarySlide, setShowSummarySlide] = useState(false);
   const [isChangingGradient, setIsChangingGradient] = useState(false);
   const [activeTab, setActiveTab] = useState<'visual' | 'sombreado' | 'final'>('visual');
+  const [customHashtag, setCustomHashtag] = useState<string>('');
   const { toast } = useToast();
+
+  // Color de marca del aliado
+  const brand = aliadoConfig.colorPrimario || '#00A5BD';
   
   const slideDuration = 1300; // 1.3 segundos por foto (mejor legibilidad)
   const summaryDuration = 2500; // 2.5 segundos para slide de resumen
@@ -182,11 +187,13 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   
   // PARTE 1: Función para cambiar foto con crossfade
   const goToPhoto = useCallback((nextIndex: number) => {
-    setPreviousPhotoIndex(currentPhotoIndex);
-    setCurrentPhotoIndex(nextIndex);
+    setCurrentPhotoIndex(current => {
+      setPreviousPhotoIndex(current);
+      return nextIndex;
+    });
     setIsTransitioning(true);
     setTimeout(() => setIsTransitioning(false), 600);
-  }, [currentPhotoIndex]);
+  }, []);
 
   // PARTE 1: Autoplay mejorado con goToPhoto
   useEffect(() => {
@@ -418,10 +425,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               propertyData={propertyData}
               aliadoConfig={aliadoConfig}
               isVisible={true}
-              photos={photosList.map(p => p.src)}
-              backgroundStyle={summaryBackground}
-              solidColor={summarySolidColor}
-            />
+                  photos={photosList.map(p => p.src)}
+                  backgroundStyle={summaryBackground}
+                  solidColor={summarySolidColor}
+                  customHashtag={customHashtag}
+                />
           )}
 
           {/* Foto actual con overlay y crossfade - Solo mostrar si NO es slide de resumen */}
@@ -495,16 +503,19 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 {/* PARTE 3: Precio con máxima visibilidad y z-index alto */}
                 {precio && (
                   <div 
-                    className="inline-block px-4 py-2 rounded-xl shadow-2xl mb-2 max-w-[85%] z-40"
+                    className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-2 max-w-[85%] z-40"
                     style={{ 
-                      background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}F2, ${aliadoConfig.colorSecundario}F2)`,
-                      border: '1px solid rgba(255,255,255,0.15)'
+                      backgroundColor: hexToRgba(brand, 0.95),
+                      border: '2px solid rgba(255,255,255,0.25)'
                     }}
                   >
-                    <p className="text-lg font-black text-white flex items-center gap-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                      <span className="text-base">💰</span>
+                    <p 
+                      className="text-xl font-black text-white flex items-center gap-1.5" 
+                      style={{ textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' }}
+                    >
+                      <span className="text-lg">💰</span>
                       <span>{formatPrecioColombia(precio)}</span>
-                      {!esVenta && <span className="text-sm">/mes</span>}
+                      {!esVenta && <span className="text-base">/mes</span>}
                     </p>
                   </div>
                 )}
@@ -572,6 +583,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               photos={photosList.map(p => p.src)}
               backgroundStyle={summaryBackground}
               solidColor={summarySolidColor}
+              customHashtag={customHashtag}
             />
           )}
 
@@ -626,19 +638,22 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
                     {/* PARTE 1: Precio reducido en canvas también */}
                     {precio && (
-                  <div 
-                    className="inline-block px-4 py-2 rounded-xl shadow-2xl mb-2 max-w-[85%] z-40"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}F2, ${aliadoConfig.colorSecundario}F2)`,
-                      border: '1px solid rgba(255,255,255,0.15)'
-                    }}
-                  >
-                    <p className="text-lg font-black text-white flex items-center gap-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                      <span className="text-base">💰</span>
-                      <span>{formatPrecioColombia(precio)}</span>
-                      {!esVenta && <span className="text-sm">/mes</span>}
-                    </p>
-                  </div>
+                      <div 
+                        className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-2 max-w-[85%] z-40"
+                        style={{ 
+                          backgroundColor: hexToRgba(brand, 0.95),
+                          border: '2px solid rgba(255,255,255,0.25)'
+                        }}
+                      >
+                        <p 
+                          className="text-xl font-black text-white flex items-center gap-1.5" 
+                          style={{ textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' }}
+                        >
+                          <span className="text-lg">💰</span>
+                          <span>{formatPrecioColombia(precio)}</span>
+                          {!esVenta && <span className="text-base">/mes</span>}
+                        </p>
+                      </div>
                     )}
                     
                     <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
@@ -809,6 +824,23 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   </div>
                 </div>
               )}
+
+              {/* Hashtag personalizado */}
+              <div className="pt-4 border-t space-y-3">
+                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  #️⃣ Hashtag Personalizado
+                </label>
+                <input
+                  type="text"
+                  value={customHashtag}
+                  onChange={(e) => setCustomHashtag(e.target.value.slice(0, 50))}
+                  placeholder="#TuHashtagAquí"
+                  className="w-full px-4 py-2.5 rounded-lg border-2 border-input bg-background text-foreground"
+                />
+                <p className="text-xs text-muted-foreground">
+                  💡 Máximo 50 caracteres. Ejemplo: #ArriendosCali #PropiedadesExclusivas
+                </p>
+              </div>
               
               <div className="pt-3 border-t">
                 <p className="text-xs text-muted-foreground leading-relaxed">
