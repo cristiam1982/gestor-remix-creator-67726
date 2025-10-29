@@ -477,8 +477,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
           {/* Subtítulo centrado sobre el precio */}
           {!shouldShowSummary && propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-            <div className="absolute bottom-[190px] left-0 right-0 z-30 flex justify-center px-4 animate-slide-up-bounce">
-              <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-xl max-w-[80%]`}>
+            <div className="absolute bottom-[190px] left-0 right-0 z-30 flex justify-center items-center px-4 animate-slide-up-bounce">
+              <div className={`${currentTemplate.subtitleStyle.background} px-4 py-2 rounded-full shadow-xl max-w-[80%] flex items-center justify-center`}>
                 <p className="text-white text-base font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                   {propertyData.subtitulos[currentPhotoIndex]}
                 </p>
@@ -616,8 +616,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
               {/* Subtítulo centrado sobre el precio - Canvas */}
               {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-                <div className="absolute bottom-[190px] left-0 right-0 z-30 flex justify-center px-4">
-                  <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-xl max-w-[80%]`}>
+                <div className="absolute bottom-[190px] left-0 right-0 z-30 flex justify-center items-center px-4">
+                  <div className={`${currentTemplate.subtitleStyle.background} px-4 py-2 rounded-full shadow-xl max-w-[80%] flex items-center justify-center`}>
                     <p className="text-white text-base font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                       {propertyData.subtitulos[currentPhotoIndex]}
                     </p>
