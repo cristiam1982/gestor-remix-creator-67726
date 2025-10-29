@@ -4,6 +4,27 @@ import GIF from "gif.js";
 import { waitForNextFrame } from "./imageUtils";
 
 /**
+ * Obtiene el mejor MIME type soportado por el navegador para grabación de video
+ */
+const getSupportedMimeType = (): string => {
+  const types = [
+    'video/webm;codecs=vp9,opus',
+    'video/webm;codecs=vp8,opus',
+    'video/webm;codecs=h264,opus',
+    'video/webm',
+    'video/mp4'
+  ];
+  
+  for (const type of types) {
+    if (MediaRecorder.isTypeSupported(type)) {
+      return type;
+    }
+  }
+  
+  return 'video/webm'; // Fallback
+};
+
+/**
  * Carga una imagen y devuelve HTMLImageElement
  */
 const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -279,6 +300,141 @@ export const generateReelVideo = async (
       stage: "error",
       progress: 0,
       message: errorMessage,
+    });
+    throw error;
+  }
+};
+
+/**
+ * Genera un video MP4 usando MediaRecorder API (Fase 2)
+ * Más rápido, mejor calidad y menor peso que GIF
+ */
+export const generateReelVideoMP4 = async (
+  photos: string[],
+  elementId: string,
+  onProgress: (progress: VideoGenerationProgress) => void,
+  onPhotoChange: (index: number) => Promise<void>
+): Promise<Blob> => {
+  const startTime = Date.now();
+  
+  try {
+    onProgress({
+      stage: "initializing",
+      progress: 0,
+      message: "Inicializando grabación de video...",
+    });
+
+    // Verificar soporte de MediaRecorder
+    if (!window.MediaRecorder) {
+      throw new Error("Tu navegador no soporta grabación de video");
+    }
+
+    const element = document.getElementById(elementId);
+    if (!element) throw new Error("Elemento no encontrado");
+
+    // Crear canvas para captura
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const ctx = canvas.getContext('2d', { 
+      alpha: false,
+      desynchronized: true 
+    });
+    
+    if (!ctx) throw new Error("No se pudo crear contexto de canvas");
+
+    // Configurar MediaRecorder
+    const stream = canvas.captureStream(30); // 30 FPS
+    const mimeType = getSupportedMimeType();
+    const mediaRecorder = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond: 5000000 // 5 Mbps para buena calidad
+    });
+
+    const chunks: Blob[] = [];
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        chunks.push(e.data);
+      }
+    };
+
+    // Iniciar grabación
+    mediaRecorder.start();
+    
+    onProgress({
+      stage: "capturing",
+      progress: 10,
+      totalFrames: photos.length,
+      currentFrame: 0,
+      message: "Grabando video...",
+    });
+
+    // Duración por foto en ms (1.2 segundos = 1200ms)
+    const photoDuration = 1200;
+    const fps = 30;
+    const framesPerPhoto = Math.floor((photoDuration / 1000) * fps);
+
+    // Renderizar cada foto
+    for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
+      await onPhotoChange(photoIndex);
+      await waitForNextFrame();
+
+      // Capturar el elemento actual
+      const frameCanvas = await captureFrame(elementId, false);
+      
+      // Dibujar frames intermedios para mantener smooth playback
+      for (let frameNum = 0; frameNum < framesPerPhoto; frameNum++) {
+        ctx.drawImage(frameCanvas, 0, 0, canvas.width, canvas.height);
+        
+        // Esperar el tiempo correcto para el siguiente frame
+        await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+      }
+
+      const captureProgress = 10 + ((photoIndex + 1) / photos.length) * 80;
+      onProgress({
+        stage: "capturing",
+        progress: captureProgress,
+        currentFrame: photoIndex + 1,
+        totalFrames: photos.length,
+        message: `Grabando foto ${photoIndex + 1} de ${photos.length}...`,
+      });
+    }
+
+    // Finalizar grabación
+    onProgress({
+      stage: "encoding",
+      progress: 90,
+      message: "Finalizando video...",
+    });
+
+    return new Promise((resolve, reject) => {
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: mimeType });
+        const totalTime = Math.round((Date.now() - startTime) / 1000);
+        
+        onProgress({
+          stage: "complete",
+          progress: 100,
+          message: `¡Video listo en ${totalTime}s!`,
+        });
+        
+        resolve(blob);
+      };
+
+      mediaRecorder.onerror = (e) => {
+        reject(new Error("Error durante la grabación"));
+      };
+
+      mediaRecorder.stop();
+    });
+
+  } catch (error) {
+    console.error("Error generando video MP4:", error);
+    
+    onProgress({
+      stage: "error",
+      progress: 0,
+      message: error instanceof Error ? error.message : "Error desconocido",
     });
     throw error;
   }

@@ -219,7 +219,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         });
       };
 
-      const videoBlob = await generateReelVideo(
+      // Usar nueva función MP4 (Fase 2 - mejor calidad, menor peso)
+      const { generateReelVideoMP4 } = await import("../utils/videoGenerator");
+      
+      const videoBlob = await generateReelVideoMP4(
         photos,
         "reel-capture-canvas",
         setGenerationProgress,
@@ -228,12 +231,12 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
       downloadBlob(
         videoBlob,
-        `reel-${aliadoConfig.nombre.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.gif`
+        `reel-${aliadoConfig.nombre.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.mp4`
       );
 
       toast({
         title: "🎉 ¡Reel generado!",
-        description: "Tu reel animado GIF se ha descargado correctamente.",
+        description: "Tu video MP4 de alta calidad se ha descargado correctamente.",
       });
 
       if (onDownload) onDownload();
