@@ -477,7 +477,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
           {/* Subtítulo centrado sobre el precio */}
           {!shouldShowSummary && propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-            <div className="absolute bottom-[200px] left-0 right-0 z-30 flex justify-center items-center px-4 animate-slide-up-bounce">
+            <div className="absolute bottom-[260px] left-0 right-0 z-30 flex justify-center items-center px-4 animate-slide-up-bounce">
               <div className="bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full shadow-lg max-w-[80%] flex items-center justify-center">
                 <p className="text-white text-sm font-semibold text-center leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">
                   {propertyData.subtitulos[currentPhotoIndex]}
@@ -522,6 +522,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                       style={{ textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' }}
                     >
                       <span>💰</span>
+                      <span className="text-xs font-semibold opacity-90 uppercase tracking-wide">
+                        {esVenta ? "Precio de venta" : "Canon"}
+                      </span>
                       <span>{formatPrecioColombia(precio)}</span>
                       {!esVenta && <span className="text-lg">/mes</span>}
                     </p>
@@ -616,7 +619,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
               {/* Subtítulo centrado sobre el precio - Canvas */}
               {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-                <div className="absolute bottom-[200px] left-0 right-0 z-30 flex justify-center items-center px-4">
+                <div className="absolute bottom-[260px] left-0 right-0 z-30 flex justify-center items-center px-4">
                   <div className="bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full shadow-lg max-w-[80%] flex items-center justify-center">
                     <p className="text-white text-sm font-semibold text-center leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">
                       {propertyData.subtitulos[currentPhotoIndex]}
@@ -659,6 +662,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                           style={{ textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' }}
                         >
                           <span>💰</span>
+                          <span className="text-xs font-semibold opacity-90 uppercase tracking-wide">
+                            {esVenta ? "Precio de venta" : "Canon"}
+                          </span>
                           <span>{formatPrecioColombia(precio)}</span>
                           {!esVenta && <span className="text-lg">/mes</span>}
                         </p>
