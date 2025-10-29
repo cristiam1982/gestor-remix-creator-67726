@@ -51,4 +51,5 @@ export interface PropertyData {
   fotos: string[];
   subtitulos?: string[];
   template?: ReelTemplate; // Fase 4: templates visuales
+  gradientDirection?: 'top' | 'bottom' | 'both'; // Fase 4: dirección de gradiente
 }

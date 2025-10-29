@@ -8,6 +8,7 @@ import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { TemplateSelector } from "./TemplateSelector";
+import { GradientSelector } from "./GradientSelector";
 import { formatPrecioColombia } from "@/utils/formatters";
 import { useToast } from "@/hooks/use-toast";
 import { REEL_TEMPLATES, getTemplateForProperty } from "@/utils/reelTemplates";
@@ -103,10 +104,13 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [selectedTemplate, setSelectedTemplate] = useState<ReelTemplate>(
     propertyData.template || getTemplateForProperty(propertyData.tipo, propertyData.uso)
   );
+  const [gradientDirection, setGradientDirection] = useState<'top' | 'bottom' | 'both'>(
+    propertyData.gradientDirection || 'both'
+  );
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { toast } = useToast();
   
-  const slideDuration = 1200; // 1.2 segundos por foto (estándar viral)
+  const slideDuration = 1300; // 1.3 segundos por foto (mejor legibilidad)
   const currentTemplate = REEL_TEMPLATES[selectedTemplate];
 
   // Helper: Obtener máximo 3 tags más relevantes
@@ -286,10 +290,18 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       
       <Card className="p-6">
         {/* Selector de Template */}
-        <div className="mb-6">
+        <div className="mb-4">
           <TemplateSelector 
             selected={selectedTemplate}
             onChange={setSelectedTemplate}
+          />
+        </div>
+
+        {/* Selector de Gradiente */}
+        <div className="mb-6">
+          <GradientSelector 
+            selected={gradientDirection}
+            onChange={setGradientDirection}
           />
         </div>
 
@@ -297,7 +309,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           <div>
             <h3 className="text-xl font-semibold text-primary">Reel Slideshow</h3>
             <p className="text-sm text-muted-foreground">
-              {photos.length} fotos · {(photos.length * 1.2).toFixed(1)}s total · {currentTemplate.name}
+              {photos.length} fotos · {(photos.length * 1.3).toFixed(1)}s total · {currentTemplate.name}
             </p>
           </div>
           <div className="flex gap-2">
@@ -360,7 +372,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             />
             
             {/* Gradient overlay dinámico según template */}
-            <div className={`absolute inset-0 bg-gradient-to-b ${currentTemplate.gradient}`} />
+            <div className={`absolute inset-0 bg-gradient-to-b ${currentTemplate.gradient[gradientDirection]}`} />
           </div>
 
           {/* Subtítulo si existe - Fase 3: mejorado + Template Fase 4 */}
@@ -391,7 +403,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
             if (!precio) return null;
             return (
-              <div className="absolute top-6 right-6 z-20 animate-fade-in">
+              <div className="absolute top-24 right-6 z-20 animate-fade-in">
                 <div 
                   className={`px-4 py-2 text-white font-black text-xl ${currentTemplate.priceStyle.className}`}
                   style={{ 
@@ -477,7 +489,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               referrerPolicy="no-referrer"
             />
             {/* Gradient overlay dinámico según template */}
-            <div className={`absolute inset-0 bg-gradient-to-b ${currentTemplate.gradient}`} />
+            <div className={`absolute inset-0 bg-gradient-to-b ${currentTemplate.gradient[gradientDirection]}`} />
           </div>
 
           {/* Subtítulo si existe - Template Fase 4 */}
@@ -509,7 +521,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
             if (!precio) return null;
             return (
-              <div className="absolute top-6 right-6 z-20">
+              <div className="absolute top-24 right-6 z-20">
                 <div 
                   className={`px-4 py-2 text-white font-black text-xl ${currentTemplate.priceStyle.className}`}
                   style={{ 
