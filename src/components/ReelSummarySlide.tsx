@@ -91,12 +91,12 @@ export const ReelSummarySlide = ({
     >
       {renderBackground()}
       
-      <div className="space-y-8 relative z-10">
+      <div className="space-y-4 relative z-10 pt-12">
         {/* Logo del aliado - más grande y protagonista */}
         <img
           src={logoRubyMorales}
           alt={aliadoConfig.nombre}
-          className="w-40 h-40 mx-auto rounded-2xl object-contain bg-white p-3 shadow-2xl"
+          className="w-28 h-28 mx-auto rounded-xl object-contain bg-white p-2.5 shadow-2xl"
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
@@ -104,13 +104,13 @@ export const ReelSummarySlide = ({
         {/* Información del inmueble - más compacta internamente */}
         <div className="space-y-2 mb-4">
           {/* Tipo de inmueble - más pequeño */}
-          <h2 className="text-2xl font-black text-white drop-shadow-2xl">
+          <h2 className="text-xl font-bold text-white drop-shadow-2xl">
             {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
           </h2>
           
           {/* Ubicación - más pequeña */}
           {propertyData.ubicacion && (
-            <p className="text-lg font-bold text-white drop-shadow-xl">
+            <p className="text-base font-semibold text-white drop-shadow-xl">
               📍 {propertyData.ubicacion}
             </p>
           )}
@@ -118,7 +118,7 @@ export const ReelSummarySlide = ({
           {/* Precio - single-brand color */}
           {precio && (
             <div 
-              className="inline-block px-6 py-3 rounded-2xl shadow-2xl"
+              className="inline-block px-5 py-2 rounded-xl shadow-2xl"
               style={{ 
                 backgroundColor: '#FF8C42',
                 opacity: 0.95,
@@ -126,7 +126,7 @@ export const ReelSummarySlide = ({
               }}
             >
               <p 
-                className="text-2xl font-black drop-shadow-2xl"
+                className="text-xl font-black drop-shadow-2xl"
                 style={{ 
                   color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
                   textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' 
@@ -144,7 +144,7 @@ export const ReelSummarySlide = ({
             {caracteristicas.map((car, idx) => (
               <span
                 key={idx}
-                className="px-5 py-2.5 rounded-2xl shadow-xl font-bold text-lg"
+                className="px-4 py-2 rounded-xl shadow-xl font-semibold text-base"
                 style={{ 
                   backgroundColor: hexToRgba(brand, 0.88),
                   border: '1.5px solid rgba(255,255,255,0.2)',
@@ -160,14 +160,14 @@ export const ReelSummarySlide = ({
 
         {/* Call to Action - single-brand color */}
         <div 
-          className="px-8 py-4 rounded-2xl shadow-2xl"
+          className="px-6 py-3 rounded-xl shadow-2xl"
           style={{ 
             backgroundColor: hexToRgba(brand, 0.94),
             border: '2px solid rgba(255,255,255,0.3)'
           }}
         >
           <p 
-            className="font-bold text-lg mb-1" 
+            className="font-bold text-base mb-1"
             style={{ 
               color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
               textShadow: '0 2px 6px rgba(0,0,0,0.8)' 
@@ -188,7 +188,7 @@ export const ReelSummarySlide = ({
 
         {/* Hashtag personalizado */}
         <p 
-          className="text-base font-semibold mt-6" 
+          className="text-sm font-medium mt-4"
           style={{ 
             color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
             textShadow: '0 2px 8px rgba(0,0,0,0.9)' 
@@ -201,7 +201,7 @@ export const ReelSummarySlide = ({
         <img
           src={elGestorLogo}
           alt="El Gestor"
-          className="h-8 mx-auto mt-6 object-contain drop-shadow-2xl"
+          className="h-7 mx-auto mt-4 object-contain drop-shadow-2xl"
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
