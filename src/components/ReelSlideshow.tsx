@@ -8,9 +8,7 @@ import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { TemplateSelector } from "./TemplateSelector";
-import { GradientSelector } from "./GradientSelector";
-import { GradientIntensitySlider } from "./GradientIntensitySlider";
-import { SummaryBackgroundSelector } from "./SummaryBackgroundSelector";
+import { ReelControlsPanel } from "./ReelControlsPanel";
 import { ReelSummarySlide } from "./ReelSummarySlide";
 import { formatPrecioColombia } from "@/utils/formatters";
 import { useToast } from "@/hooks/use-toast";
@@ -334,21 +332,15 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           />
         </div>
 
-        {/* Selector de Gradiente */}
-        <div className="mb-6 space-y-4">
-          <GradientSelector
-            selected={gradientDirection}
-            onChange={setGradientDirection}
-          />
-          
-          <GradientIntensitySlider
-            intensity={gradientIntensity}
-            onChange={setGradientIntensity}
-          />
-          
-          <SummaryBackgroundSelector
-            selected={summaryBackground}
-            onChange={setSummaryBackground}
+        {/* Panel de controles con Accordion */}
+        <div className="mb-6">
+          <ReelControlsPanel
+            gradientDirection={gradientDirection}
+            onGradientDirectionChange={setGradientDirection}
+            gradientIntensity={gradientIntensity}
+            onGradientIntensityChange={setGradientIntensity}
+            summaryBackground={summaryBackground}
+            onSummaryBackgroundChange={setSummaryBackground}
           />
         </div>
 
@@ -463,33 +455,32 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </div>
           )}
 
-          {/* Precio destacado - Arriba del tipo de propiedad, alineado a la izquierda */}
+
           {!showSummarySlide && (() => {
             const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
-            if (!precio) return null;
+            
             return (
-              <div 
-                className={`absolute top-32 left-6 z-20 px-8 py-4 ${currentTemplate.priceStyle.className}`}
-                style={{ 
-                  background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}95, ${aliadoConfig.colorSecundario}95)`,
-                  borderColor: `${aliadoConfig.colorPrimario}50`
-                }}
-              >
-                <p className="text-3xl font-black text-white flex items-center gap-2 drop-shadow-2xl">
-                  <span>{currentTemplate.priceStyle.emoji}</span>
-                  <span>{formatPrecioColombia(precio)}</span>
-                  {!esVenta && <span className="text-2xl">/mes</span>}
-                </p>
-              </div>
-            );
-          })()}
-
-          {!showSummarySlide && (
-            <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
-              <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
-              </h3>
+              <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
+                {/* Precio arriba del tipo - NUEVO */}
+                {precio && (
+                  <div 
+                    className="inline-block px-6 py-3 rounded-2xl shadow-2xl mb-3"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}E5, ${aliadoConfig.colorSecundario}E5)`,
+                    }}
+                  >
+                    <p className="text-2xl font-black text-white flex items-center gap-2 drop-shadow-2xl">
+                      <span>💰</span>
+                      <span>{formatPrecioColombia(precio)}</span>
+                      {!esVenta && <span className="text-xl">/mes</span>}
+                    </p>
+                  </div>
+                )}
+                
+                <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                  {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
+                </h3>
               {propertyData.ubicacion && (
                 <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
               )}
@@ -511,17 +502,18 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 ))}
               </div>
 
-              {/* Logo El Gestor - inferior derecha */}
-              <div className="absolute bottom-8 right-4 z-40">
-                <img 
-                  src={elGestorLogo} 
-                  alt="El Gestor" 
-                  data-eg-logo="true"
-                  className="h-8 object-contain drop-shadow-lg"
-                />
+                {/* Logo El Gestor - inferior derecha */}
+                <div className="absolute bottom-8 right-4 z-40">
+                  <img 
+                    src={elGestorLogo} 
+                    alt="El Gestor" 
+                    data-eg-logo="true"
+                    className="h-8 object-contain drop-shadow-lg"
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Play/Pause overlay */}
           {!isPlaying && (

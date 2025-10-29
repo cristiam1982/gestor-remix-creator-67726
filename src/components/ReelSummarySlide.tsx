@@ -79,52 +79,52 @@ export const ReelSummarySlide = ({
     >
       {renderBackground()}
       
-      <div className="space-y-6 relative z-10">
-        {/* Logo del aliado - +15% más grande */}
+      <div className="space-y-8 relative z-10">
+        {/* Logo del aliado - más grande y protagonista */}
         <img
           src={logoRubyMorales}
           alt={aliadoConfig.nombre}
-          className="w-36 h-36 mx-auto rounded-2xl object-contain bg-white p-3 shadow-2xl"
+          className="w-40 h-40 mx-auto rounded-2xl object-contain bg-white p-3 shadow-2xl"
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
 
-        {/* Información del inmueble */}
-        <div className="space-y-3 mb-5">
-          {/* Tipo de inmueble - reducido */}
-          <h2 className="text-3xl font-black text-white drop-shadow-2xl">
+        {/* Información del inmueble - más compacta internamente */}
+        <div className="space-y-2 mb-4">
+          {/* Tipo de inmueble - más pequeño */}
+          <h2 className="text-2xl font-black text-white drop-shadow-2xl">
             {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
           </h2>
           
-          {/* Ubicación - reducida */}
+          {/* Ubicación - más pequeña */}
           {propertyData.ubicacion && (
-            <p className="text-xl font-bold text-white drop-shadow-xl">
+            <p className="text-lg font-bold text-white drop-shadow-xl">
               📍 {propertyData.ubicacion}
             </p>
           )}
           
-          {/* Precio - reducido */}
+          {/* Precio - más sutil */}
           {precio && (
             <div 
-              className="inline-block px-6 py-3 rounded-3xl shadow-2xl"
+              className="inline-block px-5 py-2.5 rounded-2xl shadow-2xl"
               style={{ 
                 background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}DD, ${aliadoConfig.colorSecundario}DD)`
               }}
             >
-              <p className="text-2xl font-black text-white drop-shadow-2xl">
+              <p className="text-xl font-black text-white drop-shadow-2xl">
                 💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
               </p>
             </div>
           )}
         </div>
 
-        {/* Características clave - más compactas */}
+        {/* Características clave - más juntas */}
         {caracteristicas.length > 0 && (
-          <div className="flex flex-wrap gap-2 justify-center mb-6">
+          <div className="flex flex-wrap gap-2 justify-center">
             {caracteristicas.map((car, idx) => (
               <span
                 key={idx}
-                className="px-5 py-2 rounded-2xl shadow-xl text-white font-bold text-lg"
+                className="px-4 py-1.5 rounded-2xl shadow-xl text-white font-bold text-base"
                 style={{ 
                   background: `linear-gradient(135deg, ${aliadoConfig.colorSecundario}CC, ${aliadoConfig.colorPrimario}CC)`
                 }}
@@ -135,31 +135,31 @@ export const ReelSummarySlide = ({
           </div>
         )}
 
-        {/* Call to Action - reducido */}
+        {/* Call to Action - menos dominante */}
         <div 
-          className="px-8 py-4 rounded-3xl shadow-2xl"
+          className="px-6 py-3 rounded-2xl shadow-2xl"
           style={{ 
             background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}EE, ${aliadoConfig.colorSecundario}EE)`
           }}
         >
-          <p className="text-xl font-black text-white mb-2 drop-shadow-2xl">
+          <p className="text-lg font-bold text-white mb-1 drop-shadow-2xl">
             📞 Agenda tu visita
           </p>
-          <p className="text-2xl font-black text-white drop-shadow-2xl">
+          <p className="text-xl font-black text-white drop-shadow-2xl">
             {aliadoConfig.whatsapp}
           </p>
         </div>
 
-        {/* Hashtag personalizado - reducido */}
-        <p className="text-lg font-bold text-white mt-4 drop-shadow-2xl">
+        {/* Hashtag personalizado - más sutil */}
+        <p className="text-sm font-semibold text-white mt-6 drop-shadow-2xl">
           #TuNuevoHogarEn{aliadoConfig.ciudad.charAt(0).toUpperCase() + aliadoConfig.ciudad.slice(1)} 🏡
         </p>
         
-        {/* Logo El Gestor - AL FINAL y -10% más pequeño */}
+        {/* Logo El Gestor - más discreto al final */}
         <img
           src={elGestorLogo}
           alt="El Gestor"
-          className="h-10 mx-auto mt-4 object-contain drop-shadow-2xl"
+          className="h-8 mx-auto mt-6 object-contain drop-shadow-2xl"
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
