@@ -9,10 +9,12 @@ import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/util
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { TemplateSelector } from "./TemplateSelector";
 import { GradientSelector } from "./GradientSelector";
+import { GradientIntensitySlider } from "./GradientIntensitySlider";
+import { SummaryBackgroundSelector } from "./SummaryBackgroundSelector";
 import { ReelSummarySlide } from "./ReelSummarySlide";
 import { formatPrecioColombia } from "@/utils/formatters";
 import { useToast } from "@/hooks/use-toast";
-import { REEL_TEMPLATES, getTemplateForProperty } from "@/utils/reelTemplates";
+import { REEL_TEMPLATES, getTemplateForProperty, applyGradientIntensity } from "@/utils/reelTemplates";
 import {
   DndContext,
   closestCenter,
@@ -108,6 +110,12 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [gradientDirection, setGradientDirection] = useState<'top' | 'bottom' | 'both' | 'none'>(
     propertyData.gradientDirection || 'both'
   );
+  const [gradientIntensity, setGradientIntensity] = useState(
+    propertyData.gradientIntensity !== undefined ? propertyData.gradientIntensity : 50
+  );
+  const [summaryBackground, setSummaryBackground] = useState<'solid' | 'blur' | 'mosaic'>(
+    propertyData.summaryBackgroundStyle || 'solid'
+  );
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showSummarySlide, setShowSummarySlide] = useState(false);
   const { toast } = useToast();
@@ -115,6 +123,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const slideDuration = 1300; // 1.3 segundos por foto (mejor legibilidad)
   const summaryDuration = 2500; // 2.5 segundos para slide de resumen
   const currentTemplate = REEL_TEMPLATES[selectedTemplate];
+  const baseGradient = currentTemplate.gradient[gradientDirection];
+  const finalGradient = applyGradientIntensity(baseGradient, gradientIntensity);
 
   // Helper: Obtener máximo 4 tags principales (habitaciones, baños, parqueaderos, área)
   const getTopTags = () => {
@@ -325,10 +335,20 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         </div>
 
         {/* Selector de Gradiente */}
-        <div className="mb-6">
-          <GradientSelector 
+        <div className="mb-6 space-y-4">
+          <GradientSelector
             selected={gradientDirection}
             onChange={setGradientDirection}
+          />
+          
+          <GradientIntensitySlider
+            intensity={gradientIntensity}
+            onChange={setGradientIntensity}
+          />
+          
+          <SummaryBackgroundSelector
+            selected={summaryBackground}
+            onChange={setSummaryBackground}
           />
         </div>
 
@@ -382,6 +402,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               propertyData={propertyData}
               aliadoConfig={aliadoConfig}
               isVisible={true}
+              photos={photos}
+              backgroundStyle={summaryBackground}
             />
           )}
 
@@ -410,8 +432,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 referrerPolicy="no-referrer"
               />
               
-              {/* Gradient overlay dinámico según template */}
-              <div className={`absolute inset-0 bg-gradient-to-b ${currentTemplate.gradient[gradientDirection]}`} />
+              {/* Gradient overlay dinámico según template e intensidad */}
+              {finalGradient && (
+                <div className={`absolute inset-0 bg-gradient-to-b ${finalGradient}`} />
+              )}
             </div>
           )}
 
@@ -439,23 +463,24 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </div>
           )}
 
-          {/* Precio destacado - Centrado vertical derecha */}
+          {/* Precio destacado - Arriba del tipo de propiedad, alineado a la izquierda */}
           {!showSummarySlide && (() => {
             const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
             if (!precio) return null;
             return (
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20 animate-fade-in">
-                <div 
-                  className={`px-4 py-2 text-white font-black text-xl ${currentTemplate.priceStyle.className}`}
-                  style={{ 
-                    backgroundColor: aliadoConfig.colorPrimario,
-                    borderColor: 'rgba(255, 255, 255, 0.3)',
-                    textShadow: '2px 2px 6px rgba(0,0,0,0.8)'
-                  }}
-                >
-                  {currentTemplate.priceStyle.emoji} {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
-                </div>
+              <div 
+                className={`absolute top-32 left-6 z-20 px-8 py-4 ${currentTemplate.priceStyle.className}`}
+                style={{ 
+                  background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}95, ${aliadoConfig.colorSecundario}95)`,
+                  borderColor: `${aliadoConfig.colorPrimario}50`
+                }}
+              >
+                <p className="text-3xl font-black text-white flex items-center gap-2 drop-shadow-2xl">
+                  <span>{currentTemplate.priceStyle.emoji}</span>
+                  <span>{formatPrecioColombia(precio)}</span>
+                  {!esVenta && <span className="text-2xl">/mes</span>}
+                </p>
               </div>
             );
           })()}
@@ -529,6 +554,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               propertyData={propertyData}
               aliadoConfig={aliadoConfig}
               isVisible={true}
+              photos={photos}
+              backgroundStyle={summaryBackground}
             />
           )}
 
@@ -543,8 +570,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   crossOrigin="anonymous"
                   referrerPolicy="no-referrer"
                 />
-                {/* Gradient overlay dinámico según template */}
-                <div className={`absolute inset-0 bg-gradient-to-b ${currentTemplate.gradient[gradientDirection]}`} />
+                {/* Gradient overlay dinámico según template e intensidad */}
+                {finalGradient && (
+                  <div className={`absolute inset-0 bg-gradient-to-b ${finalGradient}`} />
+                )}
               </div>
 
               {/* Subtítulo si existe - Template Fase 4 */}
@@ -570,23 +599,24 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 />
               </div>
 
-              {/* Precio destacado - Centrado vertical derecha */}
+              {/* Precio destacado - Arriba del tipo de propiedad, alineado a la izquierda */}
               {(() => {
                 const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
                 const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
                 if (!precio) return null;
                 return (
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
-                    <div 
-                      className={`px-4 py-2 text-white font-black text-xl ${currentTemplate.priceStyle.className}`}
-                      style={{ 
-                        backgroundColor: aliadoConfig.colorPrimario,
-                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                        textShadow: '2px 2px 6px rgba(0,0,0,0.8)'
-                      }}
-                    >
-                      {currentTemplate.priceStyle.emoji} {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
-                    </div>
+                  <div 
+                    className={`absolute top-32 left-6 z-20 px-8 py-4 ${currentTemplate.priceStyle.className}`}
+                    style={{ 
+                      background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}95, ${aliadoConfig.colorSecundario}95)`,
+                      borderColor: `${aliadoConfig.colorPrimario}50`
+                    }}
+                  >
+                    <p className="text-3xl font-black text-white flex items-center gap-2 drop-shadow-2xl">
+                      <span>{currentTemplate.priceStyle.emoji}</span>
+                      <span>{formatPrecioColombia(precio)}</span>
+                      {!esVenta && <span className="text-2xl">/mes</span>}
+                    </p>
                   </div>
                 );
               })()}

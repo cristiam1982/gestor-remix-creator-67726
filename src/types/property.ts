@@ -52,5 +52,7 @@ export interface PropertyData {
   subtitulos?: string[];
   template?: ReelTemplate; // Fase 4: templates visuales
   gradientDirection?: 'top' | 'bottom' | 'both' | 'none'; // Fase 4: dirección de gradiente
+  gradientIntensity?: number; // Fase 4: intensidad del gradiente (0-100)
   showSummarySlide?: boolean; // Fase 5: mostrar slide de resumen final
+  summaryBackgroundStyle?: 'solid' | 'blur' | 'mosaic'; // Fase 5: estilo de fondo del slide final
 }
