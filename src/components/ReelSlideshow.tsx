@@ -510,9 +510,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 {/* Precio con máxima visibilidad */}
                 {precio && (
                   <div 
-                    className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-0.5 max-w-[85%] z-40"
+                    className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-2 max-w-[85%] z-40"
                     style={{ 
-                      backgroundColor: '#FF8C42',
+                      backgroundColor: aliadoConfig.colorPrimario,
                       opacity: 0.95,
                       border: '2px solid rgba(255,255,255,0.25)'
                     }}
@@ -528,15 +528,15 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   </div>
                 )}
                 
-                <h3 className="text-white text-3xl font-black mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                <h3 className="text-white text-2xl font-black mb-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
                   {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
                 </h3>
               {propertyData.ubicacion && (
-                <p className="text-white text-lg font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
+                <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
               )}
 
                 {/* Logo El Gestor - inferior derecha */}
-                <div className="absolute bottom-14 right-4 z-40">
+                <div className="absolute bottom-12 right-4 z-40">
                   <img 
                     src={elGestorLogo} 
                     alt="El Gestor" 
@@ -647,9 +647,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     {/* Precio con máxima visibilidad - Canvas */}
                     {precio && (
                       <div 
-                        className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-0.5 max-w-[85%] z-40"
+                        className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-2 max-w-[85%] z-40"
                         style={{ 
-                          backgroundColor: '#FF8C42',
+                          backgroundColor: aliadoConfig.colorPrimario,
                           opacity: 0.95,
                           border: '2px solid rgba(255,255,255,0.25)'
                         }}
@@ -665,15 +665,15 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                       </div>
                     )}
                     
-                    <h3 className="text-white text-3xl font-black mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                    <h3 className="text-white text-2xl font-black mb-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
                       {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
                     </h3>
                     {propertyData.ubicacion && (
-                      <p className="text-white text-lg font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
+                      <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
                     )}
 
                     {/* Logo El Gestor - inferior derecha */}
-                    <div className="absolute bottom-14 right-4 z-40">
+                    <div className="absolute bottom-12 right-4 z-40">
                       <img 
                         src={elGestorLogo} 
                         alt="El Gestor" 

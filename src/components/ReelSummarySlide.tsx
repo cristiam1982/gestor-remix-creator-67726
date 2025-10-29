@@ -120,7 +120,7 @@ export const ReelSummarySlide = ({
             <div 
               className="inline-block px-5 py-2 rounded-xl shadow-2xl"
               style={{ 
-                backgroundColor: '#FF8C42',
+                backgroundColor: aliadoConfig.colorPrimario,
                 opacity: 0.95,
                 border: '2px solid rgba(255,255,255,0.25)'
               }}
