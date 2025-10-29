@@ -512,7 +512,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   <div 
                     className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-3 max-w-[85%] z-40"
                     style={{ 
-                      backgroundColor: hexToRgba(brand, 0.95),
+                      backgroundColor: '#FF8C42',
+                      opacity: 0.95,
                       border: '2px solid rgba(255,255,255,0.25)'
                     }}
                   >
@@ -648,7 +649,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                       <div 
                         className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-3 max-w-[85%] z-40"
                         style={{ 
-                          backgroundColor: hexToRgba(brand, 0.95),
+                          backgroundColor: '#FF8C42',
+                          opacity: 0.95,
                           border: '2px solid rgba(255,255,255,0.25)'
                         }}
                       >

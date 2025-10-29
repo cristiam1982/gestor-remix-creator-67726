@@ -410,9 +410,15 @@ export const generateReelVideoMP4 = async (
     if (includeSummary) {
       // Cambiar al slide de resumen (índice = photos.length)
       await onPhotoChange(photos.length);
-      await waitForNextFrame();
-
+      
+      // ESPERAR MÁS TIEMPO para que React renderice completamente el ReelSummarySlide
+      await waitForNextFrame(); // Primera espera
+      await waitForNextFrame(); // Segunda espera
+      await new Promise(resolve => setTimeout(resolve, 300)); // 300ms adicionales
+      
+      console.log("🎬 Capturando slide de resumen...");
       const summaryCanvas = await captureFrame(elementId, false);
+      console.log("✅ Slide de resumen capturado:", summaryCanvas.width, "x", summaryCanvas.height);
       
       for (let frameNum = 0; frameNum < framesPerSummary; frameNum++) {
         ctx.drawImage(summaryCanvas, 0, 0, canvas.width, canvas.height);
