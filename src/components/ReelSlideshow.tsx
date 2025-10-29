@@ -510,18 +510,20 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 {/* Precio con máxima visibilidad */}
                 {precio && (
                   <div 
-                    className="relative z-40 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl shadow-md mb-2"
+                    className="relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2"
                     style={{ 
                       backgroundColor: aliadoConfig.colorPrimario,
-                      border: '1px solid rgba(255,255,255,0.18)',
+                      opacity: 0.9,
+                      border: '1px solid rgba(255,255,255,0.2)',
                       color: '#ffffff'
                     }}
                   >
-                    <span className="text-xl leading-none">💰</span>
-                    <span className="text-xs font-semibold uppercase tracking-wide leading-none">
-                      {esVenta ? "Precio de venta" : "Valor de canon"}
+                    <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
+                      {esVenta ? "Venta" : "Arriendo"}
                     </span>
-                    <span className="text-xl font-extrabold leading-none">{formatPrecioColombia(precio)}</span>
+                    <span className="text-2xl font-black leading-none text-white">
+                      {formatPrecioColombia(precio)}
+                    </span>
                   </div>
                 )}
                 
@@ -644,18 +646,20 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     {/* Precio con máxima visibilidad - Canvas */}
                     {precio && (
                       <div 
-                        className="relative z-40 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl shadow-md mb-2"
+                        className="relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2"
                         style={{ 
                           backgroundColor: aliadoConfig.colorPrimario,
-                          border: '1px solid rgba(255,255,255,0.18)',
+                          opacity: 0.9,
+                          border: '1px solid rgba(255,255,255,0.2)',
                           color: '#ffffff'
                         }}
                       >
-                        <span className="text-xl leading-none">💰</span>
-                        <span className="text-xs font-semibold uppercase tracking-wide leading-none">
-                          {esVenta ? "Precio de venta" : "Valor de canon"}
+                        <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
+                          {esVenta ? "Venta" : "Arriendo"}
                         </span>
-                        <span className="text-xl font-extrabold leading-none">{formatPrecioColombia(precio)}</span>
+                        <span className="text-2xl font-black leading-none text-white">
+                          {formatPrecioColombia(precio)}
+                        </span>
                       </div>
                     )}
                     
