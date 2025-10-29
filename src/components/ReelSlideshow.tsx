@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { PropertyData, AliadoConfig, ReelTemplate } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
@@ -126,7 +125,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showSummarySlide, setShowSummarySlide] = useState(false);
   const [isChangingGradient, setIsChangingGradient] = useState(false);
-  const [activeTab, setActiveTab] = useState<'visual' | 'sombreado' | 'final'>('visual');
   const [customHashtag, setCustomHashtag] = useState<string>('');
   const { toast } = useToast();
 
@@ -370,8 +368,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     );
   }
   
-  // PARTE 4: Determinar si mostrar slide de resumen (reproducción o editando pestaña final)
-  const shouldShowSummary = showSummarySlide || activeTab === 'final';
+  // PARTE 4: Determinar si mostrar slide de resumen (reproducción)
+  const shouldShowSummary = showSummarySlide;
 
   return (
     <div className="space-y-6">
@@ -689,37 +687,32 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           </Card>
         </div>
 
-        {/* PARTE 4: Panel de Controles Unificado con 3 Tabs */}
-        <Card className="p-6">
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
-              <TabsTrigger value="visual" className="text-sm font-semibold">
-                🎨 Estilo Visual
-              </TabsTrigger>
-              <TabsTrigger value="sombreado" className="text-sm font-semibold">
-                🌗 Sombreado
-              </TabsTrigger>
-              <TabsTrigger value="final" className="text-sm font-semibold">
-                🎬 Slide Final
-              </TabsTrigger>
-            </TabsList>
-            
-            {/* Tab 1: Estilo Visual (Template Selector) */}
-            <TabsContent value="visual" className="space-y-4 mt-0">
+        {/* PARTE 4: Panel de Controles - Flujo Vertical Simplificado */}
+        <Card className="p-5">
+          <div className="space-y-6">
+            {/* Sección 1: Estilo Visual */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 pb-2">
+                <h3 className="text-sm font-bold text-foreground">🎨 Estilo Visual del Reel</h3>
+              </div>
               <TemplateSelector 
                 selected={selectedTemplate}
                 onChange={setSelectedTemplate}
               />
-              <div className="pt-3 border-t">
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  💡 <strong>Tip:</strong> Cada template tiene su propia paleta de colores y estilo. 
-                  Elige el que mejor represente tu inmueble: Residencial para hogares, Comercial para negocios, o Premium para propiedades exclusivas.
-                </p>
+              <p className="text-xs text-muted-foreground leading-relaxed pl-1">
+                Cada template tiene su propia paleta y estilo según el tipo de inmueble.
+              </p>
+            </div>
+
+            {/* Separador */}
+            <div className="border-t border-border" />
+
+            {/* Sección 2: Sombreado de Foto */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 pb-2">
+                <h3 className="text-sm font-bold text-foreground">🌗 Sombreado de Foto</h3>
               </div>
-            </TabsContent>
-            
-            {/* Tab 2: Efectos de Sombreado */}
-            <TabsContent value="sombreado" className="space-y-5 mt-0">
+              
               <div className="grid grid-cols-4 gap-3">
                 {(['none', 'top', 'bottom', 'both'] as const).map((dir) => {
                   const labels = {
@@ -736,18 +729,19 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                       onClick={() => setGradientDirection(dir)}
                       className="flex flex-col h-auto py-4 gap-2"
                     >
-                      <span className="text-3xl">{labels[dir].icon}</span>
+                      <span className="text-2xl">{labels[dir].icon}</span>
                       <span className="text-xs font-medium leading-tight text-center">{labels[dir].text}</span>
                     </Button>
                   );
                 })}
               </div>
               
-              {gradientDirection !== 'none' && (
-                <div className="pt-4 border-t space-y-3">
+              {/* Espacio reservado para el slider - evita layout shift */}
+              <div className={`transition-opacity duration-200 ${gradientDirection === 'none' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                <div className="pt-2 space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold">🌗 Intensidad del sombreado</span>
-                    <span className="text-sm font-bold bg-primary/10 px-4 py-1.5 rounded-full">
+                    <span className="text-sm font-semibold">Intensidad</span>
+                    <span className="text-xs font-bold bg-primary/10 px-3 py-1.5 rounded-full">
                       {gradientIntensity}%
                     </span>
                   </div>
@@ -758,42 +752,44 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     step="10"
                     value={gradientIntensity}
                     onChange={(e) => handleGradientIntensityChange(Number(e.target.value))}
-                    className="w-full h-3 bg-secondary/20 rounded-lg appearance-none cursor-pointer accent-primary"
+                    disabled={gradientDirection === 'none'}
+                    className="w-full h-3 bg-secondary/20 rounded-lg appearance-none cursor-pointer accent-primary disabled:cursor-not-allowed"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>🔆 Ligero</span>
-                    <span>🌑 Intenso</span>
+                    <span>Ligero</span>
+                    <span>Intenso</span>
                   </div>
                 </div>
-              )}
-              
-              <div className="pt-3 border-t">
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  💡 <strong>Tip:</strong> El sombreado mejora la legibilidad del texto sobre las fotos. 
-                  Ajusta la intensidad según el brillo de tus imágenes para obtener el mejor contraste.
-                </p>
               </div>
-            </TabsContent>
-            
-            {/* Tab 3: Fondo del Slide Final (con color picker para solid) */}
-            <TabsContent value="final" className="space-y-5 mt-0">
-              <div className="grid grid-cols-3 gap-4">
+
+              <p className="text-xs text-muted-foreground leading-relaxed pl-1">
+                Mejora la legibilidad del texto ajustando el sombreado según tus fotos.
+              </p>
+            </div>
+
+            {/* Separador */}
+            <div className="border-t border-border" />
+
+            {/* Sección 3: Slide Final */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 pb-2">
+                <h3 className="text-sm font-bold text-foreground">🎬 Slide Final</h3>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-3">
                 {(['solid', 'blur', 'mosaic'] as const).map((bg) => {
                   const options = {
                     solid: { 
                       icon: '🎨', 
                       text: 'Color Sólido',
-                      desc: 'Fondo limpio con color personalizado'
                     },
                     blur: { 
                       icon: '🌫️', 
                       text: 'Foto Difuminada',
-                      desc: 'Última foto con efecto blur'
                     },
                     mosaic: { 
                       icon: '🖼️', 
                       text: 'Mosaico',
-                      desc: 'Grid con tus fotos'
                     }
                   };
                   return (
@@ -804,36 +800,37 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                       onClick={() => setSummaryBackground(bg)}
                       className="flex flex-col h-auto py-4 px-3 text-center gap-2"
                     >
-                      <span className="text-3xl">{options[bg].icon}</span>
+                      <span className="text-2xl">{options[bg].icon}</span>
                       <span className="text-xs font-medium leading-tight">{options[bg].text}</span>
                     </Button>
                   );
                 })}
               </div>
               
-              {/* Color picker para fondo sólido */}
-              {summaryBackground === 'solid' && (
-                <div className="pt-4 border-t space-y-3">
-                  <label className="text-sm font-semibold">🎨 Color del Fondo Sólido</label>
+              {/* Espacio reservado para color picker - evita layout shift */}
+              <div className={`transition-opacity duration-200 ${summaryBackground !== 'solid' ? 'opacity-0 pointer-events-none h-24' : 'opacity-100 h-auto'}`}>
+                <div className="pt-2 space-y-3">
+                  <label className="text-sm font-semibold">Color del Fondo</label>
                   <div className="flex items-center gap-3">
                     <input
                       type="color"
                       value={summarySolidColor}
                       onChange={(e) => setSummarySolidColor(e.target.value)}
-                      className="w-16 h-12 rounded-lg cursor-pointer border-2 border-border"
+                      disabled={summaryBackground !== 'solid'}
+                      className="w-16 h-12 rounded-lg cursor-pointer border-2 border-border disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     <div className="flex-1">
                       <p className="text-sm font-medium">{summarySolidColor.toUpperCase()}</p>
                       <p className="text-xs text-muted-foreground">
-                        Elige un color que represente tu marca
+                        Personaliza el color de fondo
                       </p>
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
 
               {/* Hashtag personalizado */}
-              <div className="pt-4 border-t space-y-3">
+              <div className="pt-2 space-y-3">
                 <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                   #️⃣ Hashtag Personalizado
                 </label>
@@ -842,23 +839,14 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   value={customHashtag}
                   onChange={(e) => setCustomHashtag(e.target.value.slice(0, 50))}
                   placeholder="#TuHashtagAquí"
-                  className="w-full px-4 py-2.5 rounded-lg border-2 border-input bg-background text-foreground"
+                  className="w-full px-4 py-2.5 rounded-lg border-2 border-input bg-background text-foreground text-sm"
                 />
                 <p className="text-xs text-muted-foreground">
-                  💡 Máximo 50 caracteres. Ejemplo: #ArriendosCali #PropiedadesExclusivas
+                  Máximo 50 caracteres
                 </p>
               </div>
-              
-              <div className="pt-3 border-t">
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  💡 <strong>Vista previa:</strong> El slide final se muestra arriba en tiempo real. 
-                  {summaryBackground === 'solid' && ' Personaliza el color para que coincida con tu identidad de marca.'}
-                  {summaryBackground === 'blur' && ' El fondo difuminado crea una transición elegante desde las fotos.'}
-                  {summaryBackground === 'mosaic' && ' El mosaico muestra un resumen visual de todas tus fotos.'}
-                </p>
-              </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </Card>
 
         {/* Miniaturas reordenables - Grid horizontal con scroll */}
@@ -884,7 +872,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     id={photo.id}
                     src={photo.src}
                     index={idx}
-                    isActive={idx === currentPhotoIndex && activeTab !== 'final'}
+                    isActive={idx === currentPhotoIndex && !showSummarySlide}
                     onClick={() => handlePhotoClick(idx)}
                   />
                 ))}
