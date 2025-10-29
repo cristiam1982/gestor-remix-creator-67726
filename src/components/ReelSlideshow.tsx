@@ -152,18 +152,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     };
   }, [gradientDirection, gradientIntensity]);
 
-  // Helper: Obtener máximo 4 tags principales (habitaciones, baños, parqueaderos, área)
-  const getTopTags = () => {
-    const tags: { icon: string; text: string; priority: number }[] = [];
-    
-    // Prioridad: habitaciones > baños > parqueaderos > área
-    if (propertyData.habitaciones) tags.push({ icon: "🛏️", text: `${propertyData.habitaciones}`, priority: 1 });
-    if (propertyData.banos) tags.push({ icon: "🚿", text: `${propertyData.banos}`, priority: 2 });
-    if (propertyData.parqueaderos) tags.push({ icon: "🚗", text: `${propertyData.parqueaderos}`, priority: 3 });
-    if (propertyData.area) tags.push({ icon: "📐", text: `${propertyData.area}m²`, priority: 4 });
-    
-    return tags.sort((a, b) => a.priority - b.priority).slice(0, 4);
-  };
 
   // Sensors para drag & drop
   const sensors = useSensors(
@@ -527,23 +515,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               {propertyData.ubicacion && (
                 <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
               )}
-              
-               {/* Máximo 4 características principales */}
-               <div className="flex flex-wrap gap-2 text-sm">
-                 {getTopTags().map((tag, idx) => (
-                   <span 
-                     key={`tag-preview-${idx}-${tag.icon}`}
-                     className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                     style={{ 
-                       backgroundColor: aliadoConfig.colorSecundario,
-                       border: '1px solid rgba(255, 255, 255, 0.2)',
-                       textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                     }}
-                   >
-                     {tag.icon} {tag.text}
-                   </span>
-                 ))}
-               </div>
 
                 {/* Logo El Gestor - inferior derecha */}
                 <div className="absolute bottom-8 right-4 z-40">
@@ -676,23 +647,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     {propertyData.ubicacion && (
                       <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
                     )}
-                    
-                    {/* Máximo 4 características principales */}
-                    <div className="flex flex-wrap gap-2 text-sm">
-                      {getTopTags().map((tag, idx) => (
-                        <span 
-                          key={`tag-canvas-${idx}-${tag.icon}`}
-                          className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                          style={{ 
-                            backgroundColor: aliadoConfig.colorSecundario,
-                            border: '1px solid rgba(255, 255, 255, 0.2)',
-                            textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                          }}
-                        >
-                          {tag.icon} {tag.text}
-                        </span>
-                      ))}
-                    </div>
 
                     {/* Logo El Gestor - inferior derecha */}
                     <div className="absolute bottom-8 right-4 z-40">
