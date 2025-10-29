@@ -99,7 +99,21 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [photos, setPhotos] = useState<string[]>(propertyData.fotos || []);
   const { toast } = useToast();
   
-  const slideDuration = 2500; // 2.5 segundos por foto
+  const slideDuration = 1200; // 1.2 segundos por foto (estándar viral)
+
+  // Helper: Obtener máximo 3 tags más relevantes
+  const getTopTags = () => {
+    const tags: { icon: string; text: string; priority: number }[] = [];
+    
+    if (propertyData.habitaciones) tags.push({ icon: "🛏️", text: `${propertyData.habitaciones}`, priority: 1 });
+    if (propertyData.banos) tags.push({ icon: "🚿", text: `${propertyData.banos}`, priority: 2 });
+    if (propertyData.area) tags.push({ icon: "📐", text: `${propertyData.area}m²`, priority: 3 });
+    if (propertyData.parqueaderos) tags.push({ icon: "🚗", text: `${propertyData.parqueaderos}`, priority: 4 });
+    if (propertyData.estrato) tags.push({ icon: "🏢", text: `Estrato ${propertyData.estrato}`, priority: 5 });
+    if (propertyData.piso) tags.push({ icon: "🏢", text: `Piso ${propertyData.piso}`, priority: 6 });
+    
+    return tags.sort((a, b) => a.priority - b.priority).slice(0, 3);
+  };
 
   // Sensors para drag & drop
   const sensors = useSensors(
@@ -264,7 +278,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           <div>
             <h3 className="text-xl font-semibold text-primary">Reel Slideshow</h3>
             <p className="text-sm text-muted-foreground">
-              {photos.length} fotos · {(photos.length * 2.5).toFixed(1)}s total
+              {photos.length} fotos · {(photos.length * 1.2).toFixed(1)}s total
             </p>
           </div>
           <div className="flex gap-2">
@@ -336,6 +350,27 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             />
           </div>
 
+          {/* Precio destacado - TOP RIGHT */}
+          {(() => {
+            const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
+            const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
+            if (!precio) return null;
+            return (
+              <div className="absolute top-6 right-6 z-20 animate-fade-in">
+                <div 
+                  className="px-4 py-2 rounded-2xl shadow-2xl text-white font-black text-xl"
+                  style={{ 
+                    backgroundColor: aliadoConfig.colorPrimario,
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    textShadow: '2px 2px 6px rgba(0,0,0,0.8)'
+                  }}
+                >
+                  💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
+                </div>
+              </div>
+            );
+          })()}
+
           <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
             <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
@@ -343,19 +378,12 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             {propertyData.ubicacion && (
               <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
             )}
-            {(() => {
-              const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
-              const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
-              if (!precio) return null;
-              return (
-                <p className="text-white text-xl font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                  💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
-                </p>
-              );
-            })()}
+            
+            {/* Máximo 3 características más relevantes */}
             <div className="flex flex-wrap gap-2 text-sm">
-              {propertyData.habitaciones && (
+              {getTopTags().map((tag, idx) => (
                 <span 
+                  key={idx}
                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
                   style={{ 
                     backgroundColor: aliadoConfig.colorSecundario,
@@ -363,117 +391,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
                 >
-                  🛏️ {propertyData.habitaciones}
+                  {tag.icon} {tag.text}
                 </span>
-              )}
-              {propertyData.banos && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🚿 {propertyData.banos}
-                </span>
-              )}
-              {propertyData.parqueaderos && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🚗 {propertyData.parqueaderos}
-                </span>
-              )}
-              {propertyData.estrato && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🏢 Estrato {propertyData.estrato}
-                </span>
-              )}
-              {propertyData.piso && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🏢 Piso {propertyData.piso}
-                </span>
-              )}
-              {propertyData.trafico && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🚦 Tráfico {propertyData.trafico}
-                </span>
-              )}
-              {propertyData.alturaLibre && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  📏 {propertyData.alturaLibre}m altura
-                </span>
-              )}
-              {propertyData.vitrina && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🪟 Con vitrina
-                </span>
-              )}
-              {propertyData.uso && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🏗️ Uso {propertyData.uso}
-                </span>
-              )}
-              {propertyData.area && (
-                <span 
-                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                  style={{ 
-                    backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  📐 {propertyData.area}m²
-                 </span>
-               )}
+              ))}
              </div>
 
               {/* Logo El Gestor - inferior derecha */}
@@ -547,6 +467,27 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             />
           </div>
 
+          {/* Precio destacado - TOP RIGHT */}
+          {(() => {
+            const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
+            const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
+            if (!precio) return null;
+            return (
+              <div className="absolute top-6 right-6 z-20">
+                <div 
+                  className="px-4 py-2 rounded-2xl shadow-2xl text-white font-black text-xl"
+                  style={{ 
+                    backgroundColor: aliadoConfig.colorPrimario,
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    textShadow: '2px 2px 6px rgba(0,0,0,0.8)'
+                  }}
+                >
+                  💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
+                </div>
+              </div>
+            );
+          })()}
+
           <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
             <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
@@ -554,137 +495,22 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             {propertyData.ubicacion && (
               <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
             )}
-            {(() => {
-              const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
-              const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
-              if (!precio) return null;
-              return (
-                <p className="text-white text-xl font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                  💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
-                </p>
-              );
-            })()}
+            
+            {/* Máximo 3 características más relevantes */}
             <div className="flex flex-wrap gap-2 text-sm">
-               {propertyData.habitaciones && (
-                 <span 
-                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                   style={{ 
-                     backgroundColor: aliadoConfig.colorSecundario,
+              {getTopTags().map((tag, idx) => (
+                <span 
+                  key={idx}
+                  className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
+                  style={{ 
+                    backgroundColor: aliadoConfig.colorSecundario,
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
                   }}
                 >
-                  🛏️ {propertyData.habitaciones}
+                  {tag.icon} {tag.text}
                 </span>
-              )}
-               {propertyData.banos && (
-                 <span 
-                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                   style={{ 
-                     backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🚿 {propertyData.banos}
-                </span>
-              )}
-               {propertyData.parqueaderos && (
-                 <span 
-                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                   style={{ 
-                     backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🚗 {propertyData.parqueaderos}
-                </span>
-              )}
-               {propertyData.estrato && (
-                 <span 
-                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                   style={{ 
-                     backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🏢 Estrato {propertyData.estrato}
-                </span>
-              )}
-               {propertyData.piso && (
-                 <span 
-                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                   style={{ 
-                     backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🏢 Piso {propertyData.piso}
-                </span>
-              )}
-               {propertyData.trafico && (
-                 <span 
-                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                   style={{ 
-                     backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🚦 Tráfico {propertyData.trafico}
-                </span>
-              )}
-               {propertyData.alturaLibre && (
-                 <span 
-                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                   style={{ 
-                     backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  📏 {propertyData.alturaLibre}m altura
-                </span>
-              )}
-               {propertyData.vitrina && (
-                 <span 
-                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                   style={{ 
-                     backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🪟 Con vitrina
-                </span>
-              )}
-               {propertyData.uso && (
-                 <span 
-                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                   style={{ 
-                     backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  🏗️ Uso {propertyData.uso}
-                </span>
-              )}
-               {propertyData.area && (
-                 <span 
-                   className="px-3 py-2 rounded-xl shadow-lg text-white font-semibold"
-                   style={{ 
-                     backgroundColor: aliadoConfig.colorSecundario,
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)'
-                  }}
-                >
-                  📐 {propertyData.area}m²
-                 </span>
-               )}
+              ))}
              </div>
 
              {/* Logo El Gestor - inferior derecha */}
@@ -730,7 +556,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         {/* Instrucciones */}
         <div className="mt-4 p-3 bg-accent/50 rounded-lg space-y-1">
           <p className="text-sm text-muted-foreground text-center">
-            💡 <strong>Play:</strong> Ver slideshow automático (2.5s por foto)
+            💡 <strong>Play:</strong> Ver slideshow automático (1.2s por foto)
           </p>
           <p className="text-sm text-muted-foreground text-center">
             🔄 <strong>Reordenar:</strong> Arrastra el ícono de las miniaturas
