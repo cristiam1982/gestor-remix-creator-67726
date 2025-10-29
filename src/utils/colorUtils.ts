@@ -30,3 +30,17 @@ export function isLightColor(hex: string): boolean {
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   return luminance > 0.7;
 }
+
+/**
+ * Convierte un color hex a hex con opacidad
+ * Útil para evitar problemas con html2canvas y opacity inline
+ * @param hex - Color en formato #RRGGBB o #RGB
+ * @param opacity - Opacidad entre 0 y 1
+ * @returns Color en formato #RRGGBBAA
+ */
+export function addOpacityToHex(hex: string, opacity: number): string {
+  const h = hex.replace('#', '');
+  const normalized = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+  const alpha = Math.round(opacity * 255).toString(16).padStart(2, '0');
+  return `#${normalized}${alpha}`;
+}

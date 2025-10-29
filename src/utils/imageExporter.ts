@@ -1,5 +1,6 @@
 import html2canvas from "html2canvas";
 import { saveAs } from "file-saver";
+import { addOpacityToHex } from "./colorUtils";
 
 export interface ExportOptions {
   format: "png" | "jpg";
@@ -44,6 +45,33 @@ export const exportToImage = async (
             const currentBg = window.getComputedStyle(el as HTMLElement).backgroundColor;
             if (currentBg.includes('rgba')) {
               (el as HTMLElement).style.backgroundColor = currentBg.replace(/[\d.]+\)$/g, '0.95)');
+            }
+          });
+          
+          // Optimizar elementos con opacity inline (como el precio)
+          const elementsWithOpacity = clonedElement.querySelectorAll('[style*="opacity"]');
+          elementsWithOpacity.forEach((el) => {
+            const element = el as HTMLElement;
+            const bgColor = element.style.backgroundColor;
+            const opacity = parseFloat(element.style.opacity || '1');
+            
+            if (bgColor && opacity < 1) {
+              // Convertir opacity a color RGBA directo
+              const rgb = bgColor.match(/\d+/g);
+              if (rgb && rgb.length >= 3) {
+                element.style.backgroundColor = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacity})`;
+                element.style.opacity = '1';
+              }
+            }
+          });
+
+          // Reducir intensidad de gradientes automáticamente
+          const gradientOverlays = clonedElement.querySelectorAll('[class*="absolute"][class*="inset-0"]');
+          gradientOverlays.forEach((el) => {
+            const element = el as HTMLElement;
+            const bgImage = window.getComputedStyle(element).backgroundImage;
+            if (bgImage && bgImage.includes('gradient')) {
+              element.style.opacity = '0.65'; // Reduce 35% la intensidad
             }
           });
           
