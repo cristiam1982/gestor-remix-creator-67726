@@ -308,12 +308,14 @@ export const generateReelVideo = async (
 /**
  * Genera un video MP4 usando MediaRecorder API (Fase 2)
  * Más rápido, mejor calidad y menor peso que GIF
+ * Incluye slide de resumen al final
  */
 export const generateReelVideoMP4 = async (
   photos: string[],
   elementId: string,
   onProgress: (progress: VideoGenerationProgress) => void,
-  onPhotoChange: (index: number) => Promise<void>
+  onPhotoChange: (index: number) => Promise<void>,
+  includeSummary: boolean = true
 ): Promise<Blob> => {
   const startTime = Date.now();
   
@@ -364,15 +366,19 @@ export const generateReelVideoMP4 = async (
     onProgress({
       stage: "capturing",
       progress: 10,
-      totalFrames: photos.length,
+      totalFrames: photos.length + (includeSummary ? 1 : 0),
       currentFrame: 0,
       message: "Grabando video...",
     });
 
-    // Duración por foto en ms (1.2 segundos = 1200ms)
-    const photoDuration = 1200;
+    // Duración por foto en ms (1.3 segundos = 1300ms)
+    const photoDuration = 1300;
+    const summaryDuration = 2500; // 2.5 segundos para slide de resumen
     const fps = 30;
     const framesPerPhoto = Math.floor((photoDuration / 1000) * fps);
+    const framesPerSummary = Math.floor((summaryDuration / 1000) * fps);
+
+    const totalSlides = photos.length + (includeSummary ? 1 : 0);
 
     // Renderizar cada foto
     for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
@@ -390,20 +396,42 @@ export const generateReelVideoMP4 = async (
         await new Promise(resolve => setTimeout(resolve, 1000 / fps));
       }
 
-      const captureProgress = 10 + ((photoIndex + 1) / photos.length) * 80;
+      const captureProgress = 10 + ((photoIndex + 1) / totalSlides) * 80;
       onProgress({
         stage: "capturing",
         progress: captureProgress,
         currentFrame: photoIndex + 1,
-        totalFrames: photos.length,
-        message: `Grabando foto ${photoIndex + 1} de ${photos.length}...`,
+        totalFrames: totalSlides,
+        message: `Grabando foto ${photoIndex + 1} de ${totalSlides}...`,
+      });
+    }
+
+    // Capturar slide de resumen si está habilitado
+    if (includeSummary) {
+      // Cambiar al slide de resumen (índice = photos.length)
+      await onPhotoChange(photos.length);
+      await waitForNextFrame();
+
+      const summaryCanvas = await captureFrame(elementId, false);
+      
+      for (let frameNum = 0; frameNum < framesPerSummary; frameNum++) {
+        ctx.drawImage(summaryCanvas, 0, 0, canvas.width, canvas.height);
+        await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+      }
+
+      onProgress({
+        stage: "capturing",
+        progress: 90,
+        currentFrame: totalSlides,
+        totalFrames: totalSlides,
+        message: `Grabando slide de resumen...`,
       });
     }
 
     // Finalizar grabación
     onProgress({
       stage: "encoding",
-      progress: 90,
+      progress: 95,
       message: "Finalizando video...",
     });
 

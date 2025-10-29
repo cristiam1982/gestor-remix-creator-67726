@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Check } from "lucide-react";
 
-type GradientDirection = 'top' | 'bottom' | 'both';
+type GradientDirection = 'top' | 'bottom' | 'both' | 'none';
 
 interface GradientSelectorProps {
   selected: GradientDirection;
@@ -9,6 +9,11 @@ interface GradientSelectorProps {
 }
 
 const GRADIENT_OPTIONS: Record<GradientDirection, { label: string; icon: string; description: string }> = {
+  none: {
+    label: "Sin Sombreado",
+    icon: "🔆",
+    description: "Foto limpia y luminosa"
+  },
   top: {
     label: "Solo Arriba",
     icon: "🔝",
@@ -33,7 +38,7 @@ export const GradientSelector = ({ selected, onChange }: GradientSelectorProps) 
         <span className="text-sm font-medium">🎨 Sombreado de Foto</span>
       </div>
       
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         {(Object.keys(GRADIENT_OPTIONS) as GradientDirection[]).map((key) => {
           const option = GRADIENT_OPTIONS[key];
           const isSelected = selected === key;

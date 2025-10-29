@@ -4,6 +4,7 @@ export interface TemplateStyle {
   name: string;
   description: string;
   gradient: {
+    none: string;
     top: string;
     bottom: string;
     both: string;
@@ -24,6 +25,7 @@ export const REEL_TEMPLATES: Record<ReelTemplate, TemplateStyle> = {
     name: "Residencial",
     description: "Cálido y acogedor para apartamentos y casas",
     gradient: {
+      none: "",
       top: "from-blue-900/45 to-transparent",
       bottom: "from-transparent to-purple-900/55",
       both: "from-blue-900/45 via-transparent to-purple-900/55"
@@ -43,6 +45,7 @@ export const REEL_TEMPLATES: Record<ReelTemplate, TemplateStyle> = {
     name: "Comercial",
     description: "Profesional y moderno para locales y oficinas",
     gradient: {
+      none: "",
       top: "from-gray-900/55 to-transparent",
       bottom: "from-transparent to-blue-900/65",
       both: "from-gray-900/55 via-transparent to-blue-900/65"
@@ -62,6 +65,7 @@ export const REEL_TEMPLATES: Record<ReelTemplate, TemplateStyle> = {
     name: "Premium",
     description: "Elegante y sofisticado para propiedades exclusivas",
     gradient: {
+      none: "",
       top: "from-amber-900/40 to-transparent",
       bottom: "from-transparent to-rose-900/50",
       both: "from-amber-900/40 via-transparent to-rose-900/50"
