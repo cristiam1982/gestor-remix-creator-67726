@@ -87,23 +87,15 @@ export const applyGradientIntensity = (
   intensity: number
 ): string => {
   if (intensity === 0 || !baseGradient) return '';
+  if (intensity === 100) return baseGradient; // Optimización
   
-  // Extraer opacidades base (ej: "/45" → 45)
-  const opacityMatches = baseGradient.match(/\/(\d+)/g);
-  if (!opacityMatches || opacityMatches.length === 0) return baseGradient;
-  
-  // Ajustar cada opacidad proporcionalmente
-  let adjustedGradient = baseGradient;
-  opacityMatches.forEach((match) => {
-    const baseOpacity = parseInt(match.replace('/', ''));
+  // Regex global para capturar TODAS las opacidades (/número)
+  // El flag /g hace que replace() actúe sobre todas las coincidencias
+  return baseGradient.replace(/\/(\d+)/g, (match, opacity) => {
+    const baseOpacity = parseInt(opacity);
     const adjustedOpacity = Math.round((baseOpacity * intensity) / 100);
-    adjustedGradient = adjustedGradient.replace(
-      match,
-      `/${adjustedOpacity}`
-    );
+    return `/${adjustedOpacity}`;
   });
-  
-  return adjustedGradient;
 };
 
 export const getTemplateForProperty = (tipo: string, uso?: string): ReelTemplate => {
