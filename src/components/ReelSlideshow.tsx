@@ -475,17 +475,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </div>
           )}
 
-          {/* Subtítulo centrado sobre el precio */}
-          {!shouldShowSummary && propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-            <div className="absolute bottom-[260px] left-0 right-0 z-30 flex justify-center items-center px-4 animate-slide-up-bounce">
-              <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%] flex items-center justify-center`}>
-                <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]`}>
-                  {propertyData.subtitulos[currentPhotoIndex]}
-                </p>
-              </div>
-            </div>
-          )}
-
           {/* Logo del aliado */}
           {!shouldShowSummary && (
             <div className="absolute top-6 left-6 z-20">
@@ -506,22 +495,34 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
             
             return (
-              <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10">
+              <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col items-start">
+                {/* Subtítulo sobre el precio */}
+                {propertyData.subtitulos?.[currentPhotoIndex] && (
+                  <div className="w-full flex justify-center mb-3">
+                    <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%]`}>
+                      <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
+                        {propertyData.subtitulos[currentPhotoIndex]}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Precio con máxima visibilidad */}
                 {precio && (
                   <div 
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl shadow-md mb-2 z-40"
+                    className="relative z-40 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl shadow-md mb-2"
                     style={{ 
                       backgroundColor: aliadoConfig.colorPrimario,
-                      border: '1px solid rgba(255,255,255,0.18)'
+                      border: '1px solid rgba(255,255,255,0.18)',
+                      color: '#ffffff'
                     }}
                   >
-                    <span className="text-white text-xl">💰</span>
-                    <span className="text-white text-xs font-semibold uppercase tracking-wide">
+                    <span className="text-xl leading-none">💰</span>
+                    <span className="text-xs font-semibold uppercase tracking-wide leading-none">
                       {esVenta ? "Precio de venta" : "Canon"}
                     </span>
-                    <span className="text-white text-xl font-black">{formatPrecioColombia(precio)}</span>
-                    {!esVenta && <span className="text-white text-lg font-black">/mes</span>}
+                    <span className="text-xl font-extrabold leading-none">{formatPrecioColombia(precio)}</span>
+                    {!esVenta && <span className="text-lg font-extrabold leading-none">/mes</span>}
                   </div>
                 )}
                 
@@ -611,17 +612,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 )}
               </div>
 
-              {/* Subtítulo centrado sobre el precio - Canvas */}
-              {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-                <div className="absolute bottom-[260px] left-0 right-0 z-30 flex justify-center items-center px-4">
-                  <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%] flex items-center justify-center`}>
-                    <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]`}>
-                      {propertyData.subtitulos[currentPhotoIndex]}
-                    </p>
-                  </div>
-                </div>
-              )}
-
               {/* Logo del aliado */}
               <div className="absolute top-6 left-6 z-20">
                 <img
@@ -640,22 +630,34 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
                 
                 return (
-                  <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col items-start">
+                    {/* Subtítulo sobre el precio - Canvas */}
+                    {propertyData.subtitulos?.[currentPhotoIndex] && (
+                      <div className="w-full flex justify-center mb-3">
+                        <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%]`}>
+                          <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
+                            {propertyData.subtitulos[currentPhotoIndex]}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Precio con máxima visibilidad - Canvas */}
                     {precio && (
                       <div 
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl shadow-md mb-2 z-40"
+                        className="relative z-40 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl shadow-md mb-2"
                         style={{ 
                           backgroundColor: aliadoConfig.colorPrimario,
-                          border: '1px solid rgba(255,255,255,0.18)'
+                          border: '1px solid rgba(255,255,255,0.18)',
+                          color: '#ffffff'
                         }}
                       >
-                        <span className="text-white text-xl">💰</span>
-                        <span className="text-white text-xs font-semibold uppercase tracking-wide">
+                        <span className="text-xl leading-none">💰</span>
+                        <span className="text-xs font-semibold uppercase tracking-wide leading-none">
                           {esVenta ? "Precio de venta" : "Canon"}
                         </span>
-                        <span className="text-white text-xl font-black">{formatPrecioColombia(precio)}</span>
-                        {!esVenta && <span className="text-white text-lg font-black">/mes</span>}
+                        <span className="text-xl font-extrabold leading-none">{formatPrecioColombia(precio)}</span>
+                        {!esVenta && <span className="text-lg font-extrabold leading-none">/mes</span>}
                       </div>
                     )}
                     
