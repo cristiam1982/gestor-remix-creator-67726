@@ -402,7 +402,14 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </div>
 
             {/* Vista previa principal - RESPONSIVE */}
-            <div className="relative aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4">
+            <div 
+              className="relative aspect-[9/16] max-w-[340px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              style={{ 
+                backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
+                  ? (summarySolidColor || hexToRgba(brand, 0.12)) 
+                  : '#000000' 
+              }}
+            >
           {/* Barras de progreso - incluye slide de resumen */}
           <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
             {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
@@ -468,9 +475,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </div>
           )}
 
-          {/* PARTE 1: Subtítulo reposicionado a top-[100px] */}
+          {/* Subtítulo centrado sobre el precio */}
           {!shouldShowSummary && propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-            <div className="absolute top-[100px] left-0 right-0 z-20 flex justify-center px-4 animate-slide-up-bounce">
+            <div className="absolute bottom-[160px] left-0 right-0 z-20 flex justify-center px-4 animate-slide-up-bounce">
               <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-xl max-w-[80%]`}>
                 <p className="text-white text-base font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                   {propertyData.subtitulos[currentPhotoIndex]}
@@ -499,41 +506,41 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
             
             return (
-              <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
-                {/* PARTE 3: Precio con máxima visibilidad y z-index alto */}
+              <div className="absolute bottom-6 left-0 right-0 p-6 pr-24 pb-14 z-10">
+                {/* Precio con máxima visibilidad */}
                 {precio && (
                   <div 
-                    className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-2 max-w-[85%] z-40"
+                    className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-3 max-w-[85%] z-40"
                     style={{ 
                       backgroundColor: hexToRgba(brand, 0.95),
                       border: '2px solid rgba(255,255,255,0.25)'
                     }}
                   >
                     <p 
-                      className="text-xl font-black text-white flex items-center gap-1.5" 
+                      className="text-2xl font-black text-white flex items-center gap-2" 
                       style={{ textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' }}
                     >
-                      <span className="text-lg">💰</span>
+                      <span>💰</span>
                       <span>{formatPrecioColombia(precio)}</span>
-                      {!esVenta && <span className="text-base">/mes</span>}
+                      {!esVenta && <span className="text-lg">/mes</span>}
                     </p>
                   </div>
                 )}
                 
-                <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                <h3 className="text-white text-3xl font-black mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
                   {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
                 </h3>
               {propertyData.ubicacion && (
-                <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
+                <p className="text-white text-lg font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
               )}
 
                 {/* Logo El Gestor - inferior derecha */}
-                <div className="absolute bottom-8 right-4 z-40">
+                <div className="absolute bottom-6 right-4 z-40">
                   <img 
                     src={elGestorLogo} 
                     alt="El Gestor" 
                     data-eg-logo="true"
-                    className="h-8 object-contain drop-shadow-lg"
+                    className="h-10 object-contain drop-shadow-2xl"
                   />
                 </div>
               </div>
@@ -606,9 +613,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 )}
               </div>
 
-              {/* PARTE 1: Subtítulo reposicionado en canvas también */}
+              {/* Subtítulo centrado sobre el precio - Canvas */}
               {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-                <div className="absolute top-[100px] left-0 right-0 z-20 flex justify-center px-4">
+                <div className="absolute bottom-[160px] left-0 right-0 z-20 flex justify-center px-4">
                   <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-xl max-w-[80%]`}>
                     <p className="text-white text-base font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                       {propertyData.subtitulos[currentPhotoIndex]}
@@ -635,41 +642,41 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
                 
                 return (
-                  <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
-                    {/* PARTE 1: Precio reducido en canvas también */}
+                  <div className="absolute bottom-6 left-0 right-0 p-6 pr-24 pb-14 z-10">
+                    {/* Precio con máxima visibilidad - Canvas */}
                     {precio && (
                       <div 
-                        className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-2 max-w-[85%] z-40"
+                        className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-3 max-w-[85%] z-40"
                         style={{ 
                           backgroundColor: hexToRgba(brand, 0.95),
                           border: '2px solid rgba(255,255,255,0.25)'
                         }}
                       >
                         <p 
-                          className="text-xl font-black text-white flex items-center gap-1.5" 
+                          className="text-2xl font-black text-white flex items-center gap-2" 
                           style={{ textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' }}
                         >
-                          <span className="text-lg">💰</span>
+                          <span>💰</span>
                           <span>{formatPrecioColombia(precio)}</span>
-                          {!esVenta && <span className="text-base">/mes</span>}
+                          {!esVenta && <span className="text-lg">/mes</span>}
                         </p>
                       </div>
                     )}
                     
-                    <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                    <h3 className="text-white text-3xl font-black mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
                       {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
                     </h3>
                     {propertyData.ubicacion && (
-                      <p className="text-white text-sm mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
+                      <p className="text-white text-lg font-bold mb-3" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
                     )}
 
                     {/* Logo El Gestor - inferior derecha */}
-                    <div className="absolute bottom-8 right-4 z-40">
+                    <div className="absolute bottom-6 right-4 z-40">
                       <img 
                         src={elGestorLogo} 
                         alt="El Gestor" 
                         data-eg-logo="true"
-                        className="h-8 object-contain drop-shadow-lg"
+                        className="h-10 object-contain drop-shadow-2xl"
                       />
                     </div>
                   </div>
