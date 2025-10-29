@@ -510,23 +510,18 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 {/* Precio con máxima visibilidad */}
                 {precio && (
                   <div 
-                    className={`inline-block px-5 py-2.5 ${currentTemplate.priceStyle.className} shadow-lg mb-2 max-w-[85%] z-40`}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl shadow-md mb-2 z-40"
                     style={{ 
-                      backgroundColor: hexToRgba(aliadoConfig.colorPrimario, 0.96),
-                      border: '1px solid rgba(255,255,255,0.2)'
+                      backgroundColor: aliadoConfig.colorPrimario,
+                      border: '1px solid rgba(255,255,255,0.18)'
                     }}
                   >
-                    <p 
-                      className="text-xl font-black text-white flex items-center gap-2"
-                      style={{ textShadow: '0 2px 5px rgba(0,0,0,0.6)' }}
-                    >
-                      <span>💰</span>
-                      <span className="text-xs font-semibold opacity-90 uppercase tracking-wide">
-                        {esVenta ? "Precio de venta" : "Canon"}
-                      </span>
-                      <span>{formatPrecioColombia(precio)}</span>
-                      {!esVenta && <span className="text-lg">/mes</span>}
-                    </p>
+                    <span className="text-white text-xl">💰</span>
+                    <span className="text-white text-xs font-semibold uppercase tracking-wide">
+                      {esVenta ? "Precio de venta" : "Canon"}
+                    </span>
+                    <span className="text-white text-xl font-black">{formatPrecioColombia(precio)}</span>
+                    {!esVenta && <span className="text-white text-lg font-black">/mes</span>}
                   </div>
                 )}
                 
@@ -649,23 +644,18 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     {/* Precio con máxima visibilidad - Canvas */}
                     {precio && (
                       <div 
-                        className={`inline-block px-5 py-2.5 ${currentTemplate.priceStyle.className} shadow-lg mb-2 max-w-[85%] z-40`}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl shadow-md mb-2 z-40"
                         style={{ 
-                          backgroundColor: hexToRgba(aliadoConfig.colorPrimario, 0.96),
-                          border: '1px solid rgba(255,255,255,0.2)'
+                          backgroundColor: aliadoConfig.colorPrimario,
+                          border: '1px solid rgba(255,255,255,0.18)'
                         }}
                       >
-                        <p 
-                          className="text-xl font-black text-white flex items-center gap-2"
-                          style={{ textShadow: '0 2px 5px rgba(0,0,0,0.6)' }}
-                        >
-                          <span>💰</span>
-                          <span className="text-xs font-semibold opacity-90 uppercase tracking-wide">
-                            {esVenta ? "Precio de venta" : "Canon"}
-                          </span>
-                          <span>{formatPrecioColombia(precio)}</span>
-                          {!esVenta && <span className="text-lg">/mes</span>}
-                        </p>
+                        <span className="text-white text-xl">💰</span>
+                        <span className="text-white text-xs font-semibold uppercase tracking-wide">
+                          {esVenta ? "Precio de venta" : "Canon"}
+                        </span>
+                        <span className="text-white text-xl font-black">{formatPrecioColombia(precio)}</span>
+                        {!esVenta && <span className="text-white text-lg font-black">/mes</span>}
                       </div>
                     )}
                     
