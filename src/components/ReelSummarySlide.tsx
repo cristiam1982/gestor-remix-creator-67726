@@ -96,7 +96,7 @@ export const ReelSummarySlide = ({
         <img
           src={logoRubyMorales}
           alt={aliadoConfig.nombre}
-          className="w-32 h-32 mx-auto rounded-xl object-contain bg-white p-2.5 shadow-2xl"
+          className="w-[140px] h-[140px] mx-auto rounded-xl object-contain bg-white p-2.5 shadow-2xl"
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
@@ -201,7 +201,7 @@ export const ReelSummarySlide = ({
         <img
           src={elGestorLogo}
           alt="El Gestor"
-          className="h-8 mx-auto mt-4 object-contain drop-shadow-2xl"
+          className="h-[35px] mx-auto mt-4 object-contain drop-shadow-2xl"
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
