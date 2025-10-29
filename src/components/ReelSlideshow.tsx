@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { PropertyData, AliadoConfig, ReelTemplate } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,14 +38,20 @@ interface ReelSlideshowProps {
   onDownload?: () => void;
 }
 
+interface PhotoItem {
+  id: string;
+  src: string;
+}
+
 interface SortablePhotoProps {
-  photo: string;
+  id: string;
+  src: string;
   index: number;
   isActive: boolean;
   onClick: () => void;
 }
 
-const SortablePhoto = ({ photo, index, isActive, onClick }: SortablePhotoProps) => {
+const SortablePhoto = ({ id, src, index, isActive, onClick }: SortablePhotoProps) => {
   const {
     attributes,
     listeners,
@@ -53,7 +59,7 @@ const SortablePhoto = ({ photo, index, isActive, onClick }: SortablePhotoProps) 
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: photo });
+  } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -76,11 +82,11 @@ const SortablePhoto = ({ photo, index, isActive, onClick }: SortablePhotoProps) 
         className="w-full h-full"
       >
         <img
-          src={photo}
+          src={src}
           alt={`Miniatura ${index + 1}`}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/20" />
+        {!isActive && <div className="absolute inset-0 bg-black/20" />}
         <span className="absolute bottom-1 right-1 text-white text-xs font-bold bg-black/60 px-1 rounded">
           {index + 1}
         </span>
@@ -102,7 +108,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [generationProgress, setGenerationProgress] = useState<VideoGenerationProgress | null>(null);
-  const [photos, setPhotos] = useState<string[]>(propertyData.fotos || []);
+  const [photosList, setPhotosList] = useState<PhotoItem[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<ReelTemplate>(
     propertyData.template || getTemplateForProperty(propertyData.tipo, propertyData.uso)
   );
@@ -115,20 +121,36 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [summaryBackground, setSummaryBackground] = useState<'solid' | 'blur' | 'mosaic'>(
     propertyData.summaryBackgroundStyle || 'solid'
   );
+  const [summarySolidColor, setSummarySolidColor] = useState(aliadoConfig.colorPrimario || '#0E1216');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showSummarySlide, setShowSummarySlide] = useState(false);
   const [isChangingGradient, setIsChangingGradient] = useState(false);
+  const [activeTab, setActiveTab] = useState<'visual' | 'sombreado' | 'final'>('visual');
   const { toast } = useToast();
   
   const slideDuration = 1300; // 1.3 segundos por foto (mejor legibilidad)
   const summaryDuration = 2500; // 2.5 segundos para slide de resumen
   const currentTemplate = REEL_TEMPLATES[selectedTemplate];
   
-  // PARTE 2: Fix gradiente con useMemo y dependencias correctas
-  const finalGradient = useMemo(() => {
-    const baseGradient = currentTemplate.gradient[gradientDirection];
-    return applyGradientIntensity(baseGradient, gradientIntensity);
-  }, [currentTemplate, gradientDirection, gradientIntensity]);
+  // PARTE 2: Fix gradiente con CSS inline en vez de clases Tailwind dinámicas
+  const gradientOverlayStyle = useMemo(() => {
+    if (gradientDirection === 'none') return {};
+    
+    const intensity = Math.max(0, Math.min(100, gradientIntensity));
+    const alpha = (intensity / 100) * 0.7; // Mapear 0-100 a 0-0.7
+    const rgba = (a: number) => `rgba(0,0,0,${a.toFixed(3)})`;
+    
+    if (gradientDirection === 'top') {
+      return { background: `linear-gradient(to bottom, ${rgba(alpha)} 0%, ${rgba(0)} 60%)` };
+    }
+    if (gradientDirection === 'bottom') {
+      return { background: `linear-gradient(to top, ${rgba(alpha)} 0%, ${rgba(0)} 60%)` };
+    }
+    // both
+    return {
+      background: `linear-gradient(to bottom, ${rgba(alpha)} 0%, ${rgba(0)} 60%), linear-gradient(to top, ${rgba(alpha)} 0%, ${rgba(0)} 60%)`
+    };
+  }, [gradientDirection, gradientIntensity]);
 
   // Helper: Obtener máximo 4 tags principales (habitaciones, baños, parqueaderos, área)
   const getTopTags = () => {
@@ -151,37 +173,55 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     })
   );
 
-  // Sincronizar fotos cuando cambia propertyData
+  // PARTE 1: Sincronizar fotos con IDs únicos y estables
   useEffect(() => {
-    setPhotos(propertyData.fotos || []);
+    const newFotos = propertyData.fotos || [];
+    
+    setPhotosList(prevList => {
+      // Crear mapa de src existentes a sus ids
+      const existingMap = new Map(prevList.map(p => [p.src, p.id]));
+      
+      return newFotos.map((src, idx) => {
+        // Reutilizar id si ya existe, sino crear uno nuevo
+        const existingId = existingMap.get(src);
+        return {
+          id: existingId || `${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 7)}`,
+          src
+        };
+      });
+    });
   }, [propertyData.fotos]);
+  
+  // PARTE 1: Función para cambiar foto con crossfade
+  const goToPhoto = useCallback((nextIndex: number) => {
+    setPreviousPhotoIndex(currentPhotoIndex);
+    setCurrentPhotoIndex(nextIndex);
+    setIsTransitioning(true);
+    setTimeout(() => setIsTransitioning(false), 600);
+  }, [currentPhotoIndex]);
 
+  // PARTE 1: Autoplay mejorado con goToPhoto
   useEffect(() => {
-    if (!isPlaying || photos.length === 0) return;
+    if (!isPlaying || photosList.length === 0) return;
 
     const interval = setInterval(() => {
-      setCurrentPhotoIndex((prev) => {
-        const next = (prev + 1) % (photos.length + 1); // +1 para incluir slide de resumen
-        if (next === photos.length) {
-          // Mostrar slide de resumen
-          setShowSummarySlide(true);
-          setProgress(0);
-          return prev; // Mantener el índice en la última foto
-        } else if (next === 0) {
-          // Llegó al final, detener
-          setShowSummarySlide(false);
-          setIsPlaying(false);
-          setProgress(0);
-        } else {
-          setShowSummarySlide(false);
-        }
-        return next;
-      });
+      if (showSummarySlide) {
+        // Después del slide de resumen, volver al inicio
+        setShowSummarySlide(false);
+        setIsPlaying(false);
+        goToPhoto(0);
+      } else if (currentPhotoIndex >= photosList.length - 1) {
+        // Última foto, mostrar slide de resumen
+        setShowSummarySlide(true);
+      } else {
+        // Siguiente foto
+        goToPhoto(currentPhotoIndex + 1);
+      }
       setProgress(0);
     }, showSummarySlide ? summaryDuration : slideDuration);
 
     return () => clearInterval(interval);
-  }, [isPlaying, photos.length, slideDuration, summaryDuration, showSummarySlide]);
+  }, [isPlaying, photosList.length, slideDuration, summaryDuration, showSummarySlide, currentPhotoIndex, goToPhoto]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -205,7 +245,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   };
 
   const handlePhotoClick = (index: number) => {
-    setCurrentPhotoIndex(index);
+    goToPhoto(index);
     setShowSummarySlide(false);
     setProgress(0);
     setIsPlaying(false);
@@ -218,15 +258,18 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     setTimeout(() => setIsChangingGradient(false), 600);
   };
 
+  // PARTE 1: DnD mejorado con IDs únicos
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setPhotos((items) => {
-        const oldIndex = items.indexOf(active.id as string);
-        const newIndex = items.indexOf(over.id as string);
+      setPhotosList((items) => {
+        const oldIndex = items.findIndex(p => p.id === active.id);
+        const newIndex = items.findIndex(p => p.id === over.id);
 
-        // Si la foto actual fue movida, actualizar el índice
+        if (oldIndex === -1 || newIndex === -1) return items;
+
+        // Actualizar índice actual si es necesario
         if (oldIndex === currentPhotoIndex) {
           setCurrentPhotoIndex(newIndex);
         } else if (newIndex <= currentPhotoIndex && oldIndex > currentPhotoIndex) {
@@ -240,7 +283,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
       toast({
         title: "📸 Fotos reordenadas",
-        description: "Arrastra las miniaturas para cambiar el orden del slideshow.",
+        description: "El nuevo orden se aplicará en el video.",
       });
     }
   };
@@ -258,10 +301,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
       // Función para cambiar foto durante la captura
       const changePhoto = async (index: number): Promise<void> => {
-        if (index >= photos.length) {
+        if (index >= photosList.length) {
           // Mostrar slide de resumen
           setShowSummarySlide(true);
-          setCurrentPhotoIndex(photos.length - 1);
+          setCurrentPhotoIndex(photosList.length - 1);
         } else {
           setShowSummarySlide(false);
           setCurrentPhotoIndex(index);
@@ -281,7 +324,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       const { generateReelVideoMP4 } = await import("../utils/videoGenerator");
       
       const videoBlob = await generateReelVideoMP4(
-        photos,
+        photosList.map(p => p.src),
         "reel-capture-canvas",
         setGenerationProgress,
         changePhoto,
@@ -322,7 +365,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     }
   };
 
-  if (photos.length === 0) {
+  if (photosList.length === 0) {
     return (
       <Card className="p-6 text-center">
         <p className="text-muted-foreground">
@@ -331,16 +374,13 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       </Card>
     );
   }
+  
+  // PARTE 4: Determinar si mostrar slide de resumen (reproducción o editando pestaña final)
+  const shouldShowSummary = showSummarySlide || activeTab === 'final';
 
   return (
     <div className="space-y-6">
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
-      
-      {/* Template Selector arriba */}
-      <TemplateSelector 
-        selected={selectedTemplate}
-        onChange={setSelectedTemplate}
-      />
 
       {/* PARTE 3: Layout reestructurado - Preview arriba, controles abajo */}
       <div className="space-y-6">
@@ -352,7 +392,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               <div>
                 <h3 className="text-xl font-semibold text-primary">Reel Slideshow</h3>
                 <p className="text-sm text-muted-foreground">
-                  {photos.length} fotos + slide final · {((photos.length * 1.3) + 2.5).toFixed(1)}s total · {currentTemplate.name}
+                  {photosList.length} fotos + slide final · {((photosList.length * 1.3) + 2.5).toFixed(1)}s total · {currentTemplate.name}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -370,65 +410,70 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             <div className="relative aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4">
           {/* Barras de progreso - incluye slide de resumen */}
           <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
-            {[...photos, 'summary'].map((_, idx) => (
+            {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
               <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-white rounded-full transition-all duration-100"
                   style={{
                     width: idx < currentPhotoIndex ? "100%" : 
-                           (idx === currentPhotoIndex && !showSummarySlide) ? `${progress}%` :
-                           (idx === photos.length && showSummarySlide) ? `${progress}%` : "0%"
+                           (idx === currentPhotoIndex && !shouldShowSummary) ? `${progress}%` :
+                           (idx === photosList.length && shouldShowSummary) ? `${progress}%` : "0%"
                   }}
                 />
               </div>
             ))}
           </div>
 
-          {/* Slide de resumen */}
-          {showSummarySlide && (
+          {/* Slide de resumen - Mostrar si está en reproducción O editando pestaña final */}
+          {shouldShowSummary && (
             <ReelSummarySlide 
               propertyData={propertyData}
               aliadoConfig={aliadoConfig}
               isVisible={true}
-              photos={photos}
+              photos={photosList.map(p => p.src)}
               backgroundStyle={summaryBackground}
+              solidColor={summarySolidColor}
             />
           )}
 
           {/* Foto actual con overlay y crossfade - Solo mostrar si NO es slide de resumen */}
-          {!showSummarySlide && (
+          {!shouldShowSummary && (
             <div className="absolute inset-0">
               {/* Foto anterior (fade out) */}
-              <img
-                src={photos[previousPhotoIndex]}
-                alt={`Foto ${previousPhotoIndex + 1}`}
-                className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
-                  isTransitioning ? 'photo-crossfade-enter' : 'photo-crossfade-active'
-                }`}
-                crossOrigin="anonymous"
-                referrerPolicy="no-referrer"
-              />
+              {photosList[previousPhotoIndex] && (
+                <img
+                  src={photosList[previousPhotoIndex].src}
+                  alt={`Foto ${previousPhotoIndex + 1}`}
+                  className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
+                    isTransitioning ? 'photo-crossfade-enter' : 'photo-crossfade-active'
+                  }`}
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                />
+              )}
               
               {/* Foto actual (fade in) */}
-              <img
-                src={photos[currentPhotoIndex]}
-                alt={`Foto ${currentPhotoIndex + 1}`}
-                className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
-                  isTransitioning ? 'photo-crossfade-active' : 'opacity-0'
-                }`}
-                crossOrigin="anonymous"
-                referrerPolicy="no-referrer"
-              />
+              {photosList[currentPhotoIndex] && (
+                <img
+                  src={photosList[currentPhotoIndex].src}
+                  alt={`Foto ${currentPhotoIndex + 1}`}
+                  className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
+                    isTransitioning ? 'photo-crossfade-active' : 'opacity-0'
+                  }`}
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                />
+              )}
               
-              {/* Gradient overlay dinámico según template e intensidad */}
-              {finalGradient && (
-                <div className={`absolute inset-0 bg-gradient-to-b ${finalGradient}`} />
+              {/* PARTE 2: Gradient overlay con CSS inline */}
+              {gradientDirection !== 'none' && (
+                <div className="absolute inset-0 pointer-events-none" style={gradientOverlayStyle} />
               )}
             </div>
           )}
 
           {/* PARTE 1: Subtítulo reposicionado a top-[100px] */}
-          {!showSummarySlide && propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
+          {!shouldShowSummary && propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
             <div className="absolute top-[100px] left-0 right-0 z-20 flex justify-center px-4 animate-slide-up-bounce">
               <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-xl max-w-[80%]`}>
                 <p className="text-white text-base font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
@@ -439,7 +484,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           )}
 
           {/* Logo del aliado */}
-          {!showSummarySlide && (
+          {!shouldShowSummary && (
             <div className="absolute top-6 left-6 z-20">
               <img
                 src={logoRubyMorales}
@@ -452,21 +497,23 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           )}
 
 
-          {!showSummarySlide && (() => {
+          {/* PARTE 3: Información del inmueble con precio más visible */}
+          {!shouldShowSummary && (() => {
             const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
             
             return (
               <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
-                {/* PARTE 1: Precio reducido y optimizado */}
+                {/* PARTE 3: Precio con máxima visibilidad y z-index alto */}
                 {precio && (
                   <div 
-                    className="inline-block px-4 py-2 rounded-xl shadow-xl mb-2 max-w-[85%]"
+                    className="inline-block px-4 py-2 rounded-xl shadow-2xl mb-2 max-w-[85%] z-40"
                     style={{ 
-                      background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}E5, ${aliadoConfig.colorSecundario}E5)`,
+                      background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}F2, ${aliadoConfig.colorSecundario}F2)`,
+                      border: '1px solid rgba(255,255,255,0.15)'
                     }}
                   >
-                    <p className="text-lg font-black text-white flex items-center gap-1.5 drop-shadow-2xl">
+                    <p className="text-lg font-black text-white flex items-center gap-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
                       <span className="text-base">💰</span>
                       <span>{formatPrecioColombia(precio)}</span>
                       {!esVenta && <span className="text-sm">/mes</span>}
@@ -551,8 +598,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               propertyData={propertyData}
               aliadoConfig={aliadoConfig}
               isVisible={true}
-              photos={photos}
+              photos={photosList.map(p => p.src)}
               backgroundStyle={summaryBackground}
+              solidColor={summarySolidColor}
             />
           )}
 
@@ -560,16 +608,18 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           {!showSummarySlide && (
             <>
               <div className="absolute inset-0">
-                <img
-                  src={photos[currentPhotoIndex]}
-                  alt={`Foto ${currentPhotoIndex + 1}`}
-                  className="w-full h-full object-cover"
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                />
-                {/* Gradient overlay dinámico según template e intensidad */}
-                {finalGradient && (
-                  <div className={`absolute inset-0 bg-gradient-to-b ${finalGradient}`} />
+                {photosList[currentPhotoIndex] && (
+                  <img
+                    src={photosList[currentPhotoIndex].src}
+                    alt={`Foto ${currentPhotoIndex + 1}`}
+                    className="w-full h-full object-cover"
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
+                {/* PARTE 2: Gradient overlay con CSS inline en canvas */}
+                {gradientDirection !== 'none' && (
+                  <div className="absolute inset-0 pointer-events-none" style={gradientOverlayStyle} />
                 )}
               </div>
 
@@ -605,18 +655,19 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
                     {/* PARTE 1: Precio reducido en canvas también */}
                     {precio && (
-                      <div 
-                        className="inline-block px-4 py-2 rounded-xl shadow-xl mb-2 max-w-[85%]"
-                        style={{ 
-                          background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}E5, ${aliadoConfig.colorSecundario}E5)`,
-                        }}
-                      >
-                        <p className="text-lg font-black text-white flex items-center gap-1.5 drop-shadow-2xl">
-                          <span className="text-base">💰</span>
-                          <span>{formatPrecioColombia(precio)}</span>
-                          {!esVenta && <span className="text-sm">/mes</span>}
-                        </p>
-                      </div>
+                  <div 
+                    className="inline-block px-4 py-2 rounded-xl shadow-2xl mb-2 max-w-[85%] z-40"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}F2, ${aliadoConfig.colorSecundario}F2)`,
+                      border: '1px solid rgba(255,255,255,0.15)'
+                    }}
+                  >
+                    <p className="text-lg font-black text-white flex items-center gap-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                      <span className="text-base">💰</span>
+                      <span>{formatPrecioColombia(precio)}</span>
+                      {!esVenta && <span className="text-sm">/mes</span>}
+                    </p>
+                  </div>
                     )}
                     
                     <h3 className="text-white text-2xl font-bold mb-2" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
@@ -662,20 +713,37 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           </Card>
         </div>
 
-        {/* PARTE 3: Panel de Controles con Tabs Horizontales */}
+        {/* PARTE 4: Panel de Controles Unificado con 3 Tabs */}
         <Card className="p-6">
-          <Tabs defaultValue="effects" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="effects" className="text-sm font-semibold">
-                🎨 Efectos de Sombreado
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="visual" className="text-sm font-semibold">
+                🎨 Estilo Visual
               </TabsTrigger>
-              <TabsTrigger value="background" className="text-sm font-semibold">
-                🎬 Fondo del Slide Final
+              <TabsTrigger value="sombreado" className="text-sm font-semibold">
+                🌗 Sombreado
+              </TabsTrigger>
+              <TabsTrigger value="final" className="text-sm font-semibold">
+                🎬 Slide Final
               </TabsTrigger>
             </TabsList>
             
-            {/* Tab 1: Efectos de Sombreado */}
-            <TabsContent value="effects" className="space-y-5 mt-0">
+            {/* Tab 1: Estilo Visual (Template Selector) */}
+            <TabsContent value="visual" className="space-y-4 mt-0">
+              <TemplateSelector 
+                selected={selectedTemplate}
+                onChange={setSelectedTemplate}
+              />
+              <div className="pt-3 border-t">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  💡 <strong>Tip:</strong> Cada template tiene su propia paleta de colores y estilo. 
+                  Elige el que mejor represente tu inmueble: Residencial para hogares, Comercial para negocios, o Premium para propiedades exclusivas.
+                </p>
+              </div>
+            </TabsContent>
+            
+            {/* Tab 2: Efectos de Sombreado */}
+            <TabsContent value="sombreado" className="space-y-5 mt-0">
               <div className="grid grid-cols-4 gap-3">
                 {(['none', 'top', 'bottom', 'both'] as const).map((dir) => {
                   const labels = {
@@ -726,30 +794,30 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               <div className="pt-3 border-t">
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   💡 <strong>Tip:</strong> El sombreado mejora la legibilidad del texto sobre las fotos. 
-                  Prueba diferentes combinaciones para encontrar el mejor contraste según tus imágenes.
+                  Ajusta la intensidad según el brillo de tus imágenes para obtener el mejor contraste.
                 </p>
               </div>
             </TabsContent>
             
-            {/* Tab 2: Fondo del Slide Final */}
-            <TabsContent value="background" className="space-y-5 mt-0">
+            {/* Tab 3: Fondo del Slide Final (con color picker para solid) */}
+            <TabsContent value="final" className="space-y-5 mt-0">
               <div className="grid grid-cols-3 gap-4">
                 {(['solid', 'blur', 'mosaic'] as const).map((bg) => {
                   const options = {
                     solid: { 
                       icon: '🎨', 
                       text: 'Color Sólido',
-                      desc: 'Fondo limpio con tus colores corporativos'
+                      desc: 'Fondo limpio con color personalizado'
                     },
                     blur: { 
                       icon: '🌫️', 
                       text: 'Foto Difuminada',
-                      desc: 'Última foto con efecto blur de fondo'
+                      desc: 'Última foto con efecto blur'
                     },
                     mosaic: { 
                       icon: '🖼️', 
-                      text: 'Mosaico de Fotos',
-                      desc: 'Grid con tus fotos de fondo'
+                      text: 'Mosaico',
+                      desc: 'Grid con tus fotos'
                     }
                   };
                   return (
@@ -767,13 +835,33 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 })}
               </div>
               
+              {/* Color picker para fondo sólido */}
+              {summaryBackground === 'solid' && (
+                <div className="pt-4 border-t space-y-3">
+                  <label className="text-sm font-semibold">🎨 Color del Fondo Sólido</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={summarySolidColor}
+                      onChange={(e) => setSummarySolidColor(e.target.value)}
+                      className="w-16 h-12 rounded-lg cursor-pointer border-2 border-border"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{summarySolidColor.toUpperCase()}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Elige un color que represente tu marca
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <div className="pt-3 border-t">
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  💡 <strong>
-                    {summaryBackground === 'solid' && 'El fondo de color sólido mantiene tu identidad de marca destacada y profesional.'}
-                    {summaryBackground === 'blur' && 'El fondo difuminado crea una transición elegante desde las fotos del inmueble.'}
-                    {summaryBackground === 'mosaic' && 'El mosaico muestra un resumen visual atractivo de todas tus fotos.'}
-                  </strong>
+                  💡 <strong>Vista previa:</strong> El slide final se muestra arriba en tiempo real. 
+                  {summaryBackground === 'solid' && ' Personaliza el color para que coincida con tu identidad de marca.'}
+                  {summaryBackground === 'blur' && ' El fondo difuminado crea una transición elegante desde las fotos.'}
+                  {summaryBackground === 'mosaic' && ' El mosaico muestra un resumen visual de todas tus fotos.'}
                 </p>
               </div>
             </TabsContent>
@@ -795,14 +883,15 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
-            <SortableContext items={photos} strategy={horizontalListSortingStrategy}>
+            <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
               <div className="grid grid-cols-5 lg:grid-cols-8 gap-3">
-                {photos.map((photo, idx) => (
+                {photosList.map((photo, idx) => (
                   <SortablePhoto
-                    key={photo}
-                    photo={photo}
+                    key={photo.id}
+                    id={photo.id}
+                    src={photo.src}
                     index={idx}
-                    isActive={idx === currentPhotoIndex}
+                    isActive={idx === currentPhotoIndex && activeTab !== 'final'}
                     onClick={() => handlePhotoClick(idx)}
                   />
                 ))}

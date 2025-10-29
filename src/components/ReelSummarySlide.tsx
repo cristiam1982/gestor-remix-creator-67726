@@ -9,6 +9,7 @@ interface ReelSummarySlideProps {
   isVisible: boolean;
   photos?: string[];
   backgroundStyle?: 'solid' | 'blur' | 'mosaic';
+  solidColor?: string;
 }
 
 export const ReelSummarySlide = ({ 
@@ -16,7 +17,8 @@ export const ReelSummarySlide = ({
   aliadoConfig,
   isVisible,
   photos = [],
-  backgroundStyle = 'solid'
+  backgroundStyle = 'solid',
+  solidColor
 }: ReelSummarySlideProps) => {
   if (!isVisible) return null;
 
@@ -73,7 +75,7 @@ export const ReelSummarySlide = ({
     <div 
       className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center"
       style={backgroundStyle === 'solid' ? {
-        background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}15 0%, ${aliadoConfig.colorSecundario}15 100%)`,
+        background: solidColor || `linear-gradient(135deg, ${aliadoConfig.colorPrimario}15 0%, ${aliadoConfig.colorSecundario}15 100%)`,
         backdropFilter: 'blur(20px)'
       } : {}}
     >
