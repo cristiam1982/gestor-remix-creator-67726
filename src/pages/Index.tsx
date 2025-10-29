@@ -321,50 +321,47 @@ const Index = () => {
           {/* Métricas */}
           <MetricsPanel onClearMetrics={handleClearMetrics} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-            <ContentTypeCard
-              icon={Square}
-              title="Post Cuadrado"
-              description="1:1 para feed de Instagram y Facebook"
-              primaryColor={aliadoConfig.colorPrimario}
-              secondaryColor={aliadoConfig.colorSecundario}
-              onClick={() => handleContentTypeSelect("post")}
-            />
-            <ContentTypeCard
-              icon={Smartphone}
-              title="Historia"
-              description="9:16 para Stories de Instagram"
-              primaryColor={aliadoConfig.colorPrimario}
-              secondaryColor={aliadoConfig.colorSecundario}
-              onClick={() => handleContentTypeSelect("historia")}
-            />
-            <ContentTypeCard
-              icon={ImageIcon}
-              title="Reel con Fotos"
-              description="Slideshow automático con música"
-              primaryColor={aliadoConfig.colorPrimario}
-              secondaryColor={aliadoConfig.colorSecundario}
-              onClick={() => handleContentTypeSelect("reel-fotos")}
-            />
-            <ContentTypeCard
-              icon={Video}
-              title="Reel con Video"
-              description="Hasta 100 segundos de video"
-              primaryColor={aliadoConfig.colorPrimario}
-              secondaryColor={aliadoConfig.colorSecundario}
-              onClick={() => handleContentTypeSelect("reel-video")}
-            />
-          </div>
-
-          {/* Nueva sección: Reel Multi-Video */}
-          <div className="mt-12">
+          {/* Sección 1: Promoción de inmuebles disponibles */}
+          <section className="mt-10">
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold mb-2">🎬 Reel Avanzado</h3>
-              <p className="text-muted-foreground">
-                Concatena múltiples videos para crear un tour completo de tu propiedad
+              <h2 className="text-3xl font-bold mb-2">📱 Promociona Inmuebles Disponibles</h2>
+              <p className="text-muted-foreground text-lg">
+                Crea contenido profesional para arriendo o venta de propiedades
               </p>
             </div>
-            <div className="max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <ContentTypeCard
+                icon={Square}
+                title="Post Cuadrado"
+                description="1:1 para feed de Instagram y Facebook"
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
+                onClick={() => handleContentTypeSelect("post")}
+              />
+              <ContentTypeCard
+                icon={Smartphone}
+                title="Historia"
+                description="9:16 para Stories de Instagram"
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
+                onClick={() => handleContentTypeSelect("historia")}
+              />
+              <ContentTypeCard
+                icon={ImageIcon}
+                title="Reel con Fotos"
+                description="Slideshow automático con música"
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
+                onClick={() => handleContentTypeSelect("reel-fotos")}
+              />
+              <ContentTypeCard
+                icon={Video}
+                title="Reel con Video"
+                description="Hasta 100 segundos de video"
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
+                onClick={() => handleContentTypeSelect("reel-video")}
+              />
               <ContentTypeCard
                 icon={Film}
                 title="Reel Multi-Video"
@@ -374,14 +371,14 @@ const Index = () => {
                 onClick={() => handleContentTypeSelect("reel-multi-video")}
               />
             </div>
-          </div>
+          </section>
 
-          {/* Nueva sección: Publicaciones de éxito */}
-          <div className="mt-12">
+          {/* Sección 2: Publicaciones de éxito */}
+          <section className="mt-12">
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold mb-2">🎉 Publicaciones de Éxito</h3>
-              <p className="text-muted-foreground">
-                Celebra tus arriendos y ventas para atraer nuevos propietarios
+              <h2 className="text-3xl font-bold mb-2">🎉 Celebra Arriendos y Ventas</h2>
+              <p className="text-muted-foreground text-lg">
+                Comparte tus éxitos para atraer nuevos propietarios y generar confianza
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -402,7 +399,7 @@ const Index = () => {
                 onClick={() => handleContentTypeSelect("vendido")}
               />
             </div>
-          </div>
+          </section>
         </div>
       </div>
     );
