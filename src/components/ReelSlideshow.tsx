@@ -510,7 +510,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 {/* Precio con máxima visibilidad */}
                 {precio && (
                   <div 
-                    className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-1.5 max-w-[85%] z-40"
+                    className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-0.5 max-w-[85%] z-40"
                     style={{ 
                       backgroundColor: '#FF8C42',
                       opacity: 0.95,
@@ -647,7 +647,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     {/* Precio con máxima visibilidad - Canvas */}
                     {precio && (
                       <div 
-                        className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-1.5 max-w-[85%] z-40"
+                        className="inline-block px-5 py-2.5 rounded-xl shadow-2xl mb-0.5 max-w-[85%] z-40"
                         style={{ 
                           backgroundColor: '#FF8C42',
                           opacity: 0.95,
