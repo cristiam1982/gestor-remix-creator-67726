@@ -506,7 +506,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
             
             return (
-              <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-8 z-10">
+              <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10">
                 {/* Precio con máxima visibilidad */}
                 {precio && (
                   <div 
@@ -643,7 +643,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
                 
                 return (
-                  <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-8 z-10">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10">
                     {/* Precio con máxima visibilidad - Canvas */}
                     {precio && (
                       <div 
