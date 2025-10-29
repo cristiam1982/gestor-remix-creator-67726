@@ -126,6 +126,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [showSummarySlide, setShowSummarySlide] = useState(false);
   const [isChangingGradient, setIsChangingGradient] = useState(false);
   const [customHashtag, setCustomHashtag] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState(1);
   const { toast } = useToast();
 
   // Color de marca del aliado
@@ -687,165 +688,251 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           </Card>
         </div>
 
-        {/* PARTE 4: Panel de Controles - Flujo Vertical Simplificado */}
-        <Card className="p-5">
-          <div className="space-y-6">
-            {/* Sección 1: Estilo Visual */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 pb-2">
-                <h3 className="text-sm font-bold text-foreground">🎨 Estilo Visual del Reel</h3>
-              </div>
-              <TemplateSelector 
-                selected={selectedTemplate}
-                onChange={setSelectedTemplate}
-              />
-              <p className="text-xs text-muted-foreground leading-relaxed pl-1">
-                Cada template tiene su propia paleta y estilo según el tipo de inmueble.
-              </p>
+        {/* PARTE 4: Panel de Controles - Wizard Paso a Paso */}
+        <Card className="p-6">
+          {/* Indicador de progreso */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              {[1, 2, 3].map((step) => (
+                <div key={step} className="flex items-center flex-1">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+                    currentStep === step 
+                      ? 'bg-primary text-primary-foreground scale-110' 
+                      : currentStep > step 
+                        ? 'bg-primary/30 text-primary' 
+                        : 'bg-muted text-muted-foreground'
+                  }`}>
+                    {step}
+                  </div>
+                  {step < 3 && (
+                    <div className={`flex-1 h-1 mx-2 rounded-full transition-all ${
+                      currentStep > step ? 'bg-primary' : 'bg-muted'
+                    }`} />
+                  )}
+                </div>
+              ))}
             </div>
+            <p className="text-sm text-center font-medium text-muted-foreground">
+              Paso {currentStep} de 3
+            </p>
+          </div>
 
-            {/* Separador */}
-            <div className="border-t border-border" />
-
-            {/* Sección 2: Sombreado de Foto */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 pb-2">
-                <h3 className="text-sm font-bold text-foreground">🌗 Sombreado de Foto</h3>
-              </div>
-              
-              <div className="grid grid-cols-4 gap-3">
-                {(['none', 'top', 'bottom', 'both'] as const).map((dir) => {
-                  const labels = {
-                    none: { icon: '🔆', text: 'Sin Sombreado' },
-                    top: { icon: '🔝', text: 'Superior' },
-                    bottom: { icon: '🔻', text: 'Inferior' },
-                    both: { icon: '⬍', text: 'Ambos Lados' }
-                  };
-                  return (
-                    <Button
-                      key={dir}
-                      variant={gradientDirection === dir ? "default" : "outline"}
-                      size="lg"
-                      onClick={() => setGradientDirection(dir)}
-                      className="flex flex-col h-auto py-4 gap-2"
-                    >
-                      <span className="text-2xl">{labels[dir].icon}</span>
-                      <span className="text-xs font-medium leading-tight text-center">{labels[dir].text}</span>
-                    </Button>
-                  );
-                })}
-              </div>
-              
-              {/* Espacio reservado para el slider - evita layout shift */}
-              <div className={`transition-opacity duration-200 ${gradientDirection === 'none' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-                <div className="pt-2 space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold">Intensidad</span>
-                    <span className="text-xs font-bold bg-primary/10 px-3 py-1.5 rounded-full">
-                      {gradientIntensity}%
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    step="10"
-                    value={gradientIntensity}
-                    onChange={(e) => handleGradientIntensityChange(Number(e.target.value))}
-                    disabled={gradientDirection === 'none'}
-                    className="w-full h-3 bg-secondary/20 rounded-lg appearance-none cursor-pointer accent-primary disabled:cursor-not-allowed"
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Ligero</span>
-                    <span>Intenso</span>
-                  </div>
+          {/* Contenido del paso actual */}
+          <div className="min-h-[400px] space-y-6">
+            {/* Paso 1: Estilo Visual */}
+            {currentStep === 1 && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="text-center space-y-2 pb-4">
+                  <h3 className="text-2xl font-bold text-foreground">🎨 Estilo Visual del Reel</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Elige el template que mejor representa tu inmueble
+                  </p>
+                </div>
+                <TemplateSelector 
+                  selected={selectedTemplate}
+                  onChange={setSelectedTemplate}
+                />
+                <div className="bg-accent/30 p-4 rounded-lg border border-border/50">
+                  <p className="text-xs text-muted-foreground leading-relaxed text-center">
+                    💡 Cada template tiene su propia paleta de colores y estilo visual optimizado según el tipo de inmueble.
+                  </p>
                 </div>
               </div>
+            )}
 
-              <p className="text-xs text-muted-foreground leading-relaxed pl-1">
-                Mejora la legibilidad del texto ajustando el sombreado según tus fotos.
-              </p>
-            </div>
-
-            {/* Separador */}
-            <div className="border-t border-border" />
-
-            {/* Sección 3: Slide Final */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 pb-2">
-                <h3 className="text-sm font-bold text-foreground">🎬 Slide Final</h3>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-3">
-                {(['solid', 'blur', 'mosaic'] as const).map((bg) => {
-                  const options = {
-                    solid: { 
-                      icon: '🎨', 
-                      text: 'Color Sólido',
-                    },
-                    blur: { 
-                      icon: '🌫️', 
-                      text: 'Foto Difuminada',
-                    },
-                    mosaic: { 
-                      icon: '🖼️', 
-                      text: 'Mosaico',
-                    }
-                  };
-                  return (
-                    <Button
-                      key={bg}
-                      variant={summaryBackground === bg ? "default" : "outline"}
-                      size="lg"
-                      onClick={() => setSummaryBackground(bg)}
-                      className="flex flex-col h-auto py-4 px-3 text-center gap-2"
-                    >
-                      <span className="text-2xl">{options[bg].icon}</span>
-                      <span className="text-xs font-medium leading-tight">{options[bg].text}</span>
-                    </Button>
-                  );
-                })}
-              </div>
-              
-              {/* Espacio reservado para color picker - evita layout shift */}
-              <div className={`transition-opacity duration-200 ${summaryBackground !== 'solid' ? 'opacity-0 pointer-events-none h-24' : 'opacity-100 h-auto'}`}>
-                <div className="pt-2 space-y-3">
-                  <label className="text-sm font-semibold">Color del Fondo</label>
-                  <div className="flex items-center gap-3">
+            {/* Paso 2: Sombreado de Foto */}
+            {currentStep === 2 && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="text-center space-y-2 pb-4">
+                  <h3 className="text-2xl font-bold text-foreground">🌗 Sombreado de Foto</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Mejora la legibilidad del texto sobre tus fotos
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {(['none', 'top', 'bottom', 'both'] as const).map((dir) => {
+                    const labels = {
+                      none: { icon: '🔆', text: 'Sin Sombreado' },
+                      top: { icon: '🔝', text: 'Superior' },
+                      bottom: { icon: '🔻', text: 'Inferior' },
+                      both: { icon: '⬍', text: 'Ambos Lados' }
+                    };
+                    return (
+                      <Button
+                        key={dir}
+                        variant={gradientDirection === dir ? "default" : "outline"}
+                        size="lg"
+                        onClick={() => setGradientDirection(dir)}
+                        className="flex flex-col h-28 gap-3 transition-all hover:scale-105"
+                      >
+                        <span className="text-4xl">{labels[dir].icon}</span>
+                        <span className="text-sm font-semibold leading-tight text-center">{labels[dir].text}</span>
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                {/* Slider de intensidad */}
+                {gradientDirection !== 'none' && (
+                  <div className="pt-4 space-y-4 animate-in fade-in duration-300">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-semibold">Intensidad del Sombreado</span>
+                      <span className="text-sm font-bold bg-primary/10 px-4 py-2 rounded-full">
+                        {gradientIntensity}%
+                      </span>
+                    </div>
                     <input
-                      type="color"
-                      value={summarySolidColor}
-                      onChange={(e) => setSummarySolidColor(e.target.value)}
-                      disabled={summaryBackground !== 'solid'}
-                      className="w-16 h-12 rounded-lg cursor-pointer border-2 border-border disabled:opacity-50 disabled:cursor-not-allowed"
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="10"
+                      value={gradientIntensity}
+                      onChange={(e) => handleGradientIntensityChange(Number(e.target.value))}
+                      className="w-full h-3 bg-secondary/20 rounded-lg appearance-none cursor-pointer accent-primary"
                     />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{summarySolidColor.toUpperCase()}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Personaliza el color de fondo
-                      </p>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Ligero</span>
+                      <span>Moderado</span>
+                      <span>Intenso</span>
                     </div>
                   </div>
+                )}
+
+                <div className="bg-accent/30 p-4 rounded-lg border border-border/50">
+                  <p className="text-xs text-muted-foreground leading-relaxed text-center">
+                    💡 El sombreado ayuda a que el texto sea más visible sin importar el color de fondo de tus fotos.
+                  </p>
                 </div>
               </div>
+            )}
 
-              {/* Hashtag personalizado */}
-              <div className="pt-2 space-y-3">
-                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  #️⃣ Hashtag Personalizado
-                </label>
-                <input
-                  type="text"
-                  value={customHashtag}
-                  onChange={(e) => setCustomHashtag(e.target.value.slice(0, 50))}
-                  placeholder="#TuHashtagAquí"
-                  className="w-full px-4 py-2.5 rounded-lg border-2 border-input bg-background text-foreground text-sm"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Máximo 50 caracteres
-                </p>
+            {/* Paso 3: Slide Final */}
+            {currentStep === 3 && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="text-center space-y-2 pb-4">
+                  <h3 className="text-2xl font-bold text-foreground">🎬 Slide Final</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Personaliza cómo se verá el cierre de tu reel
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {(['solid', 'blur', 'mosaic'] as const).map((bg) => {
+                    const options = {
+                      solid: { 
+                        icon: '🎨', 
+                        text: 'Color Sólido',
+                        desc: 'Fondo de color plano'
+                      },
+                      blur: { 
+                        icon: '🌫️', 
+                        text: 'Foto Difuminada',
+                        desc: 'Última foto con blur'
+                      },
+                      mosaic: { 
+                        icon: '🖼️', 
+                        text: 'Mosaico',
+                        desc: 'Collage de fotos'
+                      }
+                    };
+                    return (
+                      <Button
+                        key={bg}
+                        variant={summaryBackground === bg ? "default" : "outline"}
+                        size="lg"
+                        onClick={() => setSummaryBackground(bg)}
+                        className="flex flex-col h-32 gap-2 text-center transition-all hover:scale-105"
+                      >
+                        <span className="text-4xl">{options[bg].icon}</span>
+                        <span className="text-sm font-semibold leading-tight">{options[bg].text}</span>
+                        <span className="text-xs text-muted-foreground leading-tight">{options[bg].desc}</span>
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                {/* Color picker para fondo sólido */}
+                {summaryBackground === 'solid' && (
+                  <div className="pt-4 space-y-4 animate-in fade-in duration-300">
+                    <label className="text-sm font-semibold text-center block">Color del Fondo</label>
+                    <div className="flex items-center justify-center gap-4">
+                      <input
+                        type="color"
+                        value={summarySolidColor}
+                        onChange={(e) => setSummarySolidColor(e.target.value)}
+                        className="w-20 h-20 rounded-lg cursor-pointer border-2 border-border"
+                      />
+                      <div>
+                        <p className="text-lg font-bold">{summarySolidColor.toUpperCase()}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Personaliza el color de fondo
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Hashtag personalizado */}
+                <div className="pt-4 space-y-3">
+                  <label className="text-sm font-semibold text-foreground text-center block">
+                    #️⃣ Hashtag Personalizado (Opcional)
+                  </label>
+                  <input
+                    type="text"
+                    value={customHashtag}
+                    onChange={(e) => setCustomHashtag(e.target.value.slice(0, 50))}
+                    placeholder="#TuHashtagAquí"
+                    className="w-full px-4 py-3 rounded-lg border-2 border-input bg-background text-foreground text-sm text-center"
+                  />
+                  <p className="text-xs text-muted-foreground text-center">
+                    Máximo 50 caracteres
+                  </p>
+                </div>
+
+                <div className="bg-accent/30 p-4 rounded-lg border border-border/50">
+                  <p className="text-xs text-muted-foreground leading-relaxed text-center">
+                    💡 El slide final es tu oportunidad para dejar una última impresión con tu marca.
+                  </p>
+                </div>
               </div>
+            )}
+          </div>
+
+          {/* Botones de navegación */}
+          <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
+              disabled={currentStep === 1}
+              className="gap-2"
+            >
+              ← Anterior
+            </Button>
+            
+            <div className="flex gap-2">
+              {[1, 2, 3].map((step) => (
+                <button
+                  key={step}
+                  onClick={() => setCurrentStep(step)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    currentStep === step ? 'bg-primary w-6' : 'bg-muted hover:bg-muted-foreground/50'
+                  }`}
+                  aria-label={`Ir al paso ${step}`}
+                />
+              ))}
             </div>
+
+            <Button
+              variant={currentStep === 3 ? "default" : "default"}
+              size="lg"
+              onClick={() => setCurrentStep(prev => Math.min(3, prev + 1))}
+              disabled={currentStep === 3}
+              className="gap-2"
+            >
+              Siguiente →
+            </Button>
           </div>
         </Card>
 
