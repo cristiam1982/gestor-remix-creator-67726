@@ -111,4 +111,17 @@ All colors MUST be HSL.
   .gradient-hero {
     background: var(--gradient-hero);
   }
+
+  /* Fase 4: Crossfade transitions */
+  .photo-crossfade {
+    transition: opacity 0.6s ease-in-out;
+  }
+
+  .photo-crossfade-enter {
+    opacity: 0;
+  }
+
+  .photo-crossfade-active {
+    opacity: 1;
+  }
 }

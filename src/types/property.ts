@@ -16,6 +16,11 @@ export type ContentType =
   | "arrendado"
   | "vendido";
 
+export type ReelTemplate = 
+  | "residencial"
+  | "comercial" 
+  | "premium";
+
 export interface AliadoConfig {
   nombre: string;
   logo: string;
@@ -45,4 +50,5 @@ export interface PropertyData {
   amoblado?: boolean;
   fotos: string[];
   subtitulos?: string[];
+  template?: ReelTemplate; // Fase 4: templates visuales
 }

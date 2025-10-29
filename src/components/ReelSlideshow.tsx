@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { PropertyData, AliadoConfig } from "@/types/property";
+import { PropertyData, AliadoConfig, ReelTemplate } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
@@ -7,8 +7,10 @@ import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
+import { TemplateSelector } from "./TemplateSelector";
 import { formatPrecioColombia } from "@/utils/formatters";
 import { useToast } from "@/hooks/use-toast";
+import { REEL_TEMPLATES, getTemplateForProperty } from "@/utils/reelTemplates";
 import {
   DndContext,
   closestCenter,
@@ -93,13 +95,19 @@ const SortablePhoto = ({ photo, index, isActive, onClick }: SortablePhotoProps) 
 
 export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSlideshowProps) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [previousPhotoIndex, setPreviousPhotoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [generationProgress, setGenerationProgress] = useState<VideoGenerationProgress | null>(null);
   const [photos, setPhotos] = useState<string[]>(propertyData.fotos || []);
+  const [selectedTemplate, setSelectedTemplate] = useState<ReelTemplate>(
+    propertyData.template || getTemplateForProperty(propertyData.tipo, propertyData.uso)
+  );
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const { toast } = useToast();
   
   const slideDuration = 1200; // 1.2 segundos por foto (estándar viral)
+  const currentTemplate = REEL_TEMPLATES[selectedTemplate];
 
   // Helper: Obtener máximo 3 tags más relevantes
   const getTopTags = () => {
@@ -277,11 +285,19 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
       
       <Card className="p-6">
+        {/* Selector de Template */}
+        <div className="mb-6">
+          <TemplateSelector 
+            selected={selectedTemplate}
+            onChange={setSelectedTemplate}
+          />
+        </div>
+
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-xl font-semibold text-primary">Reel Slideshow</h3>
             <p className="text-sm text-muted-foreground">
-              {photos.length} fotos · {(photos.length * 1.2).toFixed(1)}s total
+              {photos.length} fotos · {(photos.length * 1.2).toFixed(1)}s total · {currentTemplate.name}
             </p>
           </div>
           <div className="flex gap-2">
@@ -319,23 +335,39 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             ))}
           </div>
 
-          {/* Foto actual con overlay */}
+          {/* Foto actual con overlay y crossfade - Fase 4 */}
           <div className="absolute inset-0">
+            {/* Foto anterior (fade out) */}
             <img
-              src={photos[currentPhotoIndex]}
-              alt={`Foto ${currentPhotoIndex + 1}`}
-              className="w-full h-full object-cover"
+              src={photos[previousPhotoIndex]}
+              alt={`Foto ${previousPhotoIndex + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
+                isTransitioning ? 'photo-crossfade-enter' : 'photo-crossfade-active'
+              }`}
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
+            
+            {/* Foto actual (fade in) */}
+            <img
+              src={photos[currentPhotoIndex]}
+              alt={`Foto ${currentPhotoIndex + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
+                isTransitioning ? 'photo-crossfade-active' : 'opacity-0'
+              }`}
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
+            />
+            
+            {/* Gradient overlay dinámico según template */}
+            <div className={`absolute inset-0 bg-gradient-to-b ${currentTemplate.gradient}`} />
           </div>
 
-          {/* Subtítulo si existe - Fase 3: mejorado contraste + animación */}
+          {/* Subtítulo si existe - Fase 3: mejorado + Template Fase 4 */}
           {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
             <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4 animate-slide-up-bounce">
-              <div className="bg-black/80 backdrop-blur-md px-5 py-2 rounded-full shadow-2xl border border-white/20">
-                <p className="text-white text-xl font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              <div className={`${currentTemplate.subtitleStyle.background} px-5 py-2 rounded-full shadow-2xl`}>
+                <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
                   {propertyData.subtitulos[currentPhotoIndex]}
                 </p>
               </div>
@@ -353,7 +385,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             />
           </div>
 
-          {/* Precio destacado - TOP RIGHT */}
+          {/* Precio destacado - Template Fase 4 */}
           {(() => {
             const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
@@ -361,14 +393,14 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             return (
               <div className="absolute top-6 right-6 z-20 animate-fade-in">
                 <div 
-                  className="px-4 py-2 rounded-2xl shadow-2xl text-white font-black text-xl"
+                  className={`px-4 py-2 text-white font-black text-xl ${currentTemplate.priceStyle.className}`}
                   style={{ 
                     backgroundColor: aliadoConfig.colorPrimario,
-                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
                     textShadow: '2px 2px 6px rgba(0,0,0,0.8)'
                   }}
                 >
-                  💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
+                  {currentTemplate.priceStyle.emoji} {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
                 </div>
               </div>
             );
@@ -435,7 +467,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           backgroundColor: '#000000'
         }}
       >
-          {/* Foto actual con overlay - CÓDIGO IDÉNTICO AL PREVIEW */}
+          {/* Foto actual con overlay - CÓDIGO IDÉNTICO AL PREVIEW + Template */}
           <div className="absolute inset-0">
             <img
               src={photos[currentPhotoIndex]}
@@ -444,14 +476,15 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
+            {/* Gradient overlay dinámico según template */}
+            <div className={`absolute inset-0 bg-gradient-to-b ${currentTemplate.gradient}`} />
           </div>
 
-          {/* Subtítulo si existe - Fase 3: mejorado contraste */}
+          {/* Subtítulo si existe - Template Fase 4 */}
           {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
             <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4">
-              <div className="bg-black/80 backdrop-blur-md px-5 py-2 rounded-full shadow-2xl border border-white/20">
-                <p className="text-white text-xl font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              <div className={`${currentTemplate.subtitleStyle.background} px-5 py-2 rounded-full shadow-2xl`}>
+                <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
                   {propertyData.subtitulos[currentPhotoIndex]}
                 </p>
               </div>
@@ -470,7 +503,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             />
           </div>
 
-          {/* Precio destacado - TOP RIGHT */}
+          {/* Precio destacado - Template Fase 4 */}
           {(() => {
             const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
@@ -478,14 +511,14 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             return (
               <div className="absolute top-6 right-6 z-20">
                 <div 
-                  className="px-4 py-2 rounded-2xl shadow-2xl text-white font-black text-xl"
+                  className={`px-4 py-2 text-white font-black text-xl ${currentTemplate.priceStyle.className}`}
                   style={{ 
                     backgroundColor: aliadoConfig.colorPrimario,
-                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
                     textShadow: '2px 2px 6px rgba(0,0,0,0.8)'
                   }}
                 >
-                  💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
+                  {currentTemplate.priceStyle.emoji} {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
                 </div>
               </div>
             );
