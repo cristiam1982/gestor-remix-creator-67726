@@ -48,57 +48,6 @@ export const exportToImage = async (
             }
           });
           
-          // Optimizar elementos con opacity inline (como el precio)
-          const elementsWithOpacity = clonedElement.querySelectorAll('[style*="opacity"]');
-          elementsWithOpacity.forEach((el) => {
-            const element = el as HTMLElement;
-            const bgColor = element.style.backgroundColor;
-            const opacity = parseFloat(element.style.opacity || '1');
-            
-            if (bgColor && opacity < 1) {
-              // Convertir opacity a color RGBA directo
-              const rgb = bgColor.match(/\d+/g);
-              if (rgb && rgb.length >= 3) {
-                element.style.backgroundColor = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacity})`;
-                element.style.opacity = '1';
-              }
-            }
-          });
-
-          // Reducir intensidad de gradientes automáticamente
-          const gradientOverlays = clonedElement.querySelectorAll('[class*="absolute"][class*="inset-0"]');
-          gradientOverlays.forEach((el) => {
-            const element = el as HTMLElement;
-            const bgImage = window.getComputedStyle(element).backgroundImage;
-            if (bgImage && bgImage.includes('gradient')) {
-              element.style.opacity = '0.65'; // Reduce 35% la intensidad
-            }
-          });
-          
-          // Force render canon block
-          const canonBlocks = clonedElement.querySelectorAll('[data-canon-value]');
-          canonBlocks.forEach((node) => {
-            const el = node as HTMLElement;
-            el.style.boxShadow = 'none';
-            el.style.setProperty('box-shadow', 'none', 'important');
-            el.style.filter = 'none';
-            el.style.backdropFilter = 'none';
-            el.style.mixBlendMode = 'normal';
-            el.style.opacity = '1';
-            el.style.position = 'relative';
-            el.style.zIndex = '99999';
-
-            el.querySelectorAll('p, span').forEach((p) => {
-              const pe = p as HTMLElement;
-              pe.style.color = '#FFFFFF';
-              pe.style.textShadow = 'none';
-              pe.style.filter = 'none';
-              pe.style.mixBlendMode = 'normal';
-              (pe.style as any)['-webkit-text-stroke'] = '0';
-              pe.style.opacity = '1';
-            });
-          });
-          
           // Ensure font is loaded in clone
           (clonedElement as HTMLElement).style.fontFamily = 'Poppins, sans-serif';
         }
