@@ -331,11 +331,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
           </div>
 
-          {/* Subtítulo si existe */}
+          {/* Subtítulo si existe - Fase 3: mejorado contraste + animación */}
           {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-            <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4 animate-fade-in">
-              <div className="bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-xl">
-                <p className="text-white text-lg font-bold text-center leading-tight">
+            <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4 animate-slide-up-bounce">
+              <div className="bg-black/80 backdrop-blur-md px-5 py-2 rounded-full shadow-2xl border border-white/20">
+                <p className="text-white text-xl font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                   {propertyData.subtitulos[currentPhotoIndex]}
                 </p>
               </div>
@@ -447,11 +447,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
           </div>
 
-          {/* Subtítulo si existe */}
+          {/* Subtítulo si existe - Fase 3: mejorado contraste */}
           {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
             <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4">
-              <div className="bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-xl">
-                <p className="text-white text-lg font-bold text-center leading-tight">
+              <div className="bg-black/80 backdrop-blur-md px-5 py-2 rounded-full shadow-2xl border border-white/20">
+                <p className="text-white text-xl font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                   {propertyData.subtitulos[currentPhotoIndex]}
                 </p>
               </div>
@@ -565,7 +565,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             🔄 <strong>Reordenar:</strong> Arrastra el ícono de las miniaturas
           </p>
           <p className="text-sm text-muted-foreground text-center">
-            📥 <strong>Descargar:</strong> Genera GIF animado (10-20s) · Compatible con todas las redes
+            📥 <strong>Descargar:</strong> Genera video MP4 de alta calidad (10-20s)
           </p>
         </div>
       </Card>
