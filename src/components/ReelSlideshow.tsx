@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { PropertyData, AliadoConfig, ReelTemplate } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
@@ -116,13 +117,18 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   );
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showSummarySlide, setShowSummarySlide] = useState(false);
+  const [isChangingGradient, setIsChangingGradient] = useState(false);
   const { toast } = useToast();
   
   const slideDuration = 1300; // 1.3 segundos por foto (mejor legibilidad)
   const summaryDuration = 2500; // 2.5 segundos para slide de resumen
   const currentTemplate = REEL_TEMPLATES[selectedTemplate];
-  const baseGradient = currentTemplate.gradient[gradientDirection];
-  const finalGradient = applyGradientIntensity(baseGradient, gradientIntensity);
+  
+  // PARTE 2: Fix gradiente con useMemo y dependencias correctas
+  const finalGradient = useMemo(() => {
+    const baseGradient = currentTemplate.gradient[gradientDirection];
+    return applyGradientIntensity(baseGradient, gradientIntensity);
+  }, [currentTemplate, gradientDirection, gradientIntensity]);
 
   // Helper: Obtener máximo 4 tags principales (habitaciones, baños, parqueaderos, área)
   const getTopTags = () => {
@@ -203,6 +209,13 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     setShowSummarySlide(false);
     setProgress(0);
     setIsPlaying(false);
+  };
+
+  // PARTE 4: Handler para cambio de intensidad con feedback visual
+  const handleGradientIntensityChange = (value: number) => {
+    setGradientIntensity(value);
+    setIsChangingGradient(true);
+    setTimeout(() => setIsChangingGradient(false), 600);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -329,10 +342,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         onChange={setSelectedTemplate}
       />
 
-      {/* Layout principal: 2 columnas en desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6">
+      {/* PARTE 3: Layout reestructurado - Preview arriba, controles abajo */}
+      <div className="space-y-6">
         
-        {/* Columna 1: Preview del Reel */}
+        {/* Preview del Reel - Centrado */}
         <div className="space-y-4">
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -414,11 +427,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </div>
           )}
 
-          {/* Subtítulo si existe - Fase 3: mejorado + Template Fase 4 */}
+          {/* PARTE 1: Subtítulo reposicionado a top-[100px] */}
           {!showSummarySlide && propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-            <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4 animate-slide-up-bounce">
-              <div className={`${currentTemplate.subtitleStyle.background} px-5 py-2 rounded-full shadow-2xl`}>
-                <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
+            <div className="absolute top-[100px] left-0 right-0 z-20 flex justify-center px-4 animate-slide-up-bounce">
+              <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-xl max-w-[80%]`}>
+                <p className="text-white text-base font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                   {propertyData.subtitulos[currentPhotoIndex]}
                 </p>
               </div>
@@ -445,18 +458,18 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             
             return (
               <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
-                {/* Precio arriba del tipo - NUEVO */}
+                {/* PARTE 1: Precio reducido y optimizado */}
                 {precio && (
                   <div 
-                    className="inline-block px-6 py-3 rounded-2xl shadow-2xl mb-3"
+                    className="inline-block px-4 py-2 rounded-xl shadow-xl mb-2 max-w-[85%]"
                     style={{ 
                       background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}E5, ${aliadoConfig.colorSecundario}E5)`,
                     }}
                   >
-                    <p className="text-2xl font-black text-white flex items-center gap-2 drop-shadow-2xl">
-                      <span>💰</span>
+                    <p className="text-lg font-black text-white flex items-center gap-1.5 drop-shadow-2xl">
+                      <span className="text-base">💰</span>
                       <span>{formatPrecioColombia(precio)}</span>
-                      {!esVenta && <span className="text-xl">/mes</span>}
+                      {!esVenta && <span className="text-sm">/mes</span>}
                     </p>
                   </div>
                 )}
@@ -497,6 +510,15 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               </div>
             );
           })()}
+
+          {/* PARTE 4: Feedback visual al cambiar gradiente */}
+          {isChangingGradient && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 bg-black/70 backdrop-blur-sm px-6 py-3 rounded-2xl animate-fade-in shadow-2xl border border-white/20">
+              <p className="text-white text-xl font-bold">
+                🌗 {gradientIntensity}%
+              </p>
+            </div>
+          )}
 
           {/* Play/Pause overlay */}
           {!isPlaying && (
@@ -551,11 +573,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 )}
               </div>
 
-              {/* Subtítulo si existe - Template Fase 4 */}
+              {/* PARTE 1: Subtítulo reposicionado en canvas también */}
               {propertyData.subtitulos && propertyData.subtitulos[currentPhotoIndex] && (
-                <div className="absolute top-14 left-0 right-0 z-20 flex justify-center px-4">
-                  <div className={`${currentTemplate.subtitleStyle.background} px-5 py-2 rounded-full shadow-2xl`}>
-                    <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
+                <div className="absolute top-[100px] left-0 right-0 z-20 flex justify-center px-4">
+                  <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-xl max-w-[80%]`}>
+                    <p className="text-white text-base font-bold text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                       {propertyData.subtitulos[currentPhotoIndex]}
                     </p>
                   </div>
@@ -581,18 +603,18 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 
                 return (
                   <div className="absolute bottom-0 left-0 right-0 p-6 pr-24 pb-12 z-10">
-                    {/* Precio arriba del tipo */}
+                    {/* PARTE 1: Precio reducido en canvas también */}
                     {precio && (
                       <div 
-                        className="inline-block px-6 py-3 rounded-2xl shadow-2xl mb-3"
+                        className="inline-block px-4 py-2 rounded-xl shadow-xl mb-2 max-w-[85%]"
                         style={{ 
                           background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}E5, ${aliadoConfig.colorSecundario}E5)`,
                         }}
                       >
-                        <p className="text-2xl font-black text-white flex items-center gap-2 drop-shadow-2xl">
-                          <span>💰</span>
+                        <p className="text-lg font-black text-white flex items-center gap-1.5 drop-shadow-2xl">
+                          <span className="text-base">💰</span>
                           <span>{formatPrecioColombia(precio)}</span>
-                          {!esVenta && <span className="text-xl">/mes</span>}
+                          {!esVenta && <span className="text-sm">/mes</span>}
                         </p>
                       </div>
                     )}
@@ -637,169 +659,135 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           )}
          </div>
 
-            {/* Miniaturas con drag & drop - Solo desktop */}
-            <div className="hidden lg:block">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-muted-foreground">
-                  📸 Arrastra las fotos para cambiar el orden
+          </Card>
+        </div>
+
+        {/* PARTE 3: Panel de Controles con Tabs Horizontales */}
+        <Card className="p-6">
+          <Tabs defaultValue="effects" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="effects" className="text-sm font-semibold">
+                🎨 Efectos de Sombreado
+              </TabsTrigger>
+              <TabsTrigger value="background" className="text-sm font-semibold">
+                🎬 Fondo del Slide Final
+              </TabsTrigger>
+            </TabsList>
+            
+            {/* Tab 1: Efectos de Sombreado */}
+            <TabsContent value="effects" className="space-y-5 mt-0">
+              <div className="grid grid-cols-4 gap-3">
+                {(['none', 'top', 'bottom', 'both'] as const).map((dir) => {
+                  const labels = {
+                    none: { icon: '🔆', text: 'Sin Sombreado' },
+                    top: { icon: '🔝', text: 'Superior' },
+                    bottom: { icon: '🔻', text: 'Inferior' },
+                    both: { icon: '⬍', text: 'Ambos Lados' }
+                  };
+                  return (
+                    <Button
+                      key={dir}
+                      variant={gradientDirection === dir ? "default" : "outline"}
+                      size="lg"
+                      onClick={() => setGradientDirection(dir)}
+                      className="flex flex-col h-auto py-4 gap-2"
+                    >
+                      <span className="text-3xl">{labels[dir].icon}</span>
+                      <span className="text-xs font-medium leading-tight text-center">{labels[dir].text}</span>
+                    </Button>
+                  );
+                })}
+              </div>
+              
+              {gradientDirection !== 'none' && (
+                <div className="pt-4 border-t space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-semibold">🌗 Intensidad del sombreado</span>
+                    <span className="text-sm font-bold bg-primary/10 px-4 py-1.5 rounded-full">
+                      {gradientIntensity}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="10"
+                    value={gradientIntensity}
+                    onChange={(e) => handleGradientIntensityChange(Number(e.target.value))}
+                    className="w-full h-3 bg-secondary/20 rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>🔆 Ligero</span>
+                    <span>🌑 Intenso</span>
+                  </div>
+                </div>
+              )}
+              
+              <div className="pt-3 border-t">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  💡 <strong>Tip:</strong> El sombreado mejora la legibilidad del texto sobre las fotos. 
+                  Prueba diferentes combinaciones para encontrar el mejor contraste según tus imágenes.
                 </p>
               </div>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext items={photos} strategy={horizontalListSortingStrategy}>
-                  <div className="grid grid-cols-5 gap-2">
-                    {photos.map((photo, idx) => (
-                      <SortablePhoto
-                        key={photo}
-                        photo={photo}
-                        index={idx}
-                        isActive={idx === currentPhotoIndex}
-                        onClick={() => handlePhotoClick(idx)}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </div>
-
-            {/* Instrucciones - Solo desktop */}
-            <div className="hidden lg:block mt-4 p-3 bg-accent/50 rounded-lg space-y-1">
-              <p className="text-sm text-muted-foreground text-center">
-                💡 <strong>Play:</strong> Ver slideshow automático (1.3s por foto + slide final)
-              </p>
-              <p className="text-sm text-muted-foreground text-center">
-                🔄 <strong>Reordenar:</strong> Arrastra el ícono de las miniaturas
-              </p>
-              <p className="text-sm text-muted-foreground text-center">
-                📥 <strong>Descargar:</strong> Genera video MP4 de alta calidad (15-30s)
-              </p>
-            </div>
-          </Card>
-        </div>
-
-        {/* Columna 2: Panel de Controles (sticky en desktop) */}
-        <div className="lg:sticky lg:top-6 lg:self-start">
-          <Card className="p-6">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <span>⚙️</span> Personalización Visual
-            </h3>
+            </TabsContent>
             
-            {/* Controles en desktop: siempre visibles */}
-            <div className="hidden lg:block space-y-6">
-              {/* Efectos de sombreado */}
-              <div className="space-y-3">
-                <label className="text-sm font-semibold">🎨 Efectos de Sombreado</label>
-                <div className="space-y-4">
-                  <div className="text-xs text-muted-foreground">
-                    Ajusta la dirección e intensidad del sombreado para mejorar la legibilidad del texto sobre las fotos.
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {(['none', 'top', 'bottom', 'both'] as const).map((dir) => {
-                      const labels = {
-                        none: { icon: '🔆', text: 'Sin' },
-                        top: { icon: '🔝', text: 'Arriba' },
-                        bottom: { icon: '🔻', text: 'Abajo' },
-                        both: { icon: '⬍', text: 'Ambos' }
-                      };
-                      return (
-                        <Button
-                          key={dir}
-                          variant={gradientDirection === dir ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setGradientDirection(dir)}
-                          className="flex flex-col h-auto py-2"
-                        >
-                          <span className="text-lg">{labels[dir].icon}</span>
-                          <span className="text-xs">{labels[dir].text}</span>
-                        </Button>
-                      );
-                    })}
-                  </div>
-                  {gradientDirection !== 'none' && (
-                    <div className="pt-2">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-medium">Intensidad</span>
-                        <span className="text-xs font-bold bg-secondary/10 px-2 py-0.5 rounded-full">
-                          {gradientIntensity}%
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        step="5"
-                        value={gradientIntensity}
-                        onChange={(e) => setGradientIntensity(Number(e.target.value))}
-                        className="w-full h-2 bg-secondary/20 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                    </div>
-                  )}
-                </div>
+            {/* Tab 2: Fondo del Slide Final */}
+            <TabsContent value="background" className="space-y-5 mt-0">
+              <div className="grid grid-cols-3 gap-4">
+                {(['solid', 'blur', 'mosaic'] as const).map((bg) => {
+                  const options = {
+                    solid: { 
+                      icon: '🎨', 
+                      text: 'Color Sólido',
+                      desc: 'Fondo limpio con tus colores corporativos'
+                    },
+                    blur: { 
+                      icon: '🌫️', 
+                      text: 'Foto Difuminada',
+                      desc: 'Última foto con efecto blur de fondo'
+                    },
+                    mosaic: { 
+                      icon: '🖼️', 
+                      text: 'Mosaico de Fotos',
+                      desc: 'Grid con tus fotos de fondo'
+                    }
+                  };
+                  return (
+                    <Button
+                      key={bg}
+                      variant={summaryBackground === bg ? "default" : "outline"}
+                      size="lg"
+                      onClick={() => setSummaryBackground(bg)}
+                      className="flex flex-col h-auto py-4 px-3 text-center gap-2"
+                    >
+                      <span className="text-3xl">{options[bg].icon}</span>
+                      <span className="text-xs font-medium leading-tight">{options[bg].text}</span>
+                    </Button>
+                  );
+                })}
               </div>
-
-              <div className="border-t pt-4" />
-
-              {/* Fondo del slide final */}
-              <div className="space-y-3">
-                <label className="text-sm font-semibold">🎬 Fondo del Slide Final</label>
-                <div className="text-xs text-muted-foreground mb-2">
-                  Elige el estilo de fondo para el último slide con tu información de contacto.
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {(['solid', 'blur', 'mosaic'] as const).map((bg) => {
-                    const labels = {
-                      solid: { icon: '🎨', text: 'Color' },
-                      blur: { icon: '🌫️', text: 'Difuminado' },
-                      mosaic: { icon: '🖼️', text: 'Mosaico' }
-                    };
-                    return (
-                      <Button
-                        key={bg}
-                        variant={summaryBackground === bg ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSummaryBackground(bg)}
-                        className="flex flex-col h-auto py-2"
-                      >
-                        <span className="text-lg">{labels[bg].icon}</span>
-                        <span className="text-xs">{labels[bg].text}</span>
-                      </Button>
-                    );
-                  })}
-                </div>
+              
+              <div className="pt-3 border-t">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  💡 <strong>
+                    {summaryBackground === 'solid' && 'El fondo de color sólido mantiene tu identidad de marca destacada y profesional.'}
+                    {summaryBackground === 'blur' && 'El fondo difuminado crea una transición elegante desde las fotos del inmueble.'}
+                    {summaryBackground === 'mosaic' && 'El mosaico muestra un resumen visual atractivo de todas tus fotos.'}
+                  </strong>
+                </p>
               </div>
-            </div>
+            </TabsContent>
+          </Tabs>
+        </Card>
 
-            {/* Controles en mobile: Accordion colapsable */}
-            <div className="lg:hidden">
-              <ReelControlsPanel
-                gradientDirection={gradientDirection}
-                onGradientDirectionChange={setGradientDirection}
-                gradientIntensity={gradientIntensity}
-                onGradientIntensityChange={setGradientIntensity}
-                summaryBackground={summaryBackground}
-                onSummaryBackgroundChange={setSummaryBackground}
-              />
-            </div>
-          </Card>
-
-          {/* Botones de descarga (sticky) */}
-          <div className="mt-4 space-y-2">
-            <Button onClick={handleDownloadVideo} className="w-full" size="lg">
-              <Download className="mr-2" /> Descargar Video MP4
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Miniaturas en mobile (abajo) */}
-      <div className="lg:hidden">
+        {/* Miniaturas reordenables - Grid horizontal con scroll */}
         <Card className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-muted-foreground">
-              📸 Arrastra las fotos para cambiar el orden
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-semibold text-foreground">
+              📸 Orden de las fotos en el reel
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Arrastra para reordenar
             </p>
           </div>
           <DndContext
@@ -808,7 +796,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             onDragEnd={handleDragEnd}
           >
             <SortableContext items={photos} strategy={horizontalListSortingStrategy}>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 lg:grid-cols-8 gap-3">
                 {photos.map((photo, idx) => (
                   <SortablePhoto
                     key={photo}
@@ -822,6 +810,28 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </SortableContext>
           </DndContext>
         </Card>
+
+        {/* Botón de descarga prominente */}
+        <div className="flex justify-center">
+          <Button onClick={handleDownloadVideo} size="lg" className="w-full max-w-md h-14 text-base">
+            <Download className="mr-2 w-5 h-5" /> Descargar Video MP4
+          </Button>
+        </div>
+
+        {/* Instrucciones finales */}
+        <div className="p-4 bg-accent/30 rounded-lg border border-border/50">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-muted-foreground text-center">
+            <p>
+              💡 <strong className="text-foreground">Play:</strong> Ver slideshow automático
+            </p>
+            <p>
+              🔄 <strong className="text-foreground">Reordenar:</strong> Arrastra las miniaturas
+            </p>
+            <p>
+              📥 <strong className="text-foreground">Descargar:</strong> Video MP4 de alta calidad
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
