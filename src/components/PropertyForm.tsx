@@ -33,11 +33,13 @@ export const PropertyForm = ({
   };
   const renderConditionalFields = () => {
     if (!data.tipo) return null;
+    if (!data.modalidad) return null;
+    
     const isResidencial = data.tipo === "apartamento" || data.tipo === "casa";
     const isComercial = data.tipo === "local" || data.tipo === "oficina" || data.tipo === "bodega";
     const isLote = data.tipo === "lote";
     return <div className="space-y-4 animate-fade-in">
-        {!isLote && data.modalidad && <>
+        {!isLote && <>
             <div>
               <Label htmlFor="precio">
                 {data.modalidad === "arriendo" ? "Canon Mensual (COP)" : "Precio de Venta (COP)"}
@@ -156,18 +158,34 @@ export const PropertyForm = ({
 
         {isLote && <>
             <div>
-              <Label htmlFor="valorVenta">Valor de Venta o Canon (COP)</Label>
+              <Label htmlFor="precio">
+                {data.modalidad === "arriendo" ? "Canon Mensual (COP)" : "Precio de Venta (COP)"}
+              </Label>
               <Input 
-                id="valorVenta" 
-                value={formatPrecioColombia(data.valorVenta || "")} 
-                onChange={e => {
+                id="precio" 
+                type="text" 
+                value={
+                  data.modalidad === "arriendo" 
+                    ? formatPrecioColombia(data.canon || "") 
+                    : formatPrecioColombia(data.valorVenta || "")
+                } 
+                onChange={(e) => {
                   const rawValue = e.target.value.replace(/\D/g, '');
-                  updateField("valorVenta", rawValue);
+                  
+                  if (data.modalidad === "arriendo") {
+                    updateField("canon", rawValue);
+                  } else {
+                    updateField("valorVenta", rawValue);
+                  }
                 }} 
-                placeholder="$ 350.000.000" 
-                className={errors?.valorVenta ? "border-destructive" : ""} 
+                placeholder={data.modalidad === "arriendo" ? "$ 1.500.000" : "$ 350.000.000"} 
+                className={errors?.canon || errors?.valorVenta ? "border-destructive" : ""} 
               />
-              {errors?.valorVenta && <p className="text-xs text-destructive mt-1">{errors.valorVenta}</p>}
+              {(errors?.canon || errors?.valorVenta) && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.canon || errors.valorVenta}
+                </p>
+              )}
             </div>
 
             <div>
@@ -224,7 +242,7 @@ export const PropertyForm = ({
           </div>
 
           {/* Selector de Modalidad */}
-          {data.tipo && data.tipo !== "lote" && (
+          {data.tipo && (
             <div>
               <Label>Modalidad</Label>
               <p className="text-xs text-muted-foreground mb-2">

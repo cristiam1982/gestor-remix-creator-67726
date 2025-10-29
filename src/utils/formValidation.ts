@@ -67,10 +67,22 @@ export const comercialSchema = propertyBaseSchema.extend({
 });
 
 export const loteSchema = propertyBaseSchema.extend({
-  valorVenta: z.string().min(1, "El valor es requerido"),
+  modalidad: z.enum(["arriendo", "venta"]),
+  canon: z.string().optional(),
+  valorVenta: z.string().optional(),
   ubicacion: z.string().min(5, "La ubicación debe ser más específica"),
   area: z.number().min(50, "El área mínima es 50 m²").max(1000000, "El área máxima es 1,000,000 m²"),
   uso: z.enum(["residencial", "comercial"]).optional(),
+}).refine((data) => {
+  if (data.modalidad === "arriendo") {
+    return !!data.canon && data.canon.length > 0;
+  } else if (data.modalidad === "venta") {
+    return !!data.valorVenta && data.valorVenta.length > 0;
+  }
+  return false;
+}, {
+  message: "Debes ingresar el precio según la modalidad seleccionada",
+  path: ["canon"]
 });
 
 export const arrendadoSchema = z.object({
