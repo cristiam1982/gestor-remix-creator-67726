@@ -34,12 +34,57 @@ export const ReelSummarySlide = ({
   // Validación de contraste para fondo sólido
   const textColor = solidColor && isLightColor(solidColor) ? '#000000' : '#FFFFFF';
 
-  // Obtener características principales
+  // Obtener características según tipo de inmueble
   const caracteristicas = [];
-  if (propertyData.habitaciones) caracteristicas.push({ icon: "🛏️", text: `${propertyData.habitaciones}` });
-  if (propertyData.banos) caracteristicas.push({ icon: "🚿", text: `${propertyData.banos}` });
-  if (propertyData.parqueaderos) caracteristicas.push({ icon: "🚗", text: `${propertyData.parqueaderos}` });
-  if (propertyData.area) caracteristicas.push({ icon: "📐", text: `${propertyData.area}m²` });
+
+  switch (propertyData.tipo) {
+    case "apartamento":
+    case "casa":
+      // Características residenciales
+      if (propertyData.habitaciones) caracteristicas.push({ icon: "🛏️", text: `${propertyData.habitaciones} hab` });
+      if (propertyData.banos) caracteristicas.push({ icon: "🚿", text: `${propertyData.banos} baños` });
+      if (propertyData.parqueaderos) caracteristicas.push({ icon: "🚗", text: `${propertyData.parqueaderos} parq` });
+      if (propertyData.area) caracteristicas.push({ icon: "📐", text: `${propertyData.area}m²` });
+      if (propertyData.estrato) caracteristicas.push({ icon: "🏘️", text: `Est. ${propertyData.estrato}` });
+      if (propertyData.piso) caracteristicas.push({ icon: "🔢", text: `Piso ${propertyData.piso}` });
+      break;
+
+    case "bodega":
+      // Características de bodega
+      if (propertyData.area) caracteristicas.push({ icon: "📐", text: `${propertyData.area}m²` });
+      if (propertyData.alturaLibre) caracteristicas.push({ icon: "📏", text: `Altura ${propertyData.alturaLibre}` });
+      if (propertyData.trafico) {
+        const traficoEmoji = propertyData.trafico === "alto" ? "🚛🚛🚛" : propertyData.trafico === "medio" ? "🚛🚛" : "🚛";
+        caracteristicas.push({ icon: traficoEmoji, text: `Tráfico ${propertyData.trafico}` });
+      }
+      if (propertyData.parqueaderos) caracteristicas.push({ icon: "🚗", text: `${propertyData.parqueaderos} parq` });
+      if (propertyData.servicios) caracteristicas.push({ icon: "⚡", text: "Servicios incluidos" });
+      break;
+
+    case "local":
+    case "oficina":
+      // Características comerciales
+      if (propertyData.area) caracteristicas.push({ icon: "📐", text: `${propertyData.area}m²` });
+      if (propertyData.piso) caracteristicas.push({ icon: "🔢", text: `Piso ${propertyData.piso}` });
+      if (propertyData.trafico) {
+        const traficoIcon = propertyData.trafico === "alto" ? "🚶‍♂️🚶‍♀️🚶" : propertyData.trafico === "medio" ? "🚶‍♂️🚶‍♀️" : "🚶";
+        caracteristicas.push({ icon: traficoIcon, text: `Tráfico ${propertyData.trafico}` });
+      }
+      if (propertyData.parqueaderos) caracteristicas.push({ icon: "🚗", text: `${propertyData.parqueaderos} parq` });
+      if (propertyData.servicios) caracteristicas.push({ icon: "⚡", text: "Servicios incluidos" });
+      if (propertyData.vitrina) caracteristicas.push({ icon: "🪟", text: "Con vitrina" });
+      break;
+
+    case "lote":
+      // Características de lote
+      if (propertyData.area) caracteristicas.push({ icon: "📐", text: `${propertyData.area}m²` });
+      if (propertyData.uso) {
+        const usoText = propertyData.uso === "residencial" ? "Uso residencial" : "Uso comercial";
+        const usoIcon = propertyData.uso === "residencial" ? "🏡" : "🏢";
+        caracteristicas.push({ icon: usoIcon, text: usoText });
+      }
+      break;
+  }
 
   const renderBackground = () => {
     switch (backgroundStyle) {
