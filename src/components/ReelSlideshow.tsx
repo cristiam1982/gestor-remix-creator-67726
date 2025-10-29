@@ -519,10 +519,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   >
                     <span className="text-xl leading-none">💰</span>
                     <span className="text-xs font-semibold uppercase tracking-wide leading-none">
-                      {esVenta ? "Precio de venta" : "Canon"}
+                      {esVenta ? "Precio de venta" : "Valor de canon"}
                     </span>
                     <span className="text-xl font-extrabold leading-none">{formatPrecioColombia(precio)}</span>
-                    {!esVenta && <span className="text-lg font-extrabold leading-none">/mes</span>}
                   </div>
                 )}
                 
@@ -654,10 +653,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                       >
                         <span className="text-xl leading-none">💰</span>
                         <span className="text-xs font-semibold uppercase tracking-wide leading-none">
-                          {esVenta ? "Precio de venta" : "Canon"}
+                          {esVenta ? "Precio de venta" : "Valor de canon"}
                         </span>
                         <span className="text-xl font-extrabold leading-none">{formatPrecioColombia(precio)}</span>
-                        {!esVenta && <span className="text-lg font-extrabold leading-none">/mes</span>}
                       </div>
                     )}
                     
