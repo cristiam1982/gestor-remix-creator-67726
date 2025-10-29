@@ -376,319 +376,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     <div className="space-y-6">
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
-      {/* PARTE 3: Layout reestructurado - Preview arriba, controles abajo */}
+      {/* Layout reestructurado - Controles ARRIBA, Preview ABAJO */}
       <div className="space-y-6">
         
-        {/* Preview del Reel - Centrado */}
-        <div className="space-y-4">
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-semibold text-primary">Reel Slideshow</h3>
-                <p className="text-sm text-muted-foreground">
-                  {photosList.length} fotos + slide final · {((photosList.length * 1.3) + 2.5).toFixed(1)}s total · {currentTemplate.name}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handlePlayPause}
-                >
-                  {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                </Button>
-              </div>
-            </div>
-
-            {/* Vista previa principal - RESPONSIVE */}
-            <div 
-              className="relative aspect-[9/16] max-w-[380px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
-              style={{ 
-                backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
-                  ? (summarySolidColor || hexToRgba(brand, 0.12)) 
-                  : '#000000' 
-              }}
-            >
-          {/* Barras de progreso - incluye slide de resumen */}
-          <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
-            {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
-              <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-white rounded-full transition-all duration-100"
-                  style={{
-                    width: idx < currentPhotoIndex ? "100%" : 
-                           (idx === currentPhotoIndex && !shouldShowSummary) ? `${progress}%` :
-                           (idx === photosList.length && shouldShowSummary) ? `${progress}%` : "0%"
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Slide de resumen - Mostrar si está en reproducción O editando pestaña final */}
-          {shouldShowSummary && (
-            <ReelSummarySlide 
-              propertyData={propertyData}
-              aliadoConfig={aliadoConfig}
-              isVisible={true}
-                  photos={photosList.map(p => p.src)}
-                  backgroundStyle={summaryBackground}
-                  solidColor={summarySolidColor}
-                  customHashtag={customHashtag}
-                />
-          )}
-
-          {/* Foto actual con overlay y crossfade - Solo mostrar si NO es slide de resumen */}
-          {!shouldShowSummary && (
-            <div className="absolute inset-0">
-              {/* Foto anterior (fade out) */}
-              {photosList[previousPhotoIndex] && (
-                <img
-                  src={photosList[previousPhotoIndex].src}
-                  alt={`Foto ${previousPhotoIndex + 1}`}
-                  className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
-                    isTransitioning ? 'photo-crossfade-enter' : 'photo-crossfade-active'
-                  }`}
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                />
-              )}
-              
-              {/* Foto actual (fade in) */}
-              {photosList[currentPhotoIndex] && (
-                <img
-                  src={photosList[currentPhotoIndex].src}
-                  alt={`Foto ${currentPhotoIndex + 1}`}
-                  className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
-                    isTransitioning ? 'photo-crossfade-active' : 'opacity-0'
-                  }`}
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                />
-              )}
-              
-              {/* PARTE 2: Gradient overlay con CSS inline */}
-              {gradientDirection !== 'none' && (
-                <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
-              )}
-            </div>
-          )}
-
-          {/* Logo del aliado */}
-          {!shouldShowSummary && (
-            <div className="absolute top-6 left-6 z-20">
-              <img
-                src={logoRubyMorales}
-                alt={aliadoConfig.nombre}
-                className="w-[88px] h-[88px] rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
-                crossOrigin="anonymous"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-          )}
-
-
-          {/* PARTE 3: Información del inmueble con precio más visible */}
-          {!shouldShowSummary && (() => {
-            const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
-            const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
-            
-            return (
-              <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col items-start">
-                {/* Subtítulo sobre el precio */}
-                {propertyData.subtitulos?.[currentPhotoIndex] && (
-                  <div className="w-full flex justify-center mb-3">
-                    <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%]`}>
-                      <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
-                        {propertyData.subtitulos[currentPhotoIndex]}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Precio con máxima visibilidad */}
-                {precio && (
-                  <div 
-                    className="relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2"
-                    style={{ 
-                      backgroundColor: aliadoConfig.colorPrimario,
-                      opacity: 0.9,
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#ffffff'
-                    }}
-                  >
-                    <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
-                      {esVenta ? "Venta" : "Arriendo"}
-                    </span>
-                    <span className="text-2xl font-black leading-none text-white">
-                      {formatPrecioColombia(precio)}
-                    </span>
-                  </div>
-                )}
-                
-                <h3 className="text-white text-2xl font-black mb-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                  {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
-                </h3>
-              {propertyData.ubicacion && (
-                <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
-              )}
-
-                {/* Logo El Gestor - inferior derecha */}
-                <div className="absolute bottom-12 right-4 z-40">
-                  <img 
-                    src={elGestorLogo} 
-                    alt="El Gestor" 
-                    data-eg-logo="true"
-                    className="h-10 object-contain drop-shadow-2xl"
-                  />
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* PARTE 4: Feedback visual al cambiar gradiente */}
-          {isChangingGradient && (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 bg-black/70 backdrop-blur-sm px-6 py-3 rounded-2xl animate-fade-in shadow-2xl border border-white/20">
-              <p className="text-white text-xl font-bold">
-                🌗 {gradientIntensity}%
-              </p>
-            </div>
-          )}
-
-          {/* Play/Pause overlay */}
-          {!isPlaying && (
-            <div className="absolute inset-0 flex items-center justify-center z-10">
-              <button
-                onClick={handlePlayPause}
-                className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all"
-              >
-                <Play className="w-10 h-10 text-white ml-1" />
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Canvas de captura OCULTO - Escalado 2.5x para generar 1080x1920 */}
-      <div 
-        id="reel-capture-canvas" 
-        className="absolute pointer-events-none"
-        style={{ 
-          width: '432px', 
-          height: '768px',
-          left: '-9999px',
-          top: '-9999px',
-          backgroundColor: '#000000'
-        }}
-      >
-          {/* Slide de resumen para captura */}
-          {showSummarySlide && (
-            <ReelSummarySlide 
-              propertyData={propertyData}
-              aliadoConfig={aliadoConfig}
-              isVisible={true}
-              photos={photosList.map(p => p.src)}
-              backgroundStyle={summaryBackground}
-              solidColor={summarySolidColor}
-              customHashtag={customHashtag}
-            />
-          )}
-
-          {/* Foto actual con overlay - CÓDIGO IDÉNTICO AL PREVIEW + Template */}
-          {!showSummarySlide && (
-            <>
-              <div className="absolute inset-0">
-                {photosList[currentPhotoIndex] && (
-                  <img
-                    src={photosList[currentPhotoIndex].src}
-                    alt={`Foto ${currentPhotoIndex + 1}`}
-                    className="w-full h-full object-cover"
-                    crossOrigin="anonymous"
-                    referrerPolicy="no-referrer"
-                  />
-                )}
-                {/* PARTE 2: Gradient overlay con CSS inline en canvas */}
-                {gradientDirection !== 'none' && (
-                  <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
-                )}
-              </div>
-
-              {/* Logo del aliado */}
-              <div className="absolute top-6 left-6 z-20">
-                <img
-                  src={logoRubyMorales}
-                  alt={aliadoConfig.nombre}
-                  className="w-[88px] h-[88px] rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                  data-ally-logo="true"
-                />
-              </div>
-
-              {/* Precio movido al área inferior - MISMO ESTILO QUE PREVIEW */}
-              {(() => {
-                const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
-                const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
-                
-                return (
-                  <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col items-start">
-                    {/* Subtítulo sobre el precio - Canvas */}
-                    {propertyData.subtitulos?.[currentPhotoIndex] && (
-                      <div className="w-full flex justify-center mb-3">
-                        <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%]`}>
-                          <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
-                            {propertyData.subtitulos[currentPhotoIndex]}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Precio con máxima visibilidad - Canvas */}
-                    {precio && (
-                      <div 
-                        className="relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2"
-                        style={{ 
-                          backgroundColor: aliadoConfig.colorPrimario,
-                          opacity: 0.9,
-                          border: '1px solid rgba(255,255,255,0.2)',
-                          color: '#ffffff'
-                        }}
-                      >
-                        <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
-                          {esVenta ? "Venta" : "Arriendo"}
-                        </span>
-                        <span className="text-2xl font-black leading-none text-white">
-                          {formatPrecioColombia(precio)}
-                        </span>
-                      </div>
-                    )}
-                    
-                    <h3 className="text-white text-2xl font-black mb-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                      {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
-                    </h3>
-                    {propertyData.ubicacion && (
-                      <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
-                    )}
-
-                    {/* Logo El Gestor - inferior derecha */}
-                    <div className="absolute bottom-12 right-4 z-40">
-                      <img 
-                        src={elGestorLogo} 
-                        alt="El Gestor" 
-                        data-eg-logo="true"
-                        className="h-10 object-contain drop-shadow-2xl"
-                      />
-                    </div>
-                  </div>
-                );
-              })()}
-            </>
-          )}
-         </div>
-
-          </Card>
-        </div>
-
-        {/* PARTE 4: Panel de Controles - Wizard Paso a Paso */}
+        {/* PANEL DE CONTROLES - Wizard Paso a Paso */}
         <Card className="p-6">
           {/* Indicador de progreso */}
           <div className="mb-6">
@@ -935,6 +626,314 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </Button>
           </div>
         </Card>
+
+        {/* PREVIEW DEL REEL - Centrado */}
+        <div className="space-y-4">
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-semibold text-primary">Reel Slideshow</h3>
+                <p className="text-sm text-muted-foreground">
+                  {photosList.length} fotos + slide final · {((photosList.length * 1.3) + 2.5).toFixed(1)}s total · {currentTemplate.name}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handlePlayPause}
+                >
+                  {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                </Button>
+              </div>
+            </div>
+
+            {/* Vista previa principal - RESPONSIVE */}
+            <div 
+              className="relative aspect-[9/16] max-w-[380px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              style={{ 
+                backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
+                  ? (summarySolidColor || hexToRgba(brand, 0.12)) 
+                  : '#000000' 
+              }}
+            >
+          {/* Barras de progreso - incluye slide de resumen */}
+          <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
+            {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
+              <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-white rounded-full transition-all duration-100"
+                  style={{
+                    width: idx < currentPhotoIndex ? "100%" : 
+                           (idx === currentPhotoIndex && !shouldShowSummary) ? `${progress}%` :
+                           (idx === photosList.length && shouldShowSummary) ? `${progress}%` : "0%"
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Slide de resumen - Mostrar si está en reproducción O editando pestaña final */}
+          {shouldShowSummary && (
+            <ReelSummarySlide 
+              propertyData={propertyData}
+              aliadoConfig={aliadoConfig}
+              isVisible={true}
+                  photos={photosList.map(p => p.src)}
+                  backgroundStyle={summaryBackground}
+                  solidColor={summarySolidColor}
+                  customHashtag={customHashtag}
+                />
+          )}
+
+          {/* Foto actual con overlay y crossfade - Solo mostrar si NO es slide de resumen */}
+          {!shouldShowSummary && (
+            <div className="absolute inset-0">
+              {/* Foto anterior (fade out) */}
+              {photosList[previousPhotoIndex] && (
+                <img
+                  src={photosList[previousPhotoIndex].src}
+                  alt={`Foto ${previousPhotoIndex + 1}`}
+                  className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
+                    isTransitioning ? 'photo-crossfade-enter' : 'photo-crossfade-active'
+                  }`}
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                />
+              )}
+              
+              {/* Foto actual (fade in) */}
+              {photosList[currentPhotoIndex] && (
+                <img
+                  src={photosList[currentPhotoIndex].src}
+                  alt={`Foto ${currentPhotoIndex + 1}`}
+                  className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
+                    isTransitioning ? 'photo-crossfade-active' : 'opacity-0'
+                  }`}
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                />
+              )}
+              
+              {/* PARTE 2: Gradient overlay con CSS inline */}
+              {gradientDirection !== 'none' && (
+                <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
+              )}
+            </div>
+          )}
+
+          {/* Logo del aliado */}
+          {!shouldShowSummary && (
+            <div className="absolute top-6 left-6 z-20">
+              <img
+                src={logoRubyMorales}
+                alt={aliadoConfig.nombre}
+                className="w-[88px] h-[88px] rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
+                crossOrigin="anonymous"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          )}
+
+          {/* PARTE 3: Información del inmueble con precio más visible */}
+          {!shouldShowSummary && (() => {
+            const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
+            const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
+            
+            return (
+              <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col items-start">
+                {/* Subtítulo sobre el precio */}
+                {propertyData.subtitulos?.[currentPhotoIndex] && (
+                  <div className="w-full flex justify-center mb-3">
+                    <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%]`}>
+                      <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
+                        {propertyData.subtitulos[currentPhotoIndex]}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Precio con máxima visibilidad */}
+                {precio && (
+                  <div 
+                    className="relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2"
+                    style={{ 
+                      backgroundColor: aliadoConfig.colorPrimario,
+                      opacity: 0.9,
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      color: '#ffffff'
+                    }}
+                  >
+                    <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
+                      {esVenta ? "Venta" : "Arriendo"}
+                    </span>
+                    <span className="text-2xl font-black leading-none text-white">
+                      {formatPrecioColombia(precio)}
+                    </span>
+                  </div>
+                )}
+                
+                <h3 className="text-white text-2xl font-black mb-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                  {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
+                </h3>
+              {propertyData.ubicacion && (
+                <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
+              )}
+
+                {/* Logo El Gestor - inferior derecha */}
+                <div className="absolute bottom-12 right-4 z-40">
+                  <img 
+                    src={elGestorLogo} 
+                    alt="El Gestor" 
+                    data-eg-logo="true"
+                    className="h-10 object-contain drop-shadow-2xl"
+                  />
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* PARTE 4: Feedback visual al cambiar gradiente */}
+          {isChangingGradient && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 bg-black/70 backdrop-blur-sm px-6 py-3 rounded-2xl animate-fade-in shadow-2xl border border-white/20">
+              <p className="text-white text-xl font-bold">
+                🌗 {gradientIntensity}%
+              </p>
+            </div>
+          )}
+
+          {/* Play/Pause overlay */}
+          {!isPlaying && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <button
+                onClick={handlePlayPause}
+                className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all"
+              >
+                <Play className="w-10 h-10 text-white ml-1" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Canvas de captura OCULTO - Escalado 2.5x para generar 1080x1920 */}
+      <div 
+        id="reel-capture-canvas" 
+        className="absolute pointer-events-none"
+        style={{ 
+          width: '432px', 
+          height: '768px',
+          left: '-9999px',
+          top: '-9999px',
+          backgroundColor: '#000000'
+        }}
+      >
+          {/* Slide de resumen para captura */}
+          {showSummarySlide && (
+            <ReelSummarySlide 
+              propertyData={propertyData}
+              aliadoConfig={aliadoConfig}
+              isVisible={true}
+              photos={photosList.map(p => p.src)}
+              backgroundStyle={summaryBackground}
+              solidColor={summarySolidColor}
+              customHashtag={customHashtag}
+            />
+          )}
+
+          {/* Foto actual con overlay - CÓDIGO IDÉNTICO AL PREVIEW + Template */}
+          {!showSummarySlide && (
+            <>
+              <div className="absolute inset-0">
+                {photosList[currentPhotoIndex] && (
+                  <img
+                    src={photosList[currentPhotoIndex].src}
+                    alt={`Foto ${currentPhotoIndex + 1}`}
+                    className="w-full h-full object-cover"
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
+                {/* PARTE 2: Gradient overlay con CSS inline en canvas */}
+                {gradientDirection !== 'none' && (
+                  <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
+                )}
+              </div>
+
+              {/* Logo del aliado */}
+              <div className="absolute top-6 left-6 z-20">
+                <img
+                  src={logoRubyMorales}
+                  alt={aliadoConfig.nombre}
+                  className="w-[88px] h-[88px] rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                  data-ally-logo="true"
+                />
+              </div>
+
+              {/* Precio movido al área inferior - MISMO ESTILO QUE PREVIEW */}
+              {(() => {
+                const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
+                const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
+                
+                return (
+                  <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col items-start">
+                    {/* Subtítulo sobre el precio - Canvas */}
+                    {propertyData.subtitulos?.[currentPhotoIndex] && (
+                      <div className="w-full flex justify-center mb-3">
+                        <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%]`}>
+                          <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
+                            {propertyData.subtitulos[currentPhotoIndex]}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Precio con máxima visibilidad - Canvas */}
+                    {precio && (
+                      <div 
+                        className="relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2"
+                        style={{ 
+                          backgroundColor: aliadoConfig.colorPrimario,
+                          opacity: 0.9,
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          color: '#ffffff'
+                        }}
+                      >
+                        <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
+                          {esVenta ? "Venta" : "Arriendo"}
+                        </span>
+                        <span className="text-2xl font-black leading-none text-white">
+                          {formatPrecioColombia(precio)}
+                        </span>
+                      </div>
+                    )}
+                    
+                    <h3 className="text-white text-2xl font-black mb-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                      {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
+                    </h3>
+                    {propertyData.ubicacion && (
+                      <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
+                    )}
+
+                    {/* Logo El Gestor - inferior derecha */}
+                    <div className="absolute bottom-12 right-4 z-40">
+                      <img 
+                        src={elGestorLogo} 
+                        alt="El Gestor" 
+                        data-eg-logo="true"
+                        className="h-10 object-contain drop-shadow-2xl"
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
+            </>
+          )}
+         </div>
+
+          </Card>
+        </div>
 
         {/* Miniaturas reordenables - Grid horizontal con scroll */}
         <Card className="p-4">
