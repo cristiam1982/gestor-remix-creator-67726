@@ -126,11 +126,11 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
       )}
 
       {/* Header con logo del aliado - diseño reel */}
-      <div className="absolute top-6 left-6 z-20 flex items-center gap-3">
+      <div className={`absolute ${isStory ? "top-32 left-6" : "top-6 left-6"} z-20 flex items-center gap-3`}>
         <img 
           src={logoRubyMorales} 
           alt={aliadoConfig.nombre}
-          className={`${isStory ? "w-[110px] h-[110px]" : "w-24 h-24"} rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1`}
+          className={`${isStory ? "w-[90px] h-[90px]" : "w-24 h-24"} rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1`}
         />
       </div>
 
