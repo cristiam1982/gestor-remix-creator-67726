@@ -15,6 +15,7 @@ export interface TemplateStyle {
   };
   subtitleStyle: {
     background: string;
+    textColor: string;
     textSize: string;
   };
   icon: string;
@@ -35,7 +36,8 @@ export const REEL_TEMPLATES: Record<ReelTemplate, TemplateStyle> = {
       emoji: "🏡"
     },
     subtitleStyle: {
-      background: "bg-black/80 backdrop-blur-md border border-white/20",
+      background: "bg-white/90 backdrop-blur-md border border-gray-300/50",
+      textColor: "text-gray-900",
       textSize: "text-xl"
     },
     icon: "🏠"
@@ -55,7 +57,8 @@ export const REEL_TEMPLATES: Record<ReelTemplate, TemplateStyle> = {
       emoji: "💼"
     },
     subtitleStyle: {
-      background: "bg-slate-900/85 backdrop-blur-lg border-2 border-white/30",
+      background: "bg-white/90 backdrop-blur-lg border-2 border-gray-400/40",
+      textColor: "text-slate-900",
       textSize: "text-xl"
     },
     icon: "🏢"
@@ -75,7 +78,8 @@ export const REEL_TEMPLATES: Record<ReelTemplate, TemplateStyle> = {
       emoji: "✨"
     },
     subtitleStyle: {
-      background: "bg-gradient-to-r from-amber-900/90 to-rose-900/90 backdrop-blur-xl border-2 border-amber-200/40",
+      background: "bg-white/95 backdrop-blur-xl border-2 border-amber-400/60",
+      textColor: "text-gray-900",
       textSize: "text-2xl"
     },
     icon: "👑"

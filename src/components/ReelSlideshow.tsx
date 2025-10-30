@@ -746,7 +746,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 {propertyData.subtitulos?.[currentPhotoIndex] && (
                   <div className="w-full flex justify-center mb-3">
                     <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%]`}>
-                      <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
+                      <p className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
                         {propertyData.subtitulos[currentPhotoIndex]}
                       </p>
                     </div>
@@ -882,7 +882,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     {propertyData.subtitulos?.[currentPhotoIndex] && (
                       <div className="w-full flex justify-center mb-3">
                         <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%]`}>
-                          <p className={`text-white ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
+                          <p className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
                             {propertyData.subtitulos[currentPhotoIndex]}
                           </p>
                         </div>
