@@ -106,7 +106,7 @@ export const ArrendadoReelSlideshow = ({
   const mainColor = tipo === "arrendado" 
     ? aliadoConfig.colorPrimario 
     : aliadoConfig.colorSecundario;
-  const badgeText = tipo === "arrendado" ? "¡RENTADO!" : "¡VENDIDO!";
+  const badgeText = tipo === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -374,7 +374,7 @@ export const ArrendadoReelSlideshow = ({
               {/* CTA - AHORA DENTRO del contenedor my-auto */}
               <div className="mt-6">
                 <p className="text-xl font-black text-center drop-shadow-lg">
-                  💪 ¿Quieres {tipo === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
+                  💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
                 </p>
               </div>
             </div>
@@ -479,7 +479,7 @@ export const ArrendadoReelSlideshow = ({
               {/* CTA - AHORA DENTRO del contenedor my-auto */}
               <div className="mt-6">
                 <p className="text-xl font-black text-center drop-shadow-lg">
-                  💪 ¿Quieres {tipo === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
+                  💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
                 </p>
               </div>
             </div>

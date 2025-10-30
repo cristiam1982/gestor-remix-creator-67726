@@ -143,7 +143,7 @@ export const VideoReelRecorder = ({
       const mainColor = variant === "arrendado" 
         ? aliadoConfig.colorPrimario 
         : aliadoConfig.colorSecundario;
-      const badgeText = variant === "arrendado" ? "¡RENTADO!" : "¡VENDIDO!";
+      const badgeText = variant === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
       
       // Logo del aliado (superior izquierda) - MÁS GRANDE
       if (logoImage) {
@@ -229,7 +229,7 @@ export const VideoReelRecorder = ({
       // CTA inferior - MÁS GRANDE
       ctx.font = "bold 42px Inter, sans-serif";
       ctx.fillText(
-        `💪 ¿Quieres ${variant === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?`,
+        `💪 ¿Quieres ${variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`,
         canvas.width / 2,
         1580
       );
@@ -607,7 +607,7 @@ export const VideoReelRecorder = ({
                     fontSize: '26px'  // Canvas: 62px → 26px (62 * 400/1080 + ajuste)
                   }}
                 >
-                  {variant === "arrendado" ? "¡RENTADO!" : "¡VENDIDO!"}
+                  {variant === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!"}
                 </div>
 
                 {/* Precio prominente (centro) */}
