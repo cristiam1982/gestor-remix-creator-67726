@@ -21,6 +21,27 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const hasMultiplePhotos = propertyData.fotos && propertyData.fotos.length > 1;
 
+  // Precio robusto para todas las vistas
+  const sanitizeNumber = (v?: string | number) => {
+    if (v === undefined || v === null) return null;
+    const s = typeof v === "number" ? v.toString() : v;
+    const digits = s.replace(/\D/g, "");
+    if (!digits) return null;
+    const n = parseInt(digits, 10);
+    return isNaN(n) ? null : n;
+  };
+  const canonNum = sanitizeNumber(propertyData.canon as any);
+  const ventaNum = sanitizeNumber(propertyData.valorVenta as any);
+  const hasPrice = canonNum !== null || ventaNum !== null;
+  const isVenta = propertyData.modalidad === "venta";
+  const chosenPrice = isVenta ? (ventaNum ?? canonNum) : (canonNum ?? ventaNum);
+  const priceText = chosenPrice !== null ? formatPrecioColombia(chosenPrice) : "";
+
+  if (import.meta.env.DEV) {
+    // Debug solo en desarrollo
+    console.debug("[CanvasPreview] price debug", { canonNum, ventaNum, chosenPrice, isVenta, contentType });
+  }
+
   useEffect(() => {
     if (onReady) {
       onReady();
@@ -132,26 +153,19 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           </div>
 
           {/* Precio destacado - fondo opaco sin sombras */}
-          {(((propertyData.canon && propertyData.canon.toString().replace(/\D/g, '').length > 0) || 
-            (propertyData.valorVenta && propertyData.valorVenta.toString().replace(/\D/g, '').length > 0))) && (
+          {hasPrice && (
             <div 
-              data-canon-value={propertyData.canon || propertyData.valorVenta}
+              data-canon-value={priceText}
               className="inline-block px-4 py-2 rounded-xl z-[60] ring-2 ring-white/70"
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario
               }}
             >
-              <p className="text-[10px] text-white font-semibold mb-0.5 uppercase tracking-wide">
-                {propertyData.modalidad === "venta" 
-                  ? "Precio de Venta" 
-                  : "Canon Mensual"}
+              <p className="text-[10px] text-white font-semibold mb-0.5 uppercase tracking-wide relative z-[70]">
+                {isVenta ? "Precio de Venta" : "Canon Mensual"}
               </p>
-              <p className="text-2xl font-extrabold text-white leading-tight">
-                {formatPrecioColombia(
-                  propertyData.modalidad === "venta" 
-                    ? (propertyData.valorVenta || propertyData.canon || "0")
-                    : (propertyData.canon || propertyData.valorVenta || "0")
-                )}
+              <p className="text-2xl font-extrabold text-white leading-tight relative z-[70]">
+                {priceText}
               </p>
             </div>
           )}
