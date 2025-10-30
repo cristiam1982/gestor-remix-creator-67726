@@ -82,14 +82,15 @@ export async function generateSimpleMultiVideoReel(
   
   // Función helper para dibujar overlays
   const drawOverlays = (currentSubtitle: string) => {
-    // Logo del aliado (superior izquierda, sin fondo)
+    // Logo del aliado (superior izquierda, ZONA SEGURA para redes sociales) - +8% tamaño
     if (aliadoLogo) {
-      const logoHeight = 182;
+      const logoHeight = 197;  // 182 × 1.08 = 197px (+8%)
       const logoWidth = Math.min(
         (aliadoLogo.width / aliadoLogo.height) * logoHeight,
-        800
+        864  // 800 × 1.08 = 864px
       );
-      ctx.drawImage(aliadoLogo, 30, 30, logoWidth, logoHeight);
+      // Posición en zona segura (debajo de username/perfil de redes sociales)
+      ctx.drawImage(aliadoLogo, 30, 128, logoWidth, logoHeight);
     }
     
     // Subtítulo (si existe) - CON SOPORTE MULTI-LÍNEA
