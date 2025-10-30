@@ -23,6 +23,7 @@ export const ContentTypeCard = ({
       className="p-6 cursor-pointer hover-lift group transition-all duration-300"
       style={{
         backgroundColor: primaryColor,
+        border: `3px solid ${secondaryColor}`,
       }}
       onClick={onClick}
     >

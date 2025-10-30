@@ -342,8 +342,8 @@ const Index = () => {
                 icon={Smartphone}
                 title="Historia"
                 description="9:16 para Stories de Instagram"
-                primaryColor={aliadoConfig.colorSecundario}
-                secondaryColor={aliadoConfig.colorPrimario}
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
                 onClick={() => handleContentTypeSelect("historia")}
               />
               <ContentTypeCard
@@ -358,8 +358,8 @@ const Index = () => {
                 icon={Video}
                 title="Reel con Video"
                 description="Hasta 100 segundos de video"
-                primaryColor={aliadoConfig.colorSecundario}
-                secondaryColor={aliadoConfig.colorPrimario}
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
                 onClick={() => handleContentTypeSelect("reel-video")}
               />
               <ContentTypeCard
@@ -394,8 +394,8 @@ const Index = () => {
                 icon={DollarSign}
                 title="Inmueble Vendido"
                 description="Celebra ventas exitosas"
-                primaryColor={aliadoConfig.colorSecundario}
-                secondaryColor={aliadoConfig.colorPrimario}
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
                 onClick={() => handleContentTypeSelect("vendido")}
               />
             </div>
