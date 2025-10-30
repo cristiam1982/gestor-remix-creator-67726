@@ -322,10 +322,10 @@ const Index = () => {
           {/* Métricas */}
           <MetricsPanel onClearMetrics={handleClearMetrics} />
 
-          {/* Sección 1: Promoción de inmuebles disponibles */}
+          {/* Sección 1: Promoción de Inmuebles */}
           <section className="mt-10">
             <div className="text-center mb-6">
-              <h2 className="text-3xl font-bold mb-2">📱 Promociona Inmuebles Disponibles</h2>
+              <h2 className="text-3xl font-bold mb-2">🎨 Promoción de Inmuebles</h2>
               <p className="text-muted-foreground text-lg">
                 Crea contenido profesional para arriendo o venta de propiedades
               </p>
@@ -338,6 +338,14 @@ const Index = () => {
                 primaryColor={aliadoConfig.colorPrimario}
                 secondaryColor={aliadoConfig.colorSecundario}
                 onClick={() => handleContentTypeSelect("post")}
+              />
+              <ContentTypeCard
+                icon={ImageIcon}
+                title="Carrusel (3-10 fotos)"
+                description="Múltiples slides para Instagram - 1.4x más engagement"
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
+                onClick={() => handleContentTypeSelect("carrusel")}
               />
               <ContentTypeCard
                 icon={Smartphone}
@@ -371,21 +379,13 @@ const Index = () => {
                 secondaryColor={aliadoConfig.colorSecundario}
                 onClick={() => handleContentTypeSelect("reel-multi-video")}
               />
-              <ContentTypeCard
-                icon={ImageIcon}
-                title="Carrusel (3-10 fotos)"
-                description="Múltiples slides para Instagram - 1.4x más engagement"
-                primaryColor={aliadoConfig.colorPrimario}
-                secondaryColor={aliadoConfig.colorSecundario}
-                onClick={() => handleContentTypeSelect("carrusel")}
-              />
             </div>
           </section>
 
-          {/* Sección 2: Publicaciones de éxito */}
+          {/* Sección 2: Generación de Confianza */}
           <section className="mt-12">
             <div className="text-center mb-6">
-              <h2 className="text-3xl font-bold mb-2">🎉 Celebra Arriendos y Ventas</h2>
+              <h2 className="text-3xl font-bold mb-2">💼 Generación de Confianza</h2>
               <p className="text-muted-foreground text-lg">
                 Comparte tus éxitos para atraer nuevos propietarios y generar confianza
               </p>
