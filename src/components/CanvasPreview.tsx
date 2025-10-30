@@ -132,7 +132,8 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           </div>
 
           {/* Precio destacado - fondo opaco sin sombras */}
-          {(propertyData.canon || propertyData.valorVenta) && (
+          {((propertyData.canon && propertyData.canon !== "") || 
+            (propertyData.valorVenta && propertyData.valorVenta !== "")) && (
             <div 
               data-canon-value={propertyData.canon || propertyData.valorVenta}
               className="inline-block px-4 py-2 rounded-xl z-[60] ring-2 ring-white/70"
@@ -141,15 +142,15 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               }}
             >
               <p className="text-[10px] text-white font-semibold mb-0.5 uppercase tracking-wide">
-                {propertyData.modalidad === "venta" || (propertyData.valorVenta && !propertyData.canon)
+                {propertyData.modalidad === "venta" 
                   ? "Precio de Venta" 
                   : "Canon Mensual"}
               </p>
               <p className="text-2xl font-extrabold text-white leading-tight">
                 {formatPrecioColombia(
                   propertyData.modalidad === "venta" 
-                    ? propertyData.valorVenta 
-                    : propertyData.canon
+                    ? (propertyData.valorVenta || propertyData.canon || "0")
+                    : (propertyData.canon || propertyData.valorVenta || "0")
                 )}
               </p>
             </div>
