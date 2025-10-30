@@ -64,7 +64,7 @@ export const VideoReelRecorder = ({
       try {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        img.src = logoRubyMorales;
+        img.src = aliadoConfig.logo || logoRubyMorales;
         await img.decode();
         setLogoImage(img);
       } catch (error) {
@@ -590,7 +590,7 @@ export const VideoReelRecorder = ({
                   }}
                 >
                   <img
-                    src={logoRubyMorales}
+                    src={aliadoConfig.logo || logoRubyMorales}
                     alt="Logo"
                     className="w-full h-full object-contain"
                   />
@@ -660,7 +660,7 @@ export const VideoReelRecorder = ({
                   style={{ bottom: '75px' }}
                 >
                   <p className="text-[16px] font-bold drop-shadow-lg">
-                    💪 ¿Quieres {variant === "arrendado" ? "rentar" : "vender"} tu inmueble rápido?
+                    💪 ¿Quieres {variant === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
                   </p>
                 </div>
 
@@ -692,7 +692,7 @@ export const VideoReelRecorder = ({
                   }}
                 >
                   <img
-                    src={logoRubyMorales}
+                    src={aliadoConfig.logo || logoRubyMorales}
                     alt="Logo"
                     className="w-full h-full object-contain"
                   />

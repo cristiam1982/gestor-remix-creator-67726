@@ -41,7 +41,7 @@ export async function renderOverlayImage(
 
   // Cargar logos si no fueron proporcionados
   const [loadedLogoImage, loadedElGestorImage] = await Promise.all([
-    logoImage || loadImageFromUrl(logoRubyMorales),
+    logoImage || loadImageFromUrl(aliadoConfig.logo || logoRubyMorales),
     elGestorLogoImage || loadImageFromUrl(elGestorLogo)
   ]);
 
@@ -95,22 +95,23 @@ export async function renderOverlayImage(
     const arrendadoData = propertyData as ArrendadoData;
     const isArrendado = variant === "arrendado";
     
-    // Badge superior
+    // Badge superior - fondo blanco con texto en color corporativo
     const badgeText = isArrendado ? "¡ARRENDADO!" : "¡VENDIDO!";
     const badgeColor = isArrendado ? aliadoConfig.colorPrimario : "#2ecc71";
     
     ctx.save();
-    ctx.fillStyle = badgeColor;
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowBlur = 20;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+    ctx.shadowBlur = 15;
     ctx.beginPath();
     ctx.roundRect(40, 280, 1000, 100, 20);
     ctx.fill();
     ctx.restore();
     
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = badgeColor;
     ctx.font = 'bold 64px "Poppins", sans-serif';
     ctx.textAlign = 'center';
+    ctx.shadowBlur = 0;
     ctx.fillText(badgeText, 540, 350);
     
     // Información central
@@ -129,8 +130,14 @@ export async function renderOverlayImage(
     ctx.fillText(arrendadoData.ubicacion, 540, centerY);
     
     // Días en mercado
+    const dias = arrendadoData.diasEnMercado;
+    const diasTexto = dias <= 7 
+      ? `🚀 ¡RÉCORD! En solo ${dias} día${dias === 1 ? '' : 's'}`
+      : dias <= 15
+      ? `⚡ En solo ${dias} días`
+      : `🎉 En ${dias} días`;
     ctx.font = '36px "Poppins", sans-serif';
-    ctx.fillText(`Proceso cerrado en ${arrendadoData.diasEnMercado} días`, 540, centerY + 80);
+    ctx.fillText(diasTexto, 540, centerY + 80);
     
     ctx.shadowBlur = 0;
     
