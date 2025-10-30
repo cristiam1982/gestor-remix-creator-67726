@@ -386,16 +386,16 @@ const Index = () => {
                 icon={CheckCircle}
                 title="Inmueble Arrendado"
                 description="Celebra arriendos exitosos"
-                primaryColor="#10B981"
-                secondaryColor="#059669"
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
                 onClick={() => handleContentTypeSelect("arrendado")}
               />
               <ContentTypeCard
                 icon={DollarSign}
                 title="Inmueble Vendido"
                 description="Celebra ventas exitosas"
-                primaryColor="#3B82F6"
-                secondaryColor="#2563EB"
+                primaryColor={aliadoConfig.colorPrimario}
+                secondaryColor={aliadoConfig.colorSecundario}
                 onClick={() => handleContentTypeSelect("vendido")}
               />
             </div>
