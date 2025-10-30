@@ -114,7 +114,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
       </div>
 
       {/* Información inferior - diseño reel minimalista */}
-      <div className="absolute bottom-4 left-4 right-4 pr-20 pb-8 z-20">
+      <div className="absolute bottom-4 left-4 right-4 pr-20 pb-8 z-30">
         <div className="space-y-2">
           {/* Título y ubicación */}
           <div>
@@ -132,8 +132,8 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           </div>
 
           {/* Precio destacado - fondo opaco sin sombras */}
-          {((propertyData.canon && propertyData.canon !== "") || 
-            (propertyData.valorVenta && propertyData.valorVenta !== "")) && (
+          {(((propertyData.canon && propertyData.canon.toString().replace(/\D/g, '').length > 0) || 
+            (propertyData.valorVenta && propertyData.valorVenta.toString().replace(/\D/g, '').length > 0))) && (
             <div 
               data-canon-value={propertyData.canon || propertyData.valorVenta}
               className="inline-block px-4 py-2 rounded-xl z-[60] ring-2 ring-white/70"
