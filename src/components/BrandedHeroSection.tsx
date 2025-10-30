@@ -17,20 +17,25 @@ export const BrandedHeroSection = ({
         </div>
       </div>
 
-      {/* Título con gradiente personalizado */}
-      <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
-      backgroundImage: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}, ${aliadoConfig.colorSecundario})`
+      {/* Título en color primario (naranja) */}
+      <h1 className="text-4xl md:text-5xl font-bold mb-2" style={{
+      color: aliadoConfig.colorPrimario
     }}>
         🎨 Creador Inmobiliario
       </h1>
 
-      <p className="text-xl text-gray-700 mb-6">Crea tu publicación profesional en minutos</p>
+      {/* Subtítulo en color secundario (azul) */}
+      <p className="text-xl font-semibold mb-6" style={{
+      color: aliadoConfig.colorSecundario
+    }}>
+        Crea tu publicación profesional en minutos
+      </p>
 
-      {/* Badge con identidad del aliado */}
+      {/* Badge con ambos colores de marca */}
       <div className="inline-block px-6 py-3 rounded-xl border-2 font-semibold" style={{
-      backgroundColor: `${aliadoConfig.colorPrimario}15`,
+      background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}15, ${aliadoConfig.colorSecundario}15)`,
       borderColor: aliadoConfig.colorPrimario,
-      color: aliadoConfig.colorPrimario
+      color: aliadoConfig.colorSecundario
     }}>
         {aliadoConfig.nombre} • {aliadoConfig.ciudad}
       </div>
