@@ -241,6 +241,35 @@ class FFmpegManager {
   public isLoaded(): boolean {
     return this.loaded;
   }
+
+  // Métodos públicos para acceder a FFmpeg
+  public async writeFile(name: string, data: Uint8Array | string): Promise<void> {
+    if (!this.loaded) throw new Error('FFmpeg no está cargado');
+    await this.ffmpeg.writeFile(name, data);
+  }
+
+  public async readFile(name: string): Promise<Uint8Array | string> {
+    if (!this.loaded) throw new Error('FFmpeg no está cargado');
+    return await this.ffmpeg.readFile(name);
+  }
+
+  public async deleteFile(name: string): Promise<void> {
+    if (!this.loaded) throw new Error('FFmpeg no está cargado');
+    await this.ffmpeg.deleteFile(name);
+  }
+
+  public async exec(args: string[]): Promise<void> {
+    if (!this.loaded) throw new Error('FFmpeg no está cargado');
+    await this.ffmpeg.exec(args);
+  }
+
+  public onProgress(callback: (progress: { progress: number }) => void): void {
+    this.ffmpeg.on('progress', callback);
+  }
+
+  public offProgress(callback: (progress: { progress: number }) => void): void {
+    this.ffmpeg.off('progress', callback);
+  }
 }
 
 export default FFmpegManager;
