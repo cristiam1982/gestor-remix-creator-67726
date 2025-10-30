@@ -33,7 +33,7 @@ export const BrandedHeroSection = ({
 
       {/* Badge con ambos colores de marca */}
       <div className="inline-block px-6 py-3 rounded-xl border-2 font-semibold" style={{
-      background: `linear-gradient(135deg, ${aliadoConfig.colorPrimario}15, ${aliadoConfig.colorSecundario}15)`,
+      background: `linear-gradient(90deg, ${aliadoConfig.colorPrimario}25, ${aliadoConfig.colorSecundario}35)`,
       borderColor: aliadoConfig.colorPrimario,
       color: aliadoConfig.colorSecundario
     }}>
