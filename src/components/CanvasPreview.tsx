@@ -333,7 +333,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
       </div>
 
       {/* Logo El Gestor - inferior derecha (marca secundaria) */}
-      <div className="absolute bottom-4 right-4 z-30">
+      <div className={`absolute ${isStory ? "bottom-24 right-6" : "bottom-4 right-4"} z-30`}>
         <img 
           src={elGestorLogo} 
           alt="El Gestor" 
