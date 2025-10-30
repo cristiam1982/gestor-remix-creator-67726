@@ -20,20 +20,27 @@ export const ContentTypeCard = ({
 }: ContentTypeCardProps) => {
   return (
     <Card 
-      className="p-6 cursor-pointer hover-lift group transition-all duration-300"
+      className="p-6 cursor-pointer hover-lift group transition-all duration-300 bg-white border-2"
       style={{
-        backgroundColor: primaryColor,
-        border: `3px solid ${secondaryColor}`,
+        borderColor: primaryColor,
       }}
       onClick={onClick}
     >
       <div className="flex flex-col items-center text-center gap-4">
-        <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm group-hover:bg-white/20 transition-all">
-          <Icon className="w-12 h-12 text-white" />
+        <div 
+          className="p-4 rounded-2xl transition-all"
+          style={{ backgroundColor: `${primaryColor}15` }}
+        >
+          <Icon className="w-12 h-12" style={{ color: primaryColor }} />
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-          <p className="text-white/80 text-sm">{description}</p>
+          <h3 
+            className="text-xl font-semibold mb-2"
+            style={{ color: secondaryColor }}
+          >
+            {title}
+          </h3>
+          <p className="text-gray-600 text-sm">{description}</p>
         </div>
       </div>
     </Card>
