@@ -52,90 +52,105 @@ export const generateCaption = (
 
   switch (tipo) {
     case "apartamento":
-      caption = hook || `${tone.prefix} ¡El hogar ${tone.adjectives[0]} que ${tone.verbs[0]} en ${ubicacion || ciudad}!\n`;
-      caption += `Apartamento de ${habitaciones} habitaciones y ${banos} baños`;
-      if (estrato) caption += `, estrato ${estrato}`;
-      caption += `.\n`;
+      caption = hook || `${tone.prefix} ¿Te imaginas despertar cada día en ${ubicacion || ciudad}?\n\n`;
+      caption += `✨ Apartamento de ${habitaciones} ${habitaciones === 1 ? 'habitación' : 'habitaciones'} y ${banos} ${banos === 1 ? 'baño' : 'baños'}`;
+      if (estrato) caption += ` en estrato ${estrato}`;
+      caption += ` 🏠\n\n`;
       caption += template === "premium" 
-        ? `Vive con distinción en ${aliado.nombre}.\n`
-        : `${esVenta ? 'Compra' : 'Arrienda'} con confianza y respaldo de ${aliado.nombre}.\n`;
-      if (precio) caption += `💰 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : ' mensual'}\n`;
+        ? `Cada detalle pensado para tu comodidad. Espacios amplios donde la luz natural será tu mejor compañía ☀️\n\n`
+        : `El espacio perfecto donde cada rincón cuenta una historia. ${esVenta ? 'Tu inversión' : 'Tu hogar'} te está esperando 🔑\n\n`;
+      caption += `📍 Ubicación privilegiada en ${ubicacion || ciudad}\n`;
+      if (precio) caption += `💰 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : '/mes'}\n\n`;
+      caption += `⚡ ${esVenta ? 'Agenda tu visita hoy' : 'Disponible de inmediato'} - Alta demanda en la zona\n`;
       hashtags = esVenta 
-        ? `#Venta${ciudad.replace(/\s/g, "")} #Apartamentos${ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar`
-        : `#Arriendos${ciudad.replace(/\s/g, "")} #Apartamentos${ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar`;
-      break;
+        ? `#Venta${ciudad.replace(/\s/g, "")} #Apartamentos${ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar #Inversión${ciudad.replace(/\s/g, "")}`
+        : `#Arriendos${ciudad.replace(/\s/g, "")} #Apartamentos${ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar #Hogar${ciudad.replace(/\s/g, "")}`;
 
     case "casa":
-      caption = hook || `${tone.prefix} La casa ${tone.adjectives[0]} que ${tone.verbs[1]} en ${ubicacion || ciudad}!\n`;
-      caption += `${habitaciones} habitaciones, ${banos} baños`;
-      if (estrato) caption += `, estrato ${estrato}`;
-      caption += ` y mucho espacio para tu familia.\n`;
+      caption = hook || `${tone.prefix} ¿Buscas el lugar perfecto para crear recuerdos inolvidables?\n\n`;
+      caption += `🏡 Casa con ${habitaciones} ${habitaciones === 1 ? 'habitación' : 'habitaciones'} y ${banos} ${banos === 1 ? 'baño' : 'baños'}`;
+      if (estrato) caption += ` - Estrato ${estrato}`;
+      caption += `\n\n`;
       caption += template === "premium"
-        ? `${tone.adjectives[1].charAt(0).toUpperCase() + tone.adjectives[1].slice(1)} exclusividad con ${aliado.nombre}.\n`
-        : `Haz realidad tu hogar con ${aliado.nombre}.\n`;
-      if (precio) caption += `💰 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : ' mensual'}\n`;
+        ? `Exclusividad y amplitud para tu familia. Jardín, espacios independientes y la tranquilidad que siempre soñaste 🌳\n\n`
+        : `Espacio de sobra para toda la familia. Patio, zonas verdes y ese lugar especial para cada momento 🌺\n\n`;
+      caption += `📍 ${ubicacion || ciudad} - Zona segura y tranquila\n`;
+      if (precio) caption += `💰 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : '/mes'}\n\n`;
+      caption += `👨‍👩‍👧‍👦 ¡Tu familia se merece este espacio!\n`;
       hashtags = esVenta
-        ? `#Casas${ciudad.replace(/\s/g, "")} #Venta #ElGestor #HogarDulceHogar`
-        : `#Casas${ciudad.replace(/\s/g, "")} #Arriendos #ElGestor #HogarDulceHogar`;
-      break;
+        ? `#Casas${ciudad.replace(/\s/g, "")} #Venta${ciudad.replace(/\s/g, "")} #ElGestor #HogarDulceHogar #FamiliasConHogar`
+        : `#Casas${ciudad.replace(/\s/g, "")} #Arriendos${ciudad.replace(/\s/g, "")} #ElGestor #HogarDulceHogar #VidaEnFamilia`;
 
     case "local":
-      caption = hook || `${tone.prefix} Espacio ${tone.adjectives[2]} para ${tone.verbs[2]} tu negocio en ${ubicacion || ciudad}.\n`;
-      caption += `Local de ${area} m²`;
-      if (trafico) caption += ` con tráfico ${trafico}`;
-      if (vitrina) caption += ` y vitrina frontal`;
-      caption += `.\n`;
+      caption = hook || `${tone.prefix} ¿Listo para hacer crecer tu negocio?\n\n`;
+      caption += `💼 Local comercial de ${area} m²`;
+      if (trafico) caption += ` 🚶‍♂️ Tráfico ${trafico === 'alto' ? 'ALTO ⬆️' : trafico === 'medio' ? 'Medio 📊' : 'Bajo'}`;
+      if (vitrina) caption += ` + Vitrina frontal para máxima visibilidad 👀`;
+      caption += `\n\n`;
       caption += template === "comercial"
-        ? `${tone.verbs[0].charAt(0).toUpperCase() + tone.verbs[0].slice(1)} tu marca con ${aliado.nombre}.\n`
-        : `Haz crecer tu negocio con el respaldo de ${aliado.nombre}.\n`;
-      if (precio) caption += `💼 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : ' mensual'}\n`;
+        ? `📍 Ubicación estratégica en ${ubicacion || ciudad} - El punto perfecto para captar clientes todos los días 🎯\n\n`
+        : `📍 ${ubicacion || ciudad} - Zona con alto flujo de clientes potenciales 🎯\n\n`;
+      caption += `✅ Todo listo para montar tu negocio\n`;
+      if (precio) caption += `💰 ${esVenta ? 'Inversión:' : 'Canon:'} $${precio}${esVenta ? '' : '/mes'}\n\n`;
+      caption += `⏰ Los mejores espacios se van rápido. ¡No dejes pasar esta oportunidad!\n`;
       hashtags = esVenta
-        ? `#LocalesComerciales #Venta${ciudad.replace(/\s/g, "")} #ElGestor #EmprenderConConfianza`
-        : `#LocalesComerciales #Negocios${ciudad.replace(/\s/g, "")} #ElGestor #EmprenderConConfianza`;
-      break;
+        ? `#LocalesComerciales #Venta${ciudad.replace(/\s/g, "")} #ElGestor #Emprendimiento #Inversión${ciudad.replace(/\s/g, "")}`
+        : `#LocalesComerciales #Negocios${ciudad.replace(/\s/g, "")} #ElGestor #Emprendimiento #TuNegocio`;
 
     case "oficina":
-      caption = hook || `${tone.prefix} Oficina ${tone.adjectives[1]} en ${ubicacion || ciudad}.\n`;
-      caption += `${area} m²`;
+      caption = hook || `${tone.prefix} ¿Tu empresa necesita crecer? Este es el espacio que buscas\n\n`;
+      caption += `🏢 Oficina profesional de ${area} m²`;
       if (piso) caption += ` en piso ${piso}`;
-      if (trafico) caption += `, tráfico ${trafico}`;
-      caption += ` ideales para tu empresa.\n`;
+      caption += `\n\n`;
       caption += template === "comercial"
-        ? `${tone.verbs[3].charAt(0).toUpperCase() + tone.verbs[3].slice(1)} tu éxito con ${aliado.nombre}.\n`
-        : `Con ${aliado.nombre}, tu éxito empresarial empieza aquí.\n`;
-      if (precio) caption += `📊 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : ' mensual'}\n`;
+        ? `🎯 Ubicación estratégica en ${ubicacion || ciudad} para posicionar tu marca\n`
+        : `📍 ${ubicacion || ciudad} - Zona empresarial de alto prestigio\n`;
+      if (trafico) caption += `🚶‍♂️ Tráfico ${trafico} de profesionales y clientes potenciales\n`;
+      caption += `\n`;
+      caption += `✨ Espacios amplios, iluminados y listos para trabajar\n`;
+      caption += `🅿️ Fácil acceso y parqueadero disponible\n\n`;
+      if (precio) caption += `💼 ${esVenta ? 'Inversión:' : 'Canon:'} $${precio}${esVenta ? '' : '/mes'}\n\n`;
+      caption += `🚀 Da el siguiente paso para tu empresa\n`;
       hashtags = esVenta
-        ? `#Oficinas${ciudad.replace(/\s/g, "")} #Venta #ElGestor`
-        : `#Oficinas${ciudad.replace(/\s/g, "")} #EspaciosProfesionales #ElGestor`;
-      break;
+        ? `#Oficinas${ciudad.replace(/\s/g, "")} #Venta${ciudad.replace(/\s/g, "")} #ElGestor #InversiónInteligente #EspaciosCorporativos`
+        : `#Oficinas${ciudad.replace(/\s/g, "")} #EspaciosProfesionales #ElGestor #Empresas${ciudad.replace(/\s/g, "")}`;
 
     case "bodega":
-      caption = hook || `${tone.prefix} Bodega ${tone.adjectives[2]} en ${ubicacion || ciudad}.\n`;
-      caption += `${area} m²`;
-      if (alturaLibre) caption += ` con ${alturaLibre}m de altura libre`;
-      if (trafico) caption += `, tráfico ${trafico}`;
-      caption += ` para almacenamiento y logística.\n`;
+      caption = hook || `${tone.prefix} ¿Necesitas optimizar tu operación logística?\n\n`;
+      caption += `📦 Bodega industrial de ${area} m²`;
+      if (alturaLibre) caption += ` con ${alturaLibre}m de altura libre 📏`;
+      caption += `\n\n`;
+      caption += `📍 ${ubicacion || ciudad}`;
+      if (trafico) caption += ` - Tráfico ${trafico} para carga y descarga 🚚`;
+      caption += `\n\n`;
+      caption += `✅ Perfecta para almacenamiento y distribución\n`;
+      caption += `✅ Fácil acceso para vehículos de carga\n`;
       caption += template === "comercial"
-        ? `Optimiza y ${tone.verbs[0]} tu operación con ${aliado.nombre}.\n`
-        : `Optimiza tu operación con ${aliado.nombre}.\n`;
-      if (precio) caption += `📦 ${esVenta ? 'Precio:' : 'Canon:'} $${precio}${esVenta ? '' : ' mensual'}\n`;
+        ? `✅ Instalaciones preparadas para operación inmediata\n\n`
+        : `✅ Lista para tus operaciones\n\n`;
+      if (precio) caption += `💰 ${esVenta ? 'Inversión:' : 'Canon:'} $${precio}${esVenta ? '' : '/mes'}\n\n`;
+      caption += `⚡ Espacios como este no duran disponibles. ¡Cotiza ahora!\n`;
       hashtags = esVenta
-        ? `#Bodegas${ciudad.replace(/\s/g, "")} #Venta #ElGestor`
-        : `#Bodegas${ciudad.replace(/\s/g, "")} #Logistica #ElGestor`;
-      break;
+        ? `#Bodegas${ciudad.replace(/\s/g, "")} #Venta${ciudad.replace(/\s/g, "")} #ElGestor #InversiónIndustrial #Logística`
+        : `#Bodegas${ciudad.replace(/\s/g, "")} #Logística${ciudad.replace(/\s/g, "")} #ElGestor #AlmacenamientoProfesional`;
 
     case "lote":
-      caption = hook || `${tone.prefix} Lote ${tone.adjectives[3]} ${property.uso} en ${ubicacion || ciudad}.\n`;
-      caption += `${area} m² con grandes posibilidades.\n`;
+      caption = hook || `${tone.prefix} ¿Buscas una inversión inteligente con proyección?\n\n`;
+      caption += `🏗️ Lote ${property.uso || 'urbano'} de ${area} m²\n`;
+      caption += `📍 ${ubicacion || ciudad}\n\n`;
       caption += template === "premium"
-        ? `Inversión ${tone.adjectives[0]} con ${aliado.nombre}.\n`
-        : `Invierte en tu futuro con ${aliado.nombre}.\n`;
-      if (property.valorVenta) caption += `💎 $${property.valorVenta}\n`;
-      hashtags = `#Lotes${ciudad.replace(/\s/g, "")} #Inversión #ElGestor`;
-      break;
+        ? `💎 Ubicación privilegiada con gran potencial de valorización\n`
+        : `💡 Terreno con múltiples posibilidades de desarrollo\n`;
+      caption += `✅ Escrituras al día\n`;
+      caption += `✅ Servicios públicos cercanos\n`;
+      caption += `✅ Zona de alto crecimiento 📈\n\n`;
+      if (property.valorVenta) caption += `💰 Inversión: $${property.valorVenta}\n\n`;
+      caption += `🎯 Las mejores oportunidades de inversión no esperan\n`;
+      hashtags = `#Lotes${ciudad.replace(/\s/g, "")} #Inversión${ciudad.replace(/\s/g, "")} #ElGestor #BienesRaíces #Oportunidad`;
   }
 
-  caption += `\n📱 Agenda tu visita: ${aliado.whatsapp}\n\n`;
+  caption += `\n📲 Contacta a ${aliado.nombre}: ${aliado.whatsapp}\n`;
+  caption += `👉 ${esVenta ? 'Invierte hoy' : 'Agenda tu visita'} y asegura este ${tipo === 'apartamento' || tipo === 'casa' ? 'hogar' : 'espacio'}\n\n`;
   caption += hashtags;
 
   return caption;
