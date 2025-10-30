@@ -13,6 +13,7 @@ export type ContentType =
   | "reel-fotos" 
   | "reel-video"
   | "reel-multi-video"
+  | "carrusel"
   | "arrendado"
   | "vendido";
 

@@ -33,7 +33,9 @@ export const PhotoManager = ({
 }: PhotoManagerProps) => {
   const { toast } = useToast();
   const isVideoContent = contentType === "reel-video";
-  const maxFiles = isVideoContent ? 1 : contentType === "reel-fotos" ? 10 : 3;
+  const maxFiles = isVideoContent ? 1 : 
+    contentType === "reel-fotos" ? 10 : 
+    contentType === "carrusel" ? 10 : 3;
   
   const getHelpText = () => {
     const isArrendado = context === "arrendado";
@@ -44,6 +46,8 @@ export const PhotoManager = ({
         return isArrendado 
           ? "Sube 1-3 fotos del inmueble arrendado (máx. 5MB cada una)"
           : "Sube 1-3 fotos del inmueble (máx. 5MB cada una)";
+      case "carrusel":
+        return "Sube 3-10 fotos para el carrusel (se generará 1 slide por foto + 1 final con CTA)";
       case "reel-fotos":
         return isArrendado
           ? "Sube 2-10 fotos del inmueble arrendado para el slideshow"
