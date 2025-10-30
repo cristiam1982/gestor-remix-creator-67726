@@ -20,8 +20,9 @@ export const ContentTypeCard = ({
 }: ContentTypeCardProps) => {
   return (
     <Card 
-      className="p-6 cursor-pointer hover-lift group transition-all duration-300 bg-white border-2"
+      className="p-6 cursor-pointer hover-lift group transition-all duration-300 border-2"
       style={{
+        background: `linear-gradient(90deg, ${primaryColor}25, ${secondaryColor}35)`,
         borderColor: primaryColor,
       }}
       onClick={onClick}
