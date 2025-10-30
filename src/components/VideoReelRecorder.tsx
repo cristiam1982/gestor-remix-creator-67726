@@ -416,27 +416,37 @@ export const VideoReelRecorder = ({
     setCurrentTime(0);
 
     try {
-      // ===== ESTRATEGIA 1: FFmpeg (RÁPIDO - 3-5x más rápido) =====
+      console.log("🔄 Cargando FFmpeg para procesamiento rápido...");
+      
+      // Intentar usar FFmpeg con timeout de 15 segundos
       const ffmpeg = FFmpegManager.getInstance();
       
-      // Cargar FFmpeg si no está cargado
       if (!ffmpeg.isLoaded()) {
-        console.log('🔄 Cargando FFmpeg para procesamiento rápido...');
-        setCurrentTime(0.05 * video.duration);
-        await ffmpeg.load((progress) => {
-          const mappedProgress = progress * 0.2; // 0% a 20%
-          setCurrentTime(mappedProgress * video.duration);
+        toast({
+          title: "⚡ Preparando procesamiento rápido",
+          description: "Cargando optimizador de video...",
         });
+        
+        const loadPromise = ffmpeg.load((progress) => {
+          setCurrentTime(progress * 0.2 * video.duration);
+        });
+        
+        const timeoutPromise = new Promise<void>((_, reject) => 
+          setTimeout(() => reject(new Error('FFmpeg load timeout')), 15000)
+        );
+        
+        await Promise.race([loadPromise, timeoutPromise]);
       }
       
-      console.log('✅ FFmpeg cargado, procesando con método rápido');
-      setCurrentTime(0.25 * video.duration);
+      console.log("✅ FFmpeg cargado, generando overlay...");
       
-      // Convertir videoUrl (data URL) a Blob
+      // Convertir video a Blob
+      console.log("📦 Convirtiendo video a blob...");
       const videoBlob = await fetch(videoUrl).then(r => r.blob());
+      console.log(`📦 Video blob size: ${videoBlob.size} bytes`);
       
       // Renderizar overlays como PNG
-      console.log('🎨 Generando overlays...');
+      console.log("🎨 Generando overlays...");
       const overlayPng = await renderOverlayImage(
         propertyData,
         aliadoConfig,
@@ -444,53 +454,52 @@ export const VideoReelRecorder = ({
         logoImage,
         elGestorLogoImage
       );
+      console.log(`🎨 Overlay PNG size: ${overlayPng.size} bytes`);
       
-      setCurrentTime(0.4 * video.duration);
-      console.log('⚡ Procesando video con FFmpeg...');
+      console.log("⚡ Procesando video con FFmpeg...");
       
       // Procesar con FFmpeg
       const resultBlob = await addOverlaysWithFFmpeg(
         videoBlob,
         overlayPng,
         (progress, stage) => {
-          // Mapear progreso FFmpeg (40% a 100% de la barra)
           const mappedProgress = 0.4 + (progress / 100) * 0.6;
           setCurrentTime(mappedProgress * video.duration);
-          console.log(`FFmpeg: ${progress.toFixed(0)}% - ${stage}`);
         }
       );
       
-      console.log('✅ Video procesado exitosamente con FFmpeg');
       setGeneratedBlob(resultBlob);
       setRecordingStage("complete");
       setIsRecording(false);
-      setCurrentTime(video.duration);
+      
+      toast({
+        title: "✅ Video generado (procesamiento rápido)",
+        description: "Tu video está listo para descargar",
+      });
+      
       onComplete(resultBlob, video.duration);
       
-      toast({
-        title: "✨ Video generado",
-        description: "Procesado con tecnología acelerada",
-      });
-      
     } catch (ffmpegError) {
-      console.warn('⚠️ FFmpeg no disponible o falló, usando MediaRecorder (método lento)...', ffmpegError);
+      console.warn("⚠️ FFmpeg no disponible, usando MediaRecorder:", ffmpegError);
+      
+      // Resetear estado antes del fallback
+      setCurrentTime(0);
       
       toast({
-        title: "⏳ Modo de compatibilidad",
-        description: "Generando video en tiempo real...",
+        title: "🔄 Usando método compatible",
+        description: "El video se generará en tiempo real (puede tardar más)",
       });
       
-      // ===== ESTRATEGIA 2: MediaRecorder (FALLBACK - tiempo real) =====
+      // Fallback a MediaRecorder
       try {
         await startRecordingWithMediaRecorder();
       } catch (mediaRecorderError) {
-        console.error('❌ Error con MediaRecorder:', mediaRecorderError);
+        console.error("❌ Error en MediaRecorder:", mediaRecorderError);
         setIsRecording(false);
         setRecordingStage("idle");
-        
         toast({
           title: "Error al generar video",
-          description: "No se pudo procesar el video. Intenta con otro navegador.",
+          description: "Por favor intenta nuevamente",
           variant: "destructive",
         });
       }

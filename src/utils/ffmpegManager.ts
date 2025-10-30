@@ -23,17 +23,25 @@ class FFmpegManager {
   }
 
   public async load(onProgress?: (progress: number) => void): Promise<void> {
-    if (this.loaded) return;
+    if (this.loaded) {
+      console.log('✅ FFmpeg ya estaba cargado');
+      return;
+    }
+
     if (this.loading) {
-      // Esperar a que termine la carga en curso
-      while (this.loading) {
+      console.log('⏳ FFmpeg ya se está cargando, esperando...');
+      const startTime = Date.now();
+      while (this.loading && Date.now() - startTime < 30000) {
         await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      if (!this.loaded) {
+        throw new Error('FFmpeg load timeout - otra instancia no completó carga');
       }
       return;
     }
 
     this.loading = true;
-    const maxRetries = 3;
+    const maxRetries = 2; // Reducido de 3 a 2 para no esperar tanto
     let lastError: Error | null = null;
 
     // CDNs alternativas en orden de prioridad
@@ -46,38 +54,36 @@ class FFmpegManager {
       for (const baseURL of cdnUrls) {
         try {
           console.log(`🔄 Intento ${attempt}/${maxRetries} desde ${baseURL.includes('jsdelivr') ? 'JSDelivr' : 'Unpkg'}...`);
+          onProgress?.(attempt * 40);
 
-          if (onProgress) {
-            this.ffmpeg.on('progress', ({ progress }) => {
-              onProgress(Math.round(progress * 100));
-            });
-          }
+          console.log('📥 Descargando ffmpeg-core.js...');
+          const coreURL = await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript');
           
-          await this.ffmpeg.load({
-            coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-            wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-          });
+          console.log('📥 Descargando ffmpeg-core.wasm...');
+          const wasmURL = await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm');
 
+          console.log('🔧 Inicializando FFmpeg...');
+          await this.ffmpeg.load({ coreURL, wasmURL });
+          
           this.loaded = true;
-          console.log('✅ FFmpeg cargado correctamente desde', baseURL);
           this.loading = false;
+          onProgress?.(100);
+          console.log('✅ FFmpeg cargado correctamente');
           return;
-
         } catch (error) {
           lastError = error as Error;
-          console.error(`❌ Intento ${attempt} falló desde ${baseURL}:`, error);
-          
-          // Si este no es el último CDN, probar el siguiente
-          if (baseURL !== cdnUrls[cdnUrls.length - 1]) {
-            continue;
+          console.error(`❌ Error detallado cargando FFmpeg desde ${baseURL}:`, error);
+          if (attempt === maxRetries && baseURL === cdnUrls[cdnUrls.length - 1]) {
+            this.loading = false;
+            throw new Error(`Failed to load FFmpeg after ${maxRetries} attempts: ${error}`);
           }
         }
       }
 
       // Si no es el último intento, esperar antes de reintentar
       if (attempt < maxRetries) {
-        console.log(`⏳ Reintentando en 2 segundos...`);
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        console.log(`⏳ Reintentando en 1 segundo...`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
 
