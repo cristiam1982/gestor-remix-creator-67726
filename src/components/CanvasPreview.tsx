@@ -323,7 +323,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           src={elGestorLogo} 
           alt="El Gestor" 
           data-eg-logo="true"
-          className={`${isStory ? "h-16" : "h-8"} object-contain drop-shadow-lg opacity-70`}
+          className={`${isStory ? "h-12" : "h-8"} object-contain drop-shadow-lg opacity-70`}
         />
       </div>
     </div>
