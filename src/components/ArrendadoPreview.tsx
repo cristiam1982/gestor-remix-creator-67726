@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { formatPrecioColombia } from "@/utils/formatters";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import { darkenHex } from "@/utils/colorUtils";
+import { ARR_THEME } from "@/utils/arrendadoTheme";
 
 interface ArrendadoPreviewProps {
   data: ArrendadoData;
@@ -38,7 +39,7 @@ export const ArrendadoPreview = ({
   const mainColor = tipo === "arrendado" 
     ? aliadoConfig.colorPrimario 
     : aliadoConfig.colorSecundario;
-  const badgeColor = darkenHex(mainColor, 0.15);
+  const badgeColor = darkenHex(mainColor, ARR_THEME.badge.darkenAmount);
 
   const tipoLabel = {
     apartamento: "Apartamento",
@@ -70,13 +71,15 @@ export const ArrendadoPreview = ({
               alt="Inmueble"
               className="w-full h-full object-cover"
             />
-            {/* Overlay oscuro para legibilidad */}
+            {/* Overlay de color de marca */}
             <div 
               className="absolute inset-0"
               style={{
                 background: `linear-gradient(135deg, ${mainColor}CC, ${mainColor}99)`
               }}
             />
+            {/* Overlay oscuro adicional para contraste del badge y CTA */}
+            <div className={`absolute inset-0 ${ARR_THEME.overlay.darkGradient}`} />
           </div>
         )}
 
@@ -86,7 +89,7 @@ export const ArrendadoPreview = ({
           {/* Header: Badge celebratorio */}
           <div className="flex flex-col items-center gap-3 pt-8">
             <div 
-              className="px-12 py-6 rounded-3xl font-black text-6xl text-center shadow-2xl ring-2 ring-white/20 animate-scale-in"
+              className={`px-12 py-6 rounded-3xl font-black text-6xl text-center ${ARR_THEME.badge.shadowClass} ${ARR_THEME.badge.ringClass} animate-scale-in`}
               style={{ 
                 backgroundColor: badgeColor,
                 color: "#fff"
@@ -146,7 +149,7 @@ export const ArrendadoPreview = ({
 
             {/* CTA - AHORA DENTRO DEL BLOQUE CENTRAL */}
             <div className="text-center px-6 mt-4">
-              <p className="text-2xl font-black drop-shadow-lg leading-tight">
+              <p className={ARR_THEME.cta.textClass}>
                 {data.ctaCustom || 
                  (tipo === "arrendado" ? aliadoConfig.ctaArrendado : aliadoConfig.ctaVendido) ||
                  `💪 ¿Quieres ${tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`}

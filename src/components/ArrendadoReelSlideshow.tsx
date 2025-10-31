@@ -10,6 +10,7 @@ import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrecioColombia } from "@/utils/formatters";
 import { darkenHex } from "@/utils/colorUtils";
+import { ARR_THEME } from "@/utils/arrendadoTheme";
 import {
   DndContext,
   closestCenter,
@@ -108,7 +109,7 @@ export const ArrendadoReelSlideshow = ({
     ? aliadoConfig.colorPrimario 
     : aliadoConfig.colorSecundario;
   const badgeText = tipo === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
-  const badgeColor = darkenHex(mainColor, 0.15);
+  const badgeColor = darkenHex(mainColor, ARR_THEME.badge.darkenAmount);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -324,7 +325,7 @@ export const ArrendadoReelSlideshow = ({
             {/* Badge celebratorio */}
             <div className="flex justify-center items-center pt-10">
               <div 
-                className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center ring-2 ring-white/20"
+                className={`px-8 py-4 rounded-3xl font-black text-3xl text-center ${ARR_THEME.badge.shadowClass} ${ARR_THEME.badge.ringClass}`}
                 style={{ backgroundColor: badgeColor, color: "#fff" }}
               >
                 {badgeText}
@@ -374,8 +375,8 @@ export const ArrendadoReelSlideshow = ({
               )}
 
               {/* CTA - AHORA DENTRO DEL BLOQUE CENTRAL */}
-              <div className="text-center px-4 mt-4">
-                <p className="text-lg font-black drop-shadow-lg leading-tight">
+              <div className="text-center px-6 mt-4">
+                <p className={ARR_THEME.cta.textClass}>
                   {data.ctaCustom || 
                    (tipo === "arrendado" ? aliadoConfig.ctaArrendado : aliadoConfig.ctaVendido) ||
                    `💪 ¿Quieres ${tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`}
@@ -432,7 +433,7 @@ export const ArrendadoReelSlideshow = ({
           <div className="absolute inset-0 flex flex-col p-6 text-white">
             <div className="flex justify-center items-center pt-10">
               <div 
-                className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center ring-2 ring-white/20"
+                className={`px-8 py-4 rounded-3xl font-black text-3xl text-center ${ARR_THEME.badge.shadowClass} ${ARR_THEME.badge.ringClass}`}
                 style={{ backgroundColor: badgeColor, color: "#fff" }}
               >
                 {badgeText}
@@ -481,8 +482,8 @@ export const ArrendadoReelSlideshow = ({
               )}
 
               {/* CTA - AHORA DENTRO DEL BLOQUE CENTRAL */}
-              <div className="text-center px-4 mt-4">
-                <p className="text-lg font-black drop-shadow-lg leading-tight">
+              <div className="text-center px-6 mt-4">
+                <p className={ARR_THEME.cta.textClass}>
                   {data.ctaCustom || 
                    (tipo === "arrendado" ? aliadoConfig.ctaArrendado : aliadoConfig.ctaVendido) ||
                    `💪 ¿Quieres ${tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`}
