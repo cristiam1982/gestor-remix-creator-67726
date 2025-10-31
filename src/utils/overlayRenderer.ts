@@ -95,7 +95,7 @@ export async function renderOverlayImage(
     const arrendadoData = propertyData as ArrendadoData;
     const isArrendado = variant === "arrendado";
     
-    // Badge superior - fondo blanco con texto en color corporativo
+    // Badge superior - fondo blanco con texto en color corporativo (más grande y prominente)
     const badgeText = isArrendado ? "¡ARRENDADO!" : "¡VENDIDO!";
     const badgeColor = isArrendado ? aliadoConfig.colorPrimario : "#2ecc71";
     
@@ -104,7 +104,7 @@ export async function renderOverlayImage(
     ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
     ctx.shadowBlur = 15;
     ctx.beginPath();
-    ctx.roundRect(40, 280, 1000, 100, 20);
+    ctx.roundRect(40, 300, 1000, 120, 20);
     ctx.fill();
     ctx.restore();
     
@@ -112,22 +112,19 @@ export async function renderOverlayImage(
     ctx.font = 'bold 64px "Poppins", sans-serif';
     ctx.textAlign = 'center';
     ctx.shadowBlur = 0;
-    ctx.fillText(badgeText, 540, 350);
+    ctx.fillText(badgeText, 540, 385);
     
-    // Información central
-    const centerY = 960;
-    
-    // Precio
+    // Precio (compacto y más arriba)
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 72px "Poppins", sans-serif';
     ctx.textAlign = 'center';
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 20;
-    ctx.fillText(formatPrecioColombia(arrendadoData.precio), 540, centerY - 100);
+    ctx.fillText(formatPrecioColombia(arrendadoData.precio), 540, 600);
     
     // Ubicación
     ctx.font = 'bold 48px "Poppins", sans-serif';
-    ctx.fillText(arrendadoData.ubicacion, 540, centerY);
+    ctx.fillText(arrendadoData.ubicacion, 540, 720);
     
     // Días en mercado
     const dias = arrendadoData.diasEnMercado;
@@ -137,7 +134,7 @@ export async function renderOverlayImage(
       ? `⚡ En solo ${dias} días`
       : `🎉 En ${dias} días`;
     ctx.font = '36px "Poppins", sans-serif';
-    ctx.fillText(diasTexto, 540, centerY + 80);
+    ctx.fillText(diasTexto, 540, 820);
     
     ctx.shadowBlur = 0;
     
