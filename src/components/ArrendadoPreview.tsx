@@ -78,8 +78,6 @@ export const ArrendadoPreview = ({
                 background: `linear-gradient(135deg, ${mainColor}CC, ${mainColor}99)`
               }}
             />
-            {/* Overlay oscuro adicional para contraste del badge y CTA */}
-            <div className={`absolute inset-0 ${ARR_THEME.overlay.darkGradient}`} />
           </div>
         )}
 

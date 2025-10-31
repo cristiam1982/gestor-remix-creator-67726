@@ -317,7 +317,6 @@ export const ArrendadoReelSlideshow = ({
               className="w-full h-full object-cover"
               crossOrigin="anonymous"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
           </div>
 
           {/* Contenido superpuesto */}
@@ -427,7 +426,6 @@ export const ArrendadoReelSlideshow = ({
               className="w-full h-full object-cover"
               crossOrigin="anonymous"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
           </div>
 
           <div className="absolute inset-0 flex flex-col p-6 text-white">
