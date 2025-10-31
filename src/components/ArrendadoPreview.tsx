@@ -4,6 +4,7 @@ import { AliadoConfig } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { formatPrecioColombia } from "@/utils/formatters";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
+import { darkenHex } from "@/utils/colorUtils";
 
 interface ArrendadoPreviewProps {
   data: ArrendadoData;
@@ -37,6 +38,7 @@ export const ArrendadoPreview = ({
   const mainColor = tipo === "arrendado" 
     ? aliadoConfig.colorPrimario 
     : aliadoConfig.colorSecundario;
+  const badgeColor = darkenHex(mainColor, 0.15);
 
   const tipoLabel = {
     apartamento: "Apartamento",
@@ -84,9 +86,9 @@ export const ArrendadoPreview = ({
           {/* Header: Badge celebratorio */}
           <div className="flex flex-col items-center gap-3 pt-8">
             <div 
-              className="px-12 py-6 rounded-3xl font-black text-6xl text-center shadow-2xl animate-scale-in"
+              className="px-12 py-6 rounded-3xl font-black text-6xl text-center shadow-2xl ring-2 ring-white/20 animate-scale-in"
               style={{ 
-                backgroundColor: mainColor,
+                backgroundColor: badgeColor,
                 color: "#fff"
               }}
             >

@@ -9,6 +9,7 @@ import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/util
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrecioColombia } from "@/utils/formatters";
+import { darkenHex } from "@/utils/colorUtils";
 import {
   DndContext,
   closestCenter,
@@ -107,6 +108,7 @@ export const ArrendadoReelSlideshow = ({
     ? aliadoConfig.colorPrimario 
     : aliadoConfig.colorSecundario;
   const badgeText = tipo === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
+  const badgeColor = darkenHex(mainColor, 0.15);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -322,8 +324,8 @@ export const ArrendadoReelSlideshow = ({
             {/* Badge celebratorio */}
             <div className="flex justify-center items-center pt-10">
               <div 
-                className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center"
-                style={{ backgroundColor: mainColor, color: "#fff" }}
+                className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center ring-2 ring-white/20"
+                style={{ backgroundColor: badgeColor, color: "#fff" }}
               >
                 {badgeText}
               </div>
@@ -430,8 +432,8 @@ export const ArrendadoReelSlideshow = ({
           <div className="absolute inset-0 flex flex-col p-6 text-white">
             <div className="flex justify-center items-center pt-10">
               <div 
-                className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center"
-                style={{ backgroundColor: mainColor, color: "#fff" }}
+                className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center ring-2 ring-white/20"
+                style={{ backgroundColor: badgeColor, color: "#fff" }}
               >
                 {badgeText}
               </div>

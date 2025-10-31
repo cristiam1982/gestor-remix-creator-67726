@@ -44,3 +44,24 @@ export function addOpacityToHex(hex: string, opacity: number): string {
   const alpha = Math.round(opacity * 255).toString(16).padStart(2, '0');
   return `#${normalized}${alpha}`;
 }
+
+/**
+ * Oscurece un color hex en un porcentaje dado (0-1)
+ * Útil para mejorar contraste de badges sobre fondos similares
+ */
+export function darkenHex(hex: string, amount: number = 0.15): string {
+  const h = hex.replace('#', '');
+  const normalized = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+  const r = parseInt(normalized.substr(0, 2), 16);
+  const g = parseInt(normalized.substr(2, 2), 16);
+  const b = parseInt(normalized.substr(4, 2), 16);
+
+  const clamp = (v: number) => Math.max(0, Math.min(255, Math.round(v)));
+  const nr = clamp(r * (1 - amount));
+  const ng = clamp(g * (1 - amount));
+  const nb = clamp(b * (1 - amount));
+
+  const toHex = (v: number) => v.toString(16).padStart(2, '0');
+  return `#${toHex(nr)}${toHex(ng)}${toHex(nb)}`;
+}
+
