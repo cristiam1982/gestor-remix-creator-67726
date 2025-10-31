@@ -29,6 +29,8 @@ export interface AliadoConfig {
   colorSecundario: string;  // Color secundario (características: habitaciones, baños, etc.)
   whatsapp: string;
   ciudad: string;
+  ctaArrendado?: string;
+  ctaVendido?: string;
 }
 
 export interface PropertyData {

@@ -7,6 +7,7 @@ export interface ArrendadoData {
   precio: string;
   fotos: string[];
   videoUrl?: string;
+  ctaCustom?: string;
 }
 
 export type ArrendadoType = "arrendado" | "vendido";

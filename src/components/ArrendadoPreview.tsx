@@ -94,16 +94,16 @@ export const ArrendadoPreview = ({
             </div>
           </div>
 
-          {/* Centro: PRECIO + Velocidad + Info (CENTRADO VERTICALMENTE) */}
+          {/* Centro: PRECIO + Velocidad + Info + CTA (CENTRADO VERTICALMENTE) */}
           <div className="flex flex-col items-center gap-4 my-auto">
             
-            {/* PRECIO - El elemento MÁS IMPORTANTE */}
+            {/* PRECIO - 10% más pequeño */}
             <div className="text-center">
-              <p className="text-7xl font-black drop-shadow-2xl leading-none">
+              <p className="text-6xl font-black drop-shadow-2xl leading-none">
                 {formatPrecioColombia(data.precio)}
               </p>
               {tipo === "arrendado" && (
-                <p className="text-xl font-semibold opacity-90 mt-2">/mes</p>
+                <p className="text-lg font-semibold opacity-90 mt-2">/mes</p>
               )}
             </div>
 
@@ -130,32 +130,34 @@ export const ArrendadoPreview = ({
               </div>
             </div>
 
-            {/* Logo del aliado */}
+            {/* Logo del aliado - 20% más grande */}
             {aliadoConfig.logo && (
               <div className="bg-white/25 px-8 py-4 rounded-xl">
                 <img 
                   src={aliadoConfig.logo} 
                   alt={aliadoConfig.nombre}
-                  className="h-20 object-contain"
+                  className="h-24 object-contain"
                   crossOrigin="anonymous"
                 />
               </div>
             )}
+
+            {/* CTA - AHORA DENTRO DEL BLOQUE CENTRAL */}
+            <div className="text-center px-6 mt-2">
+              <p className="text-2xl font-black drop-shadow-lg leading-tight">
+                {data.ctaCustom || 
+                 (tipo === "arrendado" ? aliadoConfig.ctaArrendado : aliadoConfig.ctaVendido) ||
+                 `💪 ¿Quieres ${tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`}
+              </p>
+            </div>
           </div>
 
-          {/* CTA - Zona independiente */}
-          <div className="text-center px-6 mb-3">
-            <p className="text-2xl font-black drop-shadow-lg leading-tight">
-              💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
-            </p>
-          </div>
-
-          {/* Footer: Logo El Gestor */}
-          <div className="flex justify-center pb-2">
+          {/* Footer: Logo El Gestor - 20% más grande */}
+          <div className="flex justify-center pb-2 mt-auto">
             <img 
               src={elGestorLogo} 
               alt="El Gestor"
-              className="h-10 object-contain opacity-70"
+              className="h-12 object-contain opacity-70"
             />
           </div>
         </div>

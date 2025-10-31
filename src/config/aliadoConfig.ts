@@ -11,5 +11,7 @@ export const ALIADO_CONFIG: AliadoConfig = {
   colorPrimario: "#FF8C42", // Naranja del logo
   colorSecundario: "#2B3FD6", // Azul del logo
   whatsapp: "+573126041877",
-  ciudad: "Cali"
+  ciudad: "Cali",
+  ctaArrendado: "💪 ¿Quieres arrendar tu inmueble rápido?",
+  ctaVendido: "💪 ¿Quieres vender tu inmueble rápido?"
 };

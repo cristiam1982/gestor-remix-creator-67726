@@ -329,10 +329,10 @@ export const ArrendadoReelSlideshow = ({
               </div>
             </div>
 
-            {/* Centro: Precio + Info (CENTRADO VERTICALMENTE) */}
+            {/* Centro: Precio + Info + CTA (CENTRADO VERTICALMENTE) */}
             <div className="flex flex-col items-center gap-4 my-auto">
               <div className="text-center">
-                <p className="text-5xl font-black drop-shadow-2xl leading-none">
+                <p className="text-[2.75rem] font-black drop-shadow-2xl leading-none">
                   {formatPrecioColombia(data.precio)}
                 </p>
                 {tipo === "arrendado" && (
@@ -365,26 +365,28 @@ export const ArrendadoReelSlideshow = ({
                   <img 
                     src={aliadoConfig.logo} 
                     alt={aliadoConfig.nombre}
-                    className="h-20 object-contain"
+                    className="h-24 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
               )}
+
+              {/* CTA - AHORA DENTRO DEL BLOQUE CENTRAL */}
+              <div className="text-center px-4 mt-2">
+                <p className="text-lg font-black drop-shadow-lg leading-tight">
+                  {data.ctaCustom || 
+                   (tipo === "arrendado" ? aliadoConfig.ctaArrendado : aliadoConfig.ctaVendido) ||
+                   `💪 ¿Quieres ${tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`}
+                </p>
+              </div>
             </div>
 
-            {/* CTA - Zona independiente */}
-            <div className="text-center px-6 mb-3">
-              <p className="text-xl font-black drop-shadow-lg">
-                💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
-              </p>
-            </div>
-
-            {/* Footer: Logo El Gestor */}
-            <div className="pb-6 flex justify-center">
+            {/* Footer: Logo El Gestor - 20% más grande */}
+            <div className="pb-6 flex justify-center mt-auto">
               <img 
                 src={elGestorLogo}
                 alt="El Gestor"
-                className="h-7 object-contain opacity-90"
+                className="h-8 object-contain opacity-90"
                 crossOrigin="anonymous"
               />
             </div>
@@ -437,7 +439,7 @@ export const ArrendadoReelSlideshow = ({
 
             <div className="flex flex-col items-center gap-4 my-auto">
               <div className="text-center">
-                <p className="text-5xl font-black drop-shadow-2xl leading-none">
+                <p className="text-[2.75rem] font-black drop-shadow-2xl leading-none">
                   {formatPrecioColombia(data.precio)}
                 </p>
                 {tipo === "arrendado" && (
@@ -470,24 +472,27 @@ export const ArrendadoReelSlideshow = ({
                   <img 
                     src={aliadoConfig.logo} 
                     alt={aliadoConfig.nombre}
-                    className="h-20 object-contain"
+                    className="h-24 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
               )}
+
+              {/* CTA - AHORA DENTRO DEL BLOQUE CENTRAL */}
+              <div className="text-center px-4 mt-2">
+                <p className="text-lg font-black drop-shadow-lg leading-tight">
+                  {data.ctaCustom || 
+                   (tipo === "arrendado" ? aliadoConfig.ctaArrendado : aliadoConfig.ctaVendido) ||
+                   `💪 ¿Quieres ${tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`}
+                </p>
+              </div>
             </div>
 
-            <div className="text-center px-6 mb-3">
-              <p className="text-xl font-black drop-shadow-lg">
-                💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
-              </p>
-            </div>
-
-            <div className="pb-6 flex justify-center">
+            <div className="pb-6 flex justify-center mt-auto">
               <img 
                 src={elGestorLogo}
                 alt="El Gestor"
-                className="h-7 object-contain opacity-90"
+                className="h-8 object-contain opacity-90"
                 crossOrigin="anonymous"
               />
             </div>
