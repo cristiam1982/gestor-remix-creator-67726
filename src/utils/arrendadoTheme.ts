@@ -4,7 +4,7 @@
  */
 export const ARR_THEME = {
   badge: {
-    darkenAmount: 0.4,
+    darkenAmount: 0.15,
     ringClass: "ring-2 ring-white/20",
     shadowClass: "shadow-2xl shadow-black/40",
   },
