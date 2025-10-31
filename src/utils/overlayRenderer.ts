@@ -95,38 +95,36 @@ export async function renderOverlayImage(
     const arrendadoData = propertyData as ArrendadoData;
     const isArrendado = variant === "arrendado";
     
-    // Badge superior - fondo blanco con texto en color corporativo (más grande y prominente)
+    // Badge superior - fondo sólido con texto blanco para máximo contraste
     const badgeText = isArrendado ? "¡ARRENDADO!" : "¡VENDIDO!";
     const badgeColor = isArrendado ? aliadoConfig.colorPrimario : "#2ecc71";
     
     ctx.save();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-    ctx.shadowBlur = 15;
+    ctx.fillStyle = badgeColor;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 20;
     ctx.beginPath();
-    ctx.roundRect(40, 300, 1000, 120, 20);
+    ctx.roundRect(40, 250, 1000, 120, 20);
     ctx.fill();
     ctx.restore();
     
-    ctx.fillStyle = badgeColor;
-    ctx.font = 'bold 64px "Poppins", sans-serif';
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 68px "Poppins", sans-serif';
     ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 10;
+    ctx.fillText(badgeText, 540, 335);
     ctx.shadowBlur = 0;
-    ctx.fillText(badgeText, 540, 385);
     
-    // Precio (compacto y más arriba)
+    // Precio - más cerca del badge
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 72px "Poppins", sans-serif';
     ctx.textAlign = 'center';
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 20;
-    ctx.fillText(formatPrecioColombia(arrendadoData.precio), 540, 600);
+    ctx.fillText(formatPrecioColombia(arrendadoData.precio), 540, 470);
     
-    // Ubicación
-    ctx.font = 'bold 48px "Poppins", sans-serif';
-    ctx.fillText(arrendadoData.ubicacion, 540, 720);
-    
-    // Días en mercado
+    // Días en mercado - como badge secundario
     const dias = arrendadoData.diasEnMercado;
     const diasTexto = dias <= 7 
       ? `🚀 ¡RÉCORD! En solo ${dias} día${dias === 1 ? '' : 's'}`
@@ -134,7 +132,16 @@ export async function renderOverlayImage(
       ? `⚡ En solo ${dias} días`
       : `🎉 En ${dias} días`;
     ctx.font = '36px "Poppins", sans-serif';
-    ctx.fillText(diasTexto, 540, 820);
+    ctx.fillText(diasTexto, 540, 590);
+    
+    // Tipo de inmueble
+    const tipoTexto = arrendadoData.tipo.charAt(0).toUpperCase() + arrendadoData.tipo.slice(1);
+    ctx.font = 'bold 44px "Poppins", sans-serif';
+    ctx.fillText(tipoTexto, 540, 1100);
+    
+    // Ubicación
+    ctx.font = 'bold 48px "Poppins", sans-serif';
+    ctx.fillText(`📍 ${arrendadoData.ubicacion}`, 540, 1200);
     
     ctx.shadowBlur = 0;
     
