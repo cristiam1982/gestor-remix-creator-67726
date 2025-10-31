@@ -329,58 +329,58 @@ export const ArrendadoReelSlideshow = ({
               </div>
             </div>
 
-            {/* Centro: Precio + Info */}
-            <div className="flex flex-col items-center gap-3 mt-3">
+            {/* Centro: Precio + Info (CENTRADO VERTICALMENTE) */}
+            <div className="flex flex-col items-center gap-4 my-auto">
               <div className="text-center">
                 <p className="text-5xl font-black drop-shadow-2xl leading-none">
                   {formatPrecioColombia(data.precio)}
                 </p>
                 {tipo === "arrendado" && (
-                  <p className="text-base font-medium opacity-80 mt-1">/mes</p>
+                  <p className="text-base font-semibold opacity-90 mt-1">/mes</p>
                 )}
               </div>
 
-              <div className="w-24 h-1 bg-white/40 rounded-full" />
+              <div className="w-24 h-0.5 bg-white/50 rounded-full" />
 
-              <div className="bg-white/10 backdrop-blur-sm px-5 py-2 rounded-xl">
-                <p className="text-xl font-bold drop-shadow-lg">
+              <div className="bg-white/20 px-6 py-3 rounded-xl">
+                <p className="text-xl font-black drop-shadow-lg">
                   {getVelocidadText()}
                 </p>
               </div>
 
-              <div className="text-center">
-                <p className="text-xl font-extrabold drop-shadow-lg mb-1">
+              <div className="text-center space-y-1">
+                <p className="text-xl font-black drop-shadow-lg">
                   {tipoLabel}
                 </p>
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-lg">📍</span>
-                  <p className="text-lg font-semibold drop-shadow-lg">
+                  <p className="text-lg font-bold drop-shadow-lg">
                     {data.ubicacion}
                   </p>
                 </div>
               </div>
 
               {aliadoConfig.logo && (
-                <div className="bg-white/10 backdrop-blur-sm px-8 py-5 rounded-xl">
+                <div className="bg-white/20 px-6 py-3 rounded-xl">
                   <img 
-                    src={aliadoConfig.logo}
+                    src={aliadoConfig.logo} 
                     alt={aliadoConfig.nombre}
-                    className="h-[88px] object-contain"
+                    className="h-20 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
               )}
-
-              {/* CTA - AHORA DENTRO del contenedor my-auto */}
-              <div className="mt-6">
-                <p className="text-xl font-black text-center drop-shadow-lg">
-                  💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
-                </p>
-              </div>
             </div>
 
-            {/* Footer: Solo Logo El Gestor */}
-            <div className="pb-6 flex justify-center mt-auto">
+            {/* CTA - Zona independiente */}
+            <div className="text-center px-6 mb-3">
+              <p className="text-xl font-black drop-shadow-lg">
+                💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
+              </p>
+            </div>
+
+            {/* Footer: Logo El Gestor */}
+            <div className="pb-6 flex justify-center">
               <img 
                 src={elGestorLogo}
                 alt="El Gestor"
@@ -435,56 +435,55 @@ export const ArrendadoReelSlideshow = ({
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-3 mt-3">
+            <div className="flex flex-col items-center gap-4 my-auto">
               <div className="text-center">
                 <p className="text-5xl font-black drop-shadow-2xl leading-none">
                   {formatPrecioColombia(data.precio)}
                 </p>
                 {tipo === "arrendado" && (
-                  <p className="text-base font-medium opacity-80 mt-1">/mes</p>
+                  <p className="text-base font-semibold opacity-90 mt-1">/mes</p>
                 )}
               </div>
 
-              <div className="w-24 h-1 bg-white/40 rounded-full" />
+              <div className="w-24 h-0.5 bg-white/50 rounded-full" />
 
-              <div className="bg-white/10 backdrop-blur-sm px-5 py-2 rounded-xl">
-                <p className="text-xl font-bold drop-shadow-lg">
+              <div className="bg-white/20 px-6 py-3 rounded-xl">
+                <p className="text-xl font-black drop-shadow-lg">
                   {getVelocidadText()}
                 </p>
               </div>
 
-              <div className="text-center">
-                <p className="text-xl font-extrabold drop-shadow-lg mb-1">
+              <div className="text-center space-y-1">
+                <p className="text-xl font-black drop-shadow-lg">
                   {tipoLabel}
                 </p>
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-lg">📍</span>
-                  <p className="text-lg font-semibold drop-shadow-lg">
+                  <p className="text-lg font-bold drop-shadow-lg">
                     {data.ubicacion}
                   </p>
                 </div>
               </div>
 
               {aliadoConfig.logo && (
-                <div className="bg-white/10 backdrop-blur-sm px-8 py-5 rounded-xl">
+                <div className="bg-white/20 px-6 py-3 rounded-xl">
                   <img 
-                    src={aliadoConfig.logo}
+                    src={aliadoConfig.logo} 
                     alt={aliadoConfig.nombre}
-                    className="h-[88px] object-contain"
+                    className="h-20 object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
               )}
-
-              {/* CTA - AHORA DENTRO del contenedor my-auto */}
-              <div className="mt-6">
-                <p className="text-xl font-black text-center drop-shadow-lg">
-                  💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
-                </p>
-              </div>
             </div>
 
-            <div className="pb-6 flex justify-center mt-auto">
+            <div className="text-center px-6 mb-3">
+              <p className="text-xl font-black drop-shadow-lg">
+                💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
+              </p>
+            </div>
+
+            <div className="pb-6 flex justify-center">
               <img 
                 src={elGestorLogo}
                 alt="El Gestor"

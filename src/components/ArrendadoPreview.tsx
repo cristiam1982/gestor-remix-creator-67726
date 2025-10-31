@@ -82,7 +82,7 @@ export const ArrendadoPreview = ({
         <div className="relative h-full flex flex-col px-8 pt-10 pb-6 text-white">
           
           {/* Header: Badge celebratorio */}
-          <div className="flex flex-col items-center gap-3 -mt-2">
+          <div className="flex flex-col items-center gap-3 pt-4">
             <div 
               className="px-12 py-6 rounded-3xl font-black text-6xl text-center shadow-2xl animate-scale-in"
               style={{ 
@@ -94,8 +94,8 @@ export const ArrendadoPreview = ({
             </div>
           </div>
 
-          {/* Centro: PRECIO + Velocidad + Info */}
-          <div className="flex flex-col items-center gap-3 mt-4">
+          {/* Centro: PRECIO + Velocidad + Info (CENTRADO VERTICALMENTE) */}
+          <div className="flex flex-col items-center gap-4 my-auto">
             
             {/* PRECIO - El elemento MÁS IMPORTANTE */}
             <div className="text-center">
@@ -143,22 +143,20 @@ export const ArrendadoPreview = ({
             )}
           </div>
 
-          {/* Footer: CTA para propietarios */}
-          <div className="space-y-3 pb-2 mt-auto">
-            <div className="text-center">
-              <p className="text-2xl font-black drop-shadow-lg leading-tight">
-                💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
-              </p>
-            </div>
+          {/* CTA - Zona independiente */}
+          <div className="text-center px-6 mb-3">
+            <p className="text-2xl font-black drop-shadow-lg leading-tight">
+              💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?
+            </p>
+          </div>
 
-            {/* Logo El Gestor (marca secundaria) */}
-            <div className="flex justify-center">
-              <img 
-                src={elGestorLogo} 
-                alt="El Gestor"
-                className="h-10 object-contain opacity-70"
-              />
-            </div>
+          {/* Footer: Logo El Gestor */}
+          <div className="flex justify-center pb-2">
+            <img 
+              src={elGestorLogo} 
+              alt="El Gestor"
+              className="h-10 object-contain opacity-70"
+            />
           </div>
         </div>
       </div>
