@@ -82,7 +82,7 @@ export const ArrendadoPreview = ({
         <div className="relative h-full flex flex-col px-8 pt-10 pb-6 text-white">
           
           {/* Header: Badge celebratorio */}
-          <div className="flex flex-col items-center gap-3 pt-4">
+          <div className="flex flex-col items-center gap-3 pt-8">
             <div 
               className="px-12 py-6 rounded-3xl font-black text-6xl text-center shadow-2xl animate-scale-in"
               style={{ 

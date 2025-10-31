@@ -99,6 +99,20 @@ export const ArrendadoForm = ({ data, updateField, errors, tipo }: ArrendadoForm
           </p>
         </div>
       </div>
+
+      {/* Campo personalizado para CTA */}
+      <div className="mt-4">
+        <Label htmlFor="ctaCustom">Llamado a la Acción Personalizado (opcional)</Label>
+        <Input
+          id="ctaCustom"
+          value={data.ctaCustom || ""}
+          onChange={(e) => updateField("ctaCustom", e.target.value)}
+          placeholder={`💪 ¿Quieres ${tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`}
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          Deja vacío para usar el mensaje por defecto
+        </p>
+      </div>
     </div>
   );
 };

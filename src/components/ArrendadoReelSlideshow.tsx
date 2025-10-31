@@ -320,7 +320,7 @@ export const ArrendadoReelSlideshow = ({
           {/* Contenido superpuesto */}
           <div className="absolute inset-0 flex flex-col p-6 text-white z-10">
             {/* Badge celebratorio */}
-            <div className="flex justify-center items-center pt-4">
+            <div className="flex justify-center items-center pt-10">
               <div 
                 className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center"
                 style={{ backgroundColor: mainColor, color: "#fff" }}
@@ -428,7 +428,7 @@ export const ArrendadoReelSlideshow = ({
           </div>
 
           <div className="absolute inset-0 flex flex-col p-6 text-white">
-            <div className="flex justify-center items-center pt-4">
+            <div className="flex justify-center items-center pt-10">
               <div 
                 className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center"
                 style={{ backgroundColor: mainColor, color: "#fff" }}
