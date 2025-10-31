@@ -133,21 +133,21 @@ export const ArrendadoPreview = ({
               </div>
             </div>
 
-            {/* Logo del aliado - 20% más grande */}
+            {/* Logo del aliado - 10% más grande */}
             {aliadoConfig.logo && (
               <div className="bg-white/25 px-8 py-4 rounded-xl">
                 <img 
                   src={aliadoConfig.logo} 
                   alt={aliadoConfig.nombre}
-                  className="h-[106px] object-contain"
+                  className="h-[117px] object-contain"
                   crossOrigin="anonymous"
                 />
               </div>
             )}
 
             {/* CTA - AHORA DENTRO DEL BLOQUE CENTRAL */}
-            <div className="text-center px-6 mt-4">
-              <p className={ARR_THEME.cta.textClass}>
+            <div className="text-center px-6 mt-6">
+              <p className="text-[1.575rem] font-black drop-shadow-lg leading-tight">
                 {data.ctaCustom || 
                  (tipo === "arrendado" ? aliadoConfig.ctaArrendado : aliadoConfig.ctaVendido) ||
                  `💪 ¿Quieres ${tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`}
