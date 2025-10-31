@@ -8,6 +8,11 @@ export interface ArrendadoData {
   fotos: string[];
   videoUrl?: string;
   ctaCustom?: string;
+  // Campos opcionales para enriquecer los captions
+  habitaciones?: number;
+  banos?: number;
+  area?: number;
+  estrategia?: string;
 }
 
 export type ArrendadoType = "arrendado" | "vendido";

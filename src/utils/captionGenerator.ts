@@ -65,6 +65,7 @@ export const generateCaption = (
       hashtags = esVenta 
         ? `#Venta${ciudad.replace(/\s/g, "")} #Apartamentos${ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar #Inversión${ciudad.replace(/\s/g, "")}`
         : `#Arriendos${ciudad.replace(/\s/g, "")} #Apartamentos${ciudad.replace(/\s/g, "")} #ElGestor #TuNuevoHogar #Hogar${ciudad.replace(/\s/g, "")}`;
+      break;
 
     case "casa":
       caption = hook || `${tone.prefix} ¿Buscas el lugar perfecto para crear recuerdos inolvidables?\n\n`;
@@ -80,6 +81,7 @@ export const generateCaption = (
       hashtags = esVenta
         ? `#Casas${ciudad.replace(/\s/g, "")} #Venta${ciudad.replace(/\s/g, "")} #ElGestor #HogarDulceHogar #FamiliasConHogar`
         : `#Casas${ciudad.replace(/\s/g, "")} #Arriendos${ciudad.replace(/\s/g, "")} #ElGestor #HogarDulceHogar #VidaEnFamilia`;
+      break;
 
     case "local":
       caption = hook || `${tone.prefix} ¿Listo para hacer crecer tu negocio?\n\n`;
@@ -96,6 +98,7 @@ export const generateCaption = (
       hashtags = esVenta
         ? `#LocalesComerciales #Venta${ciudad.replace(/\s/g, "")} #ElGestor #Emprendimiento #Inversión${ciudad.replace(/\s/g, "")}`
         : `#LocalesComerciales #Negocios${ciudad.replace(/\s/g, "")} #ElGestor #Emprendimiento #TuNegocio`;
+      break;
 
     case "oficina":
       caption = hook || `${tone.prefix} ¿Tu empresa necesita crecer? Este es el espacio que buscas\n\n`;
@@ -114,6 +117,7 @@ export const generateCaption = (
       hashtags = esVenta
         ? `#Oficinas${ciudad.replace(/\s/g, "")} #Venta${ciudad.replace(/\s/g, "")} #ElGestor #InversiónInteligente #EspaciosCorporativos`
         : `#Oficinas${ciudad.replace(/\s/g, "")} #EspaciosProfesionales #ElGestor #Empresas${ciudad.replace(/\s/g, "")}`;
+      break;
 
     case "bodega":
       caption = hook || `${tone.prefix} ¿Necesitas optimizar tu operación logística?\n\n`;
@@ -133,6 +137,7 @@ export const generateCaption = (
       hashtags = esVenta
         ? `#Bodegas${ciudad.replace(/\s/g, "")} #Venta${ciudad.replace(/\s/g, "")} #ElGestor #InversiónIndustrial #Logística`
         : `#Bodegas${ciudad.replace(/\s/g, "")} #Logística${ciudad.replace(/\s/g, "")} #ElGestor #AlmacenamientoProfesional`;
+      break;
 
     case "lote":
       caption = hook || `${tone.prefix} ¿Buscas una inversión inteligente con proyección?\n\n`;
@@ -147,6 +152,7 @@ export const generateCaption = (
       if (property.valorVenta) caption += `💰 Inversión: $${property.valorVenta}\n\n`;
       caption += `🎯 Las mejores oportunidades de inversión no esperan\n`;
       hashtags = `#Lotes${ciudad.replace(/\s/g, "")} #Inversión${ciudad.replace(/\s/g, "")} #ElGestor #BienesRaíces #Oportunidad`;
+      break;
   }
 
   caption += `\n📲 Contacta a ${aliado.nombre}: ${aliado.whatsapp}\n`;
@@ -168,9 +174,19 @@ export const regenerateCaption = (
 export const generateArrendadoCaption = (
   data: ArrendadoData,
   aliado: AliadoConfig,
-  tipo: ArrendadoType
+  tipo: ArrendadoType,
+  includeViralIdea: boolean = true
 ): string => {
-  const { tipo: tipoInmueble, ubicacion, diasEnMercado, precio } = data;
+  const { 
+    tipo: tipoInmueble, 
+    ubicacion, 
+    diasEnMercado, 
+    precio,
+    habitaciones,
+    banos,
+    area,
+    estrategia
+  } = data;
   
   const tipoLabel = {
     apartamento: "apartamento",
@@ -181,21 +197,88 @@ export const generateArrendadoCaption = (
     lote: "lote"
   }[tipoInmueble];
 
+  // Hook viral opcional
+  let hook = "";
+  if (includeViralIdea) {
+    const viralIdeas = getViralIdeas(tipoInmueble, tipo);
+    if (viralIdeas && viralIdeas.length > 0) {
+      hook = `${viralIdeas[0].title}\n\n`;
+    }
+  }
+
+  // Velocidad según días en mercado
   const velocidad = diasEnMercado <= 7 
-    ? `🚀 ¡RÉCORD! En solo ${diasEnMercado} día${diasEnMercado === 1 ? '' : 's'}`
+    ? `🚀 ¡RÉCORD HISTÓRICO! En solo ${diasEnMercado} día${diasEnMercado === 1 ? '' : 's'}`
     : diasEnMercado <= 15 
-    ? `⚡ En solo ${diasEnMercado} días`
-    : `🎉 En ${diasEnMercado} días`;
+    ? `⚡ ¡RAPIDÍSIMO! En solo ${diasEnMercado} días`
+    : diasEnMercado <= 30
+    ? `🎯 Eficiencia comprobada: ${diasEnMercado} días`
+    : `✅ Proceso exitoso: ${diasEnMercado} días`;
 
+  const accion = tipo === "arrendado" ? "ARRENDADO" : "VENDIDO";
   const accionInfinitivo = tipo === "arrendado" ? "arrendar" : "vender";
+  const tiempoPromedio = tipo === "arrendado" ? "45 días" : "90 días";
 
-  let caption = `🎉 ¡${tipo === "arrendado" ? "ARRENDADO" : "VENDIDO"}! ${velocidad}\n\n`;
-  caption += `${tipoLabel.charAt(0).toUpperCase() + tipoLabel.slice(1)} en ${ubicacion}\n`;
+  // Caption principal con storytelling
+  let caption = hook || `🎉 ¡${accion}! ${velocidad}\n\n`;
+  
+  // Detalles del inmueble
+  caption += `✨ ${tipoLabel.charAt(0).toUpperCase() + tipoLabel.slice(1)}`;
+  
+  // Agregar detalles específicos si están disponibles
+  if ((tipoInmueble === "apartamento" || tipoInmueble === "casa") && habitaciones && banos) {
+    caption += ` de ${habitaciones} ${habitaciones === 1 ? 'habitación' : 'habitaciones'} y ${banos} ${banos === 1 ? 'baño' : 'baños'}`;
+  }
+  if (area && (tipoInmueble === "local" || tipoInmueble === "oficina" || tipoInmueble === "bodega" || tipoInmueble === "lote")) {
+    caption += ` de ${area}m²`;
+  }
+  caption += `\n📍 ${ubicacion}\n`;
   caption += `💰 ${tipo === "arrendado" ? "Canon:" : "Precio:"} ${precio}${tipo === "arrendado" ? "/mes" : ""}\n\n`;
-  caption += `✨ ¡Otro propietario feliz con ${aliado.nombre}!\n\n`;
-  caption += `💪 ¿Quieres ${accionInfinitivo} tu inmueble rápido y seguro?\n`;
-  caption += `📱 Contáctanos: ${aliado.whatsapp}\n\n`;
-  caption += `#Propiedad${tipo === "arrendado" ? "Arrendada" : "Vendida"} #${aliado.ciudad.replace(/\s/g, "")} #ElGestor #${accionInfinitivo}Rápido #${ubicacion.replace(/\s/g, "")}`;
+
+  // Storytelling emocional según velocidad
+  if (diasEnMercado <= 7) {
+    caption += `🏆 ¡Logro extraordinario! Mientras el mercado promedia ${tiempoPromedio}, nuestro equipo ${tipo === "arrendado" ? "arrendó" : "vendió"} esta propiedad en tiempo récord.\n\n`;
+  } else if (diasEnMercado <= 15) {
+    caption += `⚡ Velocidad que marca la diferencia. Nuestro equipo trabaja con estrategia y resultados comprobables.\n\n`;
+  } else {
+    caption += `✅ Otro propietario satisfecho con resultados profesionales y gestión efectiva.\n\n`;
+  }
+
+  // Estrategia opcional
+  if (estrategia) {
+    caption += `🔑 Clave del éxito: ${estrategia}\n\n`;
+  } else {
+    caption += `🔑 Claves del éxito:\n`;
+    caption += `✅ Estrategia de marketing efectiva\n`;
+    caption += `✅ Precio competitivo en el mercado\n`;
+    caption += `✅ Acompañamiento profesional 24/7\n\n`;
+  }
+
+  // CTA potente
+  caption += `💪 ¿Quieres los mismos resultados?\n`;
+  caption += `👉 ${aliado.nombre} ${tipo === "arrendado" ? "arrienda" : "vende"} ${diasEnMercado <= 15 ? "3X más rápido" : "con mayor eficiencia"} que el promedio del mercado\n\n`;
+  caption += `📱 Contacta ahora: ${aliado.whatsapp}\n`;
+  caption += `🎯 Agenda tu asesoría GRATIS hoy\n\n`;
+
+  // Hashtags virales usando la función existente
+  const hashtags = [
+    `#Propiedad${tipo === "arrendado" ? "Arrendada" : "Vendida"}`,
+    `#${aliado.ciudad.replace(/\s/g, "")}`,
+    "#ElGestor",
+    diasEnMercado <= 7 ? "#Récord" : diasEnMercado <= 15 ? "#Efectividad" : "#Profesionalismo",
+    tipo === "arrendado" ? "#ArriendoRápido" : "#VentaRápida",
+    `#${ubicacion.replace(/\s/g, "")}`,
+    "#ClienteFeliz",
+    "#Resultados",
+    tipoInmueble === "apartamento" ? "#ApartamentoArrendado" :
+    tipoInmueble === "casa" ? "#CasaArrendada" :
+    tipoInmueble === "local" ? "#LocalArrendado" :
+    tipoInmueble === "oficina" ? "#OficinaArrendada" :
+    tipoInmueble === "bodega" ? "#BodegaArrendada" :
+    "#LoteVendido"
+  ];
+
+  caption += hashtags.join(" ");
 
   return caption;
 };
