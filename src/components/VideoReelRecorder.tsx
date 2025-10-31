@@ -163,19 +163,21 @@ export const VideoReelRecorder = ({
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
       
-      // Badge celebratorio grande (10% más grande, más abajo)
-      ctx.fillStyle = "white";
-      ctx.fillRect(canvas.width / 2 - 220, 320, 440, 110);
+      // Badge celebratorio - fondo sólido corporativo con texto blanco
       ctx.fillStyle = mainColor;
-      ctx.font = "bold 62px Inter, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(badgeText, canvas.width / 2, 397);
-      
-      // Restaurar sombra para otros elementos
-      ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
       ctx.shadowBlur = 20;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 4;
+      ctx.beginPath();
+      ctx.roundRect(40, 250, 1000, 120, 20);
+      ctx.fill();
+      
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 68px Poppins, sans-serif";
+      ctx.textAlign = "center";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+      ctx.shadowBlur = 10;
+      ctx.fillText(badgeText, canvas.width / 2, 335);
+      ctx.shadowBlur = 0;
       
       // Validar que los datos estén completos
       if (!arrendadoData.precio || !arrendadoData.diasEnMercado) {
@@ -183,32 +185,32 @@ export const VideoReelRecorder = ({
         return;
       }
       
-      // Precio prominente
+      // Restaurar sombra para otros elementos
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 20;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 4;
+      
+      // Precio prominente - más cerca del badge
       ctx.textAlign = "center";
       ctx.fillStyle = "white";
-      ctx.font = "bold 32px Inter, sans-serif";
-      ctx.fillText(
-        variant === "arrendado" ? "Arrendado por:" : "Vendido por:",
-        canvas.width / 2,
-        canvas.height / 2 - 100
-      );
-      ctx.font = "bold 84px Inter, sans-serif";
-      ctx.fillText(formatPrecioColombia(arrendadoData.precio), canvas.width / 2, canvas.height / 2);
+      ctx.font = "bold 72px Poppins, sans-serif";
+      ctx.fillText(formatPrecioColombia(arrendadoData.precio), canvas.width / 2, 470);
       if (variant === "arrendado") {
-        ctx.font = "bold 36px Inter, sans-serif";
-        ctx.fillText("/mes", canvas.width / 2, canvas.height / 2 + 60);
+        ctx.font = "bold 36px Poppins, sans-serif";
+        ctx.fillText("/mes", canvas.width / 2, 520);
       }
       
-      // Velocidad
+      // Velocidad - como badge secundario
       const diasTexto = arrendadoData.diasEnMercado <= 7 
-        ? `🚀 En solo ${arrendadoData.diasEnMercado} día${arrendadoData.diasEnMercado === 1 ? '' : 's'}`
+        ? `🚀 ¡RÉCORD! En solo ${arrendadoData.diasEnMercado} día${arrendadoData.diasEnMercado === 1 ? '' : 's'}`
         : arrendadoData.diasEnMercado <= 15
-        ? `⚡ En ${arrendadoData.diasEnMercado} días`
+        ? `⚡ En solo ${arrendadoData.diasEnMercado} días`
         : `🎉 En ${arrendadoData.diasEnMercado} días`;
-      ctx.font = "bold 40px Inter, sans-serif";
-      ctx.fillText(diasTexto, canvas.width / 2, canvas.height / 2 + 140);
+      ctx.font = "36px Poppins, sans-serif";
+      ctx.fillText(diasTexto, canvas.width / 2, 590);
       
-      // Tipo + Ubicación
+      // Tipo de inmueble
       const tipoLabel = {
         apartamento: "Apartamento",
         casa: "Casa",
@@ -218,12 +220,15 @@ export const VideoReelRecorder = ({
         lote: "Lote"
       }[arrendadoData.tipo] || arrendadoData.tipo;
       
-      ctx.font = "bold 44px Inter, sans-serif";
-      ctx.fillText(tipoLabel, canvas.width / 2, canvas.height / 2 + 210);
+      ctx.font = "bold 44px Poppins, sans-serif";
+      ctx.fillText(tipoLabel, canvas.width / 2, 1100);
+      
+      // Ubicación
+      ctx.font = "bold 48px Poppins, sans-serif";
       ctx.fillText(
         `📍 ${arrendadoData.ubicacion}`,
         canvas.width / 2,
-        canvas.height / 2 + 270
+        1200
       );
       
       // CTA inferior - MÁS GRANDE
