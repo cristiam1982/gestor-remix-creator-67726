@@ -79,15 +79,15 @@ export const ArrendadoPreview = ({
         )}
 
         {/* Contenido principal */}
-        <div className="relative h-full flex flex-col justify-between px-8 pt-12 pb-6 text-white">
+        <div className="relative h-full flex flex-col px-8 pt-10 pb-6 text-white">
           
           {/* Header: Badge celebratorio */}
           <div className="flex flex-col items-center gap-3 -mt-2">
             <div 
               className="px-12 py-6 rounded-3xl font-black text-6xl text-center shadow-2xl animate-scale-in"
               style={{ 
-                backgroundColor: "white",
-                color: mainColor
+                backgroundColor: mainColor,
+                color: "#fff"
               }}
             >
               {badgeText}
@@ -95,7 +95,7 @@ export const ArrendadoPreview = ({
           </div>
 
           {/* Centro: PRECIO + Velocidad + Info */}
-          <div className="flex flex-col items-center gap-5 mt-auto mb-10">
+          <div className="flex flex-col items-center gap-3 mt-4">
             
             {/* PRECIO - El elemento MÁS IMPORTANTE */}
             <div className="text-center">
@@ -144,7 +144,7 @@ export const ArrendadoPreview = ({
           </div>
 
           {/* Footer: CTA para propietarios */}
-          <div className="space-y-3 pb-2">
+          <div className="space-y-3 pb-2 mt-auto">
             <div className="text-center">
               <p className="text-2xl font-black drop-shadow-lg leading-tight">
                 💪 ¿Quieres {tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?

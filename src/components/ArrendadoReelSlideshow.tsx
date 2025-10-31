@@ -318,19 +318,19 @@ export const ArrendadoReelSlideshow = ({
           </div>
 
           {/* Contenido superpuesto */}
-          <div className="absolute inset-0 flex flex-col justify-between p-6 text-white z-10">
+          <div className="absolute inset-0 flex flex-col p-6 text-white z-10">
             {/* Badge celebratorio */}
             <div className="flex justify-center items-center pt-4">
               <div 
                 className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center"
-                style={{ backgroundColor: "white", color: mainColor }}
+                style={{ backgroundColor: mainColor, color: "#fff" }}
               >
                 {badgeText}
               </div>
             </div>
 
             {/* Centro: Precio + Info */}
-            <div className="flex flex-col items-center gap-4 my-auto">
+            <div className="flex flex-col items-center gap-3 mt-3">
               <div className="text-center">
                 <p className="text-5xl font-black drop-shadow-2xl leading-none">
                   {formatPrecioColombia(data.precio)}
@@ -380,7 +380,7 @@ export const ArrendadoReelSlideshow = ({
             </div>
 
             {/* Footer: Solo Logo El Gestor */}
-            <div className="pb-6 flex justify-center">
+            <div className="pb-6 flex justify-center mt-auto">
               <img 
                 src={elGestorLogo}
                 alt="El Gestor"
@@ -425,17 +425,17 @@ export const ArrendadoReelSlideshow = ({
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
           </div>
 
-          <div className="absolute inset-0 flex flex-col justify-between p-6 text-white">
+          <div className="absolute inset-0 flex flex-col p-6 text-white">
             <div className="flex justify-center items-center pt-4">
               <div 
                 className="px-8 py-4 rounded-3xl font-black text-3xl shadow-2xl text-center"
-                style={{ backgroundColor: "white", color: mainColor }}
+                style={{ backgroundColor: mainColor, color: "#fff" }}
               >
                 {badgeText}
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-4 my-auto">
+            <div className="flex flex-col items-center gap-3 mt-3">
               <div className="text-center">
                 <p className="text-5xl font-black drop-shadow-2xl leading-none">
                   {formatPrecioColombia(data.precio)}
@@ -484,7 +484,7 @@ export const ArrendadoReelSlideshow = ({
               </div>
             </div>
 
-            <div className="pb-6 flex justify-center">
+            <div className="pb-6 flex justify-center mt-auto">
               <img 
                 src={elGestorLogo}
                 alt="El Gestor"
