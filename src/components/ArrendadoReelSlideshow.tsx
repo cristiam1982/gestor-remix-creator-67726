@@ -365,14 +365,14 @@ export const ArrendadoReelSlideshow = ({
                   <img 
                     src={aliadoConfig.logo} 
                     alt={aliadoConfig.nombre}
-                    className="h-24 object-contain"
+                    className="h-[106px] object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
               )}
 
               {/* CTA - AHORA DENTRO DEL BLOQUE CENTRAL */}
-              <div className="text-center px-4 mt-2">
+              <div className="text-center px-4 mt-4">
                 <p className="text-lg font-black drop-shadow-lg leading-tight">
                   {data.ctaCustom || 
                    (tipo === "arrendado" ? aliadoConfig.ctaArrendado : aliadoConfig.ctaVendido) ||
@@ -472,14 +472,14 @@ export const ArrendadoReelSlideshow = ({
                   <img 
                     src={aliadoConfig.logo} 
                     alt={aliadoConfig.nombre}
-                    className="h-24 object-contain"
+                    className="h-[106px] object-contain"
                     crossOrigin="anonymous"
                   />
                 </div>
               )}
 
               {/* CTA - AHORA DENTRO DEL BLOQUE CENTRAL */}
-              <div className="text-center px-4 mt-2">
+              <div className="text-center px-4 mt-4">
                 <p className="text-lg font-black drop-shadow-lg leading-tight">
                   {data.ctaCustom || 
                    (tipo === "arrendado" ? aliadoConfig.ctaArrendado : aliadoConfig.ctaVendido) ||
