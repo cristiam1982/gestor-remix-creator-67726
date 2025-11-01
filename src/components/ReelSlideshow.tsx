@@ -126,7 +126,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [showSummarySlide, setShowSummarySlide] = useState(false);
   const [isChangingGradient, setIsChangingGradient] = useState(false);
   const [customHashtag, setCustomHashtag] = useState<string>('');
-  const [currentStep, setCurrentStep] = useState(1);
   
   // Fase 6: Logo settings
   const [logoSettings, setLogoSettings] = useState<LogoSettings>(
@@ -464,301 +463,92 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const shouldShowSummary = showSummarySlide;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
-      {/* Layout reestructurado - Controles ARRIBA, Preview ABAJO */}
-      <div className="space-y-6">
-        
-        {/* PANEL DE CONTROLES - Wizard Paso a Paso */}
-        <Card className="p-6">
-          {/* Indicador de progreso */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-3">
-              {[1, 2, 3, 4].map((step) => (
-                <div key={step} className="flex items-center flex-1">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
-                    currentStep === step 
-                      ? 'bg-primary text-primary-foreground scale-110' 
-                      : currentStep > step 
-                        ? 'bg-primary/30 text-primary' 
-                        : 'bg-muted text-muted-foreground'
-                  }`}>
-                    {step}
-                  </div>
-                  {step < 4 && (
-                    <div className={`flex-1 h-1 mx-2 rounded-full transition-all ${
-                      currentStep > step ? 'bg-primary' : 'bg-muted'
-                    }`} />
-                  )}
-                </div>
-              ))}
-            </div>
-            <p className="text-sm text-center font-medium text-muted-foreground">
-              Paso {currentStep} de 4
-            </p>
-          </div>
+      {/* Header con título y botón de descarga */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">🎬 Editor de Reel</h2>
+          <p className="text-sm text-muted-foreground">
+            {photosList.length} fotos · {((photosList.length * 1.3) + 2.5).toFixed(1)}s · {currentTemplate.name}
+          </p>
+        </div>
+        <Button onClick={handleDownloadVideo} size="lg" className="gap-2">
+          <Download className="w-5 h-5" /> Descargar MP4
+        </Button>
+      </div>
 
-          {/* Contenido del paso actual */}
-          <div className="min-h-[400px] space-y-6">
-            {/* Paso 1: Estilo Visual */}
-            {currentStep === 1 && (
-              <div className="space-y-6 animate-in fade-in duration-300">
-                <div className="text-center space-y-2 pb-4">
-                  <h3 className="text-2xl font-bold text-foreground">🎨 Estilo Visual del Reel</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Elige el template que mejor representa tu inmueble
-                  </p>
-                </div>
+      {/* Layout de dos columnas: Controles (izq) + Preview (der) */}
+      <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
+        
+        {/* PANEL DE CONTROLES - Izquierda */}
+        <aside className="space-y-4 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:sticky lg:top-4">
+          <Card className="p-6">
+            <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
+            
+            <div className="space-y-6">
+              {/* Gestión de Fotos */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">📸 Fotos del Reel ({photosList.length})</h4>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
+                    <div className="grid grid-cols-4 gap-2">
+                      {photosList.map((photo, idx) => (
+                        <SortablePhoto
+                          key={photo.id}
+                          id={photo.id}
+                          src={photo.src}
+                          index={idx}
+                          isActive={idx === currentPhotoIndex && !showSummarySlide}
+                          onClick={() => handlePhotoClick(idx)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              </div>
+
+              {/* Estilo Visual */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">🎨 Estilo Visual</h4>
                 <TemplateSelector 
                   selected={selectedTemplate}
                   onChange={setSelectedTemplate}
                 />
-                <div className="bg-accent/30 p-4 rounded-lg border border-border/50">
-                  <p className="text-xs text-muted-foreground leading-relaxed text-center">
-                    💡 Cada template tiene su propia paleta de colores y estilo visual optimizado según el tipo de inmueble.
-                  </p>
-                </div>
               </div>
-            )}
 
-            {/* Paso 2: Sombreado de Foto */}
-            {currentStep === 2 && (
-              <div className="space-y-6 animate-in fade-in duration-300">
-                <div className="text-center space-y-2 pb-4">
-                  <h3 className="text-2xl font-bold text-foreground">🌗 Sombreado de Foto</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Mejora la legibilidad del texto sobre tus fotos
-                  </p>
-                </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {(['none', 'top', 'bottom', 'both'] as const).map((dir) => {
-                    const labels = {
-                      none: { icon: '🔆', text: 'Sin Sombreado' },
-                      top: { icon: '🔝', text: 'Superior' },
-                      bottom: { icon: '🔻', text: 'Inferior' },
-                      both: { icon: '⬍', text: 'Ambos Lados' }
-                    };
-                    return (
-                      <Button
-                        key={dir}
-                        variant={gradientDirection === dir ? "default" : "outline"}
-                        size="lg"
-                        onClick={() => setGradientDirection(dir)}
-                        className="flex flex-col h-28 gap-3 transition-all hover:scale-105"
-                      >
-                        <span className="text-4xl">{labels[dir].icon}</span>
-                        <span className="text-sm font-semibold leading-tight text-center">{labels[dir].text}</span>
-                      </Button>
-                    );
-                  })}
-                </div>
-                
-                {/* Slider de intensidad */}
-                {gradientDirection !== 'none' && (
-                  <div className="pt-4 space-y-4 animate-in fade-in duration-300">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-semibold">Intensidad del Sombreado</span>
-                      <span className="text-sm font-bold bg-primary/10 px-4 py-2 rounded-full">
-                        {gradientIntensity}%
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      step="10"
-                      value={gradientIntensity}
-                      onChange={(e) => handleGradientIntensityChange(Number(e.target.value))}
-                      className="w-full h-3 bg-secondary/20 rounded-lg appearance-none cursor-pointer accent-primary"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Ligero</span>
-                      <span>Moderado</span>
-                      <span>Intenso</span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="bg-accent/30 p-4 rounded-lg border border-border/50">
-                  <p className="text-xs text-muted-foreground leading-relaxed text-center">
-                    💡 El sombreado ayuda a que el texto sea más visible sin importar el color de fondo de tus fotos.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Paso 3: Slide Final */}
-            {currentStep === 3 && (
-              <div className="space-y-6 animate-in fade-in duration-300">
-                <div className="text-center space-y-2 pb-4">
-                  <h3 className="text-2xl font-bold text-foreground">🎬 Slide Final</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Personaliza cómo se verá el cierre de tu reel
-                  </p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {(['solid', 'blur', 'mosaic'] as const).map((bg) => {
-                    const options = {
-                      solid: { 
-                        icon: '🎨', 
-                        text: 'Color Sólido',
-                        desc: 'Fondo de color plano'
-                      },
-                      blur: { 
-                        icon: '🌫️', 
-                        text: 'Foto Difuminada',
-                        desc: 'Última foto con blur'
-                      },
-                      mosaic: { 
-                        icon: '🖼️', 
-                        text: 'Mosaico',
-                        desc: 'Collage de fotos'
-                      }
-                    };
-                    return (
-                      <Button
-                        key={bg}
-                        variant={summaryBackground === bg ? "default" : "outline"}
-                        size="lg"
-                        onClick={() => setSummaryBackground(bg)}
-                        className="flex flex-col h-32 gap-2 text-center transition-all hover:scale-105"
-                      >
-                        <span className="text-4xl">{options[bg].icon}</span>
-                        <span className="text-sm font-semibold leading-tight">{options[bg].text}</span>
-                        <span className="text-xs text-muted-foreground leading-tight">{options[bg].desc}</span>
-                      </Button>
-                    );
-                  })}
-                </div>
-                
-                {/* Color picker para fondo sólido */}
-                {summaryBackground === 'solid' && (
-                  <div className="pt-4 space-y-4 animate-in fade-in duration-300">
-                    <label className="text-sm font-semibold text-center block">Color del Fondo</label>
-                    <div className="flex items-center justify-center gap-4">
-                      <input
-                        type="color"
-                        value={summarySolidColor}
-                        onChange={(e) => setSummarySolidColor(e.target.value)}
-                        className="w-20 h-20 rounded-lg cursor-pointer border-2 border-border"
-                      />
-                      <div>
-                        <p className="text-lg font-bold">{summarySolidColor.toUpperCase()}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Personaliza el color de fondo
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Hashtag personalizado */}
-                <div className="pt-4 space-y-3">
-                  <label className="text-sm font-semibold text-foreground text-center block">
-                    #️⃣ Hashtag Personalizado (Opcional)
-                  </label>
-                  <input
-                    type="text"
-                    value={customHashtag}
-                    onChange={(e) => setCustomHashtag(e.target.value.slice(0, 50))}
-                    placeholder="#TuHashtagAquí"
-                    className="w-full px-4 py-3 rounded-lg border-2 border-input bg-background text-foreground text-sm text-center"
-                  />
-                  <p className="text-xs text-muted-foreground text-center">
-                    Máximo 50 caracteres
-                  </p>
-                </div>
-
-                <div className="bg-accent/30 p-4 rounded-lg border border-border/50">
-                  <p className="text-xs text-muted-foreground leading-relaxed text-center">
-                    💡 El slide final es tu oportunidad para dejar una última impresión con tu marca.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Paso 4: Personalización Avanzada (FASE 6 - NUEVO) */}
-            {currentStep === 4 && (
-              <div className="space-y-6 animate-in fade-in duration-300">
-                <div className="text-center space-y-2 pb-4">
-                  <h3 className="text-2xl font-bold text-foreground">🎛️ Personalización Avanzada</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Ajusta logo, texto y visibilidad de elementos
-                  </p>
-                </div>
-                
-                <ReelControlsPanel
-                  gradientDirection={gradientDirection}
-                  onGradientDirectionChange={setGradientDirection}
-                  gradientIntensity={gradientIntensity}
-                  onGradientIntensityChange={handleGradientIntensityChange}
-                  summaryBackground={summaryBackground}
-                  onSummaryBackgroundChange={setSummaryBackground}
-                  logoSettings={logoSettings}
-                  onLogoSettingsChange={setLogoSettings}
-                  textComposition={textComposition}
-                  onTextCompositionChange={setTextComposition}
-                  visualLayers={visualLayers}
-                  onVisualLayersChange={setVisualLayers}
-                />
-
-                <div className="bg-accent/30 p-4 rounded-lg border border-border/50">
-                  <p className="text-xs text-muted-foreground leading-relaxed text-center">
-                    💡 Los cambios se reflejan en tiempo real en el preview. Experimenta hasta encontrar el diseño perfecto.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Botones de navegación */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
-              disabled={currentStep === 1}
-              className="gap-2"
-            >
-              ← Anterior
-            </Button>
-            
-            <div className="flex gap-2">
-              {[1, 2, 3, 4].map((step) => (
-                <button
-                  key={step}
-                  onClick={() => setCurrentStep(step)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    currentStep === step ? 'bg-primary w-6' : 'bg-muted hover:bg-muted-foreground/50'
-                  }`}
-                  aria-label={`Ir al paso ${step}`}
-                />
-              ))}
+              {/* ReelControlsPanel expandido */}
+              <ReelControlsPanel
+                gradientDirection={gradientDirection}
+                onGradientDirectionChange={setGradientDirection}
+                gradientIntensity={gradientIntensity}
+                onGradientIntensityChange={handleGradientIntensityChange}
+                summaryBackground={summaryBackground}
+                onSummaryBackgroundChange={setSummaryBackground}
+                logoSettings={logoSettings}
+                onLogoSettingsChange={setLogoSettings}
+                textComposition={textComposition}
+                onTextCompositionChange={setTextComposition}
+                visualLayers={visualLayers}
+                onVisualLayersChange={setVisualLayers}
+              />
             </div>
+          </Card>
+        </aside>
 
-            <Button
-              variant={currentStep === 4 ? "default" : "default"}
-              size="lg"
-              onClick={() => setCurrentStep(prev => Math.min(4, prev + 1))}
-              disabled={currentStep === 4}
-              className="gap-2"
-            >
-              Siguiente →
-            </Button>
-          </div>
-        </Card>
-
-        {/* PREVIEW DEL REEL - Centrado */}
-        <div className="space-y-4">
+        {/* PREVIEW EN VIVO - Derecha */}
+        <main className="space-y-4">
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-xl font-semibold text-primary">Reel Slideshow</h3>
+                <h3 className="text-lg font-semibold">Vista Previa en Vivo</h3>
                 <p className="text-sm text-muted-foreground">
-                  {photosList.length} fotos + slide final · {((photosList.length * 1.3) + 2.5).toFixed(1)}s total · {currentTemplate.name}
+                  {!showSummarySlide ? `Foto ${currentPhotoIndex + 1} de ${photosList.length}` : 'Slide Final'}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -803,11 +593,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               propertyData={propertyData}
               aliadoConfig={aliadoConfig}
               isVisible={true}
-                  photos={photosList.map(p => p.src)}
-                  backgroundStyle={summaryBackground}
-                  solidColor={summarySolidColor}
-                  customHashtag={customHashtag}
-                />
+              photos={photosList.map(p => p.src)}
+              backgroundStyle={summaryBackground}
+              solidColor={summarySolidColor}
+              customHashtag={customHashtag}
+            />
           )}
 
           {/* Foto actual con overlay y crossfade - Solo mostrar si NO es slide de resumen */}
@@ -1093,60 +883,60 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
          </div>
 
           </Card>
+        </main>
+      </div>
+
+      {/* Miniaturas reordenables - Grid horizontal con scroll */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-semibold text-foreground">
+            📸 Orden de las fotos en el reel
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Arrastra para reordenar
+          </p>
         </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
+            <div className="grid grid-cols-5 lg:grid-cols-8 gap-3">
+              {photosList.map((photo, idx) => (
+                <SortablePhoto
+                  key={photo.id}
+                  id={photo.id}
+                  src={photo.src}
+                  index={idx}
+                  isActive={idx === currentPhotoIndex && !showSummarySlide}
+                  onClick={() => handlePhotoClick(idx)}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </Card>
 
-        {/* Miniaturas reordenables - Grid horizontal con scroll */}
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-semibold text-foreground">
-              📸 Orden de las fotos en el reel
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Arrastra para reordenar
-            </p>
-          </div>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
-              <div className="grid grid-cols-5 lg:grid-cols-8 gap-3">
-                {photosList.map((photo, idx) => (
-                  <SortablePhoto
-                    key={photo.id}
-                    id={photo.id}
-                    src={photo.src}
-                    index={idx}
-                    isActive={idx === currentPhotoIndex && !showSummarySlide}
-                    onClick={() => handlePhotoClick(idx)}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        </Card>
+      {/* Botón de descarga prominente */}
+      <div className="flex justify-center">
+        <Button onClick={handleDownloadVideo} size="lg" className="w-full max-w-md h-14 text-base">
+          <Download className="mr-2 w-5 h-5" /> Descargar Video MP4
+        </Button>
+      </div>
 
-        {/* Botón de descarga prominente */}
-        <div className="flex justify-center">
-          <Button onClick={handleDownloadVideo} size="lg" className="w-full max-w-md h-14 text-base">
-            <Download className="mr-2 w-5 h-5" /> Descargar Video MP4
-          </Button>
-        </div>
-
-        {/* Instrucciones finales */}
-        <div className="p-4 bg-accent/30 rounded-lg border border-border/50">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-muted-foreground text-center">
-            <p>
-              💡 <strong className="text-foreground">Play:</strong> Ver slideshow automático
-            </p>
-            <p>
-              🔄 <strong className="text-foreground">Reordenar:</strong> Arrastra las miniaturas
-            </p>
-            <p>
-              📥 <strong className="text-foreground">Descargar:</strong> Video MP4 de alta calidad
-            </p>
-          </div>
+      {/* Instrucciones finales */}
+      <div className="p-4 bg-accent/30 rounded-lg border border-border/50">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-muted-foreground text-center">
+          <p>
+            💡 <strong className="text-foreground">Play:</strong> Ver slideshow automático
+          </p>
+          <p>
+            🔄 <strong className="text-foreground">Reordenar:</strong> Arrastra las miniaturas
+          </p>
+          <p>
+            📥 <strong className="text-foreground">Descargar:</strong> Video MP4 de alta calidad
+          </p>
         </div>
       </div>
     </div>
