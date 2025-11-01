@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { PropertyData, AliadoConfig, ReelTemplate } from "@/types/property";
+import { PropertyData, AliadoConfig, ReelTemplate, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
@@ -127,6 +127,42 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [isChangingGradient, setIsChangingGradient] = useState(false);
   const [customHashtag, setCustomHashtag] = useState<string>('');
   const [currentStep, setCurrentStep] = useState(1);
+  
+  // Fase 6: Logo settings
+  const [logoSettings, setLogoSettings] = useState<LogoSettings>(
+    propertyData.logoSettings || {
+      position: 'top-left',
+      opacity: 90,
+      background: 'box',
+      size: 'medium'
+    }
+  );
+
+  // Fase 6: Text composition settings
+  const [textComposition, setTextComposition] = useState<TextCompositionSettings>(
+    propertyData.textComposition || {
+      pricePosition: 'bottom',
+      typographyScale: 0,
+      badgeStyle: 'rounded',
+      ctaAlignment: 'left',
+      verticalSpacing: 'normal'
+    }
+  );
+
+  // Fase 6: Visual layers
+  const [visualLayers, setVisualLayers] = useState<VisualLayers>(
+    propertyData.visualLayers || {
+      showPhoto: true,
+      showGradient: true,
+      showPrice: true,
+      showBadge: true,
+      showIcons: true,
+      showAllyLogo: true,
+      showElGestorLogo: true,
+      showCTA: true
+    }
+  );
+
   const { toast } = useToast();
 
   // Color de marca del aliado
@@ -138,7 +174,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   
   // PARTE 2: Fix gradiente con CSS inline en vez de clases Tailwind dinámicas
   const gradientOverlayStyle = useMemo(() => {
-    if (gradientDirection === 'none') return {};
+    if (gradientDirection === 'none' || !visualLayers.showGradient) return {};
     
     const intensity = Math.max(0, Math.min(100, gradientIntensity));
     const alpha = (intensity / 100) * 0.7; // Mapear 0-100 a 0-0.7
@@ -154,7 +190,62 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     return {
       background: `linear-gradient(to bottom, ${rgba(alpha)} 0%, ${rgba(0)} 60%), linear-gradient(to top, ${rgba(alpha)} 0%, ${rgba(0)} 60%)`
     };
-  }, [gradientDirection, gradientIntensity]);
+  }, [gradientDirection, gradientIntensity, visualLayers.showGradient]);
+
+  // Fase 6: Estilos dinámicos del logo
+  const logoStyle = useMemo(() => {
+    const sizes = { small: 60, medium: 88, large: 120 };
+    const size = sizes[logoSettings.size];
+    
+    let backgroundClass = 'bg-white/90';
+    if (logoSettings.background === 'blur') backgroundClass = 'backdrop-blur-sm bg-white/60';
+    if (logoSettings.background === 'shadow') backgroundClass = 'bg-transparent shadow-2xl';
+    if (logoSettings.background === 'none') backgroundClass = 'bg-transparent';
+
+    const positionClasses = {
+      'top-left': 'top-6 left-6',
+      'top-right': 'top-6 right-6',
+      'bottom-center': 'bottom-6 left-1/2 -translate-x-1/2'
+    };
+
+    return {
+      size: `${size}px`,
+      opacity: logoSettings.opacity / 100,
+      backgroundClass,
+      positionClass: positionClasses[logoSettings.position]
+    };
+  }, [logoSettings]);
+
+  // Fase 6: Estilos dinámicos del texto
+  const textStyle = useMemo(() => {
+    const scale = 1 + (textComposition.typographyScale / 100);
+    
+    const badgeClasses = {
+      circular: 'rounded-full',
+      rectangular: 'rounded-none',
+      rounded: 'rounded-xl',
+      none: 'hidden'
+    };
+
+    const alignmentClasses = {
+      left: 'items-start text-left',
+      center: 'items-center text-center',
+      right: 'items-end text-right'
+    };
+
+    const spacingValues = {
+      compact: 'gap-1',
+      normal: 'gap-2',
+      spacious: 'gap-4'
+    };
+
+    return {
+      scale,
+      badgeClass: badgeClasses[textComposition.badgeStyle],
+      alignmentClass: alignmentClasses[textComposition.ctaAlignment],
+      spacingClass: spacingValues[textComposition.verticalSpacing]
+    };
+  }, [textComposition]);
 
 
   // Sensors para drag & drop
@@ -384,7 +475,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           {/* Indicador de progreso */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              {[1, 2, 3].map((step) => (
+              {[1, 2, 3, 4].map((step) => (
                 <div key={step} className="flex items-center flex-1">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
                     currentStep === step 
@@ -395,7 +486,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   }`}>
                     {step}
                   </div>
-                  {step < 3 && (
+                  {step < 4 && (
                     <div className={`flex-1 h-1 mx-2 rounded-full transition-all ${
                       currentStep > step ? 'bg-primary' : 'bg-muted'
                     }`} />
@@ -404,7 +495,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               ))}
             </div>
             <p className="text-sm text-center font-medium text-muted-foreground">
-              Paso {currentStep} de 3
+              Paso {currentStep} de 4
             </p>
           </div>
 
@@ -588,6 +679,39 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 </div>
               </div>
             )}
+
+            {/* Paso 4: Personalización Avanzada (FASE 6 - NUEVO) */}
+            {currentStep === 4 && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="text-center space-y-2 pb-4">
+                  <h3 className="text-2xl font-bold text-foreground">🎛️ Personalización Avanzada</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Ajusta logo, texto y visibilidad de elementos
+                  </p>
+                </div>
+                
+                <ReelControlsPanel
+                  gradientDirection={gradientDirection}
+                  onGradientDirectionChange={setGradientDirection}
+                  gradientIntensity={gradientIntensity}
+                  onGradientIntensityChange={handleGradientIntensityChange}
+                  summaryBackground={summaryBackground}
+                  onSummaryBackgroundChange={setSummaryBackground}
+                  logoSettings={logoSettings}
+                  onLogoSettingsChange={setLogoSettings}
+                  textComposition={textComposition}
+                  onTextCompositionChange={setTextComposition}
+                  visualLayers={visualLayers}
+                  onVisualLayersChange={setVisualLayers}
+                />
+
+                <div className="bg-accent/30 p-4 rounded-lg border border-border/50">
+                  <p className="text-xs text-muted-foreground leading-relaxed text-center">
+                    💡 Los cambios se reflejan en tiempo real en el preview. Experimenta hasta encontrar el diseño perfecto.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Botones de navegación */}
@@ -603,7 +727,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </Button>
             
             <div className="flex gap-2">
-              {[1, 2, 3].map((step) => (
+              {[1, 2, 3, 4].map((step) => (
                 <button
                   key={step}
                   onClick={() => setCurrentStep(step)}
@@ -616,10 +740,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </div>
 
             <Button
-              variant={currentStep === 3 ? "default" : "default"}
+              variant={currentStep === 4 ? "default" : "default"}
               size="lg"
-              onClick={() => setCurrentStep(prev => Math.min(3, prev + 1))}
-              disabled={currentStep === 3}
+              onClick={() => setCurrentStep(prev => Math.min(4, prev + 1))}
+              disabled={currentStep === 4}
               className="gap-2"
             >
               Siguiente →
@@ -722,13 +846,17 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </div>
           )}
 
-          {/* Logo del aliado */}
-          {!shouldShowSummary && (
-            <div className="absolute top-6 left-6 z-20">
+          {/* Logo del aliado - Fase 6: Estilos dinámicos */}
+          {!shouldShowSummary && visualLayers.showAllyLogo && (
+            <div 
+              className={`absolute z-20 ${logoStyle.positionClass}`}
+              style={{ opacity: logoStyle.opacity }}
+            >
               <img
                 src={logoRubyMorales}
                 alt={aliadoConfig.nombre}
-                className="w-[88px] h-[88px] rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
+                className={`rounded-xl border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
+                style={{ width: logoStyle.size, height: logoStyle.size }}
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
               />
@@ -741,12 +869,15 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
             
             return (
-              <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col items-start">
+              <div className={`absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col ${textStyle.alignmentClass} ${textStyle.spacingClass}`}>
                 {/* Subtítulo sobre el precio */}
-                {propertyData.subtitulos?.[currentPhotoIndex] && (
+                {visualLayers.showBadge && propertyData.subtitulos?.[currentPhotoIndex] && (
                   <div className="w-full flex justify-center mb-3">
-                    <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%]`}>
-                      <p className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
+                    <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 ${textStyle.badgeClass} shadow-lg max-w-[80%]`}>
+                      <p 
+                        className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}
+                        style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.scale})` }}
+                      >
                         {propertyData.subtitulos[currentPhotoIndex]}
                       </p>
                     </div>
@@ -754,14 +885,15 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 )}
 
                 {/* Precio con máxima visibilidad */}
-                {precio && (
+                {visualLayers.showPrice && precio && (
                   <div 
-                    className="relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2"
+                    className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2`}
                     style={{ 
                       backgroundColor: aliadoConfig.colorPrimario,
                       opacity: 0.9,
                       border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#ffffff'
+                      color: '#ffffff',
+                      transform: `scale(${textStyle.scale})`
                     }}
                   >
                     <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
@@ -773,22 +905,42 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   </div>
                 )}
                 
-                <h3 className="text-white text-2xl font-black mb-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                  {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
-                </h3>
-              {propertyData.ubicacion && (
-                <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
-              )}
+                {visualLayers.showCTA && (
+                  <>
+                    <h3 
+                      className="text-white text-2xl font-black mb-1.5" 
+                      style={{ 
+                        textShadow: '2px 2px 8px rgba(0,0,0,0.9)',
+                        fontSize: `calc(2rem * ${textStyle.scale})`
+                      }}
+                    >
+                      {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
+                    </h3>
+                    {propertyData.ubicacion && (
+                      <p 
+                        className="text-white text-lg font-bold mb-4" 
+                        style={{ 
+                          textShadow: '2px 2px 8px rgba(0,0,0,0.9)',
+                          fontSize: `calc(1.125rem * ${textStyle.scale})`
+                        }}
+                      >
+                        📍 {propertyData.ubicacion}
+                      </p>
+                    )}
+                  </>
+                )}
 
                 {/* Logo El Gestor - inferior derecha */}
-                <div className="absolute bottom-12 right-4 z-40">
-                  <img 
-                    src={elGestorLogo} 
-                    alt="El Gestor" 
-                    data-eg-logo="true"
-                    className="h-10 object-contain drop-shadow-2xl"
-                  />
-                </div>
+                {visualLayers.showElGestorLogo && (
+                  <div className="absolute bottom-12 right-4 z-40">
+                    <img 
+                      src={elGestorLogo} 
+                      alt="El Gestor" 
+                      data-eg-logo="true"
+                      className="h-10 object-contain drop-shadow-2xl"
+                    />
+                  </div>
+                )}
               </div>
             );
           })()}
@@ -859,45 +1011,53 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 )}
               </div>
 
-              {/* Logo del aliado */}
-              <div className="absolute top-6 left-6 z-20">
-                <img
-                  src={logoRubyMorales}
-                  alt={aliadoConfig.nombre}
-                  className="w-[88px] h-[88px] rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1"
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                  data-ally-logo="true"
-                />
-              </div>
+              {/* Logo del aliado - Canvas con estilos dinámicos */}
+              {visualLayers.showAllyLogo && (
+                <div 
+                  className={`absolute z-20 ${logoStyle.positionClass}`}
+                  style={{ opacity: logoStyle.opacity }}
+                >
+                  <img
+                    src={logoRubyMorales}
+                    alt={aliadoConfig.nombre}
+                    className={`rounded-xl border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
+                    style={{ width: logoStyle.size, height: logoStyle.size }}
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                    data-ally-logo="true"
+                  />
+                </div>
+              )}
 
-              {/* Precio movido al área inferior - MISMO ESTILO QUE PREVIEW */}
+              {/* Precio movido al área inferior - Canvas con estilos dinámicos */}
               {(() => {
                 const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
                 const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
                 
                 return (
-                  <div className="absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col items-start">
-                    {/* Subtítulo sobre el precio - Canvas */}
-                    {propertyData.subtitulos?.[currentPhotoIndex] && (
+                  <div className={`absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col ${textStyle.alignmentClass} ${textStyle.spacingClass}`}>
+                    {visualLayers.showBadge && propertyData.subtitulos?.[currentPhotoIndex] && (
                       <div className="w-full flex justify-center mb-3">
-                        <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 rounded-full shadow-lg max-w-[80%]`}>
-                          <p className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}>
+                        <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 ${textStyle.badgeClass} shadow-lg max-w-[80%]`}>
+                          <p 
+                            className={`${currentTemplate.subtitleStyle.textColor} font-semibold text-center leading-tight`}
+                            style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.scale})` }}
+                          >
                             {propertyData.subtitulos[currentPhotoIndex]}
                           </p>
                         </div>
                       </div>
                     )}
 
-                    {/* Precio con máxima visibilidad - Canvas */}
-                    {precio && (
+                    {visualLayers.showPrice && precio && (
                       <div 
                         className="relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2"
                         style={{ 
                           backgroundColor: aliadoConfig.colorPrimario,
                           opacity: 0.9,
                           border: '1px solid rgba(255,255,255,0.2)',
-                          color: '#ffffff'
+                          color: '#ffffff',
+                          transform: `scale(${textStyle.scale})`
                         }}
                       >
                         <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
@@ -909,22 +1069,22 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                       </div>
                     )}
                     
-                    <h3 className="text-white text-2xl font-black mb-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-                      {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
-                    </h3>
-                    {propertyData.ubicacion && (
-                      <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>📍 {propertyData.ubicacion}</p>
+                    {visualLayers.showCTA && (
+                      <>
+                        <h3 className="text-white text-2xl font-black mb-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)', fontSize: `calc(2rem * ${textStyle.scale})` }}>
+                          {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
+                        </h3>
+                        {propertyData.ubicacion && (
+                          <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)', fontSize: `calc(1.125rem * ${textStyle.scale})` }}>📍 {propertyData.ubicacion}</p>
+                        )}
+                      </>
                     )}
 
-                    {/* Logo El Gestor - inferior derecha */}
-                    <div className="absolute bottom-12 right-4 z-40">
-                      <img 
-                        src={elGestorLogo} 
-                        alt="El Gestor" 
-                        data-eg-logo="true"
-                        className="h-10 object-contain drop-shadow-2xl"
-                      />
-                    </div>
+                    {visualLayers.showElGestorLogo && (
+                      <div className="absolute bottom-12 right-4 z-40">
+                        <img src={elGestorLogo} alt="El Gestor" data-eg-logo="true" className="h-10 object-contain drop-shadow-2xl" />
+                      </div>
+                    )}
                   </div>
                 );
               })()}

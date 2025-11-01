@@ -33,6 +33,35 @@ export interface AliadoConfig {
   ctaVendido?: string;
 }
 
+// Fase 6: Logo settings
+export interface LogoSettings {
+  position: 'top-left' | 'top-right' | 'bottom-center';
+  opacity: number; // 30-100
+  background: 'none' | 'blur' | 'shadow' | 'box';
+  size: 'small' | 'medium' | 'large'; // 60px, 90px, 120px
+}
+
+// Fase 6: Text composition settings
+export interface TextCompositionSettings {
+  pricePosition: 'top' | 'center' | 'bottom';
+  typographyScale: number; // -20 a +40 (porcentaje)
+  badgeStyle: 'circular' | 'rectangular' | 'rounded' | 'none';
+  ctaAlignment: 'left' | 'center' | 'right';
+  verticalSpacing: 'compact' | 'normal' | 'spacious';
+}
+
+// Fase 6: Visual layers visibility
+export interface VisualLayers {
+  showPhoto: boolean;
+  showGradient: boolean;
+  showPrice: boolean;
+  showBadge: boolean;
+  showIcons: boolean;
+  showAllyLogo: boolean;
+  showElGestorLogo: boolean;
+  showCTA: boolean;
+}
+
 export interface PropertyData {
   tipo: PropertyType;
   modalidad?: "arriendo" | "venta";
@@ -58,4 +87,8 @@ export interface PropertyData {
   gradientIntensity?: number; // Fase 4: intensidad del gradiente (0-100)
   showSummarySlide?: boolean; // Fase 5: mostrar slide de resumen final
   summaryBackgroundStyle?: 'solid' | 'blur' | 'mosaic'; // Fase 5: estilo de fondo del slide final
+  // Fase 6: Customization settings
+  logoSettings?: LogoSettings;
+  textComposition?: TextCompositionSettings;
+  visualLayers?: VisualLayers;
 }

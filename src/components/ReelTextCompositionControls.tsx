@@ -1,0 +1,136 @@
+import { TextCompositionSettings } from "@/types/property";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+
+interface ReelTextCompositionControlsProps {
+  settings: TextCompositionSettings;
+  onChange: (settings: TextCompositionSettings) => void;
+}
+
+export const ReelTextCompositionControls = ({ settings, onChange }: ReelTextCompositionControlsProps) => {
+  const pricePositions: Array<{ value: TextCompositionSettings['pricePosition']; icon: string; label: string }> = [
+    { value: 'top', icon: '⬆️', label: 'Superior' },
+    { value: 'center', icon: '◉', label: 'Centro' },
+    { value: 'bottom', icon: '⬇️', label: 'Inferior' },
+  ];
+
+  const badgeStyles: Array<{ value: TextCompositionSettings['badgeStyle']; icon: string; label: string }> = [
+    { value: 'circular', icon: '⭕', label: 'Circular' },
+    { value: 'rectangular', icon: '▭', label: 'Rectangular' },
+    { value: 'rounded', icon: '▢', label: 'Redondeado' },
+    { value: 'none', icon: '🚫', label: 'Sin Badge' },
+  ];
+
+  const alignments: Array<{ value: TextCompositionSettings['ctaAlignment']; icon: string; label: string }> = [
+    { value: 'left', icon: '◀', label: 'Izquierda' },
+    { value: 'center', icon: '◆', label: 'Centro' },
+    { value: 'right', icon: '▶', label: 'Derecha' },
+  ];
+
+  const spacings: Array<{ value: TextCompositionSettings['verticalSpacing']; label: string }> = [
+    { value: 'compact', label: 'Compacto' },
+    { value: 'normal', label: 'Normal' },
+    { value: 'spacious', label: 'Espacioso' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Posición del Precio */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Posición del Precio</Label>
+        <div className="grid grid-cols-3 gap-2">
+          {pricePositions.map((pos) => (
+            <Button
+              key={pos.value}
+              variant={settings.pricePosition === pos.value ? "default" : "outline"}
+              size="sm"
+              onClick={() => onChange({ ...settings, pricePosition: pos.value })}
+              className="flex flex-col h-20 gap-2"
+            >
+              <span className="text-2xl">{pos.icon}</span>
+              <span className="text-xs">{pos.label}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tamaño de Tipografía */}
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <Label className="text-sm font-semibold">Tamaño de Texto</Label>
+          <span className="text-sm font-bold bg-accent px-3 py-1 rounded-full">
+            {settings.typographyScale > 0 ? '+' : ''}{settings.typographyScale}%
+          </span>
+        </div>
+        <Slider
+          value={[settings.typographyScale]}
+          onValueChange={(value) => onChange({ ...settings, typographyScale: value[0] })}
+          min={-20}
+          max={40}
+          step={10}
+          className="py-2"
+        />
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>Más Pequeño</span>
+          <span>Más Grande</span>
+        </div>
+      </div>
+
+      {/* Estilo del Badge */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Estilo del Badge</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {badgeStyles.map((style) => (
+            <Button
+              key={style.value}
+              variant={settings.badgeStyle === style.value ? "default" : "outline"}
+              size="sm"
+              onClick={() => onChange({ ...settings, badgeStyle: style.value })}
+              className="flex flex-col h-16 gap-1"
+            >
+              <span className="text-xl">{style.icon}</span>
+              <span className="text-xs">{style.label}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Alineación del CTA */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Alineación del CTA</Label>
+        <div className="grid grid-cols-3 gap-2">
+          {alignments.map((align) => (
+            <Button
+              key={align.value}
+              variant={settings.ctaAlignment === align.value ? "default" : "outline"}
+              size="sm"
+              onClick={() => onChange({ ...settings, ctaAlignment: align.value })}
+              className="flex flex-col h-16 gap-1"
+            >
+              <span className="text-xl">{align.icon}</span>
+              <span className="text-xs">{align.label}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Espaciado Vertical */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Espaciado Vertical</Label>
+        <div className="grid grid-cols-3 gap-2">
+          {spacings.map((spacing) => (
+            <Button
+              key={spacing.value}
+              variant={settings.verticalSpacing === spacing.value ? "default" : "outline"}
+              size="sm"
+              onClick={() => onChange({ ...settings, verticalSpacing: spacing.value })}
+            >
+              {spacing.label}
+            </Button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
