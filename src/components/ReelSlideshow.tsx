@@ -462,7 +462,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const shouldShowSummary = showSummarySlide;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-4 lg:px-6 xl:px-8 max-w-[1920px] mx-auto">
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
       {/* Header con título y botón de descarga */}
@@ -479,10 +479,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       </div>
 
       {/* Layout de dos columnas: Controles (izq) + Preview (der) */}
-      <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
         
         {/* PANEL DE CONTROLES - Izquierda */}
-        <aside className="space-y-4 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto lg:sticky lg:top-4">
+        <aside className="space-y-4 lg:max-h-[calc(100vh-140px)] lg:overflow-y-auto lg:sticky lg:top-4">
           <Card className="p-6">
             <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
             
@@ -551,7 +551,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
         {/* PREVIEW EN VIVO - Derecha */}
         <main className="space-y-4">
-          <Card className="p-6">
+          <Card className="p-6 xl:p-8">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold">Vista Previa en Vivo</h3>
@@ -572,7 +572,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
             {/* Vista previa principal - RESPONSIVE */}
             <div 
-              className="relative aspect-[9/16] max-w-[380px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="relative aspect-[9/16] max-w-[450px] lg:max-w-[500px] xl:max-w-[550px] 2xl:max-w-[600px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
               style={{ 
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
@@ -805,13 +805,13 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           )}
         </div>
 
-        {/* Canvas de captura OCULTO - Escalado 2.5x para generar 1080x1920 */}
+        {/* Canvas de captura OCULTO - SIEMPRE 1080x1920 para exportación */}
       <div 
         id="reel-capture-canvas" 
         className="absolute pointer-events-none"
         style={{ 
-          width: '432px', 
-          height: '768px',
+          width: '1080px', 
+          height: '1920px',
           left: '-9999px',
           top: '-9999px',
           backgroundColor: '#000000'
