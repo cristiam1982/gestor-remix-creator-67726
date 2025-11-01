@@ -10,6 +10,7 @@ import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { TemplateSelector } from "./TemplateSelector";
 import { ReelControlsPanel } from "./ReelControlsPanel";
 import { ReelSummarySlide } from "./ReelSummarySlide";
+import { ReelDurationControl } from "./ReelDurationControl";
 import { formatPrecioColombia } from "@/utils/formatters";
 import { hexToRgba } from "@/utils/colorUtils";
 import { useToast } from "@/hooks/use-toast";
@@ -126,6 +127,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [showSummarySlide, setShowSummarySlide] = useState(false);
   const [isChangingGradient, setIsChangingGradient] = useState(false);
   const [customHashtag, setCustomHashtag] = useState<string>('');
+  const [slideDuration, setSlideDuration] = useState(1300); // Duración por foto en ms
   
   // Fase 6: Logo settings
   const [logoSettings, setLogoSettings] = useState<LogoSettings>(
@@ -167,7 +169,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   // Color de marca del aliado
   const brand = aliadoConfig.colorPrimario || '#00A5BD';
   
-  const slideDuration = 1300; // 1.3 segundos por foto (mejor legibilidad)
   const summaryDuration = 2500; // 2.5 segundos para slide de resumen
   const currentTemplate = REEL_TEMPLATES[selectedTemplate];
   
@@ -412,7 +413,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         "reel-capture-canvas",
         setGenerationProgress,
         changePhoto,
-        true // includeSummary
+        true, // includeSummary
+        slideDuration // duración dinámica por foto
       );
 
       downloadBlob(
@@ -471,7 +473,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         <div>
           <h2 className="text-2xl font-bold text-foreground">🎬 Editor de Reel</h2>
           <p className="text-sm text-muted-foreground">
-            {photosList.length} fotos · {((photosList.length * 1.3) + 2.5).toFixed(1)}s · {currentTemplate.name}
+            {photosList.length} fotos · {((photosList.length * slideDuration / 1000) + 2.5).toFixed(1)}s · {currentTemplate.name}
           </p>
         </div>
         <Button onClick={handleDownloadVideo} size="lg" className="gap-2">
@@ -512,6 +514,13 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   </SortableContext>
                 </DndContext>
               </div>
+
+              {/* Control de duración */}
+              <ReelDurationControl
+                duration={slideDuration}
+                onChange={setSlideDuration}
+                photoCount={photosList.length}
+              />
 
               {/* Estilo Visual */}
               <div className="space-y-3">
@@ -884,60 +893,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
           </Card>
         </main>
-      </div>
-
-      {/* Miniaturas reordenables - Grid horizontal con scroll */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-semibold text-foreground">
-            📸 Orden de las fotos en el reel
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Arrastra para reordenar
-          </p>
-        </div>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
-            <div className="grid grid-cols-5 lg:grid-cols-8 gap-3">
-              {photosList.map((photo, idx) => (
-                <SortablePhoto
-                  key={photo.id}
-                  id={photo.id}
-                  src={photo.src}
-                  index={idx}
-                  isActive={idx === currentPhotoIndex && !showSummarySlide}
-                  onClick={() => handlePhotoClick(idx)}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-      </Card>
-
-      {/* Botón de descarga prominente */}
-      <div className="flex justify-center">
-        <Button onClick={handleDownloadVideo} size="lg" className="w-full max-w-md h-14 text-base">
-          <Download className="mr-2 w-5 h-5" /> Descargar Video MP4
-        </Button>
-      </div>
-
-      {/* Instrucciones finales */}
-      <div className="p-4 bg-accent/30 rounded-lg border border-border/50">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-muted-foreground text-center">
-          <p>
-            💡 <strong className="text-foreground">Play:</strong> Ver slideshow automático
-          </p>
-          <p>
-            🔄 <strong className="text-foreground">Reordenar:</strong> Arrastra las miniaturas
-          </p>
-          <p>
-            📥 <strong className="text-foreground">Descargar:</strong> Video MP4 de alta calidad
-          </p>
-        </div>
       </div>
     </div>
   );

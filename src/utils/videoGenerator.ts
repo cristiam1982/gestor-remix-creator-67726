@@ -315,7 +315,8 @@ export const generateReelVideoMP4 = async (
   elementId: string,
   onProgress: (progress: VideoGenerationProgress) => void,
   onPhotoChange: (index: number) => Promise<void>,
-  includeSummary: boolean = true
+  includeSummary: boolean = true,
+  slideDuration: number = 1300 // Duración dinámica por foto en ms
 ): Promise<Blob> => {
   const startTime = Date.now();
   
@@ -371,8 +372,8 @@ export const generateReelVideoMP4 = async (
       message: "Grabando video...",
     });
 
-    // Duración por foto en ms (1.3 segundos = 1300ms)
-    const photoDuration = 1300;
+    // Usar duración dinámica proporcionada
+    const photoDuration = slideDuration;
     const summaryDuration = 2500; // 2.5 segundos para slide de resumen
     const fps = 30;
     const framesPerPhoto = Math.floor((photoDuration / 1000) * fps);
