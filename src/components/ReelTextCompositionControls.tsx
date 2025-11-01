@@ -9,12 +9,6 @@ interface ReelTextCompositionControlsProps {
 }
 
 export const ReelTextCompositionControls = ({ settings, onChange }: ReelTextCompositionControlsProps) => {
-  const pricePositions: Array<{ value: TextCompositionSettings['pricePosition']; icon: string; label: string }> = [
-    { value: 'top', icon: '⬆️', label: 'Superior' },
-    { value: 'center', icon: '◉', label: 'Centro' },
-    { value: 'bottom', icon: '⬇️', label: 'Inferior' },
-  ];
-
   const badgeStyles: Array<{ value: TextCompositionSettings['badgeStyle']; icon: string; label: string }> = [
     { value: 'circular', icon: '⭕', label: 'Circular' },
     { value: 'rectangular', icon: '▭', label: 'Rectangular' },
@@ -36,25 +30,6 @@ export const ReelTextCompositionControls = ({ settings, onChange }: ReelTextComp
 
   return (
     <div className="space-y-6">
-      {/* Posición del Precio */}
-      <div className="space-y-3">
-        <Label className="text-sm font-semibold">Posición del Precio</Label>
-        <div className="grid grid-cols-3 gap-2">
-          {pricePositions.map((pos) => (
-            <Button
-              key={pos.value}
-              variant={settings.pricePosition === pos.value ? "default" : "outline"}
-              size="sm"
-              onClick={() => onChange({ ...settings, pricePosition: pos.value })}
-              className="flex flex-col h-20 gap-2"
-            >
-              <span className="text-2xl">{pos.icon}</span>
-              <span className="text-xs">{pos.label}</span>
-            </Button>
-          ))}
-        </div>
-      </div>
-
       {/* Tamaño de Tipografía */}
       <div className="space-y-3">
         <div className="flex justify-between items-center">

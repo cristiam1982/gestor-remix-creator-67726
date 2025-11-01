@@ -43,7 +43,6 @@ export interface LogoSettings {
 
 // Fase 6: Text composition settings
 export interface TextCompositionSettings {
-  pricePosition: 'top' | 'center' | 'bottom';
   typographyScale: number; // -20 a +40 (porcentaje)
   badgeStyle: 'circular' | 'rectangular' | 'rounded' | 'none';
   ctaAlignment: 'left' | 'center' | 'right';
@@ -53,12 +52,10 @@ export interface TextCompositionSettings {
 // Fase 6: Visual layers visibility
 export interface VisualLayers {
   showPhoto: boolean;
-  showGradient: boolean;
   showPrice: boolean;
   showBadge: boolean;
   showIcons: boolean;
   showAllyLogo: boolean;
-  showElGestorLogo: boolean;
   showCTA: boolean;
 }
 

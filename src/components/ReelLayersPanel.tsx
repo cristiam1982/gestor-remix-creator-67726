@@ -10,12 +10,10 @@ interface ReelLayersPanelProps {
 export const ReelLayersPanel = ({ layers, onChange }: ReelLayersPanelProps) => {
   const layerItems: Array<{ key: keyof VisualLayers; icon: string; label: string; description: string }> = [
     { key: 'showPhoto', icon: '🖼️', label: 'Foto Principal', description: 'Imagen de fondo' },
-    { key: 'showGradient', icon: '🌗', label: 'Gradiente', description: 'Sombreado para legibilidad' },
     { key: 'showPrice', icon: '💰', label: 'Precio', description: 'Canon o valor de venta' },
     { key: 'showBadge', icon: '🏷️', label: 'Badge', description: 'Etiqueta destacada' },
     { key: 'showIcons', icon: '🛏️', label: 'Iconografía', description: 'Íconos de características' },
     { key: 'showAllyLogo', icon: '🎨', label: 'Logo del Aliado', description: 'Tu marca personal' },
-    { key: 'showElGestorLogo', icon: '🏢', label: 'Logo El Gestor', description: 'Marca El Gestor' },
     { key: 'showCTA', icon: '📣', label: 'Call to Action', description: 'Llamado a la acción' },
   ];
 

@@ -142,7 +142,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   // Fase 6: Text composition settings
   const [textComposition, setTextComposition] = useState<TextCompositionSettings>(
     propertyData.textComposition || {
-      pricePosition: 'bottom',
       typographyScale: 0,
       badgeStyle: 'rounded',
       ctaAlignment: 'left',
@@ -154,12 +153,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const [visualLayers, setVisualLayers] = useState<VisualLayers>(
     propertyData.visualLayers || {
       showPhoto: true,
-      showGradient: true,
       showPrice: true,
       showBadge: true,
       showIcons: true,
       showAllyLogo: true,
-      showElGestorLogo: true,
       showCTA: true
     }
   );
@@ -174,7 +171,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   
   // PARTE 2: Fix gradiente con CSS inline en vez de clases Tailwind dinámicas
   const gradientOverlayStyle = useMemo(() => {
-    if (gradientDirection === 'none' || !visualLayers.showGradient) return {};
+    if (gradientDirection === 'none') return {};
     
     const intensity = Math.max(0, Math.min(100, gradientIntensity));
     const alpha = (intensity / 100) * 0.7; // Mapear 0-100 a 0-0.7
@@ -190,7 +187,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     return {
       background: `linear-gradient(to bottom, ${rgba(alpha)} 0%, ${rgba(0)} 60%), linear-gradient(to top, ${rgba(alpha)} 0%, ${rgba(0)} 60%)`
     };
-  }, [gradientDirection, gradientIntensity, visualLayers.showGradient]);
+  }, [gradientDirection, gradientIntensity]);
 
   // Fase 6: Estilos dinámicos del logo
   const logoStyle = useMemo(() => {
@@ -539,6 +536,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 onGradientIntensityChange={handleGradientIntensityChange}
                 summaryBackground={summaryBackground}
                 onSummaryBackgroundChange={setSummaryBackground}
+                summarySolidColor={summarySolidColor}
+                onSummarySolidColorChange={setSummarySolidColor}
                 logoSettings={logoSettings}
                 onLogoSettingsChange={setLogoSettings}
                 textComposition={textComposition}
@@ -725,21 +724,61 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                       >
                         📍 {propertyData.ubicacion}
                       </p>
-                    )}
-                  </>
-                )}
+                  )}
+                </>
+              )}
 
-                {/* Logo El Gestor - inferior derecha */}
-                {visualLayers.showElGestorLogo && (
-                  <div className="absolute bottom-12 right-4 z-40">
-                    <img 
-                      src={elGestorLogo} 
-                      alt="El Gestor" 
-                      data-eg-logo="true"
-                      className="h-10 object-contain drop-shadow-2xl"
-                    />
-                  </div>
-                )}
+              {/* Iconografía de características - Fase 6 */}
+              {visualLayers.showIcons && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {propertyData.habitaciones && (
+                    <div 
+                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      style={{ transform: `scale(${textStyle.scale})` }}
+                    >
+                      <span className="text-base">🛏️</span>
+                      <span className="text-sm font-bold text-gray-800">{propertyData.habitaciones}</span>
+                    </div>
+                  )}
+                  {propertyData.banos && (
+                    <div 
+                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      style={{ transform: `scale(${textStyle.scale})` }}
+                    >
+                      <span className="text-base">🚿</span>
+                      <span className="text-sm font-bold text-gray-800">{propertyData.banos}</span>
+                    </div>
+                  )}
+                  {propertyData.parqueaderos && (
+                    <div 
+                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      style={{ transform: `scale(${textStyle.scale})` }}
+                    >
+                      <span className="text-base">🚗</span>
+                      <span className="text-sm font-bold text-gray-800">{propertyData.parqueaderos}</span>
+                    </div>
+                  )}
+                  {propertyData.area && (
+                    <div 
+                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      style={{ transform: `scale(${textStyle.scale})` }}
+                    >
+                      <span className="text-base">📐</span>
+                      <span className="text-sm font-bold text-gray-800">{propertyData.area}m²</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Logo El Gestor - inferior derecha - SIEMPRE visible */}
+              <div className="absolute bottom-12 right-4 z-40">
+                  <img 
+                    src={elGestorLogo} 
+                    alt="El Gestor" 
+                    data-eg-logo="true"
+                    className="h-10 object-contain drop-shadow-2xl"
+                  />
+                </div>
               </div>
             );
           })()}
@@ -875,16 +914,15 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                         </h3>
                         {propertyData.ubicacion && (
                           <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)', fontSize: `calc(1.125rem * ${textStyle.scale})` }}>📍 {propertyData.ubicacion}</p>
-                        )}
-                      </>
-                    )}
+                  )}
+                </>
+              )}
 
-                    {visualLayers.showElGestorLogo && (
-                      <div className="absolute bottom-12 right-4 z-40">
-                        <img src={elGestorLogo} alt="El Gestor" data-eg-logo="true" className="h-10 object-contain drop-shadow-2xl" />
-                      </div>
-                    )}
-                  </div>
+              {/* Logo El Gestor - SIEMPRE visible */}
+              <div className="absolute bottom-12 right-4 z-40">
+                  <img src={elGestorLogo} alt="El Gestor" data-eg-logo="true" className="h-10 object-contain drop-shadow-2xl" />
+                </div>
+              </div>
                 );
               })()}
             </>

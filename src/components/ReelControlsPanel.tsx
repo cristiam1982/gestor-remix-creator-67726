@@ -17,6 +17,8 @@ interface ReelControlsPanelProps {
   // Summary background
   summaryBackground: 'solid' | 'blur' | 'mosaic';
   onSummaryBackgroundChange: (bg: 'solid' | 'blur' | 'mosaic') => void;
+  summarySolidColor?: string;
+  onSummarySolidColorChange?: (color: string) => void;
 
   // Logo settings (Fase 6)
   logoSettings: LogoSettings;
@@ -38,6 +40,8 @@ export const ReelControlsPanel = ({
   onGradientIntensityChange,
   summaryBackground,
   onSummaryBackgroundChange,
+  summarySolidColor,
+  onSummarySolidColorChange,
   logoSettings,
   onLogoSettingsChange,
   textComposition,
@@ -126,6 +130,8 @@ export const ReelControlsPanel = ({
           <SummaryBackgroundSelector
             selected={summaryBackground}
             onChange={onSummaryBackgroundChange}
+            solidColor={summarySolidColor}
+            onColorChange={onSummarySolidColorChange}
           />
           
           <p className="text-xs text-muted-foreground mt-2">
