@@ -565,7 +565,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         {/* PANEL DEL PREVIEW - Derecha (redimensionable) */}
         <ResizablePanel defaultSize={65} minSize={50}>
           <main className="space-y-4 pl-2 pr-4 h-full flex flex-col">
-          <Card className="p-3 max-w-[600px] mx-auto">
+          <Card className="p-3 max-w-[800px] mx-auto">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold">Vista Previa en Vivo</h3>
@@ -586,7 +586,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
             {/* Vista previa principal - DINÁMICO según tamaño del panel */}
             <div 
-              className="relative aspect-[9/16] w-full max-w-[min(85%,520px)] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="relative aspect-[9/16] w-full max-w-[min(90%,680px)] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
               style={{ 
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
