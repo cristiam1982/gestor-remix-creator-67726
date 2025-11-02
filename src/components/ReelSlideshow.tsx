@@ -3,6 +3,7 @@ import { PropertyData, AliadoConfig, ReelTemplate, LogoSettings, TextComposition
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
@@ -478,79 +479,92 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         </Button>
       </div>
 
-      {/* Layout de dos columnas: Controles (izq) + Preview (der) */}
-      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4">
-        
-        {/* PANEL DE CONTROLES - Izquierda */}
-        <aside className="space-y-4 lg:max-h-[calc(100vh-140px)] lg:overflow-y-auto lg:sticky lg:top-4">
-          <Card className="p-4">
-            <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
-            
-            <div className="space-y-6">
-              {/* Gestión de Fotos */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold">📸 Fotos del Reel ({photosList.length})</h4>
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
-                    <div className="grid grid-cols-4 gap-2">
-                      {photosList.map((photo, idx) => (
-                        <SortablePhoto
-                          key={photo.id}
-                          id={photo.id}
-                          src={photo.src}
-                          index={idx}
-                          isActive={idx === currentPhotoIndex && !showSummarySlide}
-                          onClick={() => handlePhotoClick(idx)}
-                        />
-                      ))}
-                    </div>
-                  </SortableContext>
-                </DndContext>
-              </div>
+      {/* Layout redimensionable para desktop */}
+      <ResizablePanelGroup 
+        direction="horizontal" 
+        className="hidden lg:flex min-h-[calc(100vh-180px)]"
+      >
+        {/* PANEL DE CONTROLES - Izquierda (redimensionable) */}
+        <ResizablePanel 
+          defaultSize={25} 
+          minSize={20} 
+          maxSize={35}
+          className="pr-2"
+        >
+          <aside className="h-full overflow-y-auto">
+            <Card className="p-4">
+              <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
+              
+              <div className="space-y-6">
+                {/* Gestión de Fotos */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold">📸 Fotos del Reel ({photosList.length})</h4>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
+                      <div className="grid grid-cols-4 gap-2">
+                        {photosList.map((photo, idx) => (
+                          <SortablePhoto
+                            key={photo.id}
+                            id={photo.id}
+                            src={photo.src}
+                            index={idx}
+                            isActive={idx === currentPhotoIndex && !showSummarySlide}
+                            onClick={() => handlePhotoClick(idx)}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                </div>
 
-              {/* Control de duración */}
-              <ReelDurationControl
-                duration={slideDuration}
-                onChange={setSlideDuration}
-                photoCount={photosList.length}
-              />
+                {/* Control de duración */}
+                <ReelDurationControl
+                  duration={slideDuration}
+                  onChange={setSlideDuration}
+                  photoCount={photosList.length}
+                />
 
-              {/* Estilo Visual */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold">🎨 Estilo Visual</h4>
-                <TemplateSelector 
-                  selected={selectedTemplate}
-                  onChange={setSelectedTemplate}
+                {/* Estilo Visual */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold">🎨 Estilo Visual</h4>
+                  <TemplateSelector 
+                    selected={selectedTemplate}
+                    onChange={setSelectedTemplate}
+                  />
+                </div>
+
+                {/* ReelControlsPanel expandido */}
+                <ReelControlsPanel
+                  gradientDirection={gradientDirection}
+                  onGradientDirectionChange={setGradientDirection}
+                  gradientIntensity={gradientIntensity}
+                  onGradientIntensityChange={handleGradientIntensityChange}
+                  summaryBackground={summaryBackground}
+                  onSummaryBackgroundChange={setSummaryBackground}
+                  summarySolidColor={summarySolidColor}
+                  onSummarySolidColorChange={setSummarySolidColor}
+                  logoSettings={logoSettings}
+                  onLogoSettingsChange={setLogoSettings}
+                  textComposition={textComposition}
+                  onTextCompositionChange={setTextComposition}
+                  visualLayers={visualLayers}
+                  onVisualLayersChange={setVisualLayers}
                 />
               </div>
+            </Card>
+          </aside>
+        </ResizablePanel>
 
-              {/* ReelControlsPanel expandido */}
-              <ReelControlsPanel
-                gradientDirection={gradientDirection}
-                onGradientDirectionChange={setGradientDirection}
-                gradientIntensity={gradientIntensity}
-                onGradientIntensityChange={handleGradientIntensityChange}
-                summaryBackground={summaryBackground}
-                onSummaryBackgroundChange={setSummaryBackground}
-                summarySolidColor={summarySolidColor}
-                onSummarySolidColorChange={setSummarySolidColor}
-                logoSettings={logoSettings}
-                onLogoSettingsChange={setLogoSettings}
-                textComposition={textComposition}
-                onTextCompositionChange={setTextComposition}
-                visualLayers={visualLayers}
-                onVisualLayersChange={setVisualLayers}
-              />
-            </div>
-          </Card>
-        </aside>
+        {/* Handle arrastrable con icono visual */}
+        <ResizableHandle withHandle />
 
-        {/* PREVIEW EN VIVO - Derecha */}
-        <main className="space-y-4 pr-4">
+        {/* PANEL DEL PREVIEW - Derecha (redimensionable) */}
+        <ResizablePanel defaultSize={75} minSize={65}>
+          <main className="space-y-4 pl-2 h-full flex flex-col">
           <Card className="p-4">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -570,9 +584,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               </div>
             </div>
 
-            {/* Vista previa principal - RESPONSIVE */}
+            {/* Vista previa principal - DINÁMICO según tamaño del panel */}
             <div 
-              className="relative aspect-[9/16] max-w-[480px] lg:max-w-[580px] xl:max-w-[680px] 2xl:max-w-[860px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="relative aspect-[9/16] w-full max-w-[min(90%,860px)] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
               style={{ 
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
@@ -929,6 +943,328 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           )}
          </div>
 
+          </Card>
+        </main>
+      </ResizablePanel>
+    </ResizablePanelGroup>
+
+      {/* Layout móvil sin redimensionar */}
+      <div className="lg:hidden space-y-4">
+        {/* PANEL DE CONTROLES */}
+        <aside className="space-y-4">
+          <Card className="p-4">
+            <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
+            
+            <div className="space-y-6">
+              {/* Gestión de Fotos */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">📸 Fotos del Reel ({photosList.length})</h4>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
+                    <div className="grid grid-cols-4 gap-2">
+                      {photosList.map((photo, idx) => (
+                        <SortablePhoto
+                          key={photo.id}
+                          id={photo.id}
+                          src={photo.src}
+                          index={idx}
+                          isActive={idx === currentPhotoIndex && !showSummarySlide}
+                          onClick={() => handlePhotoClick(idx)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              </div>
+
+              {/* Control de duración */}
+              <ReelDurationControl
+                duration={slideDuration}
+                onChange={setSlideDuration}
+                photoCount={photosList.length}
+              />
+
+              {/* Estilo Visual */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">🎨 Estilo Visual</h4>
+                <TemplateSelector 
+                  selected={selectedTemplate}
+                  onChange={setSelectedTemplate}
+                />
+              </div>
+
+              {/* ReelControlsPanel expandido */}
+              <ReelControlsPanel
+                gradientDirection={gradientDirection}
+                onGradientDirectionChange={setGradientDirection}
+                gradientIntensity={gradientIntensity}
+                onGradientIntensityChange={handleGradientIntensityChange}
+                summaryBackground={summaryBackground}
+                onSummaryBackgroundChange={setSummaryBackground}
+                summarySolidColor={summarySolidColor}
+                onSummarySolidColorChange={setSummarySolidColor}
+                logoSettings={logoSettings}
+                onLogoSettingsChange={setLogoSettings}
+                textComposition={textComposition}
+                onTextCompositionChange={setTextComposition}
+                visualLayers={visualLayers}
+                onVisualLayersChange={setVisualLayers}
+              />
+            </div>
+          </Card>
+        </aside>
+
+        {/* PREVIEW */}
+        <main className="space-y-4">
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold">Vista Previa en Vivo</h3>
+                <p className="text-sm text-muted-foreground">
+                  {!showSummarySlide ? `Foto ${currentPhotoIndex + 1} de ${photosList.length}` : 'Slide Final'}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handlePlayPause}
+                >
+                  {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                </Button>
+              </div>
+            </div>
+
+            {/* Vista previa principal - móvil */}
+            <div 
+              className="relative aspect-[9/16] max-w-[480px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              style={{ 
+                backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
+                  ? (summarySolidColor || hexToRgba(brand, 0.12)) 
+                  : '#000000' 
+              }}
+            >
+              {/* Resto del contenido del preview - mismo código que desktop */}
+              {/* Barras de progreso */}
+              <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
+                {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
+                  <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-white rounded-full transition-all duration-100"
+                      style={{
+                        width: idx < currentPhotoIndex ? "100%" : 
+                               (idx === currentPhotoIndex && !shouldShowSummary) ? `${progress}%` :
+                               (idx === photosList.length && shouldShowSummary) ? `${progress}%` : "0%"
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Slide de resumen */}
+              {shouldShowSummary && (
+                <ReelSummarySlide 
+                  propertyData={propertyData}
+                  aliadoConfig={aliadoConfig}
+                  isVisible={true}
+                  photos={photosList.map(p => p.src)}
+                  backgroundStyle={summaryBackground}
+                  solidColor={summarySolidColor}
+                  customHashtag={customHashtag}
+                />
+              )}
+
+              {/* Foto actual con overlay */}
+              {!shouldShowSummary && (
+                <div className="absolute inset-0">
+                  {photosList[previousPhotoIndex] && (
+                    <img
+                      src={photosList[previousPhotoIndex].src}
+                      alt={`Foto ${previousPhotoIndex + 1}`}
+                      className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
+                        isTransitioning ? 'photo-crossfade-enter' : 'photo-crossfade-active'
+                      }`}
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
+                  
+                  {photosList[currentPhotoIndex] && (
+                    <img
+                      src={photosList[currentPhotoIndex].src}
+                      alt={`Foto ${currentPhotoIndex + 1}`}
+                      className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
+                        isTransitioning ? 'photo-crossfade-active' : 'opacity-0'
+                      }`}
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
+                  
+                  {gradientDirection !== 'none' && (
+                    <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
+                  )}
+                </div>
+              )}
+
+              {/* Logo del aliado */}
+              {!shouldShowSummary && visualLayers.showAllyLogo && (
+                <div 
+                  className={`absolute z-20 ${logoStyle.positionClass}`}
+                  style={{ opacity: logoStyle.opacity }}
+                >
+                  <img
+                    src={logoRubyMorales}
+                    alt={aliadoConfig.nombre}
+                    className={`rounded-xl border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
+                    style={{ width: logoStyle.size, height: logoStyle.size }}
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              )}
+
+              {/* Información del inmueble */}
+              {!shouldShowSummary && (() => {
+                const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
+                const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
+                
+                return (
+                  <div className={`absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col ${textStyle.alignmentClass} ${textStyle.spacingClass}`}>
+                    {visualLayers.showBadge && propertyData.subtitulos?.[currentPhotoIndex] && (
+                      <div className="w-full flex justify-center mb-3">
+                        <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 ${textStyle.badgeClass} shadow-lg max-w-[80%]`}>
+                          <p 
+                            className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}
+                            style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.scale})` }}
+                          >
+                            {propertyData.subtitulos[currentPhotoIndex]}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {visualLayers.showPrice && precio && (
+                      <div 
+                        className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2`}
+                        style={{ 
+                          backgroundColor: aliadoConfig.colorPrimario,
+                          opacity: 0.9,
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          color: '#ffffff',
+                          transform: `scale(${textStyle.scale})`
+                        }}
+                      >
+                        <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
+                          {esVenta ? "Venta" : "Arriendo"}
+                        </span>
+                        <span className="text-2xl font-black leading-none text-white">
+                          {formatPrecioColombia(precio)}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {visualLayers.showCTA && (
+                      <>
+                        <h3 
+                          className="text-white text-2xl font-black mb-1.5" 
+                          style={{ 
+                            textShadow: '2px 2px 8px rgba(0,0,0,0.9)',
+                            fontSize: `calc(2rem * ${textStyle.scale})`
+                          }}
+                        >
+                          {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
+                        </h3>
+                        {propertyData.ubicacion && (
+                          <p 
+                            className="text-white text-lg font-bold mb-4" 
+                            style={{ 
+                              textShadow: '2px 2px 8px rgba(0,0,0,0.9)',
+                              fontSize: `calc(1.125rem * ${textStyle.scale})`
+                            }}
+                          >
+                            📍 {propertyData.ubicacion}
+                          </p>
+                        )}
+                      </>
+                    )}
+
+                    {visualLayers.showIcons && (
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {propertyData.habitaciones && (
+                          <div 
+                            className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                            style={{ transform: `scale(${textStyle.scale})` }}
+                          >
+                            <span className="text-base">🛏️</span>
+                            <span className="text-sm font-bold text-gray-800">{propertyData.habitaciones}</span>
+                          </div>
+                        )}
+                        {propertyData.banos && (
+                          <div 
+                            className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                            style={{ transform: `scale(${textStyle.scale})` }}
+                          >
+                            <span className="text-base">🚿</span>
+                            <span className="text-sm font-bold text-gray-800">{propertyData.banos}</span>
+                          </div>
+                        )}
+                        {propertyData.parqueaderos && (
+                          <div 
+                            className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                            style={{ transform: `scale(${textStyle.scale})` }}
+                          >
+                            <span className="text-base">🚗</span>
+                            <span className="text-sm font-bold text-gray-800">{propertyData.parqueaderos}</span>
+                          </div>
+                        )}
+                        {propertyData.area && (
+                          <div 
+                            className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                            style={{ transform: `scale(${textStyle.scale})` }}
+                          >
+                            <span className="text-base">📐</span>
+                            <span className="text-sm font-bold text-gray-800">{propertyData.area}m²</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-12 right-4 z-40">
+                      <img 
+                        src={elGestorLogo} 
+                        alt="El Gestor" 
+                        data-eg-logo="true"
+                        className="h-10 object-contain drop-shadow-2xl"
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {isChangingGradient && (
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 bg-black/70 backdrop-blur-sm px-6 py-3 rounded-2xl animate-fade-in shadow-2xl border border-white/20">
+                  <p className="text-white text-xl font-bold">
+                    🌗 {gradientIntensity}%
+                  </p>
+                </div>
+              )}
+
+              {!isPlaying && (
+                <div className="absolute inset-0 flex items-center justify-center z-10">
+                  <button
+                    onClick={handlePlayPause}
+                    className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all"
+                  >
+                    <Play className="w-10 h-10 text-white ml-1" />
+                  </button>
+                </div>
+              )}
+            </div>
           </Card>
         </main>
       </div>
