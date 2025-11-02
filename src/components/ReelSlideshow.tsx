@@ -4,6 +4,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
@@ -495,66 +501,78 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             <Card className="p-4">
               <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
               
-              <div className="space-y-6">
-                {/* Gestión de Fotos */}
-                <div className="space-y-3">
-                  <h4 className="text-sm font-semibold">📸 Fotos del Reel ({photosList.length})</h4>
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
-                      <div className="grid grid-cols-4 gap-2">
-                        {photosList.map((photo, idx) => (
-                          <SortablePhoto
-                            key={photo.id}
-                            id={photo.id}
-                            src={photo.src}
-                            index={idx}
-                            isActive={idx === currentPhotoIndex && !showSummarySlide}
-                            onClick={() => handlePhotoClick(idx)}
-                          />
-                        ))}
-                      </div>
-                    </SortableContext>
-                  </DndContext>
-                </div>
-
-                {/* Control de duración */}
+              {/* Control de duración fuera del accordion */}
+              <div className="mb-4">
                 <ReelDurationControl
                   duration={slideDuration}
                   onChange={setSlideDuration}
                   photoCount={photosList.length}
                 />
+              </div>
+
+              {/* Accordion colapsable */}
+              <Accordion type="single" collapsible defaultValue="fotos" className="w-full">
+                {/* Fotos del Reel */}
+                <AccordionItem value="fotos">
+                  <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+                    📸 Fotos del Reel ({photosList.length})
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
+                        <div className="grid grid-cols-4 gap-2">
+                          {photosList.map((photo, idx) => (
+                            <SortablePhoto
+                              key={photo.id}
+                              id={photo.id}
+                              src={photo.src}
+                              index={idx}
+                              isActive={idx === currentPhotoIndex && !showSummarySlide}
+                              onClick={() => handlePhotoClick(idx)}
+                            />
+                          ))}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  </AccordionContent>
+                </AccordionItem>
 
                 {/* Estilo Visual */}
-                <div className="space-y-3">
-                  <h4 className="text-sm font-semibold">🎨 Estilo Visual</h4>
-                  <TemplateSelector 
-                    selected={selectedTemplate}
-                    onChange={setSelectedTemplate}
-                  />
-                </div>
-
-                {/* ReelControlsPanel expandido */}
-                <ReelControlsPanel
-                  gradientDirection={gradientDirection}
-                  onGradientDirectionChange={setGradientDirection}
-                  gradientIntensity={gradientIntensity}
-                  onGradientIntensityChange={handleGradientIntensityChange}
-                  summaryBackground={summaryBackground}
-                  onSummaryBackgroundChange={setSummaryBackground}
-                  summarySolidColor={summarySolidColor}
-                  onSummarySolidColorChange={setSummarySolidColor}
-                  logoSettings={logoSettings}
-                  onLogoSettingsChange={setLogoSettings}
-                  textComposition={textComposition}
-                  onTextCompositionChange={setTextComposition}
-                  visualLayers={visualLayers}
-                  onVisualLayersChange={setVisualLayers}
-                />
-              </div>
+                <AccordionItem value="estilo">
+                  <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+                    🎨 Estilo Visual
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-4">
+                      <TemplateSelector 
+                        selected={selectedTemplate}
+                        onChange={setSelectedTemplate}
+                      />
+                      
+                      <ReelControlsPanel
+                        gradientDirection={gradientDirection}
+                        onGradientDirectionChange={setGradientDirection}
+                        gradientIntensity={gradientIntensity}
+                        onGradientIntensityChange={handleGradientIntensityChange}
+                        summaryBackground={summaryBackground}
+                        onSummaryBackgroundChange={setSummaryBackground}
+                        summarySolidColor={summarySolidColor}
+                        onSummarySolidColorChange={setSummarySolidColor}
+                        logoSettings={logoSettings}
+                        onLogoSettingsChange={setLogoSettings}
+                        textComposition={textComposition}
+                        onTextCompositionChange={setTextComposition}
+                        visualLayers={visualLayers}
+                        onVisualLayersChange={setVisualLayers}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </Card>
           </aside>
         </ResizablePanel>
