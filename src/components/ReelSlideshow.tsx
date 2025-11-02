@@ -572,7 +572,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
             {/* Vista previa principal - RESPONSIVE */}
             <div 
-              className="relative aspect-[9/16] max-w-[480px] lg:max-w-[580px] xl:max-w-[680px] 2xl:max-w-[780px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="relative aspect-[9/16] max-w-[480px] lg:max-w-[580px] xl:max-w-[680px] 2xl:max-w-[860px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
               style={{ 
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 

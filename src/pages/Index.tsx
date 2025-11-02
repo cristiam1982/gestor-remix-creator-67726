@@ -415,7 +415,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
+    <div className="min-h-screen bg-background py-4 md:py-6 px-2 md:px-4">
       {isDownloading && <LoadingState message="Generando tu publicación..." />}
       <MultiVideoProcessingModal
         isOpen={isProcessingMultiVideo}
@@ -424,7 +424,7 @@ const Index = () => {
         isComplete={generatedMultiVideoBlob !== null}
       />
       
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full max-w-[1600px] 2xl:max-w-[1920px] mx-auto px-2 lg:px-4">
         <div className="mb-6 flex items-center justify-between">
           <Button variant="outline" onClick={handleBackToHub}>
             ← Volver al inicio
