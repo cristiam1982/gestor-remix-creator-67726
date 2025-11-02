@@ -511,7 +511,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               </div>
 
               {/* Accordion colapsable */}
-              <Accordion type="single" collapsible defaultValue="fotos" className="w-full">
+              <Accordion type="multiple" defaultValue={["fotos", "estilo"]} className="w-full">
                 {/* Fotos del Reel */}
                 <AccordionItem value="fotos">
                   <AccordionTrigger className="text-sm font-semibold hover:no-underline">
@@ -582,8 +582,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
         {/* PANEL DEL PREVIEW - Derecha (redimensionable) */}
         <ResizablePanel defaultSize={65} minSize={50}>
-          <main className="sticky top-0 h-screen flex items-center justify-center pl-2 pr-2">
-          <Card className="p-3 w-full max-w-lg">
+          <main className="h-screen overflow-y-auto pl-2 pr-2">
+            <div className="sticky top-4 flex items-center justify-center py-4">
+              <Card className="p-3 w-full max-w-lg">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold">Vista Previa en Vivo</h3>
@@ -962,8 +963,11 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           )}
          </div>
 
-          </Card>
-        </main>
+              </Card>
+            </div>
+            {/* Espacio para generar scroll */}
+            <div className="h-[200px]"></div>
+          </main>
       </ResizablePanel>
     </ResizablePanelGroup>
 
