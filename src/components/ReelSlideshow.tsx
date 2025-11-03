@@ -560,29 +560,45 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     🎨 Estilo Visual
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="space-y-4">
-                      <TemplateSelector 
-                        selected={selectedTemplate}
-                        onChange={setSelectedTemplate}
-                      />
-                      
-                      <ReelControlsPanel
-                        gradientDirection={gradientDirection}
-                        onGradientDirectionChange={setGradientDirection}
-                        gradientIntensity={gradientIntensity}
-                        onGradientIntensityChange={handleGradientIntensityChange}
-                        summaryBackground={summaryBackground}
-                        onSummaryBackgroundChange={setSummaryBackground}
-                        summarySolidColor={summarySolidColor}
-                        onSummarySolidColorChange={setSummarySolidColor}
-                        logoSettings={logoSettings}
-                        onLogoSettingsChange={setLogoSettings}
-                        textComposition={textComposition}
-                        onTextCompositionChange={setTextComposition}
-                        visualLayers={visualLayers}
-                        onVisualLayersChange={setVisualLayers}
-                      />
-                    </div>
+                    <Accordion type="multiple" defaultValue={["tema"]} className="w-full">
+                      {/* Tema del Inmueble */}
+                      <AccordionItem value="tema">
+                        <AccordionTrigger className="text-base font-semibold">
+                          🏠 Tema del Inmueble
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <TemplateSelector 
+                            selected={selectedTemplate}
+                            onChange={setSelectedTemplate}
+                          />
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      {/* Opciones de Personalización */}
+                      <AccordionItem value="personalizacion">
+                        <AccordionTrigger className="text-base font-semibold">
+                          ⚙️ Opciones de Personalización
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <ReelControlsPanel
+                            gradientDirection={gradientDirection}
+                            onGradientDirectionChange={setGradientDirection}
+                            gradientIntensity={gradientIntensity}
+                            onGradientIntensityChange={handleGradientIntensityChange}
+                            summaryBackground={summaryBackground}
+                            onSummaryBackgroundChange={setSummaryBackground}
+                            summarySolidColor={summarySolidColor}
+                            onSummarySolidColorChange={setSummarySolidColor}
+                            logoSettings={logoSettings}
+                            onLogoSettingsChange={setLogoSettings}
+                            textComposition={textComposition}
+                            onTextCompositionChange={setTextComposition}
+                            visualLayers={visualLayers}
+                            onVisualLayersChange={setVisualLayers}
+                          />
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -1037,29 +1053,45 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   🎨 Estilo Visual
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="space-y-4">
-                    <TemplateSelector 
-                      selected={selectedTemplate}
-                      onChange={setSelectedTemplate}
-                    />
-                    
-                    <ReelControlsPanel
-                      gradientDirection={gradientDirection}
-                      onGradientDirectionChange={setGradientDirection}
-                      gradientIntensity={gradientIntensity}
-                      onGradientIntensityChange={handleGradientIntensityChange}
-                      summaryBackground={summaryBackground}
-                      onSummaryBackgroundChange={setSummaryBackground}
-                      summarySolidColor={summarySolidColor}
-                      onSummarySolidColorChange={setSummarySolidColor}
-                      logoSettings={logoSettings}
-                      onLogoSettingsChange={setLogoSettings}
-                      textComposition={textComposition}
-                      onTextCompositionChange={setTextComposition}
-                      visualLayers={visualLayers}
-                      onVisualLayersChange={setVisualLayers}
-                    />
-                  </div>
+                  <Accordion type="multiple" defaultValue={["tema"]} className="w-full">
+                    {/* Tema del Inmueble */}
+                    <AccordionItem value="tema">
+                      <AccordionTrigger className="text-base font-semibold">
+                        🏠 Tema del Inmueble
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <TemplateSelector 
+                          selected={selectedTemplate}
+                          onChange={setSelectedTemplate}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Opciones de Personalización */}
+                    <AccordionItem value="personalizacion">
+                      <AccordionTrigger className="text-base font-semibold">
+                        ⚙️ Opciones de Personalización
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <ReelControlsPanel
+                          gradientDirection={gradientDirection}
+                          onGradientDirectionChange={setGradientDirection}
+                          gradientIntensity={gradientIntensity}
+                          onGradientIntensityChange={handleGradientIntensityChange}
+                          summaryBackground={summaryBackground}
+                          onSummaryBackgroundChange={setSummaryBackground}
+                          summarySolidColor={summarySolidColor}
+                          onSummarySolidColorChange={setSummarySolidColor}
+                          logoSettings={logoSettings}
+                          onLogoSettingsChange={setLogoSettings}
+                          textComposition={textComposition}
+                          onTextCompositionChange={setTextComposition}
+                          visualLayers={visualLayers}
+                          onVisualLayersChange={setVisualLayers}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
