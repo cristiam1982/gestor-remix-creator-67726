@@ -265,14 +265,27 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
     const newFotos = propertyData.fotos || [];
     
     setPhotosList(prevList => {
-      // Crear mapa de src existentes a sus ids
-      const existingMap = new Map(prevList.map(p => [p.src, p.id]));
+      // Crear mapa de src existentes a sus ids, guardando ocurrencias
+      const existingMap = new Map<string, string[]>();
+      prevList.forEach(p => {
+        const existing = existingMap.get(p.src) || [];
+        existing.push(p.id);
+        existingMap.set(p.src, existing);
+      });
       
-      return newFotos.map((src, idx) => {
-        // Reutilizar id si ya existe, sino crear uno nuevo
-        const existingId = existingMap.get(src);
+      // Mapear con contador de ocurrencias para IDs únicos
+      const occurrenceCount = new Map<string, number>();
+      
+      return newFotos.map((src) => {
+        const occurrence = (occurrenceCount.get(src) || 0);
+        occurrenceCount.set(src, occurrence + 1);
+        
+        // Reutilizar id si existe para esta ocurrencia
+        const existingIds = existingMap.get(src) || [];
+        const existingId = existingIds[occurrence];
+        
         return {
-          id: existingId || `${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 7)}`,
+          id: existingId || `${src}::${occurrence}::${crypto.randomUUID()}`,
           src
         };
       });
@@ -488,7 +501,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       {/* Layout redimensionable para desktop */}
       <ResizablePanelGroup 
         direction="horizontal" 
-        className="hidden lg:flex min-h-[calc(100vh-180px)]"
+        className="hidden lg:flex h-[calc(100vh-160px)] overflow-hidden"
       >
         {/* PANEL DE CONTROLES - Izquierda (redimensionable) */}
         <ResizablePanel 
@@ -719,7 +732,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 {/* Precio con máxima visibilidad */}
                 {visualLayers.showPrice && precio && (
                   <div 
-                    className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2`}
+                    className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 shadow-md mb-2 ${currentTemplate.priceStyle.className}`}
                     style={{ 
                       backgroundColor: aliadoConfig.colorPrimario,
                       opacity: 0.9,
@@ -923,7 +936,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
                     {visualLayers.showPrice && precio && (
                       <div 
-                        className="relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2"
+                        className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 shadow-md mb-2 ${currentTemplate.priceStyle.className}`}
                         style={{ 
                           backgroundColor: aliadoConfig.colorPrimario,
                           opacity: 0.9,
@@ -971,73 +984,85 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       </ResizablePanel>
     </ResizablePanelGroup>
 
-      {/* Layout móvil sin redimensionar */}
+      {/* Layout móvil vertical */}
       <div className="lg:hidden space-y-4">
         {/* PANEL DE CONTROLES */}
         <aside className="space-y-4">
           <Card className="p-4">
             <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
             
-            <div className="space-y-6">
-              {/* Gestión de Fotos */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold">📸 Fotos del Reel ({photosList.length})</h4>
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
-                    <div className="grid grid-cols-4 gap-2">
-                      {photosList.map((photo, idx) => (
-                        <SortablePhoto
-                          key={photo.id}
-                          id={photo.id}
-                          src={photo.src}
-                          index={idx}
-                          isActive={idx === currentPhotoIndex && !showSummarySlide}
-                          onClick={() => handlePhotoClick(idx)}
-                        />
-                      ))}
-                    </div>
-                  </SortableContext>
-                </DndContext>
-              </div>
-
-              {/* Control de duración */}
+            {/* Control de duración fuera del accordion */}
+            <div className="mb-4">
               <ReelDurationControl
                 duration={slideDuration}
                 onChange={setSlideDuration}
                 photoCount={photosList.length}
               />
+            </div>
+
+            {/* Accordion colapsable e independiente */}
+            <Accordion type="multiple" defaultValue={["fotos", "estilo"]} className="w-full">
+              {/* Gestión de Fotos */}
+              <AccordionItem value="fotos">
+                <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+                  📸 Fotos del Reel ({photosList.length})
+                </AccordionTrigger>
+                <AccordionContent>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext items={photosList.map(p => p.id)} strategy={horizontalListSortingStrategy}>
+                      <div className="grid grid-cols-4 gap-2">
+                        {photosList.map((photo, idx) => (
+                          <SortablePhoto
+                            key={photo.id}
+                            id={photo.id}
+                            src={photo.src}
+                            index={idx}
+                            isActive={idx === currentPhotoIndex && !showSummarySlide}
+                            onClick={() => handlePhotoClick(idx)}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                </AccordionContent>
+              </AccordionItem>
 
               {/* Estilo Visual */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold">🎨 Estilo Visual</h4>
-                <TemplateSelector 
-                  selected={selectedTemplate}
-                  onChange={setSelectedTemplate}
-                />
-              </div>
-
-              {/* ReelControlsPanel expandido */}
-              <ReelControlsPanel
-                gradientDirection={gradientDirection}
-                onGradientDirectionChange={setGradientDirection}
-                gradientIntensity={gradientIntensity}
-                onGradientIntensityChange={handleGradientIntensityChange}
-                summaryBackground={summaryBackground}
-                onSummaryBackgroundChange={setSummaryBackground}
-                summarySolidColor={summarySolidColor}
-                onSummarySolidColorChange={setSummarySolidColor}
-                logoSettings={logoSettings}
-                onLogoSettingsChange={setLogoSettings}
-                textComposition={textComposition}
-                onTextCompositionChange={setTextComposition}
-                visualLayers={visualLayers}
-                onVisualLayersChange={setVisualLayers}
-              />
-            </div>
+              <AccordionItem value="estilo">
+                <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+                  🎨 Estilo Visual
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4">
+                    <TemplateSelector 
+                      selected={selectedTemplate}
+                      onChange={setSelectedTemplate}
+                    />
+                    
+                    <ReelControlsPanel
+                      gradientDirection={gradientDirection}
+                      onGradientDirectionChange={setGradientDirection}
+                      gradientIntensity={gradientIntensity}
+                      onGradientIntensityChange={handleGradientIntensityChange}
+                      summaryBackground={summaryBackground}
+                      onSummaryBackgroundChange={setSummaryBackground}
+                      summarySolidColor={summarySolidColor}
+                      onSummarySolidColorChange={setSummarySolidColor}
+                      logoSettings={logoSettings}
+                      onLogoSettingsChange={setLogoSettings}
+                      textComposition={textComposition}
+                      onTextCompositionChange={setTextComposition}
+                      visualLayers={visualLayers}
+                      onVisualLayersChange={setVisualLayers}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </Card>
         </aside>
 
@@ -1173,7 +1198,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
                     {visualLayers.showPrice && precio && (
                       <div 
-                        className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 rounded-xl shadow-md mb-2`}
+                        className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 shadow-md mb-2 ${currentTemplate.priceStyle.className}`}
                         style={{ 
                           backgroundColor: aliadoConfig.colorPrimario,
                           opacity: 0.9,
