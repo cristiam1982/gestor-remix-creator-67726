@@ -6,14 +6,17 @@ import { Check } from "lucide-react";
 interface TemplateSelectorProps {
   selected: ReelTemplate;
   onChange: (template: ReelTemplate) => void;
+  showTitle?: boolean;
 }
 
-export const TemplateSelector = ({ selected, onChange }: TemplateSelectorProps) => {
+export const TemplateSelector = ({ selected, onChange, showTitle = true }: TemplateSelectorProps) => {
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">🎨 Estilo Visual</span>
-      </div>
+      {showTitle && (
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">🎨 Estilo Visual</span>
+        </div>
+      )}
       
       <div className="grid grid-cols-3 gap-3">
         {(Object.keys(REEL_TEMPLATES) as ReelTemplate[]).map((key) => {

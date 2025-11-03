@@ -560,7 +560,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     🎨 Estilo Visual
                   </AccordionTrigger>
                   <AccordionContent>
-                    <Accordion type="multiple" defaultValue={["tema"]} className="w-full">
+                    <Accordion type="multiple" defaultValue={["tema", "personalizacion"]} className="w-full">
                       {/* Tema del Inmueble */}
                       <AccordionItem value="tema">
                         <AccordionTrigger className="text-base font-semibold">
@@ -570,6 +570,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                           <TemplateSelector 
                             selected={selectedTemplate}
                             onChange={setSelectedTemplate}
+                            showTitle={false}
                           />
                         </AccordionContent>
                       </AccordionItem>
@@ -611,8 +612,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
         {/* PANEL DEL PREVIEW - Derecha (redimensionable) */}
         <ResizablePanel defaultSize={65} minSize={50}>
-          <main className="h-screen overflow-y-auto pl-2 pr-2">
-            <div className="sticky top-4 flex items-center justify-center py-4">
+          <main className="h-full overflow-y-auto pl-2 pr-2">
+            <div className="sticky top-4 flex items-center justify-center">
               <Card className="p-3 w-full max-w-lg">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -634,7 +635,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
             {/* Vista previa principal - FLOTANTE con altura completa */}
             <div 
-              className="relative w-auto h-[85vh] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="relative w-auto max-h-[calc(100vh-220px)] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
               style={{ 
                 aspectRatio: '9/16',
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
@@ -1053,16 +1054,17 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                   🎨 Estilo Visual
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Accordion type="multiple" defaultValue={["tema"]} className="w-full">
+                  <Accordion type="multiple" defaultValue={["tema", "personalizacion"]} className="w-full">
                     {/* Tema del Inmueble */}
                     <AccordionItem value="tema">
                       <AccordionTrigger className="text-base font-semibold">
                         🏠 Tema del Inmueble
                       </AccordionTrigger>
-                      <AccordionContent>
+                        <AccordionContent>
                         <TemplateSelector 
                           selected={selectedTemplate}
                           onChange={setSelectedTemplate}
+                          showTitle={false}
                         />
                       </AccordionContent>
                     </AccordionItem>
@@ -1099,7 +1101,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         </aside>
 
         {/* PREVIEW */}
-        <main className="space-y-4">
+        <div className="sticky top-2 z-20">
           <Card className="p-4">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -1346,7 +1348,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               )}
             </div>
           </Card>
-        </main>
+        </div>
       </div>
     </div>
   );
