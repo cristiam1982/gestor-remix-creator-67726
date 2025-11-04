@@ -13,6 +13,7 @@ import {
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
+import { fetchFile } from '@ffmpeg/util';
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { TemplateSelector } from "./TemplateSelector";
 import { ReelControlsPanel } from "./ReelControlsPanel";
@@ -398,7 +399,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       
       toast({
         title: "✨ ¡Generando tu reel!",
-        description: "Esto tomará 10-25 segundos. No cierres esta pestaña.",
+        description: "Esto tomará 10-30 segundos. No cierres esta pestaña.",
       });
 
       // Función para cambiar foto durante la captura
@@ -425,7 +426,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       // Usar nueva función MP4 (Fase 2 - mejor calidad, menor peso)
       const { generateReelVideoMP4 } = await import("../utils/videoGenerator");
       
-      const videoBlob = await generateReelVideoMP4(
+      let videoBlob = await generateReelVideoMP4(
         photosList.map(p => p.src),
         "reel-capture-canvas",
         setGenerationProgress,
@@ -434,14 +435,96 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         slideDuration // duración dinámica por foto
       );
 
-      downloadBlob(
-        videoBlob,
-        `reel-${aliadoConfig.nombre.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.mp4`
-      );
+      // CONVERSIÓN A MP4 REAL si es necesario
+      const blobType = videoBlob.type.toLowerCase();
+      let finalFilename = `reel-${aliadoConfig.nombre.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`;
+      
+      if (blobType.includes('webm')) {
+        console.log('🔄 Video en formato WebM, convirtiendo a MP4...');
+        
+        try {
+          const { default: FFmpegManager } = await import("../utils/ffmpegManager");
+          const ffmpegManager = FFmpegManager.getInstance();
+          
+          setGenerationProgress({
+            stage: "encoding",
+            progress: 92,
+            message: "Convirtiendo a MP4 real...",
+          });
+
+          // Cargar FFmpeg con timeout
+          await Promise.race([
+            ffmpegManager.load((progress) => {
+              setGenerationProgress({
+                stage: "encoding",
+                progress: 92 + (progress * 0.03),
+                message: `Cargando conversor... ${Math.round(progress)}%`,
+              });
+            }),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Timeout cargando FFmpeg')), 15000)
+            )
+          ]);
+
+          // Escribir archivo de entrada
+          await ffmpegManager.writeFile('input.webm', await fetchFile(videoBlob));
+          
+          setGenerationProgress({
+            stage: "encoding",
+            progress: 95,
+            message: "Transcodificando a MP4...",
+          });
+
+          // Convertir a MP4 con configuración optimizada
+          await Promise.race([
+            ffmpegManager.exec([
+              '-i', 'input.webm',
+              '-vf', 'scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,setsar=1,fps=30',
+              '-c:v', 'libx264',
+              '-pix_fmt', 'yuv420p',
+              '-preset', 'medium',
+              '-crf', '23',
+              '-movflags', '+faststart',
+              '-an', // Sin audio
+              'output.mp4'
+            ]),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Timeout convirtiendo video')), 30000)
+            )
+          ]);
+
+          // Leer archivo de salida
+          const data = await ffmpegManager.readFile('output.mp4');
+          videoBlob = new Blob([
+            data instanceof Uint8Array ? data.buffer : data
+          ] as BlobPart[], { type: 'video/mp4' });
+          finalFilename += '.mp4';
+
+          // Limpiar archivos temporales
+          await ffmpegManager.deleteFile('input.webm').catch(() => {});
+          await ffmpegManager.deleteFile('output.mp4').catch(() => {});
+
+          console.log('✅ Conversión a MP4 completada');
+        } catch (conversionError) {
+          console.error('Error convirtiendo a MP4:', conversionError);
+          
+          toast({
+            title: "⚠️ Conversión no disponible",
+            description: "Se descargará en formato WebM. Puedes convertirlo luego con un conversor online.",
+          });
+          
+          finalFilename += '.webm';
+        }
+      } else {
+        // Ya es MP4 o compatible
+        finalFilename += '.mp4';
+      }
+
+      downloadBlob(videoBlob, finalFilename);
 
       toast({
         title: "🎉 ¡Reel generado!",
-        description: "Tu video MP4 de alta calidad se ha descargado correctamente.",
+        description: `Tu video ${finalFilename.endsWith('.mp4') ? 'MP4' : 'WebM'} se ha descargado correctamente.`,
       });
 
       if (onDownload) onDownload();
@@ -501,16 +584,16 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       {/* Layout redimensionable para desktop */}
       <ResizablePanelGroup 
         direction="horizontal" 
-        className="hidden lg:flex h-[calc(100vh-120px)] overflow-visible"
+        className="hidden lg:flex w-full"
       >
         {/* PANEL DE CONTROLES - Izquierda (redimensionable) */}
         <ResizablePanel 
           defaultSize={35} 
           minSize={25} 
           maxSize={50}
-          className="pr-2 overflow-visible"
+          className="pr-2 overflow-y-auto"
         >
-          <aside className="h-auto">
+          <aside className="space-y-4">
             <Card className="p-4">
               <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
               
@@ -611,11 +694,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         <ResizableHandle withHandle />
 
         {/* PANEL DEL PREVIEW - Derecha (redimensionable) */}
-        <ResizablePanel defaultSize={65} minSize={50} className="overflow-visible">
-          <main className="h-auto pl-2 pr-2">
-            <div className="min-h-[calc(100vh+100px)]">
-              <div className="sticky top-4 z-30 flex items-center justify-center">
-                <Card className="p-3 w-full">
+        <ResizablePanel defaultSize={65} minSize={50} className="overflow-y-auto">
+          <main className="pl-2 pr-2 py-4">
+            <div className="sticky top-4 z-30 flex items-center justify-center">
+                <Card className="p-3">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold">Vista Previa en Vivo</h3>
@@ -634,10 +716,13 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               </div>
             </div>
 
-            {/* Vista previa principal - FLOTANTE con altura completa */}
+            {/* Vista previa principal - FLOTANTE con altura fija y aspect ratio 9:16 */}
             <div 
-              className="relative h-[calc(100vh-180px)] aspect-story w-auto mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="relative aspect-story mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
               style={{
+                height: 'calc(100vh - 200px)',
+                maxHeight: '820px',
+                width: 'auto',
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
                   : '#000000' 
@@ -992,14 +1077,13 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               })()}
             </>
           )}
-         </div>
+        </div>
 
                 </Card>
               </div>
-            </div>
           </main>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        </ResizablePanel>
+      </ResizablePanelGroup>
 
       {/* Layout móvil vertical */}
       <div className="lg:hidden space-y-4">

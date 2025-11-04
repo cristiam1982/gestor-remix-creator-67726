@@ -71,31 +71,38 @@ const captureFrame = async (
       await document.fonts.ready;
     }
 
+    // MEJORA: Configuración optimizada para 1080x1920
     const commonOptions = {
-      scale: 2.5,
+      scale: 1, // Escala 1:1 para evitar reescalados
       backgroundColor: "#000000",
       logging: false,
-      width: 432,
-      height: 768,
+      width: 1080,
+      height: 1920,
       useCORS: true,
       allowTaint: false,
       imageTimeout: 30000,
       removeContainer: false,
-      windowWidth: 432,
-      windowHeight: 768,
+      windowWidth: 1080,
+      windowHeight: 1920,
       onclone: (clonedDoc: Document) => {
         // Forzar que las imágenes se capturen con colores reales
         const imgs = clonedDoc.querySelectorAll('img');
         imgs.forEach(img => {
-          (img as HTMLImageElement).style.opacity = '1';
+          const imgElement = img as HTMLImageElement;
+          imgElement.style.opacity = '1';
+          // Asegurar que las imágenes estén completamente cargadas
+          if (!imgElement.complete) {
+            imgElement.loading = 'eager';
+          }
         });
       }
     };
 
     let canvas: HTMLCanvasElement;
     
-    // Intentar primero con modo estándar (más confiable)
+    // MEJORA: Secuencia de reintentos robusta
     try {
+      // Intento 1: Modo estándar (más confiable)
       canvas = await html2canvas(element, {
         ...commonOptions,
         foreignObjectRendering: false,
@@ -109,6 +116,7 @@ const captureFrame = async (
         
         if (isBlack) {
           console.warn("Canvas negro detectado, reintentando con foreignObjectRendering");
+          // Intento 2: Con foreignObjectRendering
           canvas = await html2canvas(element, {
             ...commonOptions,
             foreignObjectRendering: true,
@@ -117,13 +125,16 @@ const captureFrame = async (
       }
     } catch (firstError) {
       // Si falla (por CORS), intentar con foreignObjectRendering
-      console.warn("Captura estándar falló, intentando con foreignObjectRendering");
+      console.warn("Captura estándar falló, intentando con foreignObjectRendering:", firstError);
       canvas = await html2canvas(element, {
         ...commonOptions,
         foreignObjectRendering: true,
       });
     }
 
+    // Log de verificación
+    console.log(`✅ Frame capturado: ${canvas.width}x${canvas.height}`);
+    
     return canvas;
   } catch (error) {
     // Si es un error de CORS y no hemos intentado ocultar el logo, reintentar
@@ -385,6 +396,9 @@ export const generateReelVideoMP4 = async (
     for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
       await onPhotoChange(photoIndex);
       await waitForNextFrame();
+      
+      // MEJORA: Delay adicional para asegurar renderizado completo
+      await new Promise(resolve => setTimeout(resolve, 150));
 
       // Capturar el elemento actual
       const frameCanvas = await captureFrame(elementId, false);

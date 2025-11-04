@@ -19,13 +19,16 @@ export const VideoGenerationProgressModal = ({ progress }: VideoGenerationProgre
   };
 
   const getTitle = () => {
+    if (progress.message.includes("Transcodificando") || progress.message.includes("Convirtiendo a MP4")) {
+      return "Transcodificando a MP4...";
+    }
     switch (progress.stage) {
       case "initializing":
         return "Preparando generador...";
       case "capturing":
         return "Capturando frames";
       case "encoding":
-        return "Codificando video";
+        return progress.progress > 90 ? "Finalizando..." : "Codificando video";
       case "complete":
         return "¡Video listo!";
       case "error":

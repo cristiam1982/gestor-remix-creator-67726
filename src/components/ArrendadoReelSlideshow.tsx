@@ -293,7 +293,13 @@ export const ArrendadoReelSlideshow = ({
         </div>
 
         {/* Vista previa */}
-        <div className="relative aspect-story max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4">
+        <div 
+          className="relative aspect-story mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4"
+          style={{
+            maxWidth: '420px',
+            height: 'auto'
+          }}
+        >
           {/* Barras de progreso */}
           <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
             {photos.map((_, idx) => (
@@ -412,10 +418,11 @@ export const ArrendadoReelSlideshow = ({
           id="arrendado-reel-capture"
           className="absolute pointer-events-none"
           style={{ 
-            width: '432px',
-            height: '768px',
-            left: '-9999px',
-            top: '-9999px',
+            width: '1080px',
+            height: '1920px',
+            left: '0px',
+            top: '0px',
+            opacity: 0,
             backgroundColor: '#000000'
           }}
         >
