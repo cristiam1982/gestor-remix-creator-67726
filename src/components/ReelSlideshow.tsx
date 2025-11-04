@@ -636,7 +636,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
             {/* Vista previa principal - FLOTANTE con altura completa */}
             <div 
-              className="relative w-full aspect-[9/16] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="relative w-full aspect-story mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
               style={{
                 maxHeight: 'calc(100vh - 220px)',
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
@@ -1123,7 +1123,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
             {/* Vista previa principal - móvil */}
             <div 
-              className="relative aspect-[9/16] w-full max-w-[420px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="relative aspect-story w-full max-w-[420px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
               style={{ 
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 

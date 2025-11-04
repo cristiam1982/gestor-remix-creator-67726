@@ -49,7 +49,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
   }, [onReady]);
 
   const isStory = contentType === "historia";
-  const dimensions = isStory ? "aspect-[9/16]" : "aspect-square";
+  const dimensions = isStory ? "aspect-story" : "aspect-square";
 
   const handlePrevPhoto = () => {
     if (propertyData.fotos && currentPhotoIndex > 0) {

@@ -124,4 +124,9 @@ All colors MUST be HSL.
   .photo-crossfade-active {
     opacity: 1;
   }
+
+  /* Utility: fixed 9:16 aspect ratio for story/reel previews */
+  .aspect-story {
+    aspect-ratio: 9 / 16;
+  }
 }

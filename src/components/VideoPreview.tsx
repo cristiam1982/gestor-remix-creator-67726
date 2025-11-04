@@ -122,7 +122,7 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
         )}
 
         {/* Vista previa del video */}
-        <div className="relative aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl">
+        <div className="relative aspect-story max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl">
           <video
             ref={videoRef}
             src={videoUrl}

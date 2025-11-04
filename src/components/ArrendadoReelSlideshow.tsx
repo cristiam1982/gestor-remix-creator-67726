@@ -293,7 +293,7 @@ export const ArrendadoReelSlideshow = ({
         </div>
 
         {/* Vista previa */}
-        <div className="relative aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4">
+        <div className="relative aspect-story max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4">
           {/* Barras de progreso */}
           <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
             {photos.map((_, idx) => (
