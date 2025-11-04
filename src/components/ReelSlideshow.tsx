@@ -501,14 +501,14 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       {/* Layout redimensionable para desktop */}
       <ResizablePanelGroup 
         direction="horizontal" 
-        className="hidden lg:flex h-[calc(100vh-120px)] overflow-y-auto"
+        className="hidden lg:flex h-[calc(100vh-120px)] overflow-visible"
       >
         {/* PANEL DE CONTROLES - Izquierda (redimensionable) */}
         <ResizablePanel 
           defaultSize={35} 
           minSize={25} 
           maxSize={50}
-          className="pr-2"
+          className="pr-2 overflow-visible"
         >
           <aside className="h-auto">
             <Card className="p-4">
@@ -611,7 +611,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         <ResizableHandle withHandle />
 
         {/* PANEL DEL PREVIEW - Derecha (redimensionable) */}
-        <ResizablePanel defaultSize={65} minSize={50}>
+        <ResizablePanel defaultSize={65} minSize={50} className="overflow-visible">
           <main className="h-auto pl-2 pr-2">
             <div className="min-h-[calc(100vh+100px)]">
               <div className="sticky top-4 z-30 flex items-center justify-center">
@@ -876,8 +876,9 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         style={{ 
           width: '1080px', 
           height: '1920px',
-          left: '-9999px',
-          top: '-9999px',
+          left: '0px',
+          top: '0px',
+          opacity: 0,
           backgroundColor: '#000000'
         }}
       >
