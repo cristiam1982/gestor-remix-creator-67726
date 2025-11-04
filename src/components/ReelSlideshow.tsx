@@ -501,7 +501,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       {/* Layout redimensionable para desktop */}
       <ResizablePanelGroup 
         direction="horizontal" 
-        className="hidden lg:flex h-[calc(100vh-120px)] overflow-visible"
+        className="hidden lg:flex h-[calc(100vh-120px)] overflow-y-auto"
       >
         {/* PANEL DE CONTROLES - Izquierda (redimensionable) */}
         <ResizablePanel 
@@ -510,7 +510,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           maxSize={50}
           className="pr-2"
         >
-          <aside className="h-full overflow-y-auto">
+          <aside className="h-auto">
             <Card className="p-4">
               <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
               
@@ -612,10 +612,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
         {/* PANEL DEL PREVIEW - Derecha (redimensionable) */}
         <ResizablePanel defaultSize={65} minSize={50}>
-          <main className="h-full overflow-y-auto pl-2 pr-2">
+          <main className="h-auto pl-2 pr-2">
             <div className="min-h-[calc(100vh+100px)]">
               <div className="sticky top-4 z-30 flex items-center justify-center">
-                <Card className="p-3 w-full max-w-[28rem]">
+                <Card className="p-3 w-full">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold">Vista Previa en Vivo</h3>
@@ -636,9 +636,8 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
             {/* Vista previa principal - FLOTANTE con altura completa */}
             <div 
-              className="relative w-full aspect-story mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="relative h-[calc(100vh-180px)] aspect-story w-auto mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
               style={{
-                maxHeight: 'calc(100vh - 220px)',
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
                   : '#000000' 
