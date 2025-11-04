@@ -416,7 +416,7 @@ export const ArrendadoReelSlideshow = ({
         {/* Canvas oculto para captura */}
         <div 
           id="arrendado-reel-capture"
-          className="absolute pointer-events-none"
+          className="relative absolute pointer-events-none"
           style={{ 
             width: '1080px',
             height: '1920px',

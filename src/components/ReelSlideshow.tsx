@@ -718,7 +718,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
             {/* Vista previa principal - FLOTANTE con altura fija y aspect ratio 9:16 */}
             <div 
-              className="relative aspect-story mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className="hidden"
               style={{
                 height: 'calc(100vh - 200px)',
                 maxHeight: '820px',
@@ -957,7 +957,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         {/* Canvas de captura OCULTO - SIEMPRE 1080x1920 para exportación */}
       <div 
         id="reel-capture-canvas" 
-        className="absolute pointer-events-none"
+        className="relative absolute pointer-events-none"
         style={{ 
           width: '1080px', 
           height: '1920px',
@@ -1085,8 +1085,280 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         </ResizablePanel>
       </ResizablePanelGroup>
 
+      {/* Preview fijo en escritorio */}
+      <div className="hidden lg:block">
+        <div className="fixed top-24 right-6 z-40">
+          <Card className="p-3">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold">Vista Previa en Vivo</h3>
+                <p className="text-sm text-muted-foreground">
+                  {!shouldShowSummary ? `Foto ${currentPhotoIndex + 1} de ${photosList.length}` : 'Slide Final'}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="icon" onClick={handlePlayPause}>
+                  {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                </Button>
+              </div>
+            </div>
+
+            <div 
+              className="relative aspect-story mx-auto rounded-xl overflow-hidden shadow-2xl"
+              style={{
+                height: 'calc(100vh - 200px)',
+                maxHeight: '820px',
+                width: 'calc((100vh - 200px) * 0.5625)',
+                backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
+                  ? (summarySolidColor || hexToRgba(brand, 0.12)) 
+                  : '#000000' 
+              }}
+            >
+              {/* Barras de progreso - incluye slide de resumen */}
+              <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
+                {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
+                  <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-white rounded-full transition-all duration-100"
+                      style={{
+                        width: idx < currentPhotoIndex ? "100%" : 
+                               (idx === currentPhotoIndex && !shouldShowSummary) ? `${progress}%` :
+                               (idx === photosList.length && shouldShowSummary) ? `${progress}%` : "0%"
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Slide de resumen o foto actual */}
+              {shouldShowSummary ? (
+                <ReelSummarySlide 
+                  propertyData={propertyData}
+                  aliadoConfig={aliadoConfig}
+                  isVisible={true}
+                  photos={photosList.map(p => p.src)}
+                  backgroundStyle={summaryBackground}
+                  solidColor={summarySolidColor}
+                  customHashtag={customHashtag}
+                />
+              ) : (
+                <div className="absolute inset-0">
+                  {photosList[previousPhotoIndex] && (
+                    <img
+                      src={photosList[previousPhotoIndex].src}
+                      alt={`Foto ${previousPhotoIndex + 1}`}
+                      className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${isTransitioning ? 'photo-crossfade-enter' : 'photo-crossfade-active'}`}
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
+                  {photosList[currentPhotoIndex] && (
+                    <img
+                      src={photosList[currentPhotoIndex].src}
+                      alt={`Foto ${currentPhotoIndex + 1}`}
+                      className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${isTransitioning ? 'photo-crossfade-active' : 'opacity-0'}`}
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
+                  {gradientDirection !== 'none' && (
+                    <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
+                  )}
+                </div>
+              )}
+
+              {/* Logo del aliado */}
+              {!shouldShowSummary && visualLayers.showAllyLogo && (
+                <div 
+                  className={`absolute z-20 ${logoStyle.positionClass}`}
+                  style={{ opacity: logoStyle.opacity }}
+                >
+                  <img
+                    src={logoRubyMorales}
+                    alt={aliadoConfig.nombre}
+                    className={`rounded-xl border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
+                    style={{ width: logoStyle.size, height: logoStyle.size }}
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              )}
+
+              {/* Logo El Gestor */}
+              <div className="absolute bottom-12 right-4 z-40">
+                <img 
+                  src={elGestorLogo} 
+                  alt="El Gestor" 
+                  data-eg-logo="true"
+                  className="h-10 object-contain drop-shadow-2xl"
+                />
+              </div>
+
+              {/* Play overlay */}
+              {!isPlaying && (
+                <div className="absolute inset-0 flex items-center justify-center z-30">
+                  <button
+                    onClick={() => setIsPlaying(true)}
+                    className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all"
+                  >
+                    <Play className="w-10 h-10 text-white ml-1" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
+      </div>
+
       {/* Layout móvil vertical */}
       <div className="lg:hidden space-y-4">
+        {/* Vista previa móvil */}
+        <Card className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold">Vista Previa</h3>
+              <p className="text-sm text-muted-foreground">
+                {!showSummarySlide ? `Foto ${currentPhotoIndex + 1} de ${photosList.length}` : 'Slide Final'}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="icon" onClick={handlePlayPause}>
+                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              </Button>
+            </div>
+          </div>
+
+          <div 
+            className="relative aspect-story mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-2"
+            style={{
+              maxWidth: '420px',
+              height: 'auto',
+              backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
+                ? (summarySolidColor || hexToRgba(brand, 0.12)) 
+                : '#000000' 
+            }}
+          >
+            {/* Barras de progreso */}
+            <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
+              {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
+                <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-white rounded-full transition-all duration-100"
+                    style={{
+                      width: idx < currentPhotoIndex ? "100%" : 
+                             (idx === currentPhotoIndex && !showSummarySlide) ? `${progress}%` :
+                             (idx === photosList.length && showSummarySlide) ? `${progress}%` : "0%"
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Foto o slide de resumen */}
+            {showSummarySlide ? (
+              <ReelSummarySlide 
+                propertyData={propertyData}
+                aliadoConfig={aliadoConfig}
+                isVisible={true}
+                photos={photosList.map(p => p.src)}
+                backgroundStyle={summaryBackground}
+                solidColor={summarySolidColor}
+                customHashtag={customHashtag}
+              />
+            ) : (
+              <img
+                src={photosList[currentPhotoIndex]?.src}
+                alt={`Foto ${currentPhotoIndex + 1}`}
+                className="absolute inset-0 w-full h-full object-cover"
+                crossOrigin="anonymous"
+                referrerPolicy="no-referrer"
+              />
+            )}
+
+            {/* Play overlay */}
+            {!isPlaying && (
+              <div className="absolute inset-0 flex items-center justify-center z-30">
+                <button
+                  onClick={() => setIsPlaying(true)}
+                  className="w-16 h-16 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all"
+                >
+                  <Play className="w-8 h-8 text-white ml-1" />
+                </button>
+              </div>
+            )}
+          </div>
+        </Card>
+
+        {/* Canvas de captura OCULTO móvil (para exportación) */}
+        <div 
+          id="reel-capture-canvas" 
+          className="relative absolute pointer-events-none"
+          style={{ 
+            width: '1080px', 
+            height: '1920px',
+            left: '0px',
+            top: '0px',
+            opacity: 0,
+            backgroundColor: '#000000'
+          }}
+        >
+          {/* Slide de resumen para captura */}
+          {showSummarySlide && (
+            <ReelSummarySlide 
+              propertyData={propertyData}
+              aliadoConfig={aliadoConfig}
+              isVisible={true}
+              photos={photosList.map(p => p.src)}
+              backgroundStyle={summaryBackground}
+              solidColor={summarySolidColor}
+              customHashtag={customHashtag}
+            />
+          )}
+
+          {/* Foto actual con overlay - Igual que en desktop */}
+          {!showSummarySlide && (
+            <>
+              <div className="absolute inset-0">
+                {photosList[currentPhotoIndex] && (
+                  <img
+                    src={photosList[currentPhotoIndex].src}
+                    alt={`Foto ${currentPhotoIndex + 1}`}
+                    className="w-full h-full object-cover"
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
+                {gradientDirection !== 'none' && (
+                  <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
+                )}
+              </div>
+
+              {/* Logo del aliado */}
+              {visualLayers.showAllyLogo && (
+                <div 
+                  className={`absolute z-20 ${logoStyle.positionClass}`}
+                  style={{ opacity: logoStyle.opacity }}
+                >
+                  <img
+                    src={logoRubyMorales}
+                    alt={aliadoConfig.nombre}
+                    className={`rounded-xl border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
+                    style={{ width: logoStyle.size, height: logoStyle.size }}
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                    data-ally-logo="true"
+                  />
+                </div>
+              )}
+
+              {/* Logo El Gestor - inferior derecha */}
+              <div className="absolute bottom-12 right-4 z-40">
+                <img src={elGestorLogo} alt="El Gestor" data-eg-logo="true" className="h-10 object-contain drop-shadow-2xl" />
+              </div>
+            </>
+          )}
+        </div>
+
         {/* PANEL DE CONTROLES */}
         <aside className="space-y-4">
           <Card className="p-4">
