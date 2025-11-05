@@ -455,13 +455,21 @@ export const ReelSlideshow = ({
           
           toast({
             title: "🔄 Convirtiendo a MP4",
-            description: "Optimizando para Instagram y iPhone...",
+            description: "Cargando conversor...",
           });
 
           const ffmpeg = FFmpegManager.getInstance();
           
           if (!ffmpeg.isLoaded()) {
+            toast({
+              title: "⏳ Descargando conversor",
+              description: "Primera vez: ~5-10 segundos...",
+            });
             await ffmpeg.load();
+            toast({
+              title: "✅ Conversor listo",
+              description: "Convirtiendo a MP4...",
+            });
           }
 
           // Escribir archivo input
@@ -561,7 +569,7 @@ export const ReelSlideshow = ({
   const shouldShowSummary = showSummarySlide;
 
   return (
-    <div className="space-y-4 max-w-full mx-auto">
+    <div className="space-y-4 max-w-full mx-auto pb-0">
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
       {/* Header con título y botón de descarga */}
@@ -675,14 +683,14 @@ export const ReelSlideshow = ({
               </Accordion>
             </Card>
 
-            {/* Caption Card */}
-            {caption !== undefined && onCaptionChange && onCopyCaption && onRegenerateCaption && (
+            {/* Caption Card - Siempre visible si hay caption */}
+            {caption && (
               <Card className="p-6">
-                <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
+                <h3 className="text-xl font-semibold mb-4 text-primary">📝 Caption Generado</h3>
                 <div className="space-y-2 mb-4">
                   <Textarea
                     value={caption}
-                    onChange={(e) => onCaptionChange(e.target.value)}
+                    onChange={(e) => onCaptionChange?.(e.target.value)}
                     className="min-h-[150px] font-mono text-sm"
                     placeholder="Tu caption aparecerá aquí..."
                   />
@@ -691,12 +699,13 @@ export const ReelSlideshow = ({
                   </p>
                 </div>
                 <div className="flex gap-3">
-                  <Button onClick={onCopyCaption} variant="secondary" className="flex-1">
+                  <Button onClick={onCopyCaption} variant="secondary" className="flex-1" disabled={!onCopyCaption}>
                     📋 Copiar Caption
                   </Button>
                   <Button 
                     onClick={onRegenerateCaption}
                     variant="outline"
+                    disabled={!onRegenerateCaption}
                   >
                     Regenerar
                   </Button>

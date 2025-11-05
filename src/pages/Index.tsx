@@ -851,15 +851,17 @@ const Index = () => {
                 </div>
               </Card>
             ) : selectedContentType === "reel-fotos" && aliadoConfig ? (
-              // Reel animado: ReelSlideshow con caption integrado
-              <ReelSlideshow
-                propertyData={propertyData as PropertyData}
-                aliadoConfig={aliadoConfig}
-                caption={generatedCaption}
-                onCaptionChange={(v) => setGeneratedCaption(v)}
-                onCopyCaption={handleCopyCaption}
-                onRegenerateCaption={handleRegenerateCaption}
-              />
+              // Reel animado: ReelSlideshow con caption integrado - Sin espacio extra
+              <div className="space-y-0">
+                <ReelSlideshow
+                  propertyData={propertyData as PropertyData}
+                  aliadoConfig={aliadoConfig}
+                  caption={generatedCaption}
+                  onCaptionChange={(v) => setGeneratedCaption(v)}
+                  onCopyCaption={handleCopyCaption}
+                  onRegenerateCaption={handleRegenerateCaption}
+                />
+              </div>
             ) : selectedContentType === "carrusel" && aliadoConfig ? (
               // Carrusel con múltiples slides
               <CarouselGenerator
