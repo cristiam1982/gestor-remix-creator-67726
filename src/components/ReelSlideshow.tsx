@@ -683,8 +683,8 @@ export const ReelSlideshow = ({
               </Accordion>
             </Card>
 
-            {/* Caption Card - Siempre visible si hay caption */}
-            {caption && (
+            {/* Caption Card */}
+            {caption !== undefined && (
               <Card className="p-6">
                 <h3 className="text-xl font-semibold mb-4 text-primary">📝 Caption Generado</h3>
                 <div className="space-y-2 mb-4">
@@ -979,9 +979,11 @@ export const ReelSlideshow = ({
         style={{ 
           width: '1080px', 
           height: '1920px',
-          left: '0px',
-          top: '0px',
-          opacity: 0,
+          position: 'absolute',
+          left: '-9999px',
+          top: '-9999px',
+          visibility: 'hidden',
+          pointerEvents: 'none',
           backgroundColor: '#000000'
         }}
       >
@@ -1176,75 +1178,6 @@ export const ReelSlideshow = ({
           </div>
         </Card>
 
-        {/* Canvas de captura OCULTO móvil (para exportación) */}
-        <div 
-          id="reel-capture-canvas" 
-          className="relative absolute pointer-events-none"
-          style={{ 
-            width: '1080px', 
-            height: '1920px',
-            left: '0px',
-            top: '0px',
-            opacity: 0,
-            backgroundColor: '#000000'
-          }}
-        >
-          {/* Slide de resumen para captura */}
-          {showSummarySlide && (
-            <ReelSummarySlide 
-              propertyData={propertyData}
-              aliadoConfig={aliadoConfig}
-              isVisible={true}
-              photos={photosList.map(p => p.src)}
-              backgroundStyle={summaryBackground}
-              solidColor={summarySolidColor}
-              customHashtag={customHashtag}
-            />
-          )}
-
-          {/* Foto actual con overlay - Igual que en desktop */}
-          {!showSummarySlide && (
-            <>
-              <div className="absolute inset-0">
-                {photosList[currentPhotoIndex] && (
-                  <img
-                    src={photosList[currentPhotoIndex].src}
-                    alt={`Foto ${currentPhotoIndex + 1}`}
-                    className="w-full h-full object-cover"
-                    crossOrigin="anonymous"
-                    referrerPolicy="no-referrer"
-                  />
-                )}
-                {gradientDirection !== 'none' && (
-                  <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
-                )}
-              </div>
-
-              {/* Logo del aliado */}
-              {visualLayers.showAllyLogo && (
-                <div 
-                  className={`absolute z-20 ${logoStyle.positionClass}`}
-                  style={{ opacity: logoStyle.opacity }}
-                >
-                  <img
-                    src={logoRubyMorales}
-                    alt={aliadoConfig.nombre}
-                    className={`rounded-xl border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
-                    style={{ width: logoStyle.size, height: logoStyle.size }}
-                    crossOrigin="anonymous"
-                    referrerPolicy="no-referrer"
-                    data-ally-logo="true"
-                  />
-                </div>
-              )}
-
-              {/* Logo El Gestor - inferior derecha */}
-              <div className="absolute bottom-12 right-4 z-40">
-                <img src={elGestorLogo} alt="El Gestor" data-eg-logo="true" className="h-10 object-contain drop-shadow-2xl" />
-              </div>
-            </>
-          )}
-        </div>
 
         {/* PANEL DE CONTROLES */}
         <aside className="space-y-4">
@@ -1593,13 +1526,13 @@ export const ReelSlideshow = ({
           </Card>
 
           {/* Caption Card - Móvil */}
-          {caption !== undefined && onCaptionChange && onCopyCaption && onRegenerateCaption && (
+          {caption !== undefined && (
             <Card className="p-6">
               <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
               <div className="space-y-2 mb-4">
                 <Textarea
                   value={caption}
-                  onChange={(e) => onCaptionChange(e.target.value)}
+                  onChange={(e) => onCaptionChange?.(e.target.value)}
                   className="min-h-[150px] font-mono text-sm"
                   placeholder="Tu caption aparecerá aquí..."
                 />
@@ -1608,12 +1541,13 @@ export const ReelSlideshow = ({
                 </p>
               </div>
               <div className="flex gap-3">
-                <Button onClick={onCopyCaption} variant="secondary" className="flex-1">
+                <Button onClick={onCopyCaption} variant="secondary" className="flex-1" disabled={!onCopyCaption}>
                   📋 Copiar Caption
                 </Button>
                 <Button 
                   onClick={onRegenerateCaption}
                   variant="outline"
+                  disabled={!onRegenerateCaption}
                 >
                   Regenerar
                 </Button>
