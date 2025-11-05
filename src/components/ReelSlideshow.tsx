@@ -452,7 +452,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             message: "Convirtiendo a MP4 real...",
           });
 
-          // Cargar FFmpeg con timeout
+          // Cargar FFmpeg con timeout aumentado
           await Promise.race([
             ffmpegManager.load((progress) => {
               setGenerationProgress({
@@ -462,7 +462,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               });
             }),
             new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout cargando FFmpeg')), 15000)
+              setTimeout(() => reject(new Error('Timeout cargando FFmpeg')), 30000)
             )
           ]);
 
@@ -475,7 +475,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             message: "Transcodificando a MP4...",
           });
 
-          // Convertir a MP4 con configuración optimizada
+          // Convertir a MP4 con configuración optimizada y timeout aumentado
           await Promise.race([
             ffmpegManager.exec([
               '-i', 'input.webm',
@@ -489,7 +489,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               'output.mp4'
             ]),
             new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout convirtiendo video')), 30000)
+              setTimeout(() => reject(new Error('Timeout convirtiendo video')), 60000)
             )
           ]);
 
@@ -509,11 +509,12 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           console.error('Error convirtiendo a MP4:', conversionError);
           
           toast({
-            title: "⚠️ Conversión no disponible",
-            description: "Se descargará en formato WebM. Puedes convertirlo luego con un conversor online.",
+            title: "⚠️ Se descargó en WebM",
+            description: "Convierte a MP4 en cloudconvert.com si es necesario.",
+            variant: "default",
           });
           
-          finalFilename += '.webm';
+          finalFilename = `reel-${propertyData.tipo}-${Date.now()}.webm`;
         }
       } else {
         // Ya es MP4 o compatible
@@ -565,7 +566,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const shouldShowSummary = showSummarySlide;
 
   return (
-    <div className="space-y-4 max-w-full mx-auto lg:pr-[560px]">
+    <div className="space-y-4 max-w-full mx-auto">
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
       {/* Header con título y botón de descarga */}
@@ -581,19 +582,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         </Button>
       </div>
 
-      {/* Layout redimensionable para desktop */}
-      <ResizablePanelGroup 
-        direction="horizontal" 
-        className="hidden lg:flex w-full"
-      >
-        {/* PANEL DE CONTROLES - Izquierda (redimensionable) */}
-        <ResizablePanel 
-          defaultSize={35} 
-          minSize={25} 
-          maxSize={50}
-          className="pr-2 overflow-y-auto"
-        >
-          <aside className="space-y-4">
+      {/* Layout de 2 columnas para desktop */}
+      <div className="hidden lg:grid lg:grid-cols-[1fr_480px] lg:gap-6 lg:items-start px-4 lg:px-6">
+        {/* PANEL DE CONTROLES - Izquierda */}
+        <div className="space-y-4">
             <Card className="p-4">
               <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
               
@@ -687,42 +679,31 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 </AccordionItem>
               </Accordion>
             </Card>
-          </aside>
-        </ResizablePanel>
+        </div>
 
-        {/* Handle arrastrable con icono visual */}
-        <ResizableHandle withHandle />
-
-        {/* PANEL DEL PREVIEW - Derecha (redimensionable) */}
-        <ResizablePanel defaultSize={65} minSize={50} className="overflow-y-auto">
-          <main className="pl-2 pr-2 py-4">
-            <div className="sticky top-4 z-30 flex items-center justify-center">
-                <Card className="p-3">
-            <div className="flex items-center justify-between mb-4">
+        {/* PANEL DE PREVIEW - Derecha (sticky) */}
+        <div className="sticky top-20 space-y-4">
+          <Card className="p-4 shadow-2xl border-2">
+            <div className="flex items-center justify-between mb-3">
               <div>
-                <h3 className="text-lg font-semibold">Vista Previa en Vivo</h3>
-                <p className="text-sm text-muted-foreground">
-                  {!showSummarySlide ? `Foto ${currentPhotoIndex + 1} de ${photosList.length}` : 'Slide Final'}
+                <h3 className="text-base font-semibold">Vista Previa en Vivo</h3>
+                <p className="text-xs text-muted-foreground">
+                  {!shouldShowSummary ? `Foto ${currentPhotoIndex + 1} de ${photosList.length}` : 'Slide Final'}
                 </p>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handlePlayPause}
-                >
-                  {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                </Button>
-              </div>
+              <Button variant="ghost" size="icon" onClick={handlePlayPause} className="h-8 w-8">
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              </Button>
             </div>
 
-            {/* Vista previa principal - FLOTANTE con altura fija y aspect ratio 9:16 */}
+            {/* Vista previa principal - sticky desktop */}
             <div 
-              className="hidden"
+              className="relative aspect-story mx-auto rounded-2xl overflow-hidden shadow-2xl"
               style={{
-                height: 'calc(100vh - 200px)',
-                maxHeight: '820px',
-                width: 'auto',
+                height: 'calc(100vh - 160px)',
+                maxHeight: '860px',
+                width: '100%',
+                maxWidth: '480px',
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
                   : '#000000' 
@@ -919,6 +900,10 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 </div>
               )}
 
+              </div>
+            );
+          })()}
+
               {/* Logo El Gestor - inferior derecha - SIEMPRE visible */}
               <div className="absolute bottom-12 right-4 z-40">
                   <img 
@@ -928,9 +913,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                     className="h-10 object-contain drop-shadow-2xl"
                   />
                 </div>
-              </div>
-            );
-          })()}
 
           {/* PARTE 4: Feedback visual al cambiar gradiente */}
           {isChangingGradient && (
@@ -943,16 +925,19 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
           {/* Play/Pause overlay */}
           {!isPlaying && (
-            <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="absolute inset-0 flex items-center justify-center z-30">
               <button
-                onClick={handlePlayPause}
+                onClick={() => setIsPlaying(true)}
                 className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all"
               >
                 <Play className="w-10 h-10 text-white ml-1" />
               </button>
             </div>
           )}
+            </div>
+          </Card>
         </div>
+      </div>
 
         {/* Canvas de captura OCULTO - SIEMPRE 1080x1920 para exportación */}
       <div 
@@ -1078,136 +1063,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             </>
           )}
         </div>
-
-                </Card>
-              </div>
-          </main>
-        </ResizablePanel>
-      </ResizablePanelGroup>
-
-      {/* Preview fijo en escritorio */}
-      <div className="hidden lg:block">
-        <div className="fixed top-20 right-8 z-40 animate-in fade-in slide-in-from-right-5 duration-500">
-          <Card className="p-4 shadow-2xl border-2 backdrop-blur-sm bg-card/95">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h3 className="text-base font-semibold">Vista Previa en Vivo</h3>
-                <p className="text-xs text-muted-foreground">
-                  {!shouldShowSummary ? `Foto ${currentPhotoIndex + 1} de ${photosList.length}` : 'Slide Final'}
-                </p>
-              </div>
-              <Button variant="ghost" size="icon" onClick={handlePlayPause} className="h-8 w-8">
-                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              </Button>
-            </div>
-
-            <div 
-              className="relative aspect-story mx-auto rounded-2xl overflow-hidden shadow-2xl"
-              style={{
-                height: 'calc(100vh - 140px)',
-                maxHeight: '920px',
-                width: 'calc((100vh - 140px) * 0.5625)',
-                maxWidth: '520px',
-                backgroundColor: shouldShowSummary && summaryBackground === 'solid'
-                  ? (summarySolidColor || hexToRgba(brand, 0.12)) 
-                  : '#000000' 
-              }}
-            >
-              {/* Barras de progreso - incluye slide de resumen */}
-              <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
-                {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
-                  <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-white rounded-full transition-all duration-100"
-                      style={{
-                        width: idx < currentPhotoIndex ? "100%" : 
-                               (idx === currentPhotoIndex && !shouldShowSummary) ? `${progress}%` :
-                               (idx === photosList.length && shouldShowSummary) ? `${progress}%` : "0%"
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* Slide de resumen o foto actual */}
-              {shouldShowSummary ? (
-                <ReelSummarySlide 
-                  propertyData={propertyData}
-                  aliadoConfig={aliadoConfig}
-                  isVisible={true}
-                  photos={photosList.map(p => p.src)}
-                  backgroundStyle={summaryBackground}
-                  solidColor={summarySolidColor}
-                  customHashtag={customHashtag}
-                />
-              ) : (
-                <div className="absolute inset-0">
-                  {photosList[previousPhotoIndex] && (
-                    <img
-                      src={photosList[previousPhotoIndex].src}
-                      alt={`Foto ${previousPhotoIndex + 1}`}
-                      className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${isTransitioning ? 'photo-crossfade-enter' : 'photo-crossfade-active'}`}
-                      crossOrigin="anonymous"
-                      referrerPolicy="no-referrer"
-                    />
-                  )}
-                  {photosList[currentPhotoIndex] && (
-                    <img
-                      src={photosList[currentPhotoIndex].src}
-                      alt={`Foto ${currentPhotoIndex + 1}`}
-                      className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${isTransitioning ? 'photo-crossfade-active' : 'opacity-0'}`}
-                      crossOrigin="anonymous"
-                      referrerPolicy="no-referrer"
-                    />
-                  )}
-                  {gradientDirection !== 'none' && (
-                    <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
-                  )}
-                </div>
-              )}
-
-              {/* Logo del aliado */}
-              {!shouldShowSummary && visualLayers.showAllyLogo && (
-                <div 
-                  className={`absolute z-20 ${logoStyle.positionClass}`}
-                  style={{ opacity: logoStyle.opacity }}
-                >
-                  <img
-                    src={logoRubyMorales}
-                    alt={aliadoConfig.nombre}
-                    className={`rounded-xl border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
-                    style={{ width: logoStyle.size, height: logoStyle.size }}
-                    crossOrigin="anonymous"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-              )}
-
-              {/* Logo El Gestor */}
-              <div className="absolute bottom-12 right-4 z-40">
-                <img 
-                  src={elGestorLogo} 
-                  alt="El Gestor" 
-                  data-eg-logo="true"
-                  className="h-10 object-contain drop-shadow-2xl"
-                />
-              </div>
-
-              {/* Play overlay */}
-              {!isPlaying && (
-                <div className="absolute inset-0 flex items-center justify-center z-30">
-                  <button
-                    onClick={() => setIsPlaying(true)}
-                    className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all"
-                  >
-                    <Play className="w-10 h-10 text-white ml-1" />
-                  </button>
-                </div>
-              )}
-            </div>
-          </Card>
-        </div>
-      </div>
 
       {/* Layout móvil vertical */}
       <div className="lg:hidden space-y-4">
