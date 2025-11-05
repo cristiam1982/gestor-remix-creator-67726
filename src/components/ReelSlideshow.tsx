@@ -354,6 +354,13 @@ export const ReelSlideshow = ({
     return () => clearInterval(progressInterval);
   }, [isPlaying, currentPhotoIndex, slideDuration, summaryDuration, showSummarySlide]);
 
+  // Precargar FFmpeg para evitar timeouts
+  useEffect(() => {
+    FFmpegManager.getInstance().load().catch(() => {
+      console.log('FFmpeg precarga falló, se cargará al descargar');
+    });
+  }, []);
+
   const handlePlayPause = () => {
     if (!isPlaying) {
       setShowSummarySlide(false); // Resetear slide de resumen al iniciar
@@ -482,15 +489,21 @@ export const ReelSlideshow = ({
             description: "Aplicando codec H.264 para compatibilidad...",
           });
 
-          await ffmpeg.exec([
-            '-i', 'input.webm',
-            '-c:v', 'libx264',
-            '-preset', 'fast',
-            '-crf', '23',
-            '-pix_fmt', 'yuv420p',
-            '-movflags', '+faststart',
-            '-an',
-            'output.mp4'
+          // Timeout de 20 segundos para la conversión
+          await Promise.race([
+            ffmpeg.exec([
+              '-i', 'input.webm',
+              '-c:v', 'libx264',
+              '-preset', 'fast',
+              '-crf', '23',
+              '-pix_fmt', 'yuv420p',
+              '-movflags', '+faststart',
+              '-an',
+              'output.mp4'
+            ]),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Timeout: conversión excedió 20s')), 20000)
+            )
           ]);
 
           // Leer resultado
@@ -572,7 +585,7 @@ export const ReelSlideshow = ({
     <div className="space-y-4 max-w-full mx-auto pb-0">
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
-      {/* Header con título y botón de descarga */}
+      {/* Header con título */}
       <div className="flex items-center justify-between px-4 lg:px-6">
         <div>
           <h2 className="text-2xl font-bold text-foreground">🎬 Editor de Reel</h2>
@@ -580,9 +593,6 @@ export const ReelSlideshow = ({
             {photosList.length} fotos · {((photosList.length * slideDuration / 1000) + 2.5).toFixed(1)}s · {currentTemplate.name}
           </p>
         </div>
-        <Button onClick={handleDownloadVideo} size="lg" className="gap-2">
-          <Download className="w-5 h-5" /> Descargar MP4
-        </Button>
       </div>
 
       {/* Layout de 2 columnas para desktop */}
@@ -729,14 +739,14 @@ export const ReelSlideshow = ({
               </Button>
             </div>
 
-            {/* Vista previa principal - sticky desktop */}
+            {/* Vista previa principal - sticky desktop (10% más grande) */}
             <div 
               className="relative aspect-story mx-auto rounded-2xl overflow-hidden shadow-2xl"
               style={{
                 height: 'calc(100vh - 160px)',
-                maxHeight: '860px',
+                maxHeight: '946px',
                 width: '100%',
-                maxWidth: '480px',
+                maxWidth: '528px',
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
                   : '#000000' 
@@ -967,6 +977,17 @@ export const ReelSlideshow = ({
               </button>
             </div>
           )}
+            </div>
+            
+            {/* Botones de descarga dentro del Card */}
+            <div className="mt-4 space-y-2">
+              <Button 
+                onClick={handleDownloadVideo} 
+                size="lg" 
+                className="w-full gap-2"
+              >
+                <Download className="w-5 h-5" /> Descargar Video
+              </Button>
             </div>
           </Card>
         </div>
