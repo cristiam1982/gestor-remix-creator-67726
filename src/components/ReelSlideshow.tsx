@@ -452,7 +452,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             message: "Convirtiendo a MP4 real...",
           });
 
-          // Cargar FFmpeg con timeout aumentado
+          // Cargar FFmpeg con timeout aumentado a 45s
           await Promise.race([
             ffmpegManager.load((progress) => {
               setGenerationProgress({
@@ -462,7 +462,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               });
             }),
             new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout cargando FFmpeg')), 30000)
+              setTimeout(() => reject(new Error('Timeout cargando FFmpeg')), 45000)
             )
           ]);
 
@@ -475,7 +475,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
             message: "Transcodificando a MP4...",
           });
 
-          // Convertir a MP4 con configuración optimizada y timeout aumentado
+          // Convertir a MP4 con configuración optimizada y timeout aumentado a 90s
           await Promise.race([
             ffmpegManager.exec([
               '-i', 'input.webm',
@@ -489,7 +489,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               'output.mp4'
             ]),
             new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout convirtiendo video')), 60000)
+              setTimeout(() => reject(new Error('Timeout convirtiendo video')), 90000)
             )
           ]);
 
@@ -509,12 +509,12 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           console.error('Error convirtiendo a MP4:', conversionError);
           
           toast({
-            title: "⚠️ Se descargó en WebM",
-            description: "Convierte a MP4 en cloudconvert.com si es necesario.",
+            title: "⚠️ Descargado en formato WebM",
+            description: "Convierte a MP4 en cloudconvert.com si es necesario para mayor compatibilidad.",
             variant: "default",
           });
           
-          finalFilename = `reel-${propertyData.tipo}-${Date.now()}.webm`;
+          finalFilename = `reel-WEBM-${propertyData.tipo}-${Date.now()}.webm`;
         }
       } else {
         // Ya es MP4 o compatible

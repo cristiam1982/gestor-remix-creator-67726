@@ -851,10 +851,12 @@ const Index = () => {
               </Card>
             ) : selectedContentType === "reel-fotos" && aliadoConfig ? (
               // Reel animado: ReelSlideshow con botón de descarga integrado
-              <ReelSlideshow
-                propertyData={propertyData as PropertyData}
-                aliadoConfig={aliadoConfig}
-              />
+              <div className="space-y-6">
+                <ReelSlideshow
+                  propertyData={propertyData as PropertyData}
+                  aliadoConfig={aliadoConfig}
+                />
+              </div>
             ) : selectedContentType === "carrusel" && aliadoConfig ? (
               // Carrusel con múltiples slides
               <CarouselGenerator
@@ -910,9 +912,10 @@ const Index = () => {
               </Card>
             )}
 
-            <Card className="p-6">
-              <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
-              <div className="space-y-2 mb-4">
+            {selectedContentType !== "reel-fotos" && (
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
+                <div className="space-y-2 mb-4">
                 <Textarea
                   value={generatedCaption}
                   onChange={(e) => setGeneratedCaption(e.target.value)}
@@ -961,8 +964,9 @@ const Index = () => {
                 >
                   🎉 Crear Otra
                 </Button>
-              </div>
-            </Card>
+                </div>
+              </Card>
+            )}
           </div>
         )}
       </div>
