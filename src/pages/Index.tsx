@@ -850,12 +850,63 @@ const Index = () => {
                 </div>
               </Card>
             ) : selectedContentType === "reel-fotos" && aliadoConfig ? (
-              // Reel animado: ReelSlideshow con botón de descarga integrado
+              // Reel animado: ReelSlideshow con caption incluido
               <div className="space-y-6">
                 <ReelSlideshow
                   propertyData={propertyData as PropertyData}
                   aliadoConfig={aliadoConfig}
                 />
+                <Card className="p-6">
+                  <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
+                  <div className="space-y-2 mb-4">
+                    <Textarea
+                      value={generatedCaption}
+                      onChange={(e) => setGeneratedCaption(e.target.value)}
+                      className="min-h-[150px] font-mono text-sm"
+                      placeholder="Tu caption aparecerá aquí..."
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {generatedCaption.length} caracteres
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button onClick={handleCopyCaption} variant="secondary" className="flex-1">
+                            📋 Copiar Caption
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Copia el texto para pegar en Instagram o Facebook</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            onClick={handleRegenerateCaption}
+                            variant="outline"
+                          >
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Regenerar
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Genera una versión alternativa del caption</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <Button 
+                      onClick={handleBackToHub}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      🎉 Crear Otra
+                    </Button>
+                  </div>
+                </Card>
               </div>
             ) : selectedContentType === "carrusel" && aliadoConfig ? (
               // Carrusel con múltiples slides

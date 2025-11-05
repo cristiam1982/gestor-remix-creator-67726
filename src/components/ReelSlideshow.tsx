@@ -440,93 +440,26 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       let finalFilename = `reel-${aliadoConfig.nombre.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`;
       
       if (blobType.includes('webm')) {
-        console.log('🔄 Video en formato WebM, convirtiendo a MP4...');
+        // Descargar directamente en WebM - es compatible con redes sociales modernas
+        console.log('✅ Video generado en WebM - formato nativo del navegador');
+        const webmFilename = `reel-${propertyData.tipo}-${Date.now()}.webm`;
         
-        try {
-          const { default: FFmpegManager } = await import("../utils/ffmpegManager");
-          const ffmpegManager = FFmpegManager.getInstance();
-          
-          setGenerationProgress({
-            stage: "encoding",
-            progress: 92,
-            message: "Convirtiendo a MP4 real...",
-          });
-
-          // Cargar FFmpeg con timeout aumentado a 45s
-          await Promise.race([
-            ffmpegManager.load((progress) => {
-              setGenerationProgress({
-                stage: "encoding",
-                progress: 92 + (progress * 0.03),
-                message: `Cargando conversor... ${Math.round(progress)}%`,
-              });
-            }),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout cargando FFmpeg')), 45000)
-            )
-          ]);
-
-          // Escribir archivo de entrada
-          await ffmpegManager.writeFile('input.webm', await fetchFile(videoBlob));
-          
-          setGenerationProgress({
-            stage: "encoding",
-            progress: 95,
-            message: "Transcodificando a MP4...",
-          });
-
-          // Convertir a MP4 con configuración optimizada y timeout aumentado a 90s
-          await Promise.race([
-            ffmpegManager.exec([
-              '-i', 'input.webm',
-              '-vf', 'scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,setsar=1,fps=30',
-              '-c:v', 'libx264',
-              '-pix_fmt', 'yuv420p',
-              '-preset', 'medium',
-              '-crf', '23',
-              '-movflags', '+faststart',
-              '-an', // Sin audio
-              'output.mp4'
-            ]),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout convirtiendo video')), 90000)
-            )
-          ]);
-
-          // Leer archivo de salida
-          const data = await ffmpegManager.readFile('output.mp4');
-          videoBlob = new Blob([
-            data instanceof Uint8Array ? data.buffer : data
-          ] as BlobPart[], { type: 'video/mp4' });
-          finalFilename += '.mp4';
-
-          // Limpiar archivos temporales
-          await ffmpegManager.deleteFile('input.webm').catch(() => {});
-          await ffmpegManager.deleteFile('output.mp4').catch(() => {});
-
-          console.log('✅ Conversión a MP4 completada');
-        } catch (conversionError) {
-          console.error('Error convirtiendo a MP4:', conversionError);
-          
-          toast({
-            title: "⚠️ Descargado en formato WebM",
-            description: "Convierte a MP4 en cloudconvert.com si es necesario para mayor compatibilidad.",
-            variant: "default",
-          });
-          
-          finalFilename = `reel-WEBM-${propertyData.tipo}-${Date.now()}.webm`;
-        }
+        downloadBlob(videoBlob, webmFilename);
+        
+        toast({
+          title: "✅ Video descargado en WebM",
+          description: "Compatible con Instagram, Facebook y TikTok. Para MP4, usa cloudconvert.com",
+        });
       } else {
-        // Ya es MP4 o compatible
-        finalFilename += '.mp4';
+        // Ya es MP4
+        const mp4Filename = `reel-${propertyData.tipo}-${Date.now()}.mp4`;
+        downloadBlob(videoBlob, mp4Filename);
+        
+        toast({
+          title: "✅ Video descargado en MP4",
+          description: "Tu reel está listo para compartir",
+        });
       }
-
-      downloadBlob(videoBlob, finalFilename);
-
-      toast({
-        title: "🎉 ¡Reel generado!",
-        description: `Tu video ${finalFilename.endsWith('.mp4') ? 'MP4' : 'WebM'} se ha descargado correctamente.`,
-      });
 
       if (onDownload) onDownload();
     } catch (error) {
