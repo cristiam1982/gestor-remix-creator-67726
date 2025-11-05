@@ -565,7 +565,7 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
   const shouldShowSummary = showSummarySlide;
 
   return (
-    <div className="space-y-4 max-w-full mx-auto">
+    <div className="space-y-4 max-w-full mx-auto lg:pr-[560px]">
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
       {/* Header con título y botón de descarga */}
@@ -1087,29 +1087,28 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
 
       {/* Preview fijo en escritorio */}
       <div className="hidden lg:block">
-        <div className="fixed top-24 right-6 z-40">
-          <Card className="p-3">
-            <div className="flex items-center justify-between mb-4">
+        <div className="fixed top-20 right-8 z-40 animate-in fade-in slide-in-from-right-5 duration-500">
+          <Card className="p-4 shadow-2xl border-2 backdrop-blur-sm bg-card/95">
+            <div className="flex items-center justify-between mb-3">
               <div>
-                <h3 className="text-lg font-semibold">Vista Previa en Vivo</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="text-base font-semibold">Vista Previa en Vivo</h3>
+                <p className="text-xs text-muted-foreground">
                   {!shouldShowSummary ? `Foto ${currentPhotoIndex + 1} de ${photosList.length}` : 'Slide Final'}
                 </p>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="icon" onClick={handlePlayPause}>
-                  {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                </Button>
-              </div>
+              <Button variant="ghost" size="icon" onClick={handlePlayPause} className="h-8 w-8">
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              </Button>
             </div>
 
             <div 
-              className="relative aspect-story mx-auto rounded-xl overflow-hidden shadow-2xl"
+              className="relative aspect-story mx-auto rounded-2xl overflow-hidden shadow-2xl"
               style={{
-                height: 'calc(100vh - 200px)',
-                maxHeight: '820px',
-                width: 'calc((100vh - 200px) * 0.5625)',
-                backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
+                height: 'calc(100vh - 140px)',
+                maxHeight: '920px',
+                width: 'calc((100vh - 140px) * 0.5625)',
+                maxWidth: '520px',
+                backgroundColor: shouldShowSummary && summaryBackground === 'solid'
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
                   : '#000000' 
               }}
