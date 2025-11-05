@@ -518,7 +518,8 @@ export const VideoReelRecorder = ({
     const url = URL.createObjectURL(generatedBlob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `reel-${aliadoConfig.nombre}-${Date.now()}.webm`;
+    const ext = generatedBlob.type.includes('mp4') ? 'mp4' : generatedBlob.type.includes('webm') ? 'webm' : 'mp4';
+    a.download = `reel-${aliadoConfig.nombre}-${Date.now()}.${ext}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

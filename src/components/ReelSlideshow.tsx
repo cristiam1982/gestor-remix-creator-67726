@@ -22,6 +22,8 @@ import { ReelDurationControl } from "./ReelDurationControl";
 import { formatPrecioColombia } from "@/utils/formatters";
 import { hexToRgba } from "@/utils/colorUtils";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import FFmpegManager from "@/utils/ffmpegManager";
 import { REEL_TEMPLATES, getTemplateForProperty, applyGradientIntensity } from "@/utils/reelTemplates";
 import {
   DndContext,
@@ -45,6 +47,10 @@ interface ReelSlideshowProps {
   propertyData: PropertyData;
   aliadoConfig: AliadoConfig;
   onDownload?: () => void;
+  caption?: string;
+  onCaptionChange?: (v: string) => void;
+  onCopyCaption?: () => void;
+  onRegenerateCaption?: () => void;
 }
 
 interface PhotoItem {
@@ -111,7 +117,15 @@ const SortablePhoto = ({ id, src, index, isActive, onClick }: SortablePhotoProps
   );
 };
 
-export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSlideshowProps) => {
+export const ReelSlideshow = ({ 
+  propertyData, 
+  aliadoConfig, 
+  onDownload,
+  caption,
+  onCaptionChange,
+  onCopyCaption,
+  onRegenerateCaption
+}: ReelSlideshowProps) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [previousPhotoIndex, setPreviousPhotoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -405,7 +419,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
       // Función para cambiar foto durante la captura
       const changePhoto = async (index: number): Promise<void> => {
         if (index >= photosList.length) {
-          // Mostrar slide de resumen
           setShowSummarySlide(true);
           setCurrentPhotoIndex(photosList.length - 1);
         } else {
@@ -413,7 +426,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
           setCurrentPhotoIndex(index);
         }
         
-        // Doble requestAnimationFrame para asegurar renderizado completo
         return new Promise((resolve) => {
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -423,7 +435,6 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         });
       };
 
-      // Usar nueva función MP4 (Fase 2 - mejor calidad, menor peso)
       const { generateReelVideoMP4 } = await import("../utils/videoGenerator");
       
       let videoBlob = await generateReelVideoMP4(
@@ -431,25 +442,76 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
         "reel-capture-canvas",
         setGenerationProgress,
         changePhoto,
-        true, // includeSummary
-        slideDuration // duración dinámica por foto
+        true,
+        slideDuration
       );
 
-      // CONVERSIÓN A MP4 REAL si es necesario
+      // CONVERSIÓN A MP4 con FFmpeg si es WebM
       const blobType = videoBlob.type.toLowerCase();
-      let finalFilename = `reel-${aliadoConfig.nombre.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`;
       
       if (blobType.includes('webm')) {
-        // Descargar directamente en WebM - es compatible con redes sociales modernas
-        console.log('✅ Video generado en WebM - formato nativo del navegador');
-        const webmFilename = `reel-${propertyData.tipo}-${Date.now()}.webm`;
-        
-        downloadBlob(videoBlob, webmFilename);
-        
-        toast({
-          title: "✅ Video descargado en WebM",
-          description: "Compatible con Instagram, Facebook y TikTok. Para MP4, usa cloudconvert.com",
-        });
+        try {
+          console.log('🔄 Convirtiendo WebM a MP4 para compatibilidad iOS/Instagram...');
+          
+          toast({
+            title: "🔄 Convirtiendo a MP4",
+            description: "Optimizando para Instagram y iPhone...",
+          });
+
+          const ffmpeg = FFmpegManager.getInstance();
+          
+          if (!ffmpeg.isLoaded()) {
+            await ffmpeg.load();
+          }
+
+          // Escribir archivo input
+          const inputData = new Uint8Array(await videoBlob.arrayBuffer());
+          await ffmpeg.writeFile('input.webm', inputData);
+
+          // Convertir a MP4 H.264 compatible
+          toast({
+            title: "⚙️ Codificando video",
+            description: "Aplicando codec H.264 para compatibilidad...",
+          });
+
+          await ffmpeg.exec([
+            '-i', 'input.webm',
+            '-c:v', 'libx264',
+            '-preset', 'fast',
+            '-crf', '23',
+            '-pix_fmt', 'yuv420p',
+            '-movflags', '+faststart',
+            '-an',
+            'output.mp4'
+          ]);
+
+          // Leer resultado
+          const data = await ffmpeg.readFile('output.mp4');
+          videoBlob = new Blob([data as BlobPart], { type: 'video/mp4' });
+
+          // Limpiar
+          await ffmpeg.deleteFile('input.webm');
+          await ffmpeg.deleteFile('output.mp4');
+
+          const mp4Filename = `reel-${propertyData.tipo}-${Date.now()}.mp4`;
+          downloadBlob(videoBlob, mp4Filename);
+          
+          toast({
+            title: "✅ Video descargado en MP4",
+            description: "Compatible con iPhone e Instagram",
+          });
+
+        } catch (conversionError) {
+          console.warn('⚠️ No se pudo convertir a MP4, descargando WebM:', conversionError);
+          
+          const webmFilename = `reel-WEBM-${propertyData.tipo}-${Date.now()}.webm`;
+          downloadBlob(videoBlob, webmFilename);
+          
+          toast({
+            title: "✅ Video descargado en WebM",
+            description: "Para convertir a MP4, usa cloudconvert.com (es gratis)",
+          });
+        }
       } else {
         // Ya es MP4
         const mp4Filename = `reel-${propertyData.tipo}-${Date.now()}.mp4`;
@@ -612,6 +674,35 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
                 </AccordionItem>
               </Accordion>
             </Card>
+
+            {/* Caption Card */}
+            {caption !== undefined && onCaptionChange && onCopyCaption && onRegenerateCaption && (
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
+                <div className="space-y-2 mb-4">
+                  <Textarea
+                    value={caption}
+                    onChange={(e) => onCaptionChange(e.target.value)}
+                    className="min-h-[150px] font-mono text-sm"
+                    placeholder="Tu caption aparecerá aquí..."
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {caption.length} caracteres
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <Button onClick={onCopyCaption} variant="secondary" className="flex-1">
+                    📋 Copiar Caption
+                  </Button>
+                  <Button 
+                    onClick={onRegenerateCaption}
+                    variant="outline"
+                  >
+                    Regenerar
+                  </Button>
+                </div>
+              </Card>
+            )}
         </div>
 
         {/* PANEL DE PREVIEW - Derecha (sticky) */}
@@ -1491,6 +1582,35 @@ export const ReelSlideshow = ({ propertyData, aliadoConfig, onDownload }: ReelSl
               )}
             </div>
           </Card>
+
+          {/* Caption Card - Móvil */}
+          {caption !== undefined && onCaptionChange && onCopyCaption && onRegenerateCaption && (
+            <Card className="p-6">
+              <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
+              <div className="space-y-2 mb-4">
+                <Textarea
+                  value={caption}
+                  onChange={(e) => onCaptionChange(e.target.value)}
+                  className="min-h-[150px] font-mono text-sm"
+                  placeholder="Tu caption aparecerá aquí..."
+                />
+                <p className="text-xs text-muted-foreground">
+                  {caption.length} caracteres
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Button onClick={onCopyCaption} variant="secondary" className="flex-1">
+                  📋 Copiar Caption
+                </Button>
+                <Button 
+                  onClick={onRegenerateCaption}
+                  variant="outline"
+                >
+                  Regenerar
+                </Button>
+              </div>
+            </Card>
+          )}
         </div>
       </div>
     </div>
