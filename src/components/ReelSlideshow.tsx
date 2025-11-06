@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/accordion";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
-import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
+import { generateReelVideo, downloadBlob, VideoGenerationProgress, generateReelVideoMP4_FFmpegFrames, isIOSOrSafari } from "@/utils/videoGenerator";
 import { fetchFile } from '@ffmpeg/util';
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { TemplateSelector } from "./TemplateSelector";
@@ -442,107 +442,125 @@ export const ReelSlideshow = ({
         });
       };
 
-      const { generateReelVideoMP4 } = await import("../utils/videoGenerator");
-      
-      let videoBlob = await generateReelVideoMP4(
-        photosList.map(p => p.src),
-        "reel-capture-canvas",
-        setGenerationProgress,
-        changePhoto,
-        true,
-        slideDuration
-      );
+      const photoSources = photosList.map(p => p.src);
+      let videoBlob: Blob;
+      let usedFFmpegFrames = false;
 
-      // CONVERSIÓN A MP4 con FFmpeg si es WebM
-      const blobType = videoBlob.type.toLowerCase();
-      
-      if (blobType.includes('webm')) {
-        try {
-          console.log('🔄 Convirtiendo WebM a MP4 para compatibilidad iOS/Instagram...');
-          
-          toast({
-            title: "🔄 Convirtiendo a MP4",
-            description: "Cargando conversor...",
-          });
-
-          const ffmpeg = FFmpegManager.getInstance();
-          
-          if (!ffmpeg.isLoaded()) {
-            toast({
-              title: "⏳ Descargando conversor",
-              description: "Primera vez: ~5-10 segundos...",
-            });
-            await ffmpeg.load();
-            toast({
-              title: "✅ Conversor listo",
-              description: "Convirtiendo a MP4...",
-            });
-          }
-
-          // Escribir archivo input
-          const inputData = new Uint8Array(await videoBlob.arrayBuffer());
-          await ffmpeg.writeFile('input.webm', inputData);
-
-          // Convertir a MP4 H.264 compatible
-          toast({
-            title: "⚙️ Codificando video",
-            description: "Aplicando codec H.264 para compatibilidad...",
-          });
-
-          // Timeout de 20 segundos para la conversión
-          await Promise.race([
-            ffmpeg.exec([
-              '-i', 'input.webm',
-              '-c:v', 'libx264',
-              '-preset', 'fast',
-              '-crf', '23',
-              '-pix_fmt', 'yuv420p',
-              '-movflags', '+faststart',
-              '-an',
-              'output.mp4'
-            ]),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout: conversión excedió 20s')), 20000)
-            )
-          ]);
-
-          // Leer resultado
-          const data = await ffmpeg.readFile('output.mp4');
-          videoBlob = new Blob([data as BlobPart], { type: 'video/mp4' });
-
-          // Limpiar
-          await ffmpeg.deleteFile('input.webm');
-          await ffmpeg.deleteFile('output.mp4');
-
-          const mp4Filename = `reel-${propertyData.tipo}-${Date.now()}.mp4`;
-          downloadBlob(videoBlob, mp4Filename);
-          
-          toast({
-            title: "✅ Video descargado en MP4",
-            description: "Compatible con iPhone e Instagram",
-          });
-
-        } catch (conversionError) {
-          console.warn('⚠️ No se pudo convertir a MP4, descargando WebM:', conversionError);
-          
-          const webmFilename = `reel-WEBM-${propertyData.tipo}-${Date.now()}.webm`;
-          downloadBlob(videoBlob, webmFilename);
-          
-          toast({
-            title: "✅ Video descargado en WebM",
-            description: "Para convertir a MP4, usa cloudconvert.com (es gratis)",
-          });
-        }
-      } else {
-        // Ya es MP4
-        const mp4Filename = `reel-${propertyData.tipo}-${Date.now()}.mp4`;
-        downloadBlob(videoBlob, mp4Filename);
-        
+      // DETECCIÓN DE NAVEGADOR: Usar FFmpeg frames directamente en iOS/Safari
+      if (isIOSOrSafari()) {
+        console.log('🍎 iOS/Safari detectado - Usando pipeline FFmpeg frames');
         toast({
-          title: "✅ Video descargado en MP4",
-          description: "Tu reel está listo para compartir",
+          title: "🍎 Modo compatible activado",
+          description: "Generando video H.264 para iPhone/Safari...",
         });
+        
+        videoBlob = await generateReelVideoMP4_FFmpegFrames(
+          photoSources,
+          "reel-capture-canvas",
+          setGenerationProgress,
+          changePhoto,
+          true,
+          slideDuration
+        );
+        usedFFmpegFrames = true;
+      } else {
+        // NAVEGADORES MODERNOS: Intentar MediaRecorder primero
+        try {
+          const { generateReelVideoMP4 } = await import("../utils/videoGenerator");
+          
+          videoBlob = await generateReelVideoMP4(
+            photoSources,
+            "reel-capture-canvas",
+            setGenerationProgress,
+            changePhoto,
+            true,
+            slideDuration
+          );
+
+          // Si es WebM, necesitamos convertir o usar fallback
+          const blobType = videoBlob.type.toLowerCase();
+          
+          if (blobType.includes('webm')) {
+            // Verificar tamaño del blob (si es muy pequeño, posiblemente falló)
+            if (videoBlob.size < 100000) { // < 100KB
+              throw new Error('Video WebM demasiado pequeño, usando fallback FFmpeg');
+            }
+
+            // Intentar conversión con timeout
+            try {
+              console.log('🔄 Convirtiendo WebM a MP4...');
+              
+              toast({
+                title: "🔄 Convirtiendo a MP4",
+                description: "Optimizando compatibilidad...",
+              });
+
+              const ffmpeg = FFmpegManager.getInstance();
+              
+              if (!ffmpeg.isLoaded()) {
+                await ffmpeg.load();
+              }
+
+              const inputData = new Uint8Array(await videoBlob.arrayBuffer());
+              await ffmpeg.writeFile('input.webm', inputData);
+
+              await Promise.race([
+                ffmpeg.exec([
+                  '-i', 'input.webm',
+                  '-c:v', 'libx264',
+                  '-preset', 'fast',
+                  '-crf', '23',
+                  '-pix_fmt', 'yuv420p',
+                  '-movflags', '+faststart',
+                  '-an',
+                  'output.mp4'
+                ]),
+                new Promise((_, reject) => 
+                  setTimeout(() => reject(new Error('Timeout de conversión')), 20000)
+                )
+              ]);
+
+              const data = await ffmpeg.readFile('output.mp4');
+              videoBlob = new Blob([data as BlobPart], { type: 'video/mp4' });
+
+              await ffmpeg.deleteFile('input.webm');
+              await ffmpeg.deleteFile('output.mp4');
+              
+            } catch (conversionError) {
+              console.warn('⚠️ Conversión falló, usando FFmpeg frames como fallback');
+              throw new Error('Fallback a FFmpeg frames');
+            }
+          }
+        } catch (mediaRecorderError) {
+          console.warn('⚠️ MediaRecorder falló, usando FFmpeg frames:', mediaRecorderError);
+          
+          toast({
+            title: "🔄 Activando modo compatible",
+            description: "Generando video H.264 optimizado...",
+          });
+          
+          videoBlob = await generateReelVideoMP4_FFmpegFrames(
+            photoSources,
+            "reel-capture-canvas",
+            setGenerationProgress,
+            changePhoto,
+            true,
+            slideDuration
+          );
+          usedFFmpegFrames = true;
+        }
       }
+
+      // Descargar video
+      const mp4Filename = `reel-${propertyData.tipo}-${Date.now()}.mp4`;
+      downloadBlob(videoBlob, mp4Filename);
+      
+      toast({
+        title: "✅ Video descargado",
+        description: usedFFmpegFrames 
+          ? "Video H.264 compatible con iPhone e Instagram" 
+          : "Tu reel está listo para compartir",
+      });
 
       if (onDownload) onDownload();
     } catch (error) {

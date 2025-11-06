@@ -2,6 +2,54 @@ import html2canvas from "html2canvas";
 // @ts-ignore - gif.js doesn't have TypeScript definitions
 import GIF from "gif.js";
 import { waitForNextFrame } from "./imageUtils";
+import FFmpegManager from "./ffmpegManager";
+
+/**
+ * Detecta si es iOS o Safari
+ */
+const isIOSOrSafari = (): boolean => {
+  const ua = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+  return isIOS || isSafari;
+};
+
+/**
+ * Detecta si un canvas es probablemente negro muestreando 5 puntos
+ */
+const isCanvasLikelyBlack = (canvas: HTMLCanvasElement): boolean => {
+  try {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return false;
+
+    const w = canvas.width;
+    const h = canvas.height;
+    const margin = 10;
+
+    // Muestrear 5 puntos: centro y 4 esquinas
+    const points = [
+      [w / 2, h / 2],          // Centro
+      [margin, margin],         // Top-left
+      [w - margin, margin],     // Top-right
+      [margin, h - margin],     // Bottom-left
+      [w - margin, h - margin]  // Bottom-right
+    ];
+
+    let totalBrightness = 0;
+    for (const [x, y] of points) {
+      const imageData = ctx.getImageData(x, y, 1, 1);
+      const [r, g, b] = imageData.data;
+      const brightness = (r + g + b) / 3;
+      totalBrightness += brightness;
+    }
+
+    const avgBrightness = totalBrightness / points.length;
+    return avgBrightness < 2; // Prácticamente negro
+  } catch (e) {
+    // Si hay SecurityError (canvas tainted), asumimos que no es negro
+    return false;
+  }
+};
 
 /**
  * Obtiene el mejor MIME type soportado por el navegador para grabación de video
@@ -72,27 +120,24 @@ const captureFrame = async (
       await document.fonts.ready;
     }
 
-    // MEJORA: Configuración optimizada para 1080x1920
-    const commonOptions = {
-      scale: 1, // Escala 1:1 para evitar reescalados
+    // Configuración base optimizada para 1080x1920
+    const baseOptions = {
+      scale: 1,
       backgroundColor: "#000000",
       logging: false,
       width: 1080,
       height: 1920,
-      useCORS: true,
-      allowTaint: false,
-      imageTimeout: 30000,
+      scrollX: 0,
+      scrollY: 0,
       removeContainer: false,
       windowWidth: 1080,
       windowHeight: 1920,
       onclone: (clonedDoc: Document) => {
-        // Forzar que las imágenes se capturen con colores reales
         const imgs = clonedDoc.querySelectorAll('img');
         imgs.forEach(img => {
           const imgElement = img as HTMLImageElement;
           imgElement.style.opacity = '1';
           imgElement.style.display = 'block';
-          // NUEVO: Forzar recarga si la imagen no está completa o sin dimensiones
           if (!imgElement.complete || imgElement.naturalHeight === 0) {
             const originalSrc = imgElement.src;
             imgElement.src = '';
@@ -102,44 +147,92 @@ const captureFrame = async (
       }
     };
 
-    let canvas: HTMLCanvasElement;
+    let canvas: HTMLCanvasElement | null = null;
     
-    // MEJORA: Secuencia de reintentos robusta
+    // INTENTO 1: Modo estándar con CORS
     try {
-      // Intento 1: Modo estándar (más confiable)
+      console.log('📸 Intento 1: Captura estándar...');
       canvas = await html2canvas(element, {
-        ...commonOptions,
+        ...baseOptions,
+        useCORS: true,
+        allowTaint: false,
+        imageTimeout: 30000,
         foreignObjectRendering: false,
       });
       
-      // Verificar que el canvas no esté vacío/negro
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        const imageData = ctx.getImageData(canvas.width / 2, canvas.height / 2, 1, 1);
-        const isBlack = imageData.data[0] === 0 && imageData.data[1] === 0 && imageData.data[2] === 0;
-        
-        if (isBlack) {
-          console.warn("Canvas negro detectado, reintentando con foreignObjectRendering");
-          // Intento 2: Con foreignObjectRendering
-          canvas = await html2canvas(element, {
-            ...commonOptions,
-            foreignObjectRendering: true,
-          });
-        }
+      if (isCanvasLikelyBlack(canvas)) {
+        console.warn('⚠️ Canvas negro detectado en intento 1');
+        canvas = null;
       }
-    } catch (firstError) {
-      // Si falla (por CORS), intentar con foreignObjectRendering
-      console.warn("Captura estándar falló, intentando con foreignObjectRendering:", firstError);
-      canvas = await html2canvas(element, {
-        ...commonOptions,
-        foreignObjectRendering: true,
-      });
+    } catch (e) {
+      console.warn('❌ Intento 1 falló:', e);
+      canvas = null;
     }
 
-    // Log de verificación
-    console.log(`✅ Frame capturado: ${canvas.width}x${canvas.height}`);
-    
+    // INTENTO 2: Con foreignObjectRendering
+    if (!canvas) {
+      try {
+        console.log('📸 Intento 2: Con foreignObjectRendering...');
+        canvas = await html2canvas(element, {
+          ...baseOptions,
+          useCORS: true,
+          allowTaint: false,
+          imageTimeout: 30000,
+          foreignObjectRendering: true,
+        });
+        
+        if (isCanvasLikelyBlack(canvas)) {
+          console.warn('⚠️ Canvas negro detectado en intento 2');
+          canvas = null;
+        }
+      } catch (e) {
+        console.warn('❌ Intento 2 falló:', e);
+        canvas = null;
+      }
+    }
+
+    // INTENTO 3: Sin CORS (allowTaint) - remover crossOrigin temporalmente
+    if (!canvas) {
+      console.log('📸 Intento 3: Sin CORS (allowTaint)...');
+      
+      // Remover crossOrigin de todas las imágenes
+      const allImages = element.querySelectorAll('img');
+      const originalCrossOrigins: (string | null)[] = [];
+      allImages.forEach(img => {
+        originalCrossOrigins.push(img.getAttribute('crossorigin'));
+        img.removeAttribute('crossorigin');
+      });
+
+      try {
+        canvas = await html2canvas(element, {
+          ...baseOptions,
+          useCORS: false,
+          allowTaint: true,
+          imageTimeout: 45000,
+          foreignObjectRendering: true,
+        });
+        
+        if (isCanvasLikelyBlack(canvas)) {
+          console.warn('⚠️ Canvas negro incluso en intento 3');
+        }
+      } finally {
+        // Restaurar crossOrigin
+        allImages.forEach((img, idx) => {
+          const original = originalCrossOrigins[idx];
+          if (original !== null) {
+            img.setAttribute('crossorigin', original);
+          }
+        });
+      }
+    }
+
+    if (!canvas) {
+      throw new Error('No se pudo capturar el frame después de 3 intentos');
+    }
+
+    console.log(`✅ Frame capturado exitosamente: ${canvas.width}x${canvas.height}`);
     return canvas;
+    
   } catch (error) {
     // Si es un error de CORS y no hemos intentado ocultar el logo, reintentar
     if (
@@ -147,7 +240,7 @@ const captureFrame = async (
       (error.message.includes("tainted") || error.message.includes("cross-origin")) &&
       !hideLogoOnError
     ) {
-      console.warn("Error de CORS detectado, reintentando sin logo del aliado...");
+      console.warn("Error de CORS persistente, reintentando sin logo del aliado...");
       return captureFrame(elementId, true);
     }
     throw error;
@@ -525,6 +618,202 @@ export const generateReelVideoMP4 = async (
   }
 };
 
+/**
+ * Genera video MP4 usando FFmpeg frame-by-frame (máxima compatibilidad iOS/Safari)
+ */
+export const generateReelVideoMP4_FFmpegFrames = async (
+  photos: string[],
+  elementId: string,
+  onProgress: (progress: VideoGenerationProgress) => void,
+  onPhotoChange: (index: number) => Promise<void>,
+  includeSummary: boolean = true,
+  slideDuration: number = 1300
+): Promise<Blob> => {
+  const startTime = Date.now();
+  
+  try {
+    onProgress({
+      stage: "initializing",
+      progress: 0,
+      message: "Inicializando generación compatible H.264...",
+    });
+
+    // Cargar FFmpeg
+    const ffmpeg = FFmpegManager.getInstance();
+    if (!ffmpeg.isLoaded()) {
+      onProgress({
+        stage: "initializing",
+        progress: 5,
+        message: "Cargando conversor FFmpeg...",
+      });
+      await ffmpeg.load();
+    }
+
+    // Pre-cargar imágenes
+    onProgress({
+      stage: "initializing",
+      progress: 10,
+      message: "Pre-cargando imágenes...",
+    });
+
+    const imagePromises = photos.map(src => {
+      return new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.referrerPolicy = "no-referrer";
+        img.onload = () => resolve(img);
+        img.onerror = () => {
+          const img2 = new Image();
+          img2.referrerPolicy = "no-referrer";
+          img2.onload = () => resolve(img2);
+          img2.onerror = reject;
+          img2.src = src;
+        };
+        img.src = src;
+      });
+    });
+
+    await Promise.all(imagePromises);
+    console.log('✅ Imágenes pre-cargadas');
+
+    const fps = 30;
+    const framesPerPhoto = Math.floor((slideDuration / 1000) * fps);
+    const framesPerSummary = Math.floor((2.5) * fps); // 2.5s para resumen
+    const totalSlides = photos.length + (includeSummary ? 1 : 0);
+
+    let frameNumber = 0;
+
+    // Capturar frames para cada foto
+    for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
+      await onPhotoChange(photoIndex);
+      
+      // Triple verificación + delay
+      await waitForNextFrame();
+      await waitForNextFrame();
+      await waitForNextFrame();
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      console.log(`📸 Capturando frames para foto ${photoIndex + 1}/${photos.length}...`);
+      const frameCanvas = await captureFrame(elementId, false);
+      
+      // Duplicar frame según duración
+      for (let i = 0; i < framesPerPhoto; i++) {
+        frameNumber++;
+        
+        // Convertir canvas a PNG
+        const blob = await new Promise<Blob>((resolve) => {
+          frameCanvas.toBlob((b) => resolve(b!), 'image/png', 1.0);
+        });
+        
+        const data = new Uint8Array(await blob.arrayBuffer());
+        const frameName = `frame_${String(frameNumber).padStart(4, '0')}.png`;
+        await ffmpeg.writeFile(frameName, data);
+      }
+
+      const captureProgress = 15 + ((photoIndex + 1) / totalSlides) * 60;
+      onProgress({
+        stage: "capturing",
+        progress: captureProgress,
+        currentFrame: photoIndex + 1,
+        totalFrames: totalSlides,
+        message: `Capturando slide ${photoIndex + 1} de ${totalSlides}...`,
+      });
+    }
+
+    // Capturar slide de resumen
+    if (includeSummary) {
+      await onPhotoChange(photos.length);
+      await waitForNextFrame();
+      await waitForNextFrame();
+      await waitForNextFrame();
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      console.log('📸 Capturando slide de resumen...');
+      const summaryCanvas = await captureFrame(elementId, false);
+      
+      for (let i = 0; i < framesPerSummary; i++) {
+        frameNumber++;
+        
+        const blob = await new Promise<Blob>((resolve) => {
+          summaryCanvas.toBlob((b) => resolve(b!), 'image/png', 1.0);
+        });
+        
+        const data = new Uint8Array(await blob.arrayBuffer());
+        const frameName = `frame_${String(frameNumber).padStart(4, '0')}.png`;
+        await ffmpeg.writeFile(frameName, data);
+      }
+
+      onProgress({
+        stage: "capturing",
+        progress: 75,
+        currentFrame: totalSlides,
+        totalFrames: totalSlides,
+        message: `Capturando slide de resumen...`,
+      });
+    }
+
+    // Codificar con FFmpeg
+    onProgress({
+      stage: "encoding",
+      progress: 80,
+      message: "Codificando video H.264...",
+    });
+
+    console.log(`🎬 Codificando ${frameNumber} frames a 30fps con FFmpeg...`);
+    
+    await ffmpeg.exec([
+      '-r', '30',
+      '-i', 'frame_%04d.png',
+      '-c:v', 'libx264',
+      '-preset', 'fast',
+      '-crf', '23',
+      '-pix_fmt', 'yuv420p',
+      '-movflags', '+faststart',
+      'output.mp4'
+    ]);
+
+    onProgress({
+      stage: "encoding",
+      progress: 95,
+      message: "Finalizando video...",
+    });
+
+    // Leer resultado
+    const data = await ffmpeg.readFile('output.mp4');
+    const videoBlob = new Blob([data as BlobPart], { type: 'video/mp4' });
+
+    // Limpiar archivos temporales
+    for (let i = 1; i <= frameNumber; i++) {
+      const frameName = `frame_${String(i).padStart(4, '0')}.png`;
+      try {
+        await ffmpeg.deleteFile(frameName);
+      } catch (e) {
+        // Ignorar errores de limpieza
+      }
+    }
+    await ffmpeg.deleteFile('output.mp4');
+
+    const totalTime = Math.round((Date.now() - startTime) / 1000);
+    onProgress({
+      stage: "complete",
+      progress: 100,
+      message: `¡Video H.264 listo en ${totalTime}s!`,
+    });
+
+    return videoBlob;
+    
+  } catch (error) {
+    console.error("Error generando video con FFmpeg:", error);
+    
+    onProgress({
+      stage: "error",
+      progress: 0,
+      message: error instanceof Error ? error.message : "Error desconocido",
+    });
+    throw error;
+  }
+};
+
 export const downloadBlob = (blob: Blob, filename: string) => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -535,3 +824,6 @@ export const downloadBlob = (blob: Blob, filename: string) => {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 };
+
+// Exportar helpers para uso externo
+export { isIOSOrSafari };
