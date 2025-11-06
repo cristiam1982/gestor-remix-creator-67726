@@ -3,6 +3,10 @@ import html2canvas from "html2canvas";
 import GIF from "gif.js";
 import { waitForNextFrame } from "./imageUtils";
 import FFmpegManager from "./ffmpegManager";
+import { PropertyData } from '@/types/property';
+import { AliadoConfig } from '@/types/property';
+import logoRubyMorales from '@/assets/logo-ruby-morales.png';
+import elGestorLogoImg from '@/assets/el-gestor-logo.png';
 
 /**
  * Detecta si es iOS o Safari
@@ -85,6 +89,266 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
     img.src = src;
   });
 };
+
+/**
+ * Dibuja un rectángulo con bordes redondeados
+ */
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+): void {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+}
+
+/**
+ * Renderiza un frame directamente en el canvas sin usar html2canvas
+ */
+async function renderFrameDirectToCanvas(
+  ctx: CanvasRenderingContext2D,
+  photo: HTMLImageElement,
+  propertyData: PropertyData,
+  aliadoConfig: AliadoConfig,
+  logos: { aliado: HTMLImageElement, elGestor: HTMLImageElement }
+): Promise<void> {
+  const width = 1080;
+  const height = 1920;
+
+  // Limpiar canvas
+  ctx.clearRect(0, 0, width, height);
+
+  // 1. Dibujar foto de fondo (cover)
+  const photoAspect = photo.width / photo.height;
+  const canvasAspect = width / height;
+  let drawWidth, drawHeight, offsetX, offsetY;
+
+  if (photoAspect > canvasAspect) {
+    drawHeight = height;
+    drawWidth = photo.width * (height / photo.height);
+    offsetX = (width - drawWidth) / 2;
+    offsetY = 0;
+  } else {
+    drawWidth = width;
+    drawHeight = photo.height * (width / photo.width);
+    offsetX = 0;
+    offsetY = (height - drawHeight) / 2;
+  }
+
+  ctx.drawImage(photo, offsetX, offsetY, drawWidth, drawHeight);
+
+  // 2. Gradiente oscuro (top y bottom)
+  const gradientTop = ctx.createLinearGradient(0, 0, 0, height * 0.3);
+  gradientTop.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
+  gradientTop.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = gradientTop;
+  ctx.fillRect(0, 0, width, height * 0.3);
+
+  const gradientBottom = ctx.createLinearGradient(0, height * 0.6, 0, height);
+  gradientBottom.addColorStop(0, 'rgba(0, 0, 0, 0)');
+  gradientBottom.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
+  ctx.fillStyle = gradientBottom;
+  ctx.fillRect(0, height * 0.6, width, height * 0.4);
+
+  // 3. Logo aliado (top-left con borde blanco)
+  const logoSize = 160;
+  const logoX = 48;
+  const logoY = 80;
+  
+  // Borde blanco redondo
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+  ctx.beginPath();
+  ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2 + 8, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Logo circular con clip
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.drawImage(logos.aliado, logoX, logoY, logoSize, logoSize);
+  ctx.restore();
+
+  // 4. Información inferior
+  const bottomY = height - 420;
+  
+  // Tipo de propiedad (título)
+  ctx.font = 'bold 52px Inter, sans-serif';
+  ctx.fillStyle = '#FFFFFF';
+  ctx.textAlign = 'left';
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 2;
+  
+  const propertyTypeText = propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1);
+  ctx.fillText(propertyTypeText, 48, bottomY);
+  ctx.shadowBlur = 0;
+
+  // Ubicación con icono
+  ctx.font = '36px Inter, sans-serif';
+  ctx.fillStyle = '#E0E0E0';
+  const locationY = bottomY + 48;
+  ctx.fillText(`📍 ${propertyData.ubicacion}`, 48, locationY);
+
+  // Precio con fondo de color
+  const priceY = locationY + 80;
+  const priceText = `$${propertyData.canon?.toLocaleString() || 'Consultar'}`;
+  ctx.font = 'bold 56px Inter, sans-serif';
+  
+  const priceMetrics = ctx.measureText(priceText);
+  const priceWidth = priceMetrics.width + 48;
+  const priceHeight = 80;
+  
+  // Fondo con color del aliado
+  ctx.fillStyle = aliadoConfig.colorPrimario;
+  roundRect(ctx, 48, priceY - 60, priceWidth, priceHeight, 16);
+  ctx.fill();
+  
+  // Texto del precio
+  ctx.fillStyle = '#FFFFFF';
+  ctx.textAlign = 'left';
+  ctx.fillText(priceText, 72, priceY - 12);
+
+  // Badges de atributos
+  const badgesY = priceY + 60;
+  let badgeX = 48;
+  
+  const badges = [];
+  if (propertyData.habitaciones) badges.push(`🛏️ ${propertyData.habitaciones}`);
+  if (propertyData.banos) badges.push(`🚿 ${propertyData.banos}`);
+  if (propertyData.parqueaderos) badges.push(`🚗 ${propertyData.parqueaderos}`);
+  if (propertyData.area) badges.push(`📐 ${propertyData.area}m²`);
+
+  ctx.font = '32px Inter, sans-serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+  
+  badges.forEach(badge => {
+    const badgeMetrics = ctx.measureText(badge);
+    const badgeWidth = badgeMetrics.width + 32;
+    const badgeHeight = 52;
+    
+    // Fondo del badge
+    roundRect(ctx, badgeX, badgesY, badgeWidth, badgeHeight, 12);
+    ctx.fill();
+    
+    // Texto del badge
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(badge, badgeX + 16, badgesY + 36);
+    
+    badgeX += badgeWidth + 16;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+  });
+
+  // 5. Logo El Gestor (bottom-right)
+  const elGestorWidth = 140;
+  const elGestorHeight = (elGestorWidth / logos.elGestor.width) * logos.elGestor.height;
+  const elGestorX = width - elGestorWidth - 48;
+  const elGestorY = height - elGestorHeight - 48;
+  
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+  ctx.shadowBlur = 8;
+  ctx.drawImage(logos.elGestor, elGestorX, elGestorY, elGestorWidth, elGestorHeight);
+  ctx.shadowBlur = 0;
+}
+
+/**
+ * Renderiza el slide de resumen directamente en canvas
+ */
+async function renderSummarySlideToCanvas(
+  ctx: CanvasRenderingContext2D,
+  propertyData: PropertyData,
+  aliadoConfig: AliadoConfig,
+  logos: { aliado: HTMLImageElement, elGestor: HTMLImageElement }
+): Promise<void> {
+  const width = 1080;
+  const height = 1920;
+
+  // Fondo con color del aliado
+  ctx.fillStyle = aliadoConfig.colorPrimario;
+  ctx.fillRect(0, 0, width, height);
+
+  // Logo aliado centrado arriba
+  const logoSize = 200;
+  const logoX = (width - logoSize) / 2;
+  const logoY = 200;
+  
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+  ctx.beginPath();
+  ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2 + 10, 0, Math.PI * 2);
+  ctx.fill();
+  
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.drawImage(logos.aliado, logoX, logoY, logoSize, logoSize);
+  ctx.restore();
+
+  // Título
+  ctx.font = 'bold 72px Inter, sans-serif';
+  ctx.fillStyle = '#FFFFFF';
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+  ctx.shadowBlur = 8;
+  
+  const propertyTypeText = propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1);
+  ctx.fillText(propertyTypeText, width / 2, 520);
+
+  // Ubicación
+  ctx.font = '48px Inter, sans-serif';
+  ctx.fillText(`📍 ${propertyData.ubicacion}`, width / 2, 620);
+
+  // Precio grande
+  ctx.font = 'bold 96px Inter, sans-serif';
+  const priceText = `$${propertyData.canon?.toLocaleString() || 'Consultar'}`;
+  ctx.fillText(priceText, width / 2, 780);
+
+  // Atributos
+  ctx.font = '52px Inter, sans-serif';
+  let attrY = 920;
+  
+  if (propertyData.habitaciones) {
+    ctx.fillText(`🛏️ ${propertyData.habitaciones} Habitaciones`, width / 2, attrY);
+    attrY += 80;
+  }
+  if (propertyData.banos) {
+    ctx.fillText(`🚿 ${propertyData.banos} Baños`, width / 2, attrY);
+    attrY += 80;
+  }
+  if (propertyData.area) {
+    ctx.fillText(`📐 ${propertyData.area}m²`, width / 2, attrY);
+    attrY += 80;
+  }
+
+  // CTA
+  ctx.font = 'bold 56px Inter, sans-serif';
+  ctx.fillText('¡Contáctanos ahora!', width / 2, attrY + 80);
+  
+  ctx.font = '44px Inter, sans-serif';
+  ctx.fillText(aliadoConfig.whatsapp, width / 2, attrY + 160);
+
+  // Logo El Gestor abajo
+  const elGestorWidth = 160;
+  const elGestorHeight = (elGestorWidth / logos.elGestor.width) * logos.elGestor.height;
+  const elGestorX = (width - elGestorWidth) / 2;
+  const elGestorY = height - elGestorHeight - 100;
+  
+  ctx.shadowBlur = 0;
+  ctx.drawImage(logos.elGestor, elGestorX, elGestorY, elGestorWidth, elGestorHeight);
+}
 
 export interface VideoGenerationProgress {
   stage: "initializing" | "capturing" | "encoding" | "complete" | "error";
@@ -424,7 +688,9 @@ export const generateReelVideoMP4 = async (
   onProgress: (progress: VideoGenerationProgress) => void,
   onPhotoChange: (index: number) => Promise<void>,
   includeSummary: boolean = true,
-  slideDuration: number = 1300 // Duración dinámica por foto en ms
+  slideDuration: number = 1300, // Duración dinámica por foto en ms
+  propertyData?: PropertyData,
+  aliadoConfig?: AliadoConfig
 ): Promise<Blob> => {
   const startTime = Date.now();
   
@@ -514,29 +780,52 @@ export const generateReelVideoMP4 = async (
       });
     });
 
-    await Promise.all(imagePromises);
+    const imageElements = await Promise.all(imagePromises);
     console.log('✅ Todas las imágenes pre-cargadas exitosamente');
+    
+    // Precargar logos si tenemos propertyData y aliadoConfig
+    let logos: { aliado: HTMLImageElement, elGestor: HTMLImageElement } | null = null;
+    if (propertyData && aliadoConfig) {
+      logos = {
+        aliado: await loadImage(logoRubyMorales),
+        elGestor: await loadImage(elGestorLogoImg)
+      };
+      console.log('✅ Logos precargados correctamente');
+    }
 
     // Renderizar cada foto
     for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
-      await onPhotoChange(photoIndex);
+      console.log(`📸 Renderizando foto ${photoIndex + 1}/${photos.length}...`);
       
-      // Triple verificación de renderizado
-      await waitForNextFrame();
-      await waitForNextFrame();
-      await waitForNextFrame();
+      const photoImg = imageElements[photoIndex];
       
-      // Delay aumentado de 150ms a 800ms para asegurar renderizado completo
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      // Capturar el elemento actual
-      const frameCanvas = await captureFrame(elementId, false);
-      
-      // Dibujar frames intermedios para mantener smooth playback
-      for (let frameNum = 0; frameNum < framesPerPhoto; frameNum++) {
-        ctx.drawImage(frameCanvas, 0, 0, canvas.width, canvas.height);
+      // Renderizar directamente en canvas si tenemos los datos necesarios
+      if (propertyData && aliadoConfig && logos) {
+        await renderFrameDirectToCanvas(ctx, photoImg, propertyData, aliadoConfig, logos);
+      } else {
+        // Fallback: solo dibujar la foto
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const photoAspect = photoImg.width / photoImg.height;
+        const canvasAspect = canvas.width / canvas.height;
+        let drawWidth, drawHeight, offsetX, offsetY;
         
-        // Esperar el tiempo correcto para el siguiente frame
+        if (photoAspect > canvasAspect) {
+          drawHeight = canvas.height;
+          drawWidth = photoImg.width * (canvas.height / photoImg.height);
+          offsetX = (canvas.width - drawWidth) / 2;
+          offsetY = 0;
+        } else {
+          drawWidth = canvas.width;
+          drawHeight = photoImg.height * (canvas.width / photoImg.width);
+          offsetX = 0;
+          offsetY = (canvas.height - drawHeight) / 2;
+        }
+        
+        ctx.drawImage(photoImg, offsetX, offsetY, drawWidth, drawHeight);
+      }
+      
+      // Mantener el frame visible durante slideDuration
+      for (let frameNum = 0; frameNum < framesPerPhoto; frameNum++) {
         await new Promise(resolve => setTimeout(resolve, 1000 / fps));
       }
 
@@ -551,24 +840,16 @@ export const generateReelVideoMP4 = async (
     }
 
     // Capturar slide de resumen si está habilitado
-    if (includeSummary) {
-      // Cambiar al slide de resumen (índice = photos.length)
-      await onPhotoChange(photos.length);
+    if (includeSummary && propertyData && aliadoConfig && logos) {
+      console.log('📊 Renderizando slide de resumen...');
       
-      // ESPERAR MÁS TIEMPO para que React renderice completamente el ReelSummarySlide
-      await waitForNextFrame(); // Primera espera
-      await waitForNextFrame(); // Segunda espera
-      await new Promise(resolve => setTimeout(resolve, 300)); // 300ms adicionales
-      
-      console.log("🎬 Capturando slide de resumen...");
-      const summaryCanvas = await captureFrame(elementId, false);
-      console.log("✅ Slide de resumen capturado:", summaryCanvas.width, "x", summaryCanvas.height);
-      
+      await renderSummarySlideToCanvas(ctx, propertyData, aliadoConfig, logos);
+
+      // Mantener visible por ~2.5 segundos
       for (let frameNum = 0; frameNum < framesPerSummary; frameNum++) {
-        ctx.drawImage(summaryCanvas, 0, 0, canvas.width, canvas.height);
         await new Promise(resolve => setTimeout(resolve, 1000 / fps));
       }
-
+      
       onProgress({
         stage: "capturing",
         progress: 90,

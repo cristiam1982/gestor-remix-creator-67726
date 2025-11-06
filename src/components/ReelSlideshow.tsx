@@ -468,14 +468,16 @@ export const ReelSlideshow = ({
         try {
           const { generateReelVideoMP4 } = await import("../utils/videoGenerator");
           
-          videoBlob = await generateReelVideoMP4(
-            photoSources,
-            "reel-capture-canvas",
-            setGenerationProgress,
-            changePhoto,
-            true,
-            slideDuration
-          );
+      videoBlob = await generateReelVideoMP4(
+        photoSources,
+        "reel-capture-canvas",
+        setGenerationProgress,
+        changePhoto,
+        true,
+        slideDuration,
+        propertyData,
+        aliadoConfig
+      );
 
           // Si es WebM, necesitamos convertir o usar fallback
           const blobType = videoBlob.type.toLowerCase();
