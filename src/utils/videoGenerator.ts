@@ -91,9 +91,12 @@ const captureFrame = async (
         imgs.forEach(img => {
           const imgElement = img as HTMLImageElement;
           imgElement.style.opacity = '1';
-          // Asegurar que las imágenes estén completamente cargadas
-          if (!imgElement.complete) {
-            imgElement.loading = 'eager';
+          imgElement.style.display = 'block';
+          // NUEVO: Forzar recarga si la imagen no está completa o sin dimensiones
+          if (!imgElement.complete || imgElement.naturalHeight === 0) {
+            const originalSrc = imgElement.src;
+            imgElement.src = '';
+            imgElement.src = originalSrc;
           }
         });
       }
@@ -393,13 +396,45 @@ export const generateReelVideoMP4 = async (
 
     const totalSlides = photos.length + (includeSummary ? 1 : 0);
 
+    // PRE-CARGAR TODAS LAS IMÁGENES antes de capturar
+    onProgress({
+      stage: "initializing",
+      progress: 5,
+      message: "Pre-cargando imágenes...",
+    });
+
+    const imagePromises = photos.map(src => {
+      return new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.referrerPolicy = "no-referrer";
+        img.onload = () => resolve(img);
+        img.onerror = () => {
+          // Si falla CORS, intentar sin crossOrigin
+          const img2 = new Image();
+          img2.referrerPolicy = "no-referrer";
+          img2.onload = () => resolve(img2);
+          img2.onerror = reject;
+          img2.src = src;
+        };
+        img.src = src;
+      });
+    });
+
+    await Promise.all(imagePromises);
+    console.log('✅ Todas las imágenes pre-cargadas exitosamente');
+
     // Renderizar cada foto
     for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
       await onPhotoChange(photoIndex);
+      
+      // Triple verificación de renderizado
+      await waitForNextFrame();
+      await waitForNextFrame();
       await waitForNextFrame();
       
-      // MEJORA: Delay adicional para asegurar renderizado completo
-      await new Promise(resolve => setTimeout(resolve, 150));
+      // Delay aumentado de 150ms a 800ms para asegurar renderizado completo
+      await new Promise(resolve => setTimeout(resolve, 800));
 
       // Capturar el elemento actual
       const frameCanvas = await captureFrame(elementId, false);
