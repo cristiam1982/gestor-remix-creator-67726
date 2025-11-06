@@ -739,14 +739,14 @@ export const ReelSlideshow = ({
               </Button>
             </div>
 
-            {/* Vista previa principal - sticky desktop (más grande, ~20-25%) */}
+            {/* Vista previa principal - MÁS GRANDE (40% increase) */}
             <div 
               className="relative aspect-story mx-auto rounded-2xl overflow-hidden shadow-2xl"
               style={{
-                height: 'calc(100vh - 160px)',
-                maxHeight: 'calc(100vh - 120px)',
+                height: 'calc(100vh - 80px)',
+                maxHeight: 'calc(100vh - 60px)',
                 width: '100%',
-                maxWidth: '600px',
+                maxWidth: '700px',
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
                   : '#000000' 
