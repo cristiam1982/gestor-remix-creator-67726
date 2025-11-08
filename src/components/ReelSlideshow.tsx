@@ -622,7 +622,7 @@ export const ReelSlideshow = ({
           {/* Layout de 2 columnas con ScrollAreas independientes */}
           <div className="grid grid-cols-[1fr_480px] gap-6 h-[calc(100vh-180px)] px-4 lg:px-6">
         {/* PANEL DE CONTROLES - Izquierda */}
-        <ScrollArea className="h-full pr-4">
+        <ScrollArea className="h-full pr-4 bg-muted/30">
           <div className="space-y-4 pb-6">
             <Card className="p-4">
               <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
@@ -751,7 +751,7 @@ export const ReelSlideshow = ({
         </ScrollArea>
 
         {/* PANEL DE PREVIEW - Derecha */}
-        <ScrollArea className="h-full">
+        <ScrollArea className="h-full bg-muted/30">
           <div className="space-y-4 pb-6">
           <Card className="p-4 shadow-2xl border-2">
             <div className="flex items-center justify-between mb-3">
