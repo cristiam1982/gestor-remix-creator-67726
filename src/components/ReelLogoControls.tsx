@@ -28,6 +28,13 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
     { value: 'large', px: 100, label: 'Grande' },
   ];
 
+  const shapes: Array<{ value: NonNullable<LogoSettings['shape']>; icon: string; label: string }> = [
+    { value: 'square', icon: '⬜', label: 'Cuadrado' },
+    { value: 'rounded', icon: '▢', label: 'Redondeado' },
+    { value: 'circle', icon: '⚪', label: 'Círculo' },
+    { value: 'squircle', icon: '◉', label: 'Squircle' },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Posición */}
@@ -104,6 +111,25 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
             >
               <span className="text-lg font-bold">{size.px}px</span>
               <span className="text-xs">{size.label}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Forma del Logo */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Forma del Logo</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {shapes.map((shape) => (
+            <Button
+              key={shape.value}
+              variant={(settings.shape || 'rounded') === shape.value ? "default" : "outline"}
+              size="sm"
+              onClick={() => onChange({ ...settings, shape: shape.value })}
+              className="flex flex-col h-16 gap-1"
+            >
+              <span className="text-xl">{shape.icon}</span>
+              <span className="text-xs">{shape.label}</span>
             </Button>
           ))}
         </div>

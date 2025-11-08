@@ -39,6 +39,7 @@ export interface LogoSettings {
   opacity: number; // 30-100
   background: 'none' | 'blur' | 'shadow' | 'box';
   size: 'small' | 'medium' | 'large'; // 60px, 90px, 120px
+  shape?: 'square' | 'rounded' | 'circle' | 'squircle'; // Default: 'rounded'
 }
 
 // Fase 6: Text composition settings

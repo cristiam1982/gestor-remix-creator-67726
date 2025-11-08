@@ -158,7 +158,8 @@ export const ReelSlideshow = ({
       position: 'top-left',
       opacity: 90,
       background: 'box',
-      size: 'medium'
+      size: 'medium',
+      shape: 'rounded'
     }
   );
 
@@ -228,11 +229,19 @@ export const ReelSlideshow = ({
       'bottom-center': 'bottom-6 left-1/2 -translate-x-1/2'
     };
 
+    const shapeClasses = {
+      'square': 'rounded-none',
+      'rounded': 'rounded-xl',
+      'circle': 'rounded-full',
+      'squircle': 'rounded-[22%]'
+    };
+
     return {
       size: `${size}px`,
       opacity: logoSettings.opacity / 100,
       backgroundClass,
-      positionClass: positionClasses[logoSettings.position]
+      positionClass: positionClasses[logoSettings.position],
+      shapeClass: shapeClasses[logoSettings.shape || 'rounded']
     };
   }, [logoSettings]);
 
@@ -622,7 +631,7 @@ export const ReelSlideshow = ({
           {/* Layout de 2 columnas con ScrollAreas independientes */}
           <div className="grid grid-cols-[1fr_480px] gap-6 h-[calc(100vh-180px)] px-4 lg:px-6">
         {/* PANEL DE CONTROLES - Izquierda */}
-        <ScrollArea className="h-full pr-4 bg-muted/30">
+        <ScrollArea className="h-full pr-4">
           <div className="space-y-4 pb-6">
             <Card className="p-4">
               <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
@@ -751,7 +760,7 @@ export const ReelSlideshow = ({
         </ScrollArea>
 
         {/* PANEL DE PREVIEW - Derecha */}
-        <ScrollArea className="h-full bg-muted/30">
+        <ScrollArea className="h-full">
           <div className="space-y-4 pb-6">
           <Card className="p-4 shadow-2xl border-2">
             <div className="flex items-center justify-between mb-3">
@@ -853,7 +862,7 @@ export const ReelSlideshow = ({
               <img
                 src={logoRubyMorales}
                 alt={aliadoConfig.nombre}
-                className={`rounded-xl border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
+                className={`${logoStyle.shapeClass} border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
                 style={{ width: logoStyle.size, height: logoStyle.size }}
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
@@ -1092,7 +1101,7 @@ export const ReelSlideshow = ({
                   <img
                     src={logoRubyMorales}
                     alt={aliadoConfig.nombre}
-                    className={`rounded-xl border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
+                    className={`${logoStyle.shapeClass} border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
                     style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                     referrerPolicy="no-referrer"
@@ -1442,7 +1451,7 @@ export const ReelSlideshow = ({
                   <img
                     src={logoRubyMorales}
                     alt={aliadoConfig.nombre}
-                    className={`rounded-xl border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
+                    className={`${logoStyle.shapeClass} border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
                     style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                     referrerPolicy="no-referrer"
