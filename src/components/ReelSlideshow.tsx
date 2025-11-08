@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Accordion,
   AccordionContent,
@@ -616,9 +617,10 @@ export const ReelSlideshow = ({
       </div>
 
       {/* Layout de 2 columnas para desktop */}
-      <div className="hidden lg:grid lg:grid-cols-[1fr_480px] lg:gap-6 lg:items-start px-4 lg:px-6">
+      <div className="hidden lg:grid lg:grid-cols-[1fr_480px] lg:gap-6 lg:h-[calc(100vh-180px)] px-4 lg:px-6">
         {/* PANEL DE CONTROLES - Izquierda */}
-        <div className="space-y-4">
+        <ScrollArea className="h-full pr-4">
+          <div className="space-y-4 pb-6">
             <Card className="p-4">
               <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
               
@@ -742,10 +744,12 @@ export const ReelSlideshow = ({
                 </div>
               </Card>
             )}
-        </div>
+          </div>
+        </ScrollArea>
 
-        {/* PANEL DE PREVIEW - Derecha (sticky) */}
-        <div className="sticky top-20 space-y-4">
+        {/* PANEL DE PREVIEW - Derecha */}
+        <ScrollArea className="h-full">
+          <div className="space-y-4 pb-6">
           <Card className="p-4 shadow-2xl border-2">
             <div className="flex items-center justify-between mb-3">
               <div>
@@ -1010,7 +1014,8 @@ export const ReelSlideshow = ({
               </Button>
             </div>
           </Card>
-        </div>
+          </div>
+        </ScrollArea>
       </div>
 
         {/* Canvas de captura OCULTO - SIEMPRE 1080x1920 para exportación */}
