@@ -603,21 +603,24 @@ export const ReelSlideshow = ({
   const shouldShowSummary = showSummarySlide;
 
   return (
-    <div className="space-y-4 max-w-full mx-auto pb-0">
+    <>
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
-      {/* Header con título */}
-      <div className="flex items-center justify-between px-4 lg:px-6">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">🎬 Editor de Reel</h2>
-          <p className="text-sm text-muted-foreground">
-            {photosList.length} fotos · {((photosList.length * slideDuration / 1000) + 2.5).toFixed(1)}s · {currentTemplate.name}
-          </p>
-        </div>
-      </div>
+      {/* Desktop: ScrollArea principal que envuelve todo */}
+      <ScrollArea className="hidden lg:block h-[calc(100vh-80px)]">
+        <div className="space-y-4 max-w-full mx-auto pb-6">
+          {/* Header con título */}
+          <div className="flex items-center justify-between px-4 lg:px-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">🎬 Editor de Reel</h2>
+              <p className="text-sm text-muted-foreground">
+                {photosList.length} fotos · {((photosList.length * slideDuration / 1000) + 2.5).toFixed(1)}s · {currentTemplate.name}
+              </p>
+            </div>
+          </div>
 
-      {/* Layout de 2 columnas para desktop */}
-      <div className="hidden lg:grid lg:grid-cols-[1fr_480px] lg:gap-6 lg:h-[calc(100vh-180px)] px-4 lg:px-6">
+          {/* Layout de 2 columnas con ScrollAreas independientes */}
+          <div className="grid grid-cols-[1fr_480px] gap-6 h-[calc(100vh-180px)] px-4 lg:px-6">
         {/* PANEL DE CONTROLES - Izquierda */}
         <ScrollArea className="h-full pr-4">
           <div className="space-y-4 pb-6">
@@ -1017,8 +1020,23 @@ export const ReelSlideshow = ({
           </div>
         </ScrollArea>
       </div>
+        </div>
+      </ScrollArea>
 
-        {/* Canvas de captura OCULTO - SIEMPRE 1080x1920 para exportación */}
+      {/* Mobile/Tablet: Scroll natural de la página */}
+      <div className="lg:hidden space-y-4 max-w-full mx-auto pb-0">
+        {/* Header con título */}
+        <div className="flex items-center justify-between px-4">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">🎬 Editor de Reel</h2>
+            <p className="text-sm text-muted-foreground">
+              {photosList.length} fotos · {((photosList.length * slideDuration / 1000) + 2.5).toFixed(1)}s · {currentTemplate.name}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Canvas de captura OCULTO - SIEMPRE 1080x1920 para exportación */}
       <div 
         id="reel-capture-canvas" 
         className="relative absolute pointer-events-none"
@@ -1145,8 +1163,8 @@ export const ReelSlideshow = ({
           )}
         </div>
 
-      {/* Layout móvil vertical */}
-      <div className="lg:hidden space-y-4">
+      {/* Layout móvil vertical - ya dentro del div lg:hidden anterior */}
+      <div className="space-y-4 lg:hidden">
         {/* Vista previa móvil */}
         <Card className="p-4">
           <div className="flex items-center justify-between mb-4">
@@ -1602,6 +1620,6 @@ export const ReelSlideshow = ({
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
