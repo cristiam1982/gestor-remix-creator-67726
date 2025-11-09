@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/accordion";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import { ALIADO_CONFIG } from "@/config/aliadoConfig";
+import { useLogoStyles } from "@/hooks/useLogoStyles";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress, generateReelVideoMP4_FFmpegFrames, isIOSOrSafari } from "@/utils/videoGenerator";
 import { fetchFile } from '@ffmpeg/util';
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
@@ -239,62 +240,8 @@ export const ReelSlideshow = ({
     };
   }, [gradientDirection, gradientIntensity]);
 
-  // Fase 6: Estilos dinámicos del logo
-  const logoStyle = useMemo(() => {
-    const sizes = { small: 60, medium: 88, large: 120 };
-    const size = sizes[logoSettings.size];
-    
-    // Efectos de fondo profesionales con profundidad avanzada
-    let backgroundClass = 'bg-white/95 shadow-[0_2px_12px_rgba(0,0,0,0.08)]';
-    if (logoSettings.background === 'blur') backgroundClass = 'backdrop-blur-md bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.12)]';
-    if (logoSettings.background === 'shadow') backgroundClass = 'bg-white/85 shadow-[0_8px_32px_rgba(0,0,0,0.18)]';
-    if (logoSettings.background === 'box') backgroundClass = 'bg-gradient-to-br from-white/95 to-white/90 shadow-[0_2px_16px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.5)]';
-    if (logoSettings.background === 'none') backgroundClass = 'bg-transparent drop-shadow-[0_4px_12px_rgba(0,0,0,0.25)]';
-    
-    // Fase 2: Efectos Glow/Resplandor
-    if (logoSettings.background === 'glow') backgroundClass = 'bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.4),0_0_40px_rgba(255,255,255,0.2),inset_0_0_20px_rgba(255,255,255,0.1)]';
-    if (logoSettings.background === 'holographic') backgroundClass = 'bg-gradient-to-br from-white/95 via-blue-50/90 to-purple-50/85 shadow-[0_8px_32px_rgba(139,92,246,0.2)] border border-white/40';
-    if (logoSettings.background === 'frosted') backgroundClass = 'backdrop-blur-[24px] bg-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.8)] border border-white/20';
-    
-    // Fase 4: Profundidad avanzada con múltiples capas de sombra
-    if (logoSettings.background === 'elevated') backgroundClass = 'bg-gradient-to-br from-white via-white/98 to-gray-50/95 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.04),0_16px_32px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.9)]';
-    
-    // Fase 3: Degradados avanzados mesh y animados
-    if (logoSettings.background === 'premium-mesh') backgroundClass = 'bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.95)_50%,rgba(241,245,249,0.92)_100%)] shadow-[0_4px_24px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.9)]';
-    if (logoSettings.background === 'gradient-animated') backgroundClass = 'bg-gradient-to-r from-white via-blue-50/90 to-white bg-[length:200%_100%] animate-gradient-shift shadow-[0_4px_20px_rgba(59,130,246,0.15)]';
-    
-    // Fase 6: Efecto iridiscente con borde animado
-    if (logoSettings.background === 'iridescent') backgroundClass = 'bg-white/95 shadow-[0_4px_20px_rgba(0,0,0,0.1)] border-2 animate-border-glow';
-
-    const positionClasses = {
-      'top-left': 'top-6 left-6',
-      'top-right': 'top-6 right-6',
-      'bottom-center': 'bottom-6 left-1/2 -translate-x-1/2'
-    };
-
-    const shapeClasses = {
-      'square': 'rounded-none',
-      'rounded': 'rounded-xl',
-      'circle': 'rounded-full',
-      'squircle': 'rounded-[22%]'
-    };
-
-    // Fase 1: Animaciones profesionales
-    const animationClasses = {
-      'none': '',
-      'floating': 'animate-floating',
-      'pulse': 'animate-glow-pulse'
-    };
-
-    return {
-      size: `${size}px`,
-      opacity: logoSettings.opacity / 100,
-      backgroundClass,
-      positionClass: positionClasses[logoSettings.position],
-      shapeClass: shapeClasses[logoSettings.shape || 'rounded'],
-      animationClass: animationClasses[logoSettings.animation || 'none']
-    };
-  }, [logoSettings]);
+  // Fase 6: Estilos dinámicos del logo (usando hook centralizado)
+  const logoStyle = useLogoStyles(logoSettings);
 
   // Fase 6: Estilos dinámicos del texto
   const textStyle = useMemo(() => {
