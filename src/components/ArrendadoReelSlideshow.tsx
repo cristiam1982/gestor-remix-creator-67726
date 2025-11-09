@@ -94,11 +94,8 @@ const SortablePhoto = ({ photo, index, isActive, onClick }: SortablePhotoProps) 
   );
 };
 
-// Función helper para obtener el logo según la preferencia
-const getLogoUrl = (logoVersion?: 'default' | 'transparent'): string => {
-  if (logoVersion === 'transparent' && ALIADO_CONFIG.logoTransparent) {
-    return ALIADO_CONFIG.logoTransparent;
-  }
+// Función helper para obtener el logo con fondo
+const getLogoUrl = (): string => {
   return ALIADO_CONFIG.logo;
 };
 
@@ -114,13 +111,12 @@ export const ArrendadoReelSlideshow = ({
   const [generationProgress, setGenerationProgress] = useState<VideoGenerationProgress | null>(null);
   const [photos, setPhotos] = useState<string[]>(data.fotos || []);
   const [logoSettings, setLogoSettings] = useState<LogoSettings>({
-    position: 'bottom-center',
+    position: 'top-left',
     size: 'medium',
     opacity: 90,
-    background: 'box',
+    background: 'frosted',
     shape: 'rounded',
-    animation: 'none',
-    logoVersion: 'transparent'
+    animation: 'none'
   });
   const { toast } = useToast();
   
@@ -397,7 +393,7 @@ export const ArrendadoReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity / 100 }}
                 >
                   <img
-                    src={getLogoUrl(logoSettings.logoVersion)}
+                    src={getLogoUrl()}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
@@ -508,7 +504,7 @@ export const ArrendadoReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity / 100 }}
                 >
                   <img
-                    src={getLogoUrl(logoSettings.logoVersion)}
+                    src={getLogoUrl()}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}

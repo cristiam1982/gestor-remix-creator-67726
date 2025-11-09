@@ -18,7 +18,6 @@ import { useLogoStyles } from "@/hooks/useLogoStyles";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress, generateReelVideoMP4_FFmpegFrames, isIOSOrSafari } from "@/utils/videoGenerator";
 import { fetchFile } from '@ffmpeg/util';
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
-import { TemplateSelector } from "./TemplateSelector";
 import { ReelControlsPanel } from "./ReelControlsPanel";
 import { ReelSummarySlide } from "./ReelSummarySlide";
 import { ReelDurationControl } from "./ReelDurationControl";
@@ -27,7 +26,7 @@ import { hexToRgba } from "@/utils/colorUtils";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import FFmpegManager from "@/utils/ffmpegManager";
-import { REEL_TEMPLATES, getTemplateForProperty, applyGradientIntensity } from "@/utils/reelTemplates";
+import { REEL_TEMPLATES, applyGradientIntensity } from "@/utils/reelTemplates";
 import {
   DndContext,
   closestCenter,
@@ -120,11 +119,8 @@ const SortablePhoto = ({ id, src, index, isActive, onClick }: SortablePhotoProps
   );
 };
 
-// Función helper para obtener el logo según la preferencia
-const getLogoUrl = (logoVersion?: 'default' | 'transparent'): string => {
-  if (logoVersion === 'transparent' && ALIADO_CONFIG.logoTransparent) {
-    return ALIADO_CONFIG.logoTransparent;
-  }
+// Función helper para obtener el logo con fondo
+const getLogoUrl = (): string => {
   return ALIADO_CONFIG.logo;
 };
 
@@ -143,9 +139,7 @@ export const ReelSlideshow = ({
   const [progress, setProgress] = useState(0);
   const [generationProgress, setGenerationProgress] = useState<VideoGenerationProgress | null>(null);
   const [photosList, setPhotosList] = useState<PhotoItem[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<ReelTemplate>(
-    propertyData.template || getTemplateForProperty(propertyData.tipo, propertyData.uso)
-  );
+  const selectedTemplate: ReelTemplate = 'residencial'; // Siempre residencial
   const [gradientDirection, setGradientDirection] = useState<'top' | 'bottom' | 'both' | 'none'>(
     propertyData.gradientDirection || 'both'
   );
@@ -167,10 +161,9 @@ export const ReelSlideshow = ({
     propertyData.logoSettings || {
       position: 'top-left',
       opacity: 90,
-      background: 'box',
+      background: 'frosted',
       size: 'medium',
-      shape: 'rounded',
-      logoVersion: 'transparent'
+      shape: 'rounded'
     }
   );
 
@@ -696,21 +689,7 @@ export const ReelSlideshow = ({
                     🎨 Estilo Visual
                   </AccordionTrigger>
                   <AccordionContent>
-                    <Accordion type="multiple" defaultValue={["tema", "personalizacion"]} className="w-full">
-                      {/* Tema del Inmueble */}
-                      <AccordionItem value="tema">
-                        <AccordionTrigger className="text-base font-semibold">
-                          🏠 Tema del Inmueble
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <TemplateSelector 
-                            selected={selectedTemplate}
-                            onChange={setSelectedTemplate}
-                            showTitle={false}
-                          />
-                        </AccordionContent>
-                      </AccordionItem>
-
+                    <Accordion type="multiple" defaultValue={["personalizacion"]} className="w-full">
                       {/* Opciones de Personalización */}
                       <AccordionItem value="personalizacion">
                         <AccordionTrigger className="text-base font-semibold">
@@ -935,7 +914,7 @@ export const ReelSlideshow = ({
               style={{ opacity: logoStyle.opacity }}
             >
               <img
-                src={getLogoUrl(logoSettings.logoVersion)}
+                src={getLogoUrl()}
                 alt={aliadoConfig.nombre}
                 className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                 style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
@@ -1165,7 +1144,7 @@ export const ReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity }}
                 >
                   <img
-                    src={getLogoUrl(logoSettings.logoVersion)}
+                    src={getLogoUrl()}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
@@ -1369,21 +1348,7 @@ export const ReelSlideshow = ({
                   🎨 Estilo Visual
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Accordion type="multiple" defaultValue={["tema", "personalizacion"]} className="w-full">
-                    {/* Tema del Inmueble */}
-                    <AccordionItem value="tema">
-                      <AccordionTrigger className="text-base font-semibold">
-                        🏠 Tema del Inmueble
-                      </AccordionTrigger>
-                        <AccordionContent>
-                        <TemplateSelector 
-                          selected={selectedTemplate}
-                          onChange={setSelectedTemplate}
-                          showTitle={false}
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-
+                  <Accordion type="multiple" defaultValue={["personalizacion"]} className="w-full">
                     {/* Opciones de Personalización */}
                     <AccordionItem value="personalizacion">
                       <AccordionTrigger className="text-base font-semibold">
@@ -1515,7 +1480,7 @@ export const ReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity }}
                 >
                   <img
-                    src={getLogoUrl(logoSettings.logoVersion)}
+                    src={getLogoUrl()}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}

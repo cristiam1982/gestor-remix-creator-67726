@@ -12,7 +12,6 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
   const positions: Array<{ value: LogoSettings['position']; icon: string; label: string }> = [
     { value: 'top-left', icon: '↖️', label: 'Superior Izq.' },
     { value: 'top-right', icon: '↗️', label: 'Superior Der.' },
-    { value: 'bottom-center', icon: '⬇️', label: 'Inferior Centro' },
   ];
 
   const backgrounds: Array<{ value: LogoSettings['background']; icon: string; label: string }> = [
@@ -20,11 +19,6 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
     { value: 'frosted', icon: '💎', label: 'Glass Pro' },
     { value: 'glow', icon: '⚡', label: 'Glow Neon' },
     { value: 'elevated', icon: '☁️', label: 'Elevado Pro' },
-    { value: 'box', icon: '🎁', label: 'Premium' },
-    { value: 'holographic', icon: '🌈', label: 'Holográfico' },
-    { value: 'premium-mesh', icon: '🎨', label: 'Mesh Premium' },
-    { value: 'gradient-animated', icon: '🌊', label: 'Gradiente Vivo' },
-    { value: 'iridescent', icon: '💫', label: 'Iridiscente' },
   ];
 
   const animations: Array<{ value: NonNullable<LogoSettings['animation']>; icon: string; label: string }> = [
@@ -34,9 +28,9 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
   ];
 
   const sizes: Array<{ value: LogoSettings['size']; px: number; label: string }> = [
-    { value: 'small', px: 60, label: 'Pequeño' },
+    { value: 'small', px: 80, label: 'Pequeño' },
     { value: 'medium', px: 90, label: 'Mediano' },
-    { value: 'large', px: 120, label: 'Grande' },
+    { value: 'large', px: 100, label: 'Grande' },
   ];
 
   const shapes: Array<{ value: NonNullable<LogoSettings['shape']>; icon: string; label: string }> = [
@@ -48,35 +42,10 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
 
   return (
     <div className="space-y-6">
-      {/* Versión del Logo */}
-      <div className="space-y-3 pb-4 border-b">
-        <Label className="text-sm font-semibold">Versión del Logo</Label>
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant={(settings.logoVersion || 'transparent') === 'default' ? "default" : "outline"}
-            size="sm"
-            onClick={() => onChange({ ...settings, logoVersion: 'default' })}
-            className="flex flex-col h-20 gap-2"
-          >
-            <span className="text-2xl">🏢</span>
-            <span className="text-xs">Con Fondo</span>
-          </Button>
-          <Button
-            variant={(settings.logoVersion || 'transparent') === 'transparent' ? "default" : "outline"}
-            size="sm"
-            onClick={() => onChange({ ...settings, logoVersion: 'transparent' })}
-            className="flex flex-col h-20 gap-2"
-          >
-            <span className="text-2xl">✨</span>
-            <span className="text-xs">Sin Fondo</span>
-          </Button>
-        </div>
-      </div>
-
       {/* Posición */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Posición del Logo</Label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {positions.map((pos) => (
             <Button
               key={pos.value}
@@ -117,7 +86,7 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
       {/* Efecto de Fondo */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Efecto de Fondo</Label>
-        <div className="grid grid-cols-3 gap-2 max-h-[320px] overflow-y-auto pr-1">
+        <div className="grid grid-cols-2 gap-2">
           {backgrounds.map((bg) => (
             <Button
               key={bg.value}

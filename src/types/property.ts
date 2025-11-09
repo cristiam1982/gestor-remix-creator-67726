@@ -36,14 +36,13 @@ export interface AliadoConfig {
 
 // Fase 6: Logo settings
 export interface LogoSettings {
-  position: 'top-left' | 'top-right' | 'bottom-center';
+  position: 'top-left' | 'top-right';
   opacity: number; // 30-100
-  background: 'none' | 'blur' | 'shadow' | 'box' | 'glow' | 'frosted' | 'elevated' | 'holographic' | 'premium-mesh' | 'gradient-animated' | 'iridescent';
-  size: 'small' | 'medium' | 'large'; // 60px, 90px, 120px
+  background: 'none' | 'frosted' | 'glow' | 'elevated';
+  size: 'small' | 'medium' | 'large'; // 80px, 90px, 100px
   shape?: 'square' | 'rounded' | 'circle' | 'squircle'; // Default: 'rounded'
   animation?: 'none' | 'floating' | 'pulse'; // Default: 'none'
   floatingSpeed?: number; // 3-8 segundos, default: 5
-  logoVersion?: 'default' | 'transparent'; // Default: 'transparent'
 }
 
 // Fase 6: Text composition settings
