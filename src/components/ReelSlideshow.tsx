@@ -823,7 +823,7 @@ export const ReelSlideshow = ({
             {/* Vista previa principal - CON ZOOM */}
             <div className="relative w-full overflow-auto">
               <div 
-                className="relative aspect-story mx-auto rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300"
+                className={`group relative aspect-story mx-auto rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 ${isPlaying ? 'cursor-pointer' : ''}`}
                 style={{
                   width: '100%',
                   maxWidth: '700px',
@@ -835,8 +835,25 @@ export const ReelSlideshow = ({
                   transformOrigin: 'center center'
                 }}
               >
+          {/* Overlay clicable para pausar - solo cuando isPlaying */}
+          {isPlaying && (
+            <div 
+              className="absolute inset-0 z-50" 
+              onClick={handlePlayPause}
+            />
+          )}
+
+          {/* Hover indicator - solo desktop cuando isPlaying */}
+          {isPlaying && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/25 backdrop-blur-sm rounded-full p-4">
+                <Pause className="w-8 h-8 text-white" />
+              </div>
+            </div>
+          )}
+
           {/* Barras de progreso - incluye slide de resumen */}
-          <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
+          <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2 pointer-events-none">
             {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
               <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
                 <div
@@ -1233,7 +1250,7 @@ export const ReelSlideshow = ({
           </div>
 
           <div 
-            className="relative aspect-story mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-2"
+            className={`group relative aspect-story mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-2 ${isPlaying ? 'cursor-pointer' : ''}`}
             style={{
               maxWidth: '420px',
               height: 'auto',
@@ -1242,8 +1259,16 @@ export const ReelSlideshow = ({
                 : '#000000' 
             }}
           >
+            {/* Overlay clicable para pausar - solo cuando isPlaying */}
+            {isPlaying && (
+              <div 
+                className="absolute inset-0 z-50" 
+                onClick={handlePlayPause}
+              />
+            )}
+
             {/* Barras de progreso */}
-            <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
+            <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2 pointer-events-none">
               {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
                 <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
                   <div
@@ -1395,16 +1420,24 @@ export const ReelSlideshow = ({
 
             {/* Vista previa principal - móvil */}
             <div 
-              className="relative aspect-story w-full max-w-[420px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4"
+              className={`group relative aspect-story w-full max-w-[420px] mx-auto rounded-xl overflow-hidden shadow-2xl mb-4 ${isPlaying ? 'cursor-pointer' : ''}`}
               style={{ 
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
                   : '#000000' 
               }}
             >
+              {/* Overlay clicable para pausar - solo cuando isPlaying */}
+              {isPlaying && (
+                <div 
+                  className="absolute inset-0 z-50" 
+                  onClick={handlePlayPause}
+                />
+              )}
+
               {/* Resto del contenido del preview - mismo código que desktop */}
               {/* Barras de progreso */}
-              <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
+              <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2 pointer-events-none">
                 {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
                   <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
                     <div
