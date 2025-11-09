@@ -117,7 +117,7 @@ export default {
         "fade-in": "fade-in 0.3s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
         "slide-up-bounce": "slide-up-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        "floating": "floating 3s ease-in-out infinite",
+        "floating": "floating 5s ease-in-out infinite",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
         "gradient-shift": "gradient-shift 4s ease infinite",
         "border-glow": "border-glow 3s ease-in-out infinite",
