@@ -311,8 +311,6 @@ export const ReelSlideshow = ({
       setPreviousPhotoIndex(current);
       return nextIndex;
     });
-    setIsTransitioning(true);
-    setTimeout(() => setIsTransitioning(false), 250);
   }, []);
 
   // PARTE 1: Autoplay mejorado con goToPhoto
