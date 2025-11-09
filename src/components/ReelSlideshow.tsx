@@ -629,7 +629,7 @@ export const ReelSlideshow = ({
           </div>
 
           {/* Layout de 2 columnas con ScrollAreas independientes */}
-          <div className="grid grid-cols-[1fr_480px] gap-6 min-h-[calc(100vh-180px)] px-4 lg:px-6">
+          <div className="grid grid-cols-[1fr_480px] gap-6 h-[calc(100vh-180px)] px-4 lg:px-6">
         {/* PANEL DE CONTROLES - Izquierda */}
         <ScrollArea className="h-full pr-4">
           <div className="space-y-4 pb-6">
