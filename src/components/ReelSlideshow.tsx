@@ -616,8 +616,8 @@ export const ReelSlideshow = ({
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
       {/* Desktop: ScrollArea principal que envuelve todo */}
-      <ScrollArea className="hidden lg:block h-[calc(100vh-80px)]">
-        <div className="space-y-4 max-w-full mx-auto pb-6">
+      <ScrollArea className="hidden lg:block min-h-[calc(100vh-80px)]">
+        <div className="space-y-4 max-w-full mx-auto pb-24">
           {/* Header con título */}
           <div className="flex items-center justify-between px-4 lg:px-6">
             <div>
@@ -629,7 +629,7 @@ export const ReelSlideshow = ({
           </div>
 
           {/* Layout de 2 columnas con ScrollAreas independientes */}
-          <div className="grid grid-cols-[1fr_480px] gap-6 h-[calc(100vh-180px)] px-4 lg:px-6">
+          <div className="grid grid-cols-[1fr_480px] gap-6 min-h-[calc(100vh-180px)] px-4 lg:px-6">
         {/* PANEL DE CONTROLES - Izquierda */}
         <ScrollArea className="h-full pr-4">
           <div className="space-y-4 pb-6">
@@ -761,7 +761,7 @@ export const ReelSlideshow = ({
 
         {/* PANEL DE PREVIEW - Derecha */}
         <ScrollArea className="h-full">
-          <div className="space-y-4 pb-6">
+          <div className="space-y-4 pb-24">
           <Card className="p-4 shadow-2xl border-2">
             <div className="flex items-center justify-between mb-3">
               <div>
@@ -779,10 +779,9 @@ export const ReelSlideshow = ({
             <div 
               className="relative aspect-story mx-auto rounded-2xl overflow-hidden shadow-2xl"
               style={{
-                height: 'calc(100vh - 80px)',
-                maxHeight: 'calc(100vh - 60px)',
                 width: '100%',
                 maxWidth: '700px',
+                height: 'auto',
                 backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
                   ? (summarySolidColor || hexToRgba(brand, 0.12)) 
                   : '#000000' 
