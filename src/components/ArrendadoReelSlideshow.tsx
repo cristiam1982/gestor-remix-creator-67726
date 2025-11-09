@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
-import { AliadoConfig } from "@/types/property";
+import { AliadoConfig, LogoSettings } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
+import { ReelLogoControls } from "./ReelLogoControls";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
@@ -102,6 +103,13 @@ export const ArrendadoReelSlideshow = ({
   const [progress, setProgress] = useState(0);
   const [generationProgress, setGenerationProgress] = useState<VideoGenerationProgress | null>(null);
   const [photos, setPhotos] = useState<string[]>(data.fotos || []);
+  const [logoSettings, setLogoSettings] = useState<LogoSettings>({
+    position: 'bottom-center',
+    size: 'medium',
+    opacity: 90,
+    background: 'box',
+    shape: 'rounded'
+  });
   const { toast } = useToast();
   
   const slideDuration = 2000;
@@ -110,6 +118,39 @@ export const ArrendadoReelSlideshow = ({
     : aliadoConfig.colorSecundario;
   const badgeText = tipo === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
   const badgeColor = darkenHex(mainColor, ARR_THEME.badge.darkenAmount);
+
+  // Logo style calculation (matching ReelSlideshow)
+  const logoStyle = (() => {
+    const sizes = { small: 60, medium: 88, large: 120 };
+    const size = sizes[logoSettings.size];
+    
+    let backgroundClass = 'bg-white/95 shadow-[0_2px_12px_rgba(0,0,0,0.08)]';
+    if (logoSettings.background === 'blur') backgroundClass = 'backdrop-blur-md bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.12)]';
+    if (logoSettings.background === 'shadow') backgroundClass = 'bg-white/85 shadow-[0_8px_32px_rgba(0,0,0,0.18)]';
+    if (logoSettings.background === 'box') backgroundClass = 'bg-gradient-to-br from-white/95 to-white/90 shadow-[0_2px_16px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.5)]';
+    if (logoSettings.background === 'none') backgroundClass = 'bg-transparent drop-shadow-[0_4px_12px_rgba(0,0,0,0.25)]';
+
+    const positionClasses = {
+      'top-left': 'top-6 left-6',
+      'top-right': 'top-6 right-6',
+      'bottom-center': 'bottom-6 left-1/2 -translate-x-1/2'
+    };
+
+    const shapeClasses = {
+      square: 'rounded-none',
+      rounded: 'rounded-2xl',
+      circle: 'rounded-full',
+      squircle: 'rounded-3xl'
+    };
+
+    return {
+      size: `${size}px`,
+      backgroundClass,
+      positionClass: positionClasses[logoSettings.position],
+      shapeClass: shapeClasses[logoSettings.shape],
+      opacity: logoSettings.opacity
+    };
+  })();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -369,11 +410,15 @@ export const ArrendadoReelSlideshow = ({
               </div>
 
               {aliadoConfig.logo && (
-                <div className="bg-white/20 px-6 py-3 rounded-xl">
-                  <img 
-                    src={aliadoConfig.logo} 
+                <div 
+                  className={`absolute ${logoStyle.positionClass} z-20`}
+                  style={{ opacity: logoStyle.opacity / 100 }}
+                >
+                  <img
+                    src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-[117px] object-contain"
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} transition-all duration-300`}
+                    style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                   />
                 </div>
@@ -476,11 +521,15 @@ export const ArrendadoReelSlideshow = ({
               </div>
 
               {aliadoConfig.logo && (
-                <div className="bg-white/20 px-6 py-3 rounded-xl">
-                  <img 
-                    src={aliadoConfig.logo} 
+                <div 
+                  className={`absolute ${logoStyle.positionClass} z-20`}
+                  style={{ opacity: logoStyle.opacity / 100 }}
+                >
+                  <img
+                    src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className="h-[117px] object-contain"
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} transition-all duration-300`}
+                    style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                   />
                 </div>
@@ -528,6 +577,15 @@ export const ArrendadoReelSlideshow = ({
             </SortableContext>
           </div>
         </DndContext>
+      </Card>
+
+      {/* Controles del Logo */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold mb-4">🎨 Personalización del Logo</h3>
+        <ReelLogoControls
+          settings={logoSettings}
+          onChange={setLogoSettings}
+        />
       </Card>
     </div>
   );
