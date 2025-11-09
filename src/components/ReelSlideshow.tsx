@@ -981,7 +981,7 @@ export const ReelSlideshow = ({
               <img
                 src={logoRubyMorales}
                 alt={aliadoConfig.nombre}
-                className={`${logoStyle.shapeClass} border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass} ${logoStyle.animationClass}`}
+                className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                 style={{ width: logoStyle.size, height: logoStyle.size }}
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
@@ -1561,7 +1561,7 @@ export const ReelSlideshow = ({
                   <img
                     src={logoRubyMorales}
                     alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass} ${logoStyle.animationClass}`}
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                     referrerPolicy="no-referrer"
