@@ -139,6 +139,13 @@ export const ArrendadoReelSlideshow = ({
     
     // Fase 4: Profundidad avanzada con múltiples capas de sombra
     if (logoSettings.background === 'elevated') backgroundClass = 'bg-gradient-to-br from-white via-white/98 to-gray-50/95 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.04),0_16px_32px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.9)]';
+    
+    // Fase 3: Degradados avanzados mesh y animados
+    if (logoSettings.background === 'premium-mesh') backgroundClass = 'bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.95)_50%,rgba(241,245,249,0.92)_100%)] shadow-[0_4px_24px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.9)]';
+    if (logoSettings.background === 'gradient-animated') backgroundClass = 'bg-gradient-to-r from-white via-blue-50/90 to-white bg-[length:200%_100%] animate-gradient-shift shadow-[0_4px_20px_rgba(59,130,246,0.15)]';
+    
+    // Fase 6: Efecto iridiscente con borde animado
+    if (logoSettings.background === 'iridescent') backgroundClass = 'bg-white/95 shadow-[0_4px_20px_rgba(0,0,0,0.1)] border-2 animate-border-glow';
 
     const positionClasses = {
       'top-left': 'top-6 left-6',

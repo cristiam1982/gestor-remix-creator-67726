@@ -22,6 +22,9 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
     { value: 'elevated', icon: '☁️', label: 'Elevado Pro' },
     { value: 'box', icon: '🎁', label: 'Premium' },
     { value: 'holographic', icon: '🌈', label: 'Holográfico' },
+    { value: 'premium-mesh', icon: '🎨', label: 'Mesh Premium' },
+    { value: 'gradient-animated', icon: '🌊', label: 'Gradiente Vivo' },
+    { value: 'iridescent', icon: '💫', label: 'Iridiscente' },
   ];
 
   const animations: Array<{ value: NonNullable<LogoSettings['animation']>; icon: string; label: string }> = [
@@ -89,7 +92,7 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
       {/* Efecto de Fondo */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Efecto de Fondo</Label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 max-h-[320px] overflow-y-auto pr-1">
           {backgrounds.map((bg) => (
             <Button
               key={bg.value}
@@ -99,7 +102,7 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
               className="flex flex-col h-16 gap-1"
             >
               <span className="text-xl">{bg.icon}</span>
-              <span className="text-xs">{bg.label}</span>
+              <span className="text-xs leading-tight">{bg.label}</span>
             </Button>
           ))}
         </div>

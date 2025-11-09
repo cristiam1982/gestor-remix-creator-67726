@@ -101,6 +101,14 @@ export default {
         "glow-pulse": {
           "0%, 100%": { filter: "drop-shadow(0 0 8px rgba(255,255,255,0.3))" },
           "50%": { filter: "drop-shadow(0 0 16px rgba(255,255,255,0.6))" }
+        },
+        "gradient-shift": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" }
+        },
+        "border-glow": {
+          "0%, 100%": { borderColor: "rgba(139, 92, 246, 0.5)" },
+          "50%": { borderColor: "rgba(236, 72, 153, 0.5)" }
         }
       },
       animation: {
@@ -111,6 +119,8 @@ export default {
         "slide-up-bounce": "slide-up-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
         "floating": "floating 3s ease-in-out infinite",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "gradient-shift": "gradient-shift 4s ease infinite",
+        "border-glow": "border-glow 3s ease-in-out infinite",
       },
     },
   },

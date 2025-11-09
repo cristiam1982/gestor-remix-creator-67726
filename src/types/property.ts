@@ -37,7 +37,7 @@ export interface AliadoConfig {
 export interface LogoSettings {
   position: 'top-left' | 'top-right' | 'bottom-center';
   opacity: number; // 30-100
-  background: 'none' | 'blur' | 'shadow' | 'box' | 'glow' | 'frosted' | 'elevated' | 'holographic';
+  background: 'none' | 'blur' | 'shadow' | 'box' | 'glow' | 'frosted' | 'elevated' | 'holographic' | 'premium-mesh' | 'gradient-animated' | 'iridescent';
   size: 'small' | 'medium' | 'large'; // 60px, 90px, 120px
   shape?: 'square' | 'rounded' | 'circle' | 'squircle'; // Default: 'rounded'
   animation?: 'none' | 'floating' | 'pulse'; // Default: 'none'
