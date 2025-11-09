@@ -152,6 +152,30 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
         </div>
       </div>
 
+      {/* Velocidad de Flotación (solo visible si floating está activo) */}
+      {settings.animation === 'floating' && (
+        <div className="space-y-3 bg-accent/20 p-4 rounded-lg border border-accent/30">
+          <div className="flex justify-between items-center">
+            <Label className="text-sm font-semibold">⏱️ Velocidad Flotante</Label>
+            <span className="text-sm font-bold bg-primary text-primary-foreground px-3 py-1 rounded-full">
+              {settings.floatingSpeed || 5}s
+            </span>
+          </div>
+          <Slider
+            value={[settings.floatingSpeed || 5]}
+            onValueChange={(value) => onChange({ ...settings, floatingSpeed: value[0] })}
+            min={3}
+            max={8}
+            step={0.5}
+            className="py-2"
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>⚡ Rápido (3s)</span>
+            <span>🐌 Suave (8s)</span>
+          </div>
+        </div>
+      )}
+
       {/* Tamaño */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Tamaño del Logo</Label>

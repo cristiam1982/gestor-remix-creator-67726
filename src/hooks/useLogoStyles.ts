@@ -66,13 +66,19 @@ export const useLogoStyles = (logoSettings: LogoSettings) => {
       'pulse': 'animate-glow-pulse'
     };
 
+    // Estilo de animación personalizado para velocidad flotante
+    const animationStyle = logoSettings.animation === 'floating' && logoSettings.floatingSpeed
+      ? { animation: `floating ${logoSettings.floatingSpeed}s ease-in-out infinite` }
+      : {};
+
     return {
       size: `${size}px`,
       opacity: logoSettings.opacity / 100,
       backgroundClass,
       positionClass: positionClasses[logoSettings.position],
       shapeClass: shapeClasses[logoSettings.shape || 'rounded'],
-      animationClass: animationClasses[logoSettings.animation || 'none']
+      animationClass: animationClasses[logoSettings.animation || 'none'],
+      animationStyle
     };
   }, [logoSettings]);
 };

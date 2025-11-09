@@ -42,6 +42,7 @@ export interface LogoSettings {
   size: 'small' | 'medium' | 'large'; // 60px, 90px, 120px
   shape?: 'square' | 'rounded' | 'circle' | 'squircle'; // Default: 'rounded'
   animation?: 'none' | 'floating' | 'pulse'; // Default: 'none'
+  floatingSpeed?: number; // 3-8 segundos, default: 5
   logoVersion?: 'default' | 'transparent'; // Default: 'transparent'
 }
 

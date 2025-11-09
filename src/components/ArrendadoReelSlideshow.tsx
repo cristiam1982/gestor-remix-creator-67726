@@ -400,7 +400,7 @@ export const ArrendadoReelSlideshow = ({
                     src={getLogoUrl(logoSettings.logoVersion)}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
-                    style={{ width: logoStyle.size, height: logoStyle.size }}
+                    style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
                     crossOrigin="anonymous"
                   />
                 </div>
@@ -511,7 +511,7 @@ export const ArrendadoReelSlideshow = ({
                     src={getLogoUrl(logoSettings.logoVersion)}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
-                    style={{ width: logoStyle.size, height: logoStyle.size }}
+                    style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
                     crossOrigin="anonymous"
                   />
                 </div>
