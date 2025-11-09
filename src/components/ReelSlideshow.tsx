@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { PropertyData, AliadoConfig, ReelTemplate, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { Play, Pause, Download, GripVertical, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -847,6 +848,23 @@ export const ReelSlideshow = ({
                   {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 </Button>
               </div>
+            </div>
+
+            {/* Slider de zoom */}
+            <div className="px-2 pb-3 space-y-2">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>50%</span>
+                <span className="font-semibold text-foreground">{zoomLevel}%</span>
+                <span>200%</span>
+              </div>
+              <Slider
+                value={[zoomLevel]}
+                onValueChange={(value) => setZoomLevel(value[0])}
+                min={50}
+                max={200}
+                step={5}
+                className="w-full"
+              />
             </div>
 
             {/* Vista previa principal - CON ZOOM */}
