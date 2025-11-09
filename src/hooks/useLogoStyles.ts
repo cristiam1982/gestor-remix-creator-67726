@@ -43,17 +43,36 @@ export const useLogoStyles = (logoSettings: LogoSettings) => {
       squircle: 'rounded-[22%]'
     };
 
-    // Animaciones profesionales
+    // Animaciones profesionales (continuas)
     const animationClasses = {
       'none': '',
       'floating': 'animate-floating',
       'pulse': 'animate-glow-pulse'
     };
 
-    // Estilo de animación personalizado para velocidad flotante
-    const animationStyle = logoSettings.animation === 'floating' && logoSettings.floatingSpeed
-      ? { animation: `floating ${logoSettings.floatingSpeed}s ease-in-out infinite` }
-      : {};
+    // Animaciones de entrada (una vez)
+    const entranceAnimationClasses = {
+      'none': '',
+      'fade-in': 'animate-logo-fade-in',
+      'zoom-in': 'animate-logo-zoom-in',
+      'slide-in': 'animate-logo-slide-in',
+      'bounce-in': 'animate-logo-bounce-in',
+      'spin-in': 'animate-logo-spin-in',
+      'elastic': 'animate-logo-elastic'
+    };
+
+    // Estilo de animación personalizado
+    const animationStyle: React.CSSProperties = {};
+    
+    // Velocidad flotante para animación continua
+    if (logoSettings.animation === 'floating' && logoSettings.floatingSpeed) {
+      animationStyle.animation = `floating ${logoSettings.floatingSpeed}s ease-in-out infinite`;
+    }
+    
+    // Duración de entrada para animación inicial
+    if (logoSettings.entranceAnimation && logoSettings.entranceAnimation !== 'none' && logoSettings.entranceDuration) {
+      animationStyle['--entrance-duration' as any] = `${logoSettings.entranceDuration}s`;
+    }
 
     return {
       size: `${size}px`,
@@ -62,6 +81,7 @@ export const useLogoStyles = (logoSettings: LogoSettings) => {
       positionClass: positionClasses[logoSettings.position],
       shapeClass: shapeClasses[logoSettings.shape || 'rounded'],
       animationClass: animationClasses[logoSettings.animation || 'none'],
+      entranceAnimationClass: entranceAnimationClasses[logoSettings.entranceAnimation || 'none'],
       animationStyle
     };
   }, [logoSettings]);

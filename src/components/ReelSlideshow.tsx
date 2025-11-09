@@ -899,7 +899,7 @@ export const ReelSlideshow = ({
               <img
                 src={getLogoUrl()}
                 alt={aliadoConfig.nombre}
-                className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
+                className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
                 style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
@@ -1129,7 +1129,7 @@ export const ReelSlideshow = ({
                   <img
                     src={getLogoUrl()}
                     alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
                     crossOrigin="anonymous"
                     referrerPolicy="no-referrer"
@@ -1455,7 +1455,7 @@ export const ReelSlideshow = ({
                   <img
                     src={getLogoUrl()}
                     alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
                     crossOrigin="anonymous"
                     referrerPolicy="no-referrer"

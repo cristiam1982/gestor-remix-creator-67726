@@ -40,6 +40,16 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
     { value: 'squircle', icon: '◉', label: 'Squircle' },
   ];
 
+  const entranceAnimations: Array<{ value: NonNullable<LogoSettings['entranceAnimation']>; icon: string; label: string }> = [
+    { value: 'none', icon: '⏸️', label: 'Sin Entrada' },
+    { value: 'fade-in', icon: '🌅', label: 'Fade In' },
+    { value: 'zoom-in', icon: '🔍', label: 'Zoom In' },
+    { value: 'slide-in', icon: '📥', label: 'Slide In' },
+    { value: 'bounce-in', icon: '🎾', label: 'Bounce In' },
+    { value: 'spin-in', icon: '🌀', label: 'Spin In' },
+    { value: 'elastic', icon: '🎪', label: 'Elastic' },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Posición */}
@@ -182,6 +192,49 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
           ))}
         </div>
       </div>
+
+      {/* Animación de Entrada */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">🎬 Entrada del Logo</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {entranceAnimations.map((entrance) => (
+            <Button
+              key={entrance.value}
+              variant={(settings.entranceAnimation || 'none') === entrance.value ? "default" : "outline"}
+              size="sm"
+              onClick={() => onChange({ ...settings, entranceAnimation: entrance.value })}
+              className="flex flex-col h-16 gap-1"
+            >
+              <span className="text-xl">{entrance.icon}</span>
+              <span className="text-xs leading-tight">{entrance.label}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Duración de Entrada (solo visible si hay animación de entrada) */}
+      {settings.entranceAnimation && settings.entranceAnimation !== 'none' && (
+        <div className="space-y-3 bg-secondary/20 p-4 rounded-lg border border-secondary/30">
+          <div className="flex justify-between items-center">
+            <Label className="text-sm font-semibold">⏱️ Duración de Entrada</Label>
+            <span className="text-sm font-bold bg-primary text-primary-foreground px-3 py-1 rounded-full">
+              {settings.entranceDuration || 0.8}s
+            </span>
+          </div>
+          <Slider
+            value={[settings.entranceDuration || 0.8]}
+            onValueChange={(value) => onChange({ ...settings, entranceDuration: value[0] })}
+            min={0.6}
+            max={1.2}
+            step={0.1}
+            className="py-2"
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>⚡ Rápido (0.6s)</span>
+            <span>🐌 Suave (1.2s)</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

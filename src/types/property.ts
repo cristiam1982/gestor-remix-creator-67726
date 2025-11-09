@@ -43,6 +43,8 @@ export interface LogoSettings {
   shape?: 'square' | 'rounded' | 'circle' | 'squircle'; // Default: 'rounded'
   animation?: 'none' | 'floating' | 'pulse'; // Default: 'none'
   floatingSpeed?: number; // 3-8 segundos, default: 5
+  entranceAnimation?: 'none' | 'fade-in' | 'zoom-in' | 'slide-in' | 'bounce-in' | 'spin-in' | 'elastic'; // Animación de entrada una vez
+  entranceDuration?: number; // 0.6-1.2 segundos, default: 0.8
 }
 
 // Fase 6: Text composition settings

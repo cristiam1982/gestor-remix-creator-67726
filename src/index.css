@@ -129,4 +129,111 @@ All colors MUST be HSL.
   .aspect-story {
     aspect-ratio: 9 / 16;
   }
+
+  /* Logo entrance animations (one-time) */
+  @keyframes logo-fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes logo-zoom-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes logo-slide-in {
+    0% {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes logo-bounce-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes logo-spin-in {
+    0% {
+      opacity: 0;
+      transform: rotate(-360deg) scale(0.3);
+    }
+    100% {
+      opacity: 1;
+      transform: rotate(0deg) scale(1);
+    }
+  }
+
+  @keyframes logo-elastic {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+    65% {
+      transform: scale(0.9);
+    }
+    80% {
+      transform: scale(1.05);
+    }
+    95% {
+      transform: scale(0.98);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .animate-logo-fade-in {
+    animation: logo-fade-in var(--entrance-duration, 0.8s) ease-out forwards;
+  }
+
+  .animate-logo-zoom-in {
+    animation: logo-zoom-in var(--entrance-duration, 0.8s) ease-out forwards;
+  }
+
+  .animate-logo-slide-in {
+    animation: logo-slide-in var(--entrance-duration, 0.8s) ease-out forwards;
+  }
+
+  .animate-logo-bounce-in {
+    animation: logo-bounce-in var(--entrance-duration, 0.8s) cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  }
+
+  .animate-logo-spin-in {
+    animation: logo-spin-in var(--entrance-duration, 0.8s) ease-out forwards;
+  }
+
+  .animate-logo-elastic {
+    animation: logo-elastic var(--entrance-duration, 0.8s) cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  }
 }
