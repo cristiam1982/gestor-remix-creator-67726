@@ -682,32 +682,22 @@ export const ReelSlideshow = ({
                     🎨 Estilo Visual
                   </AccordionTrigger>
                   <AccordionContent>
-                    <Accordion type="multiple" defaultValue={["personalizacion"]} className="w-full">
-                      {/* Opciones de Personalización */}
-                      <AccordionItem value="personalizacion">
-                        <AccordionTrigger className="text-base font-semibold">
-                          ⚙️ Opciones de Personalización
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <ReelControlsPanel
-                            gradientDirection={gradientDirection}
-                            onGradientDirectionChange={setGradientDirection}
-                            gradientIntensity={gradientIntensity}
-                            onGradientIntensityChange={handleGradientIntensityChange}
-                            summaryBackground={summaryBackground}
-                            onSummaryBackgroundChange={setSummaryBackground}
-                            summarySolidColor={summarySolidColor}
-                            onSummarySolidColorChange={setSummarySolidColor}
-                            logoSettings={logoSettings}
-                            onLogoSettingsChange={setLogoSettings}
-                            textComposition={textComposition}
-                            onTextCompositionChange={setTextComposition}
-                            visualLayers={visualLayers}
-                            onVisualLayersChange={setVisualLayers}
-                          />
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                    <ReelControlsPanel
+                      gradientDirection={gradientDirection}
+                      onGradientDirectionChange={setGradientDirection}
+                      gradientIntensity={gradientIntensity}
+                      onGradientIntensityChange={handleGradientIntensityChange}
+                      summaryBackground={summaryBackground}
+                      onSummaryBackgroundChange={setSummaryBackground}
+                      summarySolidColor={summarySolidColor}
+                      onSummarySolidColorChange={setSummarySolidColor}
+                      logoSettings={logoSettings}
+                      onLogoSettingsChange={setLogoSettings}
+                      textComposition={textComposition}
+                      onTextCompositionChange={setTextComposition}
+                      visualLayers={visualLayers}
+                      onVisualLayersChange={setVisualLayers}
+                    />
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -1341,32 +1331,22 @@ export const ReelSlideshow = ({
                   🎨 Estilo Visual
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Accordion type="multiple" defaultValue={["personalizacion"]} className="w-full">
-                    {/* Opciones de Personalización */}
-                    <AccordionItem value="personalizacion">
-                      <AccordionTrigger className="text-base font-semibold">
-                        ⚙️ Opciones de Personalización
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <ReelControlsPanel
-                          gradientDirection={gradientDirection}
-                          onGradientDirectionChange={setGradientDirection}
-                          gradientIntensity={gradientIntensity}
-                          onGradientIntensityChange={handleGradientIntensityChange}
-                          summaryBackground={summaryBackground}
-                          onSummaryBackgroundChange={setSummaryBackground}
-                          summarySolidColor={summarySolidColor}
-                          onSummarySolidColorChange={setSummarySolidColor}
-                          logoSettings={logoSettings}
-                          onLogoSettingsChange={setLogoSettings}
-                          textComposition={textComposition}
-                          onTextCompositionChange={setTextComposition}
-                          visualLayers={visualLayers}
-                          onVisualLayersChange={setVisualLayers}
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
+                  <ReelControlsPanel
+                    gradientDirection={gradientDirection}
+                    onGradientDirectionChange={setGradientDirection}
+                    gradientIntensity={gradientIntensity}
+                    onGradientIntensityChange={handleGradientIntensityChange}
+                    summaryBackground={summaryBackground}
+                    onSummaryBackgroundChange={setSummaryBackground}
+                    summarySolidColor={summarySolidColor}
+                    onSummarySolidColorChange={setSummarySolidColor}
+                    logoSettings={logoSettings}
+                    onLogoSettingsChange={setLogoSettings}
+                    textComposition={textComposition}
+                    onTextCompositionChange={setTextComposition}
+                    visualLayers={visualLayers}
+                    onVisualLayersChange={setVisualLayers}
+                  />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
