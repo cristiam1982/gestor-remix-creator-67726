@@ -25,6 +25,7 @@ export type ReelTemplate =
 export interface AliadoConfig {
   nombre: string;
   logo: string;
+  logoTransparent?: string;
   colorPrimario: string;    // Color principal (canon/precio y destacados)
   colorSecundario: string;  // Color secundario (características: habitaciones, baños, etc.)
   whatsapp: string;
@@ -41,6 +42,7 @@ export interface LogoSettings {
   size: 'small' | 'medium' | 'large'; // 60px, 90px, 120px
   shape?: 'square' | 'rounded' | 'circle' | 'squircle'; // Default: 'rounded'
   animation?: 'none' | 'floating' | 'pulse'; // Default: 'none'
+  logoVersion?: 'default' | 'transparent'; // Default: 'transparent'
 }
 
 // Fase 6: Text composition settings

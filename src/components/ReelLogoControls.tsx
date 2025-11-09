@@ -48,6 +48,31 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
 
   return (
     <div className="space-y-6">
+      {/* Versión del Logo */}
+      <div className="space-y-3 pb-4 border-b">
+        <Label className="text-sm font-semibold">Versión del Logo</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant={(settings.logoVersion || 'transparent') === 'default' ? "default" : "outline"}
+            size="sm"
+            onClick={() => onChange({ ...settings, logoVersion: 'default' })}
+            className="flex flex-col h-20 gap-2"
+          >
+            <span className="text-2xl">🏢</span>
+            <span className="text-xs">Con Fondo</span>
+          </Button>
+          <Button
+            variant={(settings.logoVersion || 'transparent') === 'transparent' ? "default" : "outline"}
+            size="sm"
+            onClick={() => onChange({ ...settings, logoVersion: 'transparent' })}
+            className="flex flex-col h-20 gap-2"
+          >
+            <span className="text-2xl">✨</span>
+            <span className="text-xs">Sin Fondo</span>
+          </Button>
+        </div>
+      </div>
+
       {/* Posición */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Posición del Logo</Label>

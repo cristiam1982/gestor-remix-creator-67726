@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
 import { ReelLogoControls } from "./ReelLogoControls";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
+import { ALIADO_CONFIG } from "@/config/aliadoConfig";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress } from "@/utils/videoGenerator";
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { useToast } from "@/hooks/use-toast";
@@ -92,6 +93,14 @@ const SortablePhoto = ({ photo, index, isActive, onClick }: SortablePhotoProps) 
   );
 };
 
+// Función helper para obtener el logo según la preferencia
+const getLogoUrl = (logoVersion?: 'default' | 'transparent'): string => {
+  if (logoVersion === 'transparent' && ALIADO_CONFIG.logoTransparent) {
+    return ALIADO_CONFIG.logoTransparent;
+  }
+  return ALIADO_CONFIG.logo;
+};
+
 export const ArrendadoReelSlideshow = ({
   data,
   aliadoConfig,
@@ -109,7 +118,8 @@ export const ArrendadoReelSlideshow = ({
     opacity: 90,
     background: 'box',
     shape: 'rounded',
-    animation: 'none'
+    animation: 'none',
+    logoVersion: 'transparent'
   });
   const { toast } = useToast();
   
@@ -440,7 +450,7 @@ export const ArrendadoReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity / 100 }}
                 >
                   <img
-                    src={aliadoConfig.logo}
+                    src={getLogoUrl(logoSettings.logoVersion)}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size }}
@@ -551,7 +561,7 @@ export const ArrendadoReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity / 100 }}
                 >
                   <img
-                    src={aliadoConfig.logo}
+                    src={getLogoUrl(logoSettings.logoVersion)}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size }}

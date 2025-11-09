@@ -13,7 +13,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
-import logoRubyMorales from "@/assets/logo-ruby-morales.png";
+import { ALIADO_CONFIG } from "@/config/aliadoConfig";
 import { generateReelVideo, downloadBlob, VideoGenerationProgress, generateReelVideoMP4_FFmpegFrames, isIOSOrSafari } from "@/utils/videoGenerator";
 import { fetchFile } from '@ffmpeg/util';
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
@@ -119,6 +119,14 @@ const SortablePhoto = ({ id, src, index, isActive, onClick }: SortablePhotoProps
   );
 };
 
+// Función helper para obtener el logo según la preferencia
+const getLogoUrl = (logoVersion?: 'default' | 'transparent'): string => {
+  if (logoVersion === 'transparent' && ALIADO_CONFIG.logoTransparent) {
+    return ALIADO_CONFIG.logoTransparent;
+  }
+  return ALIADO_CONFIG.logo;
+};
+
 export const ReelSlideshow = ({ 
   propertyData, 
   aliadoConfig, 
@@ -160,7 +168,8 @@ export const ReelSlideshow = ({
       opacity: 90,
       background: 'box',
       size: 'medium',
-      shape: 'rounded'
+      shape: 'rounded',
+      logoVersion: 'transparent'
     }
   );
 
@@ -979,7 +988,7 @@ export const ReelSlideshow = ({
               style={{ opacity: logoStyle.opacity }}
             >
               <img
-                src={logoRubyMorales}
+                src={getLogoUrl(logoSettings.logoVersion)}
                 alt={aliadoConfig.nombre}
                 className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                 style={{ width: logoStyle.size, height: logoStyle.size }}
@@ -1209,7 +1218,7 @@ export const ReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity }}
                 >
                   <img
-                    src={logoRubyMorales}
+                    src={getLogoUrl(logoSettings.logoVersion)}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size }}
@@ -1559,7 +1568,7 @@ export const ReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity }}
                 >
                   <img
-                    src={logoRubyMorales}
+                    src={getLogoUrl(logoSettings.logoVersion)}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size }}
