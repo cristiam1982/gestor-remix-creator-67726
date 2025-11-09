@@ -615,34 +615,37 @@ export const ReelSlideshow = ({
     <>
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
+      {/* Header y Botón FIJOS - fuera del scroll */}
+      <div className="hidden lg:block space-y-3 pb-3 border-b bg-background">
+        {/* Header con título */}
+        <div className="flex items-center justify-between px-4 lg:px-6 pt-4">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">🎬 Editor de Reel</h2>
+            <p className="text-sm text-muted-foreground">
+              {photosList.length} fotos · {((photosList.length * slideDuration / 1000) + 2.5).toFixed(1)}s · {currentTemplate.name}
+            </p>
+          </div>
+        </div>
+
+        {/* Botón de descarga FIJO */}
+        <div className="px-4 lg:px-6">
+          <Card className="p-3 bg-primary/5 border-primary/20">
+            <Button 
+              onClick={handleDownloadVideo} 
+              size="lg" 
+              className="w-full gap-2 bg-primary hover:bg-primary/90"
+            >
+              <Download className="w-5 h-5" /> Descargar Video
+            </Button>
+          </Card>
+        </div>
+      </div>
+
       {/* Desktop: ScrollArea principal que envuelve todo */}
       <ScrollArea className="hidden lg:block h-[calc(100vh-80px)]">
         <div className="space-y-4 max-w-full mx-auto pb-8">
-          {/* Header con título */}
-          <div className="flex items-center justify-between px-4 lg:px-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">🎬 Editor de Reel</h2>
-              <p className="text-sm text-muted-foreground">
-                {photosList.length} fotos · {((photosList.length * slideDuration / 1000) + 2.5).toFixed(1)}s · {currentTemplate.name}
-              </p>
-            </div>
-          </div>
-
-          {/* Botón de descarga fijo en la página */}
-          <div className="px-4 lg:px-6">
-            <Card className="p-3 bg-primary/5 border-primary/20">
-              <Button 
-                onClick={handleDownloadVideo} 
-                size="lg" 
-                className="w-full gap-2 bg-primary hover:bg-primary/90"
-              >
-                <Download className="w-5 h-5" /> Descargar Video
-              </Button>
-            </Card>
-          </div>
-
           {/* Layout de 2 columnas con ScrollAreas independientes */}
-          <div className="grid grid-cols-[1fr_480px] gap-6 h-[calc(100vh-180px)] px-4 lg:px-6">
+          <div className="grid grid-cols-[1fr_480px] gap-6 h-[calc(100vh-100px)] px-4 lg:px-6">
         {/* PANEL DE CONTROLES - Izquierda */}
         <ScrollArea className="h-full pr-4">
           <div className="space-y-4 pb-6">
