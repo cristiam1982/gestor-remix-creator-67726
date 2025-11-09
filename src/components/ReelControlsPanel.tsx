@@ -21,6 +21,8 @@ interface ReelControlsPanelProps {
   onSummarySolidColorChange?: (color: string) => void;
   customPhone?: string;
   onCustomPhoneChange?: (phone: string) => void;
+  customHashtag?: string;
+  onCustomHashtagChange?: (hashtag: string) => void;
 
   // Logo settings (Fase 6)
   logoSettings: LogoSettings;
@@ -46,6 +48,8 @@ export const ReelControlsPanel = ({
   onSummarySolidColorChange,
   customPhone,
   onCustomPhoneChange,
+  customHashtag,
+  onCustomHashtagChange,
   logoSettings,
   onLogoSettingsChange,
   textComposition,
@@ -138,6 +142,8 @@ export const ReelControlsPanel = ({
             onColorChange={onSummarySolidColorChange}
             customPhone={customPhone}
             onPhoneChange={onCustomPhoneChange}
+            customHashtag={customHashtag}
+            onHashtagChange={onCustomHashtagChange}
           />
           
           <p className="text-xs text-muted-foreground mt-2">

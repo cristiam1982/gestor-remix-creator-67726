@@ -11,6 +11,8 @@ interface SummaryBackgroundSelectorProps {
   onColorChange?: (color: string) => void;
   customPhone?: string;
   onPhoneChange?: (phone: string) => void;
+  customHashtag?: string;
+  onHashtagChange?: (hashtag: string) => void;
 }
 
 const BACKGROUND_OPTIONS: Record<BackgroundStyle, { label: string; icon: string; description: string }> = {
@@ -37,7 +39,9 @@ export const SummaryBackgroundSelector = ({
   solidColor = '#00A5BD',
   onColorChange,
   customPhone,
-  onPhoneChange
+  onPhoneChange,
+  customHashtag,
+  onHashtagChange
 }: SummaryBackgroundSelectorProps) => {
   return (
     <div className="space-y-3">
@@ -97,6 +101,23 @@ export const SummaryBackgroundSelector = ({
           />
           <p className="text-xs text-muted-foreground mt-2">
             💡 Dejar vacío para usar el número del aliado por defecto
+          </p>
+        </div>
+      )}
+
+      {/* Campo para hashtag personalizado */}
+      {onHashtagChange && (
+        <div className="mt-4 p-4 bg-accent/50 rounded-lg border border-border">
+          <Label className="text-sm font-semibold mb-2 block">🏷️ Hashtag Personalizado (Slide Final)</Label>
+          <Input
+            type="text"
+            value={customHashtag || ''}
+            onChange={(e) => onHashtagChange(e.target.value)}
+            placeholder="#TuNuevoHogarEnCali 🏡"
+            className="font-mono"
+          />
+          <p className="text-xs text-muted-foreground mt-2">
+            💡 Dejar vacío para usar el hashtag por defecto basado en la ciudad
           </p>
         </div>
       )}

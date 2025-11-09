@@ -126,7 +126,8 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover cursor-pointer"
+            onClick={handlePlayPause}
             onLoadedMetadata={handleLoadedMetadata}
             onError={handleError}
             onEnded={() => setIsPlaying(false)}
@@ -200,15 +201,12 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
             </div>
           </div>
 
-          {/* Play/Pause button */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
+          {/* Play/Pause button - solo visual cuando está pausado */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {!isPlaying && (
-              <button
-                onClick={handlePlayPause}
-                className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all"
-              >
+              <div className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center">
                 <Play className="w-10 h-10 text-white ml-1" />
-              </button>
+              </div>
             )}
           </div>
         </div>
