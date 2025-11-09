@@ -187,7 +187,7 @@ export const ReelSlideshow = ({
   );
 
   // Estado para el zoom del preview
-  const [zoomLevel, setZoomLevel] = useState(100); // 100 = 100%, rango: 50-200
+  const [zoomLevel, setZoomLevel] = useState(80); // 80 = 80% (tamaño perfecto por defecto), rango: 50-200
 
   const { toast } = useToast();
 
