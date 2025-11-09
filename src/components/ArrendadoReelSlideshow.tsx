@@ -114,7 +114,7 @@ export const ArrendadoReelSlideshow = ({
     position: 'top-left',
     size: 'medium',
     opacity: 90,
-    background: 'frosted',
+    background: 'elevated',
     shape: 'rounded',
     animation: 'none',
     floatingSpeed: 3,

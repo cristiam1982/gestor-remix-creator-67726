@@ -15,10 +15,10 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
   ];
 
   const backgrounds: Array<{ value: LogoSettings['background']; icon: string; label: string }> = [
-    { value: 'none', icon: '✨', label: 'Flotante' },
+    { value: 'elevated', icon: '☁️', label: 'Elevado Pro' },
     { value: 'frosted', icon: '💎', label: 'Glass Pro' },
     { value: 'glow', icon: '⚡', label: 'Glow Neon' },
-    { value: 'elevated', icon: '☁️', label: 'Elevado Pro' },
+    { value: 'none', icon: '✨', label: 'Flotante' },
   ];
 
   const animations: Array<{ value: NonNullable<LogoSettings['animation']>; icon: string; label: string }> = [

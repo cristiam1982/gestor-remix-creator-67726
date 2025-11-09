@@ -161,7 +161,7 @@ export const ReelSlideshow = ({
     propertyData.logoSettings || {
       position: 'top-left',
       opacity: 90,
-      background: 'frosted',
+      background: 'elevated',
       size: 'medium',
       shape: 'rounded',
       animation: 'none',
@@ -186,7 +186,7 @@ export const ReelSlideshow = ({
       showPhoto: true,
       showPrice: true,
       showBadge: true,
-      showIcons: true,
+      showIcons: false,
       showAllyLogo: true,
       showCTA: true
     }
