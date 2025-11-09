@@ -895,6 +895,7 @@ export const ReelSlideshow = ({
           {/* Logo del aliado - Fase 6: Estilos dinámicos */}
           {!shouldShowSummary && visualLayers.showAllyLogo && (
             <div 
+              key={`logo-${logoSettings.entranceAnimation}-${logoSettings.entranceDuration}`}
               className={`absolute z-20 ${logoStyle.positionClass}`}
               style={{ opacity: logoStyle.opacity }}
             >
@@ -1125,6 +1126,7 @@ export const ReelSlideshow = ({
               {/* Logo del aliado - Canvas con estilos dinámicos */}
               {visualLayers.showAllyLogo && (
                 <div 
+                  key={`logo-canvas-${logoSettings.entranceAnimation}-${logoSettings.entranceDuration}`}
                   className={`absolute z-20 ${logoStyle.positionClass}`}
                   style={{ opacity: logoStyle.opacity }}
                 >
@@ -1451,6 +1453,7 @@ export const ReelSlideshow = ({
               {/* Logo del aliado */}
               {!shouldShowSummary && visualLayers.showAllyLogo && (
                 <div 
+                  key={`logo-mini-${logoSettings.entranceAnimation}-${logoSettings.entranceDuration}`}
                   className={`absolute z-20 ${logoStyle.positionClass}`}
                   style={{ opacity: logoStyle.opacity }}
                 >

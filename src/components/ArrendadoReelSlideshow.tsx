@@ -392,6 +392,7 @@ export const ArrendadoReelSlideshow = ({
 
               {aliadoConfig.logo && (
                 <div 
+                  key={`logo-arrendado-${logoSettings.entranceAnimation}-${logoSettings.entranceDuration}`}
                   className={`absolute ${logoStyle.positionClass} z-20`}
                   style={{ opacity: logoStyle.opacity / 100 }}
                 >
@@ -503,6 +504,7 @@ export const ArrendadoReelSlideshow = ({
 
               {aliadoConfig.logo && (
                 <div 
+                  key={`logo-arrendado-canvas-${logoSettings.entranceAnimation}-${logoSettings.entranceDuration}`}
                   className={`absolute ${logoStyle.positionClass} z-20`}
                   style={{ opacity: logoStyle.opacity / 100 }}
                 >
