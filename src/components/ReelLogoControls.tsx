@@ -2,6 +2,8 @@ import { LogoSettings } from "@/types/property";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { logoPresets } from "@/config/logoPresets";
+import { Sparkles } from "lucide-react";
 
 interface ReelLogoControlsProps {
   settings: LogoSettings;
@@ -9,6 +11,12 @@ interface ReelLogoControlsProps {
 }
 
 export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) => {
+  const applyPreset = (presetId: string) => {
+    const preset = logoPresets.find(p => p.id === presetId);
+    if (preset) {
+      onChange(preset.settings);
+    }
+  };
   const positions: Array<{ value: LogoSettings['position']; icon: string; label: string }> = [
     { value: 'top-left', icon: '↖️', label: 'Superior Izq.' },
     { value: 'top-right', icon: '↗️', label: 'Superior Der.' },
@@ -48,6 +56,34 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
 
   return (
     <div className="space-y-6">
+      {/* Presets Section */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" />
+          <Label className="text-sm font-semibold text-foreground">Presets Rápidos</Label>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {logoPresets.map((preset) => (
+            <Button
+              key={preset.id}
+              variant="outline"
+              size="sm"
+              onClick={() => applyPreset(preset.id)}
+              className="h-auto flex-col items-start gap-1 p-3 hover:bg-accent/50 hover:border-primary/50 transition-all"
+            >
+              <div className="flex items-center gap-2 w-full">
+                <span className="text-xl">{preset.icon}</span>
+                <span className="font-semibold text-xs">{preset.name}</span>
+              </div>
+              <span className="text-[10px] text-muted-foreground leading-tight text-left">
+                {preset.description}
+              </span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div className="h-px bg-border" />
       {/* Posición */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Posición del Logo</Label>
