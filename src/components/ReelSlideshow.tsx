@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { PropertyData, AliadoConfig, ReelTemplate, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Download, GripVertical } from "lucide-react";
+import { Play, Pause, Download, GripVertical, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -185,7 +185,23 @@ export const ReelSlideshow = ({
     }
   );
 
+  // Estado para el zoom del preview
+  const [zoomLevel, setZoomLevel] = useState(100); // 100 = 100%, rango: 50-200
+
   const { toast } = useToast();
+
+  // Funciones de zoom
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(200, prev + 25)); // Máximo 200%
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(50, prev - 25)); // Mínimo 50%
+  };
+
+  const handleResetZoom = () => {
+    setZoomLevel(100); // Reset a 100%
+  };
 
   // Color de marca del aliado
   const brand = aliadoConfig.colorPrimario || '#00A5BD';
@@ -783,26 +799,71 @@ export const ReelSlideshow = ({
               <div>
                 <h3 className="text-base font-semibold">Vista Previa en Vivo</h3>
                 <p className="text-xs text-muted-foreground">
-                  {!shouldShowSummary ? `Foto ${currentPhotoIndex + 1} de ${photosList.length}` : 'Slide Final'}
+                  {!shouldShowSummary ? `Foto ${currentPhotoIndex + 1} de ${photosList.length}` : 'Slide Final'} · Zoom: {zoomLevel}%
                 </p>
               </div>
-              <Button variant="ghost" size="icon" onClick={handlePlayPause} className="h-8 w-8">
-                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              </Button>
+              <div className="flex items-center gap-1">
+                {/* Botón Zoom Out */}
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleZoomOut}
+                  disabled={zoomLevel <= 50}
+                  className="h-8 w-8"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </Button>
+                
+                {/* Botón Reset Zoom */}
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleResetZoom}
+                  disabled={zoomLevel === 100}
+                  className="h-8 w-8"
+                  title="Reset Zoom (100%)"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </Button>
+                
+                {/* Botón Zoom In */}
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleZoomIn}
+                  disabled={zoomLevel >= 200}
+                  className="h-8 w-8"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                </Button>
+                
+                {/* Separador */}
+                <div className="w-px h-6 bg-border mx-1" />
+                
+                {/* Botón Play/Pause existente */}
+                <Button variant="ghost" size="icon" onClick={handlePlayPause} className="h-8 w-8">
+                  {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                </Button>
+              </div>
             </div>
 
-            {/* Vista previa principal - MÁS GRANDE (40% increase) */}
-            <div 
-              className="relative aspect-story mx-auto rounded-2xl overflow-hidden shadow-2xl"
-              style={{
-                width: '100%',
-                maxWidth: '700px',
-                height: 'auto',
-                backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
-                  ? (summarySolidColor || hexToRgba(brand, 0.12)) 
-                  : '#000000' 
-              }}
-            >
+            {/* Vista previa principal - CON ZOOM */}
+            <div className="relative w-full overflow-auto">
+              <div 
+                className="relative aspect-story mx-auto rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300"
+                style={{
+                  width: '100%',
+                  maxWidth: '700px',
+                  height: 'auto',
+                  backgroundColor: shouldShowSummary && summaryBackground === 'solid' 
+                    ? (summarySolidColor || hexToRgba(brand, 0.12)) 
+                    : '#000000',
+                  transform: `scale(${zoomLevel / 100})`,
+                  transformOrigin: 'center center'
+                }}
+              >
           {/* Barras de progreso - incluye slide de resumen */}
           <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
             {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
@@ -1028,6 +1089,7 @@ export const ReelSlideshow = ({
               </button>
             </div>
           )}
+            </div>
             </div>
             
           </Card>
