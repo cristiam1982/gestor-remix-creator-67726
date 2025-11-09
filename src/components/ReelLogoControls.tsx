@@ -24,7 +24,6 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
   const animations: Array<{ value: NonNullable<LogoSettings['animation']>; icon: string; label: string }> = [
     { value: 'none', icon: '🚫', label: 'Sin Animación' },
     { value: 'floating', icon: '☁️', label: 'Flotante' },
-    { value: 'pulse', icon: '💫', label: 'Pulso' },
   ];
 
   const sizes: Array<{ value: LogoSettings['size']; px: number; label: string }> = [
