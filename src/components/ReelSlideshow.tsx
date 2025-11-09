@@ -119,8 +119,13 @@ const SortablePhoto = ({ id, src, index, isActive, onClick }: SortablePhotoProps
   );
 };
 
-// Función helper para obtener el logo con fondo
-const getLogoUrl = (): string => {
+// Función helper para obtener el logo apropiado según el fondo
+const getLogoUrl = (backgroundStyle: LogoSettings['background']): string => {
+  // Si el fondo es 'none' (flotante), usar logo transparente
+  if (backgroundStyle === 'none') {
+    return ALIADO_CONFIG.logoTransparent;
+  }
+  // Para otros fondos, usar logo con fondo
   return ALIADO_CONFIG.logo;
 };
 
@@ -926,7 +931,7 @@ export const ReelSlideshow = ({
               style={{ opacity: logoStyle.opacity }}
             >
               <img
-                src={getLogoUrl()}
+                src={getLogoUrl(logoSettings.background)}
                 alt={aliadoConfig.nombre}
                 className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
                 style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
@@ -1158,7 +1163,7 @@ export const ReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity }}
                 >
                   <img
-                    src={getLogoUrl()}
+                    src={getLogoUrl(logoSettings.background)}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
@@ -1218,6 +1223,48 @@ export const ReelSlideshow = ({
                           <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)', fontSize: `calc(1.125rem * ${textStyle.scale})` }}>📍 {propertyData.ubicacion}</p>
                   )}
                 </>
+              )}
+
+              {/* Iconografía de características - Fase 6 - Canvas */}
+              {visualLayers.showIcons && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {propertyData.habitaciones && (
+                    <div 
+                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      style={{ transform: `scale(${textStyle.scale})` }}
+                    >
+                      <span className="text-base">🛏️</span>
+                      <span className="text-sm font-bold text-gray-800">{propertyData.habitaciones}</span>
+                    </div>
+                  )}
+                  {propertyData.banos && (
+                    <div 
+                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      style={{ transform: `scale(${textStyle.scale})` }}
+                    >
+                      <span className="text-base">🚿</span>
+                      <span className="text-sm font-bold text-gray-800">{propertyData.banos}</span>
+                    </div>
+                  )}
+                  {propertyData.parqueaderos && (
+                    <div 
+                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      style={{ transform: `scale(${textStyle.scale})` }}
+                    >
+                      <span className="text-base">🚗</span>
+                      <span className="text-sm font-bold text-gray-800">{propertyData.parqueaderos}</span>
+                    </div>
+                  )}
+                  {propertyData.area && (
+                    <div 
+                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      style={{ transform: `scale(${textStyle.scale})` }}
+                    >
+                      <span className="text-base">📐</span>
+                      <span className="text-sm font-bold text-gray-800">{propertyData.area}m²</span>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Logo El Gestor - SIEMPRE visible */}
@@ -1507,7 +1554,7 @@ export const ReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity }}
                 >
                   <img
-                    src={getLogoUrl()}
+                    src={getLogoUrl(logoSettings.background)}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
