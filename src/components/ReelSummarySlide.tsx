@@ -12,6 +12,7 @@ interface ReelSummarySlideProps {
   backgroundStyle?: 'solid' | 'blur' | 'mosaic';
   solidColor?: string;
   customHashtag?: string;
+  customPhone?: string;
 }
 
 export const ReelSummarySlide = ({ 
@@ -21,7 +22,8 @@ export const ReelSummarySlide = ({
   photos = [],
   backgroundStyle = 'solid',
   solidColor,
-  customHashtag
+  customHashtag,
+  customPhone
 }: ReelSummarySlideProps) => {
   if (!isVisible) return null;
 
@@ -227,7 +229,7 @@ export const ReelSummarySlide = ({
               textShadow: '0 2px 6px rgba(0,0,0,0.8)' 
             }}
           >
-            {aliadoConfig.whatsapp}
+            {customPhone || aliadoConfig.whatsapp}
           </p>
         </div>
 

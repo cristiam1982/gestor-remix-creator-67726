@@ -9,6 +9,8 @@ interface SummaryBackgroundSelectorProps {
   onChange: (style: BackgroundStyle) => void;
   solidColor?: string;
   onColorChange?: (color: string) => void;
+  customPhone?: string;
+  onPhoneChange?: (phone: string) => void;
 }
 
 const BACKGROUND_OPTIONS: Record<BackgroundStyle, { label: string; icon: string; description: string }> = {
@@ -33,7 +35,9 @@ export const SummaryBackgroundSelector = ({
   selected, 
   onChange, 
   solidColor = '#00A5BD',
-  onColorChange 
+  onColorChange,
+  customPhone,
+  onPhoneChange
 }: SummaryBackgroundSelectorProps) => {
   return (
     <div className="space-y-3">
@@ -76,6 +80,23 @@ export const SummaryBackgroundSelector = ({
           </div>
           <p className="text-xs text-muted-foreground mt-2">
             💡 Recomendado: Usa el color primario de tu marca
+          </p>
+        </div>
+      )}
+
+      {/* Campo para número de WhatsApp personalizado */}
+      {onPhoneChange && (
+        <div className="mt-4 p-4 bg-accent/50 rounded-lg border border-border">
+          <Label className="text-sm font-semibold mb-2 block">📱 Número de WhatsApp (Slide Final)</Label>
+          <Input
+            type="text"
+            value={customPhone || ''}
+            onChange={(e) => onPhoneChange(e.target.value)}
+            placeholder="+57 300 123 4567"
+            className="font-mono"
+          />
+          <p className="text-xs text-muted-foreground mt-2">
+            💡 Dejar vacío para usar el número del aliado por defecto
           </p>
         </div>
       )}

@@ -19,6 +19,8 @@ interface ReelControlsPanelProps {
   onSummaryBackgroundChange: (bg: 'solid' | 'blur' | 'mosaic') => void;
   summarySolidColor?: string;
   onSummarySolidColorChange?: (color: string) => void;
+  customPhone?: string;
+  onCustomPhoneChange?: (phone: string) => void;
 
   // Logo settings (Fase 6)
   logoSettings: LogoSettings;
@@ -42,6 +44,8 @@ export const ReelControlsPanel = ({
   onSummaryBackgroundChange,
   summarySolidColor,
   onSummarySolidColorChange,
+  customPhone,
+  onCustomPhoneChange,
   logoSettings,
   onLogoSettingsChange,
   textComposition,
@@ -132,6 +136,8 @@ export const ReelControlsPanel = ({
             onChange={onSummaryBackgroundChange}
             solidColor={summarySolidColor}
             onColorChange={onSummarySolidColorChange}
+            customPhone={customPhone}
+            onPhoneChange={onCustomPhoneChange}
           />
           
           <p className="text-xs text-muted-foreground mt-2">

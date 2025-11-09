@@ -154,6 +154,7 @@ export const ReelSlideshow = ({
   const [showSummarySlide, setShowSummarySlide] = useState(false);
   const [isChangingGradient, setIsChangingGradient] = useState(false);
   const [customHashtag, setCustomHashtag] = useState<string>('');
+  const [customPhone, setCustomPhone] = useState<string>('');
   const [slideDuration, setSlideDuration] = useState(1300); // Duración por foto en ms
   
   // Fase 6: Logo settings
@@ -696,6 +697,8 @@ export const ReelSlideshow = ({
                       onSummaryBackgroundChange={setSummaryBackground}
                       summarySolidColor={summarySolidColor}
                       onSummarySolidColorChange={setSummarySolidColor}
+                      customPhone={customPhone}
+                      onCustomPhoneChange={setCustomPhone}
                       logoSettings={logoSettings}
                       onLogoSettingsChange={setLogoSettings}
                       textComposition={textComposition}
@@ -856,6 +859,7 @@ export const ReelSlideshow = ({
               backgroundStyle={summaryBackground}
               solidColor={summarySolidColor}
               customHashtag={customHashtag}
+              customPhone={customPhone}
             />
           )}
 
@@ -1104,6 +1108,7 @@ export const ReelSlideshow = ({
               backgroundStyle={summaryBackground}
               solidColor={summarySolidColor}
               customHashtag={customHashtag}
+              customPhone={customPhone}
             />
           )}
 
@@ -1261,6 +1266,7 @@ export const ReelSlideshow = ({
                 backgroundStyle={summaryBackground}
                 solidColor={summarySolidColor}
                 customHashtag={customHashtag}
+                customPhone={customPhone}
               />
             ) : (
               <img
@@ -1347,6 +1353,8 @@ export const ReelSlideshow = ({
                     onSummaryBackgroundChange={setSummaryBackground}
                     summarySolidColor={summarySolidColor}
                     onSummarySolidColorChange={setSummarySolidColor}
+                    customPhone={customPhone}
+                    onCustomPhoneChange={setCustomPhone}
                     logoSettings={logoSettings}
                     onLogoSettingsChange={setLogoSettings}
                     textComposition={textComposition}
@@ -1417,6 +1425,7 @@ export const ReelSlideshow = ({
                   backgroundStyle={summaryBackground}
                   solidColor={summarySolidColor}
                   customHashtag={customHashtag}
+                  customPhone={customPhone}
                 />
               )}
 
