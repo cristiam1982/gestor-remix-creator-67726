@@ -312,7 +312,7 @@ export const ReelSlideshow = ({
       return nextIndex;
     });
     setIsTransitioning(true);
-    setTimeout(() => setIsTransitioning(false), 600);
+    setTimeout(() => setIsTransitioning(false), 250);
   }, []);
 
   // PARTE 1: Autoplay mejorado con goToPhoto
