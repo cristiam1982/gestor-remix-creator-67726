@@ -37,9 +37,10 @@ export interface AliadoConfig {
 export interface LogoSettings {
   position: 'top-left' | 'top-right' | 'bottom-center';
   opacity: number; // 30-100
-  background: 'none' | 'blur' | 'shadow' | 'box';
+  background: 'none' | 'blur' | 'shadow' | 'box' | 'glow' | 'frosted' | 'elevated' | 'holographic';
   size: 'small' | 'medium' | 'large'; // 60px, 90px, 120px
   shape?: 'square' | 'rounded' | 'circle' | 'squircle'; // Default: 'rounded'
+  animation?: 'none' | 'floating' | 'pulse'; // Default: 'none'
 }
 
 // Fase 6: Text composition settings

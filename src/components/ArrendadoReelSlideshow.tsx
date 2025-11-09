@@ -108,7 +108,8 @@ export const ArrendadoReelSlideshow = ({
     size: 'medium',
     opacity: 90,
     background: 'box',
-    shape: 'rounded'
+    shape: 'rounded',
+    animation: 'none'
   });
   const { toast } = useToast();
   
@@ -119,16 +120,25 @@ export const ArrendadoReelSlideshow = ({
   const badgeText = tipo === "arrendado" ? "¡ARRENDADO!" : "¡VENDIDO!";
   const badgeColor = darkenHex(mainColor, ARR_THEME.badge.darkenAmount);
 
-  // Logo style calculation (matching ReelSlideshow)
+  // Logo style calculation (matching ReelSlideshow with new pro effects)
   const logoStyle = (() => {
     const sizes = { small: 60, medium: 88, large: 120 };
     const size = sizes[logoSettings.size];
     
+    // Efectos de fondo profesionales con profundidad avanzada
     let backgroundClass = 'bg-white/95 shadow-[0_2px_12px_rgba(0,0,0,0.08)]';
     if (logoSettings.background === 'blur') backgroundClass = 'backdrop-blur-md bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.12)]';
     if (logoSettings.background === 'shadow') backgroundClass = 'bg-white/85 shadow-[0_8px_32px_rgba(0,0,0,0.18)]';
     if (logoSettings.background === 'box') backgroundClass = 'bg-gradient-to-br from-white/95 to-white/90 shadow-[0_2px_16px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.5)]';
     if (logoSettings.background === 'none') backgroundClass = 'bg-transparent drop-shadow-[0_4px_12px_rgba(0,0,0,0.25)]';
+    
+    // Fase 2: Efectos Glow/Resplandor
+    if (logoSettings.background === 'glow') backgroundClass = 'bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.4),0_0_40px_rgba(255,255,255,0.2),inset_0_0_20px_rgba(255,255,255,0.1)]';
+    if (logoSettings.background === 'holographic') backgroundClass = 'bg-gradient-to-br from-white/95 via-blue-50/90 to-purple-50/85 shadow-[0_8px_32px_rgba(139,92,246,0.2)] border border-white/40';
+    if (logoSettings.background === 'frosted') backgroundClass = 'backdrop-blur-[24px] bg-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.8)] border border-white/20';
+    
+    // Fase 4: Profundidad avanzada con múltiples capas de sombra
+    if (logoSettings.background === 'elevated') backgroundClass = 'bg-gradient-to-br from-white via-white/98 to-gray-50/95 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.04),0_16px_32px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.9)]';
 
     const positionClasses = {
       'top-left': 'top-6 left-6',
@@ -143,12 +153,20 @@ export const ArrendadoReelSlideshow = ({
       squircle: 'rounded-3xl'
     };
 
+    // Fase 1: Animaciones profesionales
+    const animationClasses = {
+      'none': '',
+      'floating': 'animate-floating',
+      'pulse': 'animate-glow-pulse'
+    };
+
     return {
       size: `${size}px`,
       backgroundClass,
       positionClass: positionClasses[logoSettings.position],
-      shapeClass: shapeClasses[logoSettings.shape],
-      opacity: logoSettings.opacity
+      shapeClass: shapeClasses[logoSettings.shape || 'rounded'],
+      opacity: logoSettings.opacity,
+      animationClass: animationClasses[logoSettings.animation || 'none']
     };
   })();
 
@@ -417,7 +435,7 @@ export const ArrendadoReelSlideshow = ({
                   <img
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} transition-all duration-300`}
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                   />
@@ -528,7 +546,7 @@ export const ArrendadoReelSlideshow = ({
                   <img
                     src={aliadoConfig.logo}
                     alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} transition-all duration-300`}
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                   />

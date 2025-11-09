@@ -17,9 +17,17 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
 
   const backgrounds: Array<{ value: LogoSettings['background']; icon: string; label: string }> = [
     { value: 'none', icon: '✨', label: 'Flotante' },
-    { value: 'blur', icon: '💎', label: 'Glass' },
-    { value: 'shadow', icon: '☁️', label: 'Elevado' },
+    { value: 'frosted', icon: '💎', label: 'Glass Pro' },
+    { value: 'glow', icon: '⚡', label: 'Glow Neon' },
+    { value: 'elevated', icon: '☁️', label: 'Elevado Pro' },
     { value: 'box', icon: '🎁', label: 'Premium' },
+    { value: 'holographic', icon: '🌈', label: 'Holográfico' },
+  ];
+
+  const animations: Array<{ value: NonNullable<LogoSettings['animation']>; icon: string; label: string }> = [
+    { value: 'none', icon: '🚫', label: 'Sin Animación' },
+    { value: 'floating', icon: '☁️', label: 'Flotante' },
+    { value: 'pulse', icon: '💫', label: 'Pulso' },
   ];
 
   const sizes: Array<{ value: LogoSettings['size']; px: number; label: string }> = [
@@ -81,7 +89,7 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
       {/* Efecto de Fondo */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Efecto de Fondo</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {backgrounds.map((bg) => (
             <Button
               key={bg.value}
@@ -92,6 +100,25 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
             >
               <span className="text-xl">{bg.icon}</span>
               <span className="text-xs">{bg.label}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Animación */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">Animación del Logo</Label>
+        <div className="grid grid-cols-3 gap-2">
+          {animations.map((anim) => (
+            <Button
+              key={anim.value}
+              variant={(settings.animation || 'none') === anim.value ? "default" : "outline"}
+              size="sm"
+              onClick={() => onChange({ ...settings, animation: anim.value })}
+              className="flex flex-col h-16 gap-1"
+            >
+              <span className="text-xl">{anim.icon}</span>
+              <span className="text-xs">{anim.label}</span>
             </Button>
           ))}
         </div>
