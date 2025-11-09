@@ -1111,13 +1111,14 @@ export const ReelSlideshow = ({
       <div 
         id="reel-capture-canvas" 
         className="relative absolute pointer-events-none"
+        aria-hidden="true"
         style={{ 
           width: '1080px', 
           height: '1920px',
           position: 'absolute',
           left: '-9999px',
           top: '-9999px',
-          visibility: 'hidden',
+          opacity: 0,
           pointerEvents: 'none',
           backgroundColor: '#000000'
         }}

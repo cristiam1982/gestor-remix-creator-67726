@@ -678,6 +678,41 @@ export const generateReelVideo = async (
 };
 
 /**
+ * Espera a que el contenedor de captura esté listo: fonts, imágenes cargadas
+ */
+const waitForCaptureReady = async (elementId: string): Promise<void> => {
+  // Esperar fonts
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
+
+  // Esperar imágenes dentro del elemento
+  const container = document.getElementById(elementId);
+  if (container) {
+    const images = container.querySelectorAll('img');
+    const imagePromises = Array.from(images).map((img) => {
+      if (img.complete && img.naturalWidth > 0) {
+        return Promise.resolve();
+      }
+      return new Promise<void>((resolve) => {
+        img.onload = () => resolve();
+        img.onerror = () => resolve(); // Continuar aunque falle
+        // Timeout por si acaso
+        setTimeout(() => resolve(), 2000);
+      });
+    });
+    await Promise.all(imagePromises);
+  }
+
+  // Esperar frames de renderizado
+  await waitForNextFrame();
+  await waitForNextFrame();
+  
+  // Delay adicional
+  await new Promise(resolve => setTimeout(resolve, 100));
+};
+
+/**
  * Genera un video MP4 usando MediaRecorder API (Fase 2)
  * Más rápido, mejor calidad y menor peso que GIF
  * Incluye slide de resumen al final
@@ -695,6 +730,9 @@ export const generateReelVideoMP4 = async (
   const startTime = Date.now();
   
   try {
+    console.log('🎬 Iniciando generación de video MP4 con MediaRecorder');
+    console.log('🎯 Captura DOM activada:', elementId);
+    
     onProgress({
       stage: "initializing",
       progress: 0,
@@ -755,34 +793,75 @@ export const generateReelVideoMP4 = async (
 
     const totalSlides = photos.length + (includeSummary ? 1 : 0);
 
-    console.log('🎯 MediaRecorder ahora captura DOM directo:', elementId);
-
-    // Renderizar cada foto capturando el DOM real
+    // Generar frames para cada foto
     for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
-      console.log(`📸 Capturando slide ${photoIndex + 1}/${photos.length} desde DOM...`);
-      
-      // Cambiar a la foto actual en el DOM
+      const progressPercent = Math.round(((photoIndex + 1) / totalSlides) * 80) + 10;
+      onProgress({
+        stage: "capturing",
+        progress: progressPercent,
+        currentFrame: photoIndex + 1,
+        totalFrames: totalSlides,
+        message: `Grabando foto ${photoIndex + 1} de ${photos.length}...`,
+      });
+      console.log(`📸 Preparando slide ${photoIndex + 1}/${photos.length} (esperando assets)...`);
+
+      // Actualizar el DOM con la foto actual
       await onPhotoChange(photoIndex);
-      
-      // Esperar 2-3 frames para que React renderice
-      await waitForNextFrame();
-      await waitForNextFrame();
-      await new Promise(resolve => setTimeout(resolve, 50)); // delay adicional
-      
-      // Capturar el frame del DOM
-      let frameCanvas: HTMLCanvasElement;
-      try {
-        frameCanvas = await captureFrame(elementId, false);
-        console.log(`🖼️ Frame DOM capturado: ${frameCanvas.width}x${frameCanvas.height}`);
-      } catch (error) {
-        // Si falla por CORS, reintentar ocultando logo del aliado
-        if (error instanceof Error && 
-            (error.message.includes("tainted") || error.message.includes("cross-origin"))) {
-          console.warn("⚠️ Error CORS, reintentando sin logo del aliado...");
-          frameCanvas = await captureFrame(elementId, true);
-        } else {
-          throw error;
+
+      // Esperar a que el contenedor esté listo para captura
+      await waitForCaptureReady(elementId);
+
+      // Capturar el frame del DOM con reintentos
+      let frameCanvas: HTMLCanvasElement | null = null;
+      let retryCount = 0;
+      const maxRetries = 3;
+
+      while (!frameCanvas && retryCount < maxRetries) {
+        try {
+          const capturedCanvas = await captureFrame(elementId, false);
+          
+          // Validar que el frame no esté oscuro
+          if (isCanvasLikelyBlack(capturedCanvas)) {
+            console.warn(`⚠️ Frame oscuro detectado, reintento #${retryCount + 1}...`);
+            await new Promise(resolve => setTimeout(resolve, 150));
+            retryCount++;
+            continue;
+          }
+          
+          frameCanvas = capturedCanvas;
+          console.log('🖼️ Capturado', frameCanvas.width, 'x', frameCanvas.height);
+        } catch (error) {
+          if (retryCount === 0 && error instanceof Error && 
+              (error.message.includes("tainted") || error.message.includes("cross-origin"))) {
+            console.warn('⚠️ Error CORS, reintentando sin logo del aliado...');
+            try {
+              const capturedCanvas = await captureFrame(elementId, true);
+              if (!isCanvasLikelyBlack(capturedCanvas)) {
+                frameCanvas = capturedCanvas;
+                console.log('🖼️ Capturado sin logo del aliado');
+                break;
+              }
+            } catch (e) {
+              console.error('⚠️ Error en reintento sin logo:', e);
+            }
+          }
+          retryCount++;
+          await new Promise(resolve => setTimeout(resolve, 200));
         }
+      }
+
+      // Si todos los reintentos fallaron, fallback a FFmpeg
+      if (!frameCanvas || isCanvasLikelyBlack(frameCanvas)) {
+        console.error('❌ No se pudo capturar frame válido, activando fallback FFmpeg...');
+        console.log('🍎 Fallback FFmpeg frames activado');
+        return generateReelVideoMP4_FFmpegFrames(
+          photos,
+          elementId,
+          onProgress,
+          onPhotoChange,
+          includeSummary,
+          slideDuration
+        );
       }
       
       // Dibujar este frame múltiples veces para mantener la duración
@@ -791,42 +870,74 @@ export const generateReelVideoMP4 = async (
         ctx.drawImage(frameCanvas, 0, 0, canvas.width, canvas.height);
         await new Promise(resolve => setTimeout(resolve, 1000 / fps));
       }
-
-      const captureProgress = 10 + ((photoIndex + 1) / totalSlides) * 80;
-      onProgress({
-        stage: "capturing",
-        progress: captureProgress,
-        currentFrame: photoIndex + 1,
-        totalFrames: totalSlides,
-        message: `Grabando foto ${photoIndex + 1} de ${totalSlides}...`,
-      });
     }
 
-    // Capturar slide de resumen si está habilitado
+    // Generar frames para el slide de resumen si está habilitado
     if (includeSummary) {
-      console.log('📊 Capturando slide de resumen desde DOM...');
-      
-      // Cambiar al slide de resumen (índice = photos.length)
+      onProgress({
+        stage: "capturing",
+        progress: 95,
+        currentFrame: totalSlides,
+        totalFrames: totalSlides,
+        message: 'Grabando slide de resumen...',
+      });
+      console.log('📊 Preparando slide de resumen (esperando assets)...');
+
+      // Actualizar el DOM para mostrar el slide de resumen
       await onPhotoChange(photos.length);
-      
-      // Esperar renderizado
-      await waitForNextFrame();
-      await waitForNextFrame();
-      await new Promise(resolve => setTimeout(resolve, 50));
-      
-      // Capturar el frame del DOM
-      let summaryCanvas: HTMLCanvasElement;
-      try {
-        summaryCanvas = await captureFrame(elementId, false);
-        console.log(`🖼️ Slide resumen capturado: ${summaryCanvas.width}x${summaryCanvas.height}`);
-      } catch (error) {
-        if (error instanceof Error && 
-            (error.message.includes("tainted") || error.message.includes("cross-origin"))) {
-          console.warn("⚠️ Error CORS en resumen, reintentando sin logo...");
-          summaryCanvas = await captureFrame(elementId, true);
-        } else {
-          throw error;
+
+      // Esperar a que el contenedor esté listo
+      await waitForCaptureReady(elementId);
+
+      // Capturar el frame del slide de resumen con reintentos
+      let summaryCanvas: HTMLCanvasElement | null = null;
+      let retryCount = 0;
+      const maxRetries = 3;
+
+      while (!summaryCanvas && retryCount < maxRetries) {
+        try {
+          const capturedCanvas = await captureFrame(elementId, false);
+          
+          if (isCanvasLikelyBlack(capturedCanvas)) {
+            console.warn(`⚠️ Frame resumen oscuro, reintento #${retryCount + 1}...`);
+            await new Promise(resolve => setTimeout(resolve, 150));
+            retryCount++;
+            continue;
+          }
+          
+          summaryCanvas = capturedCanvas;
+          console.log('🖼️ Frame resumen capturado');
+        } catch (error) {
+          if (retryCount === 0 && error instanceof Error && 
+              (error.message.includes("tainted") || error.message.includes("cross-origin"))) {
+            console.warn('⚠️ Error CORS en resumen, reintentando sin logo del aliado...');
+            try {
+              const capturedCanvas = await captureFrame(elementId, true);
+              if (!isCanvasLikelyBlack(capturedCanvas)) {
+                summaryCanvas = capturedCanvas;
+                console.log('🖼️ Resumen capturado sin logo del aliado');
+                break;
+              }
+            } catch (e) {
+              console.error('⚠️ Error en reintento resumen sin logo:', e);
+            }
+          }
+          retryCount++;
+          await new Promise(resolve => setTimeout(resolve, 200));
         }
+      }
+
+      if (!summaryCanvas || isCanvasLikelyBlack(summaryCanvas)) {
+        console.error('❌ No se pudo capturar slide de resumen, activando fallback FFmpeg...');
+        console.log('🍎 Fallback FFmpeg frames activado');
+        return generateReelVideoMP4_FFmpegFrames(
+          photos,
+          elementId,
+          onProgress,
+          onPhotoChange,
+          includeSummary,
+          slideDuration
+        );
       }
 
       // Dibujar el slide de resumen durante ~2.5 segundos
@@ -835,14 +946,6 @@ export const generateReelVideoMP4 = async (
         ctx.drawImage(summaryCanvas, 0, 0, canvas.width, canvas.height);
         await new Promise(resolve => setTimeout(resolve, 1000 / fps));
       }
-      
-      onProgress({
-        stage: "capturing",
-        progress: 90,
-        currentFrame: totalSlides,
-        totalFrames: totalSlides,
-        message: `Grabando slide de resumen...`,
-      });
     }
 
     // Finalizar grabación
@@ -954,11 +1057,8 @@ export const generateReelVideoMP4_FFmpegFrames = async (
     for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
       await onPhotoChange(photoIndex);
       
-      // Triple verificación + delay
-      await waitForNextFrame();
-      await waitForNextFrame();
-      await waitForNextFrame();
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Esperar a que el contenedor esté listo
+      await waitForCaptureReady(elementId);
 
       console.log(`📸 Capturando frames para foto ${photoIndex + 1}/${photos.length}...`);
       const frameCanvas = await captureFrame(elementId, false);
@@ -990,10 +1090,9 @@ export const generateReelVideoMP4_FFmpegFrames = async (
     // Capturar slide de resumen
     if (includeSummary) {
       await onPhotoChange(photos.length);
-      await waitForNextFrame();
-      await waitForNextFrame();
-      await waitForNextFrame();
-      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Esperar a que el contenedor esté listo
+      await waitForCaptureReady(elementId);
 
       console.log('📸 Capturando slide de resumen...');
       const summaryCanvas = await captureFrame(elementId, false);
