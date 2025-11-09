@@ -617,7 +617,7 @@ export const ReelSlideshow = ({
 
       {/* Desktop: ScrollArea principal que envuelve todo */}
       <ScrollArea className="hidden lg:block h-[calc(100vh-80px)]">
-        <div className="space-y-4 max-w-full mx-auto pb-20">
+        <div className="space-y-4 max-w-full mx-auto pb-8">
           {/* Header con título */}
           <div className="flex items-center justify-between px-4 lg:px-6">
             <div>
@@ -645,7 +645,7 @@ export const ReelSlideshow = ({
           <div className="grid grid-cols-[1fr_480px] gap-6 h-[calc(100vh-180px)] px-4 lg:px-6">
         {/* PANEL DE CONTROLES - Izquierda */}
         <ScrollArea className="h-full pr-4">
-          <div className="space-y-4 pb-16">
+          <div className="space-y-4 pb-6">
             <Card className="p-4">
               <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
               
@@ -774,7 +774,7 @@ export const ReelSlideshow = ({
 
         {/* PANEL DE PREVIEW - Derecha */}
         <ScrollArea className="h-full">
-          <div className="space-y-4 pb-16">
+          <div className="space-y-4 pb-6">
           <Card className="p-4 shadow-2xl border-2">
             <div className="flex items-center justify-between mb-3">
               <div>
