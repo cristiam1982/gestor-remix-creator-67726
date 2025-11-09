@@ -116,7 +116,10 @@ export const ArrendadoReelSlideshow = ({
     opacity: 90,
     background: 'frosted',
     shape: 'rounded',
-    animation: 'none'
+    animation: 'none',
+    floatingSpeed: 3,
+    entranceAnimation: 'zoom-in',
+    entranceDuration: 0.8
   });
   const { toast } = useToast();
   

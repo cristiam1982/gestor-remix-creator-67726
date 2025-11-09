@@ -163,7 +163,11 @@ export const ReelSlideshow = ({
       opacity: 90,
       background: 'frosted',
       size: 'medium',
-      shape: 'rounded'
+      shape: 'rounded',
+      animation: 'none',
+      floatingSpeed: 3,
+      entranceAnimation: 'zoom-in',
+      entranceDuration: 0.8
     }
   );
 
