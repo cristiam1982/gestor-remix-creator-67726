@@ -24,10 +24,10 @@ export const ReelTextCompositionControls = ({ settings, onChange }: ReelTextComp
 
   return (
     <div className="space-y-6">
-      {/* Tamaño de Tipografía */}
+      {/* Tamaño de Texto Principal */}
       <div className="space-y-3">
         <div className="flex justify-between items-center">
-          <Label className="text-sm font-semibold">Tamaño de Texto</Label>
+          <Label className="text-sm font-semibold">Tamaño de Texto Principal</Label>
           <span className="text-sm font-bold bg-accent px-3 py-1 rounded-full">
             {settings.typographyScale > 0 ? '+' : ''}{settings.typographyScale}%
           </span>
@@ -35,6 +35,28 @@ export const ReelTextCompositionControls = ({ settings, onChange }: ReelTextComp
         <Slider
           value={[settings.typographyScale]}
           onValueChange={(value) => onChange({ ...settings, typographyScale: value[0] })}
+          min={-20}
+          max={40}
+          step={10}
+          className="py-2"
+        />
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>Más Pequeño</span>
+          <span>Más Grande</span>
+        </div>
+      </div>
+
+      {/* Tamaño del Badge */}
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <Label className="text-sm font-semibold">Tamaño del Badge</Label>
+          <span className="text-sm font-bold bg-accent px-3 py-1 rounded-full">
+            {settings.badgeScale > 0 ? '+' : ''}{settings.badgeScale}%
+          </span>
+        </div>
+        <Slider
+          value={[settings.badgeScale]}
+          onValueChange={(value) => onChange({ ...settings, badgeScale: value[0] })}
           min={-20}
           max={40}
           step={10}

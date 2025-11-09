@@ -175,6 +175,7 @@ export const ReelSlideshow = ({
   const [textComposition, setTextComposition] = useState<TextCompositionSettings>(
     propertyData.textComposition || {
       typographyScale: 0,
+      badgeScale: 0,
       badgeStyle: 'rounded',
       verticalSpacing: 'normal'
     }
@@ -242,6 +243,7 @@ export const ReelSlideshow = ({
   // Fase 6: Estilos dinámicos del texto
   const textStyle = useMemo(() => {
     const scale = 1 + (textComposition.typographyScale / 100);
+    const badgeScale = 1 + (textComposition.badgeScale / 100);
     
     const badgeClasses = {
       circular: 'rounded-full',
@@ -258,6 +260,7 @@ export const ReelSlideshow = ({
 
     return {
       scale,
+      badgeScale,
       badgeClass: badgeClasses[textComposition.badgeStyle],
       alignmentClass: 'items-start text-left', // Fijo en left
       spacingClass: spacingValues[textComposition.verticalSpacing]
@@ -923,7 +926,7 @@ export const ReelSlideshow = ({
                     <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 ${textStyle.badgeClass} shadow-lg max-w-[80%]`}>
                       <p 
                         className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}
-                        style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.scale})` }}
+                        style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})` }}
                       >
                         {propertyData.subtitulos[currentPhotoIndex]}
                       </p>
@@ -1154,7 +1157,7 @@ export const ReelSlideshow = ({
                         <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 ${textStyle.badgeClass} shadow-lg max-w-[80%]`}>
                           <p 
                             className={`${currentTemplate.subtitleStyle.textColor} font-semibold text-center leading-tight`}
-                            style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.scale})` }}
+                            style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})` }}
                           >
                             {propertyData.subtitulos[currentPhotoIndex]}
                           </p>
@@ -1480,7 +1483,7 @@ export const ReelSlideshow = ({
                         <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 ${textStyle.badgeClass} shadow-lg max-w-[80%]`}>
                           <p 
                             className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}
-                            style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.scale})` }}
+                            style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})` }}
                           >
                             {propertyData.subtitulos[currentPhotoIndex]}
                           </p>

@@ -49,7 +49,8 @@ export interface LogoSettings {
 
 // Fase 6: Text composition settings
 export interface TextCompositionSettings {
-  typographyScale: number; // -20 a +40 (porcentaje)
+  typographyScale: number; // -20 a +40 (porcentaje) - para texto principal (precio, ubicación, etc.)
+  badgeScale: number; // -20 a +40 (porcentaje) - para badge/subtítulo
   badgeStyle: 'circular' | 'rectangular' | 'rounded' | 'none';
   verticalSpacing: 'compact' | 'normal' | 'spacious';
 }
