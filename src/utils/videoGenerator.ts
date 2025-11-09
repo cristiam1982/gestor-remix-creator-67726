@@ -755,77 +755,40 @@ export const generateReelVideoMP4 = async (
 
     const totalSlides = photos.length + (includeSummary ? 1 : 0);
 
-    // PRE-CARGAR TODAS LAS IMÁGENES antes de capturar
-    onProgress({
-      stage: "initializing",
-      progress: 5,
-      message: "Pre-cargando imágenes...",
-    });
+    console.log('🎯 MediaRecorder ahora captura DOM directo:', elementId);
 
-    const imagePromises = photos.map(src => {
-      return new Promise<HTMLImageElement>((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.referrerPolicy = "no-referrer";
-        img.onload = () => resolve(img);
-        img.onerror = () => {
-          // Si falla CORS, intentar sin crossOrigin
-          const img2 = new Image();
-          img2.referrerPolicy = "no-referrer";
-          img2.onload = () => resolve(img2);
-          img2.onerror = reject;
-          img2.src = src;
-        };
-        img.src = src;
-      });
-    });
-
-    const imageElements = await Promise.all(imagePromises);
-    console.log('✅ Todas las imágenes pre-cargadas exitosamente');
-    
-    // Precargar logos si tenemos propertyData y aliadoConfig
-    let logos: { aliado: HTMLImageElement, elGestor: HTMLImageElement } | null = null;
-    if (propertyData && aliadoConfig) {
-      logos = {
-        aliado: await loadImage(logoRubyMorales),
-        elGestor: await loadImage(elGestorLogoImg)
-      };
-      console.log('✅ Logos precargados correctamente');
-    }
-
-    // Renderizar cada foto
+    // Renderizar cada foto capturando el DOM real
     for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
-      console.log(`📸 Renderizando foto ${photoIndex + 1}/${photos.length}...`);
+      console.log(`📸 Capturando slide ${photoIndex + 1}/${photos.length} desde DOM...`);
       
-      const photoImg = imageElements[photoIndex];
+      // Cambiar a la foto actual en el DOM
+      await onPhotoChange(photoIndex);
       
-      // Renderizar directamente en canvas si tenemos los datos necesarios
-      if (propertyData && aliadoConfig && logos) {
-        await renderFrameDirectToCanvas(ctx, photoImg, propertyData, aliadoConfig, logos);
-      } else {
-        // Fallback: solo dibujar la foto
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const photoAspect = photoImg.width / photoImg.height;
-        const canvasAspect = canvas.width / canvas.height;
-        let drawWidth, drawHeight, offsetX, offsetY;
-        
-        if (photoAspect > canvasAspect) {
-          drawHeight = canvas.height;
-          drawWidth = photoImg.width * (canvas.height / photoImg.height);
-          offsetX = (canvas.width - drawWidth) / 2;
-          offsetY = 0;
+      // Esperar 2-3 frames para que React renderice
+      await waitForNextFrame();
+      await waitForNextFrame();
+      await new Promise(resolve => setTimeout(resolve, 50)); // delay adicional
+      
+      // Capturar el frame del DOM
+      let frameCanvas: HTMLCanvasElement;
+      try {
+        frameCanvas = await captureFrame(elementId, false);
+        console.log(`🖼️ Frame DOM capturado: ${frameCanvas.width}x${frameCanvas.height}`);
+      } catch (error) {
+        // Si falla por CORS, reintentar ocultando logo del aliado
+        if (error instanceof Error && 
+            (error.message.includes("tainted") || error.message.includes("cross-origin"))) {
+          console.warn("⚠️ Error CORS, reintentando sin logo del aliado...");
+          frameCanvas = await captureFrame(elementId, true);
         } else {
-          drawWidth = canvas.width;
-          drawHeight = photoImg.height * (canvas.width / photoImg.width);
-          offsetX = 0;
-          offsetY = (canvas.height - drawHeight) / 2;
+          throw error;
         }
-        
-        ctx.drawImage(photoImg, offsetX, offsetY, drawWidth, drawHeight);
       }
       
-      // Mantener el frame visible durante slideDuration
+      // Dibujar este frame múltiples veces para mantener la duración
       for (let frameNum = 0; frameNum < framesPerPhoto; frameNum++) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(frameCanvas, 0, 0, canvas.width, canvas.height);
         await new Promise(resolve => setTimeout(resolve, 1000 / fps));
       }
 
@@ -840,13 +803,36 @@ export const generateReelVideoMP4 = async (
     }
 
     // Capturar slide de resumen si está habilitado
-    if (includeSummary && propertyData && aliadoConfig && logos) {
-      console.log('📊 Renderizando slide de resumen...');
+    if (includeSummary) {
+      console.log('📊 Capturando slide de resumen desde DOM...');
       
-      await renderSummarySlideToCanvas(ctx, propertyData, aliadoConfig, logos);
+      // Cambiar al slide de resumen (índice = photos.length)
+      await onPhotoChange(photos.length);
+      
+      // Esperar renderizado
+      await waitForNextFrame();
+      await waitForNextFrame();
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // Capturar el frame del DOM
+      let summaryCanvas: HTMLCanvasElement;
+      try {
+        summaryCanvas = await captureFrame(elementId, false);
+        console.log(`🖼️ Slide resumen capturado: ${summaryCanvas.width}x${summaryCanvas.height}`);
+      } catch (error) {
+        if (error instanceof Error && 
+            (error.message.includes("tainted") || error.message.includes("cross-origin"))) {
+          console.warn("⚠️ Error CORS en resumen, reintentando sin logo...");
+          summaryCanvas = await captureFrame(elementId, true);
+        } else {
+          throw error;
+        }
+      }
 
-      // Mantener visible por ~2.5 segundos
+      // Dibujar el slide de resumen durante ~2.5 segundos
       for (let frameNum = 0; frameNum < framesPerSummary; frameNum++) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(summaryCanvas, 0, 0, canvas.width, canvas.height);
         await new Promise(resolve => setTimeout(resolve, 1000 / fps));
       }
       
