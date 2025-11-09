@@ -617,7 +617,7 @@ export const ReelSlideshow = ({
 
       {/* Desktop: ScrollArea principal que envuelve todo */}
       <ScrollArea className="hidden lg:block h-[calc(100vh-80px)]">
-        <div className="space-y-4 max-w-full mx-auto pb-5">
+        <div className="space-y-4 max-w-full mx-auto pb-20">
           {/* Header con título */}
           <div className="flex items-center justify-between px-4 lg:px-6">
             <div>
@@ -628,11 +628,24 @@ export const ReelSlideshow = ({
             </div>
           </div>
 
+          {/* Botón de descarga fijo en la página */}
+          <div className="px-4 lg:px-6">
+            <Card className="p-3 bg-primary/5 border-primary/20">
+              <Button 
+                onClick={handleDownloadVideo} 
+                size="lg" 
+                className="w-full gap-2 bg-primary hover:bg-primary/90"
+              >
+                <Download className="w-5 h-5" /> Descargar Video
+              </Button>
+            </Card>
+          </div>
+
           {/* Layout de 2 columnas con ScrollAreas independientes */}
           <div className="grid grid-cols-[1fr_480px] gap-6 h-[calc(100vh-180px)] px-4 lg:px-6">
         {/* PANEL DE CONTROLES - Izquierda */}
         <ScrollArea className="h-full pr-4">
-          <div className="space-y-4 pb-5">
+          <div className="space-y-4 pb-16">
             <Card className="p-4">
               <h3 className="text-lg font-bold mb-4">⚙️ Controles de Personalización</h3>
               
@@ -761,18 +774,7 @@ export const ReelSlideshow = ({
 
         {/* PANEL DE PREVIEW - Derecha */}
         <ScrollArea className="h-full">
-          <div className="space-y-4 pb-5">
-          {/* Botón de descarga - Posicionado arriba del preview */}
-          <Card className="p-3 bg-primary/5 border-primary/20">
-            <Button 
-              onClick={handleDownloadVideo} 
-              size="lg" 
-              className="w-full gap-2 bg-primary hover:bg-primary/90"
-            >
-              <Download className="w-5 h-5" /> Descargar Video
-            </Button>
-          </Card>
-
+          <div className="space-y-4 pb-16">
           <Card className="p-4 shadow-2xl border-2">
             <div className="flex items-center justify-between mb-3">
               <div>
