@@ -122,12 +122,14 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
         )}
 
         {/* Vista previa del video */}
-        <div className="relative aspect-story max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl">
+        <div 
+          className="relative aspect-story max-w-[400px] mx-auto bg-black rounded-xl overflow-hidden shadow-2xl cursor-pointer"
+          onClick={handlePlayPause}
+        >
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full h-full object-cover cursor-pointer"
-            onClick={handlePlayPause}
+            className="w-full h-full object-cover"
             onLoadedMetadata={handleLoadedMetadata}
             onError={handleError}
             onEnded={() => setIsPlaying(false)}
@@ -136,7 +138,7 @@ export const VideoPreview = ({ propertyData, aliadoConfig }: VideoPreviewProps) 
           />
 
           {/* Overlay con información */}
-          <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 pointer-events-none select-none">
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
             
             {/* Header */}
