@@ -280,7 +280,7 @@ export const ReelSlideshow = ({
     };
 
     const spacingValues = {
-      compact: 'gap-1',
+      compact: 'gap-0.5',
       normal: 'gap-2',
       spacious: 'gap-4'
     };
