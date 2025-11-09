@@ -16,12 +16,6 @@ export const ReelTextCompositionControls = ({ settings, onChange }: ReelTextComp
     { value: 'none', icon: '🚫', label: 'Sin Badge' },
   ];
 
-  const alignments: Array<{ value: TextCompositionSettings['ctaAlignment']; icon: string; label: string }> = [
-    { value: 'left', icon: '◀', label: 'Izquierda' },
-    { value: 'center', icon: '◆', label: 'Centro' },
-    { value: 'right', icon: '▶', label: 'Derecha' },
-  ];
-
   const spacings: Array<{ value: TextCompositionSettings['verticalSpacing']; label: string }> = [
     { value: 'compact', label: 'Compacto' },
     { value: 'normal', label: 'Normal' },
@@ -66,25 +60,6 @@ export const ReelTextCompositionControls = ({ settings, onChange }: ReelTextComp
             >
               <span className="text-xl">{style.icon}</span>
               <span className="text-xs">{style.label}</span>
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Alineación del CTA */}
-      <div className="space-y-3">
-        <Label className="text-sm font-semibold">Alineación del CTA</Label>
-        <div className="grid grid-cols-3 gap-2">
-          {alignments.map((align) => (
-            <Button
-              key={align.value}
-              variant={settings.ctaAlignment === align.value ? "default" : "outline"}
-              size="sm"
-              onClick={() => onChange({ ...settings, ctaAlignment: align.value })}
-              className="flex flex-col h-16 gap-1"
-            >
-              <span className="text-xl">{align.icon}</span>
-              <span className="text-xs">{align.label}</span>
             </Button>
           ))}
         </div>

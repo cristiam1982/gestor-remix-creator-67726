@@ -49,7 +49,6 @@ export interface LogoSettings {
 export interface TextCompositionSettings {
   typographyScale: number; // -20 a +40 (porcentaje)
   badgeStyle: 'circular' | 'rectangular' | 'rounded' | 'none';
-  ctaAlignment: 'left' | 'center' | 'right';
   verticalSpacing: 'compact' | 'normal' | 'spacious';
 }
 

@@ -172,7 +172,6 @@ export const ReelSlideshow = ({
     propertyData.textComposition || {
       typographyScale: 0,
       badgeStyle: 'rounded',
-      ctaAlignment: 'left',
       verticalSpacing: 'normal'
     }
   );
@@ -247,12 +246,6 @@ export const ReelSlideshow = ({
       none: 'hidden'
     };
 
-    const alignmentClasses = {
-      left: 'items-start text-left',
-      center: 'items-center text-center',
-      right: 'items-end text-right'
-    };
-
     const spacingValues = {
       compact: 'gap-0.5',
       normal: 'gap-2',
@@ -262,7 +255,7 @@ export const ReelSlideshow = ({
     return {
       scale,
       badgeClass: badgeClasses[textComposition.badgeStyle],
-      alignmentClass: alignmentClasses[textComposition.ctaAlignment],
+      alignmentClass: 'items-start text-left', // Fijo en left
       spacingClass: spacingValues[textComposition.verticalSpacing]
     };
   }, [textComposition]);
