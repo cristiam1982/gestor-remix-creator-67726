@@ -235,10 +235,11 @@ export const ReelSlideshow = ({
     const sizes = { small: 60, medium: 88, large: 120 };
     const size = sizes[logoSettings.size];
     
-    let backgroundClass = 'bg-white/90';
-    if (logoSettings.background === 'blur') backgroundClass = 'backdrop-blur-sm bg-white/60';
-    if (logoSettings.background === 'shadow') backgroundClass = 'bg-transparent shadow-2xl';
-    if (logoSettings.background === 'none') backgroundClass = 'bg-transparent';
+    let backgroundClass = 'bg-white/95 shadow-[0_2px_12px_rgba(0,0,0,0.08)]';
+    if (logoSettings.background === 'blur') backgroundClass = 'backdrop-blur-md bg-white/70 shadow-[0_4px_20px_rgba(0,0,0,0.12)]';
+    if (logoSettings.background === 'shadow') backgroundClass = 'bg-white/85 shadow-[0_8px_32px_rgba(0,0,0,0.18)]';
+    if (logoSettings.background === 'box') backgroundClass = 'bg-gradient-to-br from-white/95 to-white/90 shadow-[0_2px_16px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.5)]';
+    if (logoSettings.background === 'none') backgroundClass = 'bg-transparent drop-shadow-[0_4px_12px_rgba(0,0,0,0.25)]';
 
     const positionClasses = {
       'top-left': 'top-6 left-6',
@@ -1186,7 +1187,7 @@ export const ReelSlideshow = ({
                   <img
                     src={logoRubyMorales}
                     alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} border-2 border-white/80 object-contain p-1 ${logoStyle.backgroundClass}`}
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                     referrerPolicy="no-referrer"

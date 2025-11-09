@@ -16,10 +16,10 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
   ];
 
   const backgrounds: Array<{ value: LogoSettings['background']; icon: string; label: string }> = [
-    { value: 'none', icon: '🚫', label: 'Sin Fondo' },
-    { value: 'blur', icon: '💨', label: 'Blur Sutil' },
-    { value: 'shadow', icon: '🌑', label: 'Sombra' },
-    { value: 'box', icon: '⬜', label: 'Recuadro' },
+    { value: 'none', icon: '✨', label: 'Flotante' },
+    { value: 'blur', icon: '💎', label: 'Glass' },
+    { value: 'shadow', icon: '☁️', label: 'Elevado' },
+    { value: 'box', icon: '🎁', label: 'Premium' },
   ];
 
   const sizes: Array<{ value: LogoSettings['size']; px: number; label: string }> = [
