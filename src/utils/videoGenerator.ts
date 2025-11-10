@@ -403,9 +403,45 @@ const captureFrame = async (
           const htmlElement = clonedElement as HTMLElement;
           htmlElement.style.opacity = '1';
           htmlElement.style.visibility = 'visible';
+
+          // Inyectar estilos para desactivar animaciones y transiciones SOLO en el elemento capturado
+          const style = clonedDoc.createElement('style');
+          style.textContent = `
+            #${elementId}, #${elementId} * { 
+              animation: none !important; 
+              transition: none !important; 
+              animation-play-state: paused !important;
+            }
+          `;
+          clonedDoc.head.appendChild(style);
+
+          // Remover clases conflictivas (animate-*, transition-*, backdrop-blur-*) dentro del árbol clonado
+          const nodes = htmlElement.querySelectorAll('*');
+          nodes.forEach((node) => {
+            const el = node as HTMLElement;
+            if (el.classList && el.classList.length) {
+              const toRemove: string[] = [];
+              el.classList.forEach((cls) => {
+                if (cls.startsWith('animate-') || cls.startsWith('transition') || cls.startsWith('duration-') || cls.startsWith('backdrop-')) {
+                  toRemove.push(cls);
+                }
+                if (cls === 'invisible' || cls.startsWith('opacity-')) {
+                  toRemove.push(cls);
+                }
+              });
+              toRemove.forEach((c) => el.classList.remove(c));
+            }
+            // Asegurar visibilidad
+            el.style.animation = 'none';
+            el.style.transition = 'none';
+            el.style.visibility = 'visible';
+            if (el.style.opacity === '' || Number(el.style.opacity) < 1) el.style.opacity = '1';
+            // Evitar backdrop-filter en elementos con estilos inline
+            (el.style as any).backdropFilter = 'none';
+          });
         }
         
-        // Asegurar que todas las imágenes son visibles
+        // Asegurar que todas las imágenes son visibles y recargarlas si es necesario
         const imgs = clonedDoc.querySelectorAll('img');
         imgs.forEach(img => {
           const imgElement = img as HTMLImageElement;

@@ -1194,7 +1194,7 @@ export const ReelSlideshow = ({
                       <div className="w-full flex justify-center mb-3">
                         <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 ${textStyle.badgeClass} shadow-lg max-w-[80%]`}>
                           <p 
-                            className={`${currentTemplate.subtitleStyle.textColor} font-semibold text-center leading-tight`}
+                            className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}
                             style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})` }}
                           >
                             {propertyData.subtitulos[currentPhotoIndex]}
