@@ -388,59 +388,25 @@ const ensureElGestorLogo = async (canvas: HTMLCanvasElement): Promise<void> => {
     const gestorX = 1080 - gestorWidth - 16; // right-4 (16px)
     const gestorY = 1920 - gestorHeight - 48; // bottom-12 (48px)
     
-    // Intentar samplear el área del logo (si el canvas no está tainted)
-    let needsLogo = false;
-    try {
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      
-      // Samplear algunos píxeles en el área del logo
-      const samplePoints = [
-        [gestorX + gestorWidth/2, gestorY + gestorHeight/2],
-        [gestorX + 10, gestorY + 10],
-        [gestorX + gestorWidth - 10, gestorY + gestorHeight - 10]
-      ];
-      
-      let blackPixels = 0;
-      for (const [x, y] of samplePoints) {
-        const imageData = ctx.getImageData(x, y, 1, 1);
-        const [r, g, b] = imageData.data;
-        const brightness = (r + g + b) / 3;
-        if (brightness < 10) blackPixels++;
-      }
-      
-      // Si más de la mitad de los puntos son negros, el logo probablemente no está
-      needsLogo = blackPixels > samplePoints.length / 2;
-    } catch (e) {
-      // Si hay SecurityError (canvas tainted), dibujar el logo por seguridad
-      console.log('⚠️ Canvas tainted, dibujando logo por seguridad');
-      needsLogo = true;
-    }
+    // SIEMPRE dibujar el logo manualmente para garantizar su presencia
+    console.log('🎨 Dibujando logo "El Gestor" manualmente...');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
     
-    if (needsLogo) {
-      console.log('🎨 Dibujando logo "El Gestor" manualmente...');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      
-      // Aplicar drop-shadow
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-      ctx.shadowBlur = 6;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 4;
-      
-      // Dibujar logo
-      ctx.drawImage(elGestorImg, gestorX, gestorY, gestorWidth, gestorHeight);
-      
-      // Reset shadow
-      ctx.shadowColor = 'transparent';
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
-      
-      console.log('✅ Logo "El Gestor" añadido manualmente');
-    } else {
-      console.log('✅ Logo "El Gestor" ya presente en canvas');
-    }
+    // Aplicar drop-shadow
+    ctx.save();
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+    
+    // Dibujar logo
+    ctx.drawImage(elGestorImg, gestorX, gestorY, gestorWidth, gestorHeight);
+    
+    // Reset shadow
+    ctx.restore();
+    
+    console.log('✅ Logo "El Gestor" añadido manualmente en canvas');
   } catch (error) {
     console.warn('⚠️ Error asegurando logo El Gestor:', error);
   }
@@ -491,6 +457,15 @@ export const captureFrame = async (
           htmlElement.style.opacity = '1';
           htmlElement.style.visibility = 'visible';
 
+          // OCULTAR logos El Gestor del DOM para que no interfieran con html2canvas
+          // Los dibujaremos manualmente después con ensureElGestorLogo
+          const egLogos = htmlElement.querySelectorAll('img[data-eg-logo="true"]') as NodeListOf<HTMLImageElement>;
+          egLogos.forEach(img => {
+            img.style.display = 'none';
+            img.style.filter = 'none';
+            img.style.opacity = '0';
+          });
+
           // Inyectar estilos para desactivar animaciones y transiciones SOLO en el elemento capturado
           const style = clonedDoc.createElement('style');
           style.textContent = `
@@ -532,6 +507,9 @@ export const captureFrame = async (
         const imgs = clonedDoc.querySelectorAll('img');
         imgs.forEach(img => {
           const imgElement = img as HTMLImageElement;
+          // Skip logos El Gestor ya que los ocultamos arriba
+          if (imgElement.getAttribute('data-eg-logo') === 'true') return;
+          
           imgElement.style.opacity = '1';
           imgElement.style.display = 'block';
           if (!imgElement.complete || imgElement.naturalHeight === 0) {

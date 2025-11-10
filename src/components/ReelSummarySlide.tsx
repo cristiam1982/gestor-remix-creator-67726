@@ -248,6 +248,7 @@ export const ReelSummarySlide = ({
         <img
           src={elGestorLogo}
           alt="El Gestor"
+          data-eg-logo="true"
           className="h-[35px] mx-auto mt-14 object-contain drop-shadow-2xl"
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"

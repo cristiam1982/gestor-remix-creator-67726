@@ -421,6 +421,7 @@ export const ArrendadoReelSlideshow = ({
               <img 
                 src={elGestorLogo}
                 alt="El Gestor"
+                data-eg-logo="true"
                 className="h-8 object-contain opacity-90"
                 crossOrigin="anonymous"
               />
@@ -532,6 +533,7 @@ export const ArrendadoReelSlideshow = ({
               <img 
                 src={elGestorLogo}
                 alt="El Gestor"
+                data-eg-logo="true"
                 className="h-8 object-contain opacity-90"
                 crossOrigin="anonymous"
               />
