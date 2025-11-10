@@ -58,19 +58,21 @@ const isCanvasLikelyBlack = (canvas: HTMLCanvasElement): boolean => {
 
 /**
  * Obtiene el mejor MIME type soportado por el navegador para grabación de video
+ * Prioriza VP9 y VP8 para mejor calidad
  */
 const getSupportedMimeType = (): string => {
   const types = [
-    'video/mp4;codecs=h264',
-    'video/mp4',
     'video/webm;codecs=vp9,opus',
     'video/webm;codecs=vp8,opus',
     'video/webm;codecs=h264,opus',
-    'video/webm'
+    'video/webm',
+    'video/mp4;codecs=h264',
+    'video/mp4'
   ];
   
   for (const type of types) {
     if (MediaRecorder.isTypeSupported(type)) {
+      console.log('🎥 Usando codec:', type);
       return type;
     }
   }
@@ -1265,6 +1267,7 @@ export const generateReelVideoFromCanvas = async (
     summaryBackgroundStyle: 'solid' | 'blur' | 'mosaic';
     includeSummary: boolean;
     slideDuration: number;
+    forceFFmpeg?: boolean;
     onProgress?: (progress: VideoGenerationProgress) => void;
   }
 ): Promise<Blob> => {
@@ -1278,6 +1281,7 @@ export const generateReelVideoFromCanvas = async (
     summaryBackgroundStyle,
     includeSummary,
     slideDuration,
+    forceFFmpeg = false,
     onProgress
   } = options;
 
@@ -1298,6 +1302,11 @@ export const generateReelVideoFromCanvas = async (
     message: 'Preparando canvas...'
   });
 
+  // Esperar a que las fuentes estén listas
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
+
   // Pre-cargar todas las imágenes
   await preloadImages(
     photos,
@@ -1316,10 +1325,14 @@ export const generateReelVideoFromCanvas = async (
     throw new Error('No se pudo crear contexto 2D del canvas');
   }
 
-  // Verificar si podemos usar MediaRecorder con H.264
-  const canUseMediaRecorder = !isIOSOrSafari() && 
-    (MediaRecorder.isTypeSupported('video/mp4') || 
-     MediaRecorder.isTypeSupported('video/webm;codecs=h264'));
+  // Habilitar suavizado de alta calidad
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  // Verificar si podemos usar MediaRecorder (a menos que se fuerce FFmpeg)
+  const canUseMediaRecorder = !forceFFmpeg && !isIOSOrSafari() && 
+    (MediaRecorder.isTypeSupported('video/webm;codecs=vp9') || 
+     MediaRecorder.isTypeSupported('video/webm;codecs=vp8'));
 
   if (canUseMediaRecorder) {
     // Método 1: MediaRecorder (más rápido)
@@ -1337,7 +1350,7 @@ export const generateReelVideoFromCanvas = async (
         const mimeType = getSupportedMimeType();
         const mediaRecorder = new MediaRecorder(stream, {
           mimeType,
-          videoBitsPerSecond: 8000000 // 8 Mbps para calidad alta
+          videoBitsPerSecond: 12_000_000 // 12 Mbps para calidad alta
         });
 
         const chunks: Blob[] = [];
@@ -1536,7 +1549,7 @@ export const generateReelVideoFromCanvas = async (
       '-i', 'frame%06d.png',
       '-c:v', 'libx264',
       '-preset', 'medium',
-      '-crf', '23',
+      '-crf', '20',
       '-pix_fmt', 'yuv420p',
       '-movflags', '+faststart',
       'output.mp4'

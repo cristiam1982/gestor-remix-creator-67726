@@ -41,6 +41,12 @@ export const CanvasReelPreview = ({
       try {
         setIsLoading(true);
         setError(null);
+        
+        // Esperar a que las fuentes estén listas
+        if (document.fonts && document.fonts.ready) {
+          await document.fonts.ready;
+        }
+        
         await preloadImages(
           propertyData.fotos,
           logoSettings.background === 'none' 
@@ -66,6 +72,10 @@ export const CanvasReelPreview = ({
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // Habilitar suavizado de imágenes de alta calidad
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     const render = async () => {
       try {

@@ -302,6 +302,10 @@ export const drawSlide = async (
 ) => {
   const { photoUrl, propertyData, aliadoConfig, logoSettings, textComposition, visualLayers, photoIndex } = options;
   
+  // Habilitar suavizado de alta calidad
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  
   // Limpiar canvas
   ctx.clearRect(0, 0, REEL_WIDTH, REEL_HEIGHT);
   
@@ -492,6 +496,10 @@ export const drawSummarySlide = async (
   }
 ) => {
   const { propertyData, aliadoConfig, logoSettings, textComposition, backgroundStyle, photos } = options;
+  
+  // Habilitar suavizado de alta calidad
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   
   // Limpiar canvas
   ctx.clearRect(0, 0, REEL_WIDTH, REEL_HEIGHT);

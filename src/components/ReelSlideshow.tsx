@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import { ALIADO_CONFIG } from "@/config/aliadoConfig";
 import { useLogoStyles } from "@/hooks/useLogoStyles";
@@ -211,12 +212,23 @@ export const ReelSlideshow = ({
     return (saved === 'canvas' || saved === 'legacy') ? saved : 'canvas';
   });
 
+  // Calidad de exportación: Rápida (WebM) vs Alta (MP4 FFmpeg)
+  const [exportQuality, setExportQuality] = useState<'fast' | 'high'>(() => {
+    const saved = localStorage.getItem('reel-export-quality');
+    return (saved === 'fast' || saved === 'high') ? saved : 'fast';
+  });
+
   const { toast } = useToast();
   
   // Guardar preferencia de motor
   useEffect(() => {
     localStorage.setItem('reel-render-engine', renderEngine);
   }, [renderEngine]);
+
+  // Guardar preferencia de calidad de exportación
+  useEffect(() => {
+    localStorage.setItem('reel-export-quality', exportQuality);
+  }, [exportQuality]);
 
   // Funciones de zoom
   const handleZoomIn = () => {
@@ -457,6 +469,7 @@ export const ReelSlideshow = ({
           summaryBackgroundStyle: summaryBackground,
           includeSummary: true,
           slideDuration,
+          forceFFmpeg: exportQuality === 'high',
           onProgress: setGenerationProgress
         });
       } else {
@@ -503,9 +516,10 @@ export const ReelSlideshow = ({
         }
       }
 
-      // Descargar video
-      const mp4Filename = `reel-${propertyData.tipo}-${Date.now()}.mp4`;
-      downloadBlob(videoBlob, mp4Filename);
+      // Descargar video con extensión correcta según el tipo de blob
+      const extension = videoBlob.type.includes('webm') ? 'webm' : 'mp4';
+      const filename = `reel-${propertyData.tipo}-${Date.now()}.${extension}`;
+      downloadBlob(videoBlob, filename);
       
       toast({
         title: "✅ Video descargado",
@@ -619,6 +633,32 @@ export const ReelSlideshow = ({
                           }
                         </p>
                       </div>
+
+                      {renderEngine === 'canvas' && (
+                        <>
+                          <div className="border-t pt-3 space-y-2">
+                            <Label className="text-sm font-medium">Calidad de Exportación</Label>
+                            <Select value={exportQuality} onValueChange={(v) => setExportQuality(v as 'fast' | 'high')}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="fast">⚡ Rápida (WebM)</SelectItem>
+                                <SelectItem value="high">💎 Alta (MP4 FFmpeg)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div className="p-3 rounded-lg bg-muted/50 border">
+                            <p className="text-xs text-muted-foreground leading-relaxed">
+                              {exportQuality === 'fast'
+                                ? '⚡ Exportación rápida con codec VP9/VP8. Excelente calidad y velocidad.'
+                                : '💎 Exportación de máxima calidad usando FFmpeg. Genera MP4 H.264 universal. Tarda más pero garantiza compatibilidad total.'
+                              }
+                            </p>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </AccordionContent>
                 </AccordionItem>
