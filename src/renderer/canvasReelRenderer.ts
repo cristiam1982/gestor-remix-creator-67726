@@ -148,11 +148,19 @@ const drawGradient = (
   const colors = parseGradient(applyGradientIntensity(gradientStr, intensity));
   if (!colors || colors.length === 0) return;
 
-  // Crear gradiente lineal
-  const isTopGradient = direction === 'top' || direction === 'both';
-  const gradient = isTopGradient
-    ? ctx.createLinearGradient(0, 0, 0, height / 2)
-    : ctx.createLinearGradient(0, height / 2, 0, height);
+  // Crear gradiente lineal según dirección
+  let gradient: CanvasGradient;
+  
+  if (direction === 'both') {
+    // Gradiente completo de arriba a abajo
+    gradient = ctx.createLinearGradient(0, 0, 0, height);
+  } else if (direction === 'top') {
+    // Gradiente solo en la parte superior
+    gradient = ctx.createLinearGradient(0, 0, 0, height / 2);
+  } else {
+    // Gradiente solo en la parte inferior
+    gradient = ctx.createLinearGradient(0, height / 2, 0, height);
+  }
 
   colors.forEach(({ color, position, opacity }) => {
     if (color === 'transparent') {
@@ -164,7 +172,15 @@ const drawGradient = (
   });
 
   ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, width, height);
+  
+  // Solo aplicar el gradiente en la zona correspondiente
+  if (direction === 'top') {
+    ctx.fillRect(0, 0, width, height / 2);
+  } else if (direction === 'bottom') {
+    ctx.fillRect(0, height / 2, width, height / 2);
+  } else {
+    ctx.fillRect(0, 0, width, height);
+  }
 };
 
 // Convertir nombre de color Tailwind a valor hex
