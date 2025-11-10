@@ -606,63 +606,8 @@ export const ReelSlideshow = ({
 
               {/* Accordion colapsable */}
               <Accordion type="multiple" defaultValue={["fotos", "estilo"]} className="w-full">
-                {/* Motor de Renderizado */}
-                <AccordionItem value="engine">
-                  <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-                    ⚙️ Motor de Renderizado
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label className="text-sm font-medium">Motor Actual</Label>
-                          <p className="text-xs text-muted-foreground">
-                            {renderEngine === 'canvas' ? 'Canvas 2D (Recomendado)' : 'Legacy (DOM)'}
-                          </p>
-                        </div>
-                        <Switch
-                          checked={renderEngine === 'canvas'}
-                          onCheckedChange={(checked) => setRenderEngine(checked ? 'canvas' : 'legacy')}
-                        />
-                      </div>
-                      
-                      <div className="p-3 rounded-lg bg-muted/50 border">
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          {renderEngine === 'canvas' 
-                            ? '✅ Motor Canvas: Renderizado directo con paridad 100% entre preview y video final. Exportación más rápida y precisa.'
-                            : '⚠️ Motor Legacy: Usa DOM+CSS. Puede haber pequeñas diferencias entre preview y video. Mantener solo como respaldo.'
-                          }
-                        </p>
-                      </div>
-
-                      {renderEngine === 'canvas' && (
-                        <>
-                          <div className="border-t pt-3 space-y-2">
-                            <Label className="text-sm font-medium">Calidad de Exportación</Label>
-                            <Select value={exportQuality} onValueChange={(v) => setExportQuality(v as 'fast' | 'high')}>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="fast">⚡ Rápida (WebM)</SelectItem>
-                                <SelectItem value="high">💎 Alta (MP4 FFmpeg)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div className="p-3 rounded-lg bg-muted/50 border">
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                              {exportQuality === 'fast'
-                                ? '⚡ Exportación rápida con codec VP9/VP8. Excelente calidad y velocidad.'
-                                : '💎 Exportación de máxima calidad usando FFmpeg. Genera MP4 H.264 universal. Tarda más pero garantiza compatibilidad total.'
-                              }
-                            </p>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
+                {/* Motor de Renderizado - OCULTO (Preview siempre usa DOM, exportación usa Canvas) */}
+                {/* El preview SIEMPRE usa DOM. La exportación SIEMPRE usa Canvas internamente. */}
 
                 {/* Fotos del Reel */}
                 <AccordionItem value="fotos">
@@ -846,69 +791,7 @@ export const ReelSlideshow = ({
                   transformOrigin: 'center center'
                 }}
               >
-          {/* Motor Canvas - Preview directo desde Canvas 2D */}
-          {renderEngine === 'canvas' ? (
-            <>
-              {/* Overlay clicable para pausar - solo cuando isPlaying */}
-              {isPlaying && (
-                <div 
-                  className="absolute inset-0 z-50" 
-                  onClick={handlePlayPause}
-                />
-              )}
-
-              {/* Hover indicator */}
-              {isPlaying && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/25 backdrop-blur-sm rounded-full p-4">
-                    <Pause className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-              )}
-
-              {/* Barras de progreso */}
-              <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2 pointer-events-none">
-                {[...photosList, { id: 'summary', src: '' }].map((_, idx) => (
-                  <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-white rounded-full transition-all duration-100"
-                      style={{
-                        width: idx < currentPhotoIndex ? "100%" : 
-                               (idx === currentPhotoIndex && !shouldShowSummary) ? `${progress}%` :
-                               (idx === photosList.length && shouldShowSummary) ? `${progress}%` : "0%"
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* Canvas Preview Component */}
-              <CanvasReelPreview
-                propertyData={propertyData}
-                aliadoConfig={aliadoConfig}
-                currentPhotoIndex={currentPhotoIndex}
-                isSummary={shouldShowSummary}
-                logoSettings={logoSettings}
-                textComposition={textComposition}
-                visualLayers={visualLayers}
-                summaryBackgroundStyle={summaryBackground}
-              />
-
-              {/* Play/Pause overlay */}
-              {!isPlaying && (
-                <div className="absolute inset-0 flex items-center justify-center z-30">
-                  <button
-                    onClick={() => setIsPlaying(true)}
-                    className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all"
-                  >
-                    <Play className="w-10 h-10 text-white ml-1" />
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            /* Motor Legacy - Preview basado en DOM */
-            <>
+          {/* Preview SIEMPRE usa Motor Legacy (DOM) - Hermoso y profesional */}
           {/* Overlay clicable para pausar - solo cuando isPlaying */}
           {isPlaying && (
             <div 
@@ -1153,8 +1036,6 @@ export const ReelSlideshow = ({
                 <Play className="w-10 h-10 text-white ml-1" />
               </button>
             </div>
-          )}
-            </>
           )}
             </div>
             </div>
