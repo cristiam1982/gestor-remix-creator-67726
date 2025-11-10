@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import { ALIADO_CONFIG } from "@/config/aliadoConfig";
 import { useLogoStyles } from "@/hooks/useLogoStyles";
-import { generateReelVideo, downloadBlob, VideoGenerationProgress, generateReelVideoMP4_FFmpegFrames, isIOSOrSafari, generateReelVideoFromCanvas } from "@/utils/videoGenerator";
+import { generateReelVideo, downloadBlob, VideoGenerationProgress, generateReelVideoMP4_FFmpegFrames, generateReelVideoMP4, isIOSOrSafari, generateReelVideoFromCanvas } from "@/utils/videoGenerator";
 import { fetchFile } from '@ffmpeg/util';
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { ReelControlsPanel } from "./ReelControlsPanel";
@@ -457,64 +457,47 @@ export const ReelSlideshow = ({
       const photoSources = photosList.map(p => p.src);
       let videoBlob: Blob;
 
-      // FORZAR MOTOR CANVAS para exportación (paridad 100%)
-      // Preview siempre usa Legacy (DOM), pero exportación usa Canvas
-      if (true) { // Siempre usar Canvas para exportación
-        videoBlob = await generateReelVideoFromCanvas({
-          photos: photoSources,
-          propertyData,
-          aliadoConfig,
-          logoSettings,
-          textComposition,
-          visualLayers,
-          summaryBackgroundStyle: summaryBackground,
-          includeSummary: true,
-          slideDuration,
-          forceFFmpeg: exportQuality === 'high',
-          onProgress: setGenerationProgress
-        });
-      } else {
-        // MOTOR LEGACY (DOM con html2canvas)
-        const changePhoto = async (index: number): Promise<void> => {
-          if (index >= photosList.length) {
-            setShowSummarySlide(true);
-            setCurrentPhotoIndex(photosList.length - 1);
-          } else {
-            setShowSummarySlide(false);
-            setCurrentPhotoIndex(index);
-          }
-          
-          return new Promise((resolve) => {
+      // FORZAR CAPTURA DOM (html2canvas) para garantizar paridad 1:1 con preview
+      const changePhoto = async (index: number): Promise<void> => {
+        if (index >= photosList.length) {
+          setShowSummarySlide(true);
+          setCurrentPhotoIndex(photosList.length - 1);
+        } else {
+          setShowSummarySlide(false);
+          setCurrentPhotoIndex(index);
+        }
+        
+        return new Promise((resolve) => {
+          requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                resolve();
-              });
+              resolve();
             });
           });
-        };
+        });
+      };
 
-        if (isIOSOrSafari()) {
-          videoBlob = await generateReelVideoMP4_FFmpegFrames(
-            photoSources,
-            "reel-capture-canvas",
-            setGenerationProgress,
-            changePhoto,
-            true,
-            slideDuration
-          );
-        } else {
-          const { generateReelVideoMP4 } = await import("../utils/videoGenerator");
-          videoBlob = await generateReelVideoMP4(
-            photoSources,
-            "reel-capture-canvas",
-            setGenerationProgress,
-            changePhoto,
-            true,
-            slideDuration,
-            propertyData,
-            aliadoConfig
-          );
-        }
+      if (exportQuality === 'high') {
+        // Alta calidad: FFmpeg + frames PNG
+        videoBlob = await generateReelVideoMP4_FFmpegFrames(
+          photoSources,
+          "reel-capture-canvas",
+          setGenerationProgress,
+          changePhoto,
+          true,
+          slideDuration
+        );
+      } else {
+        // Rápida: MediaRecorder (WebM)
+        videoBlob = await generateReelVideoMP4(
+          photoSources,
+          "reel-capture-canvas",
+          setGenerationProgress,
+          changePhoto,
+          true,
+          slideDuration,
+          propertyData,
+          aliadoConfig
+        );
       }
 
       // Descargar video con extensión correcta según el tipo de blob
@@ -664,6 +647,91 @@ export const ReelSlideshow = ({
                       visualLayers={visualLayers}
                       onVisualLayersChange={setVisualLayers}
                     />
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Ajustes Avanzados */}
+                <AccordionItem value="advanced">
+                  <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+                    ⚙️ Ajustes Avanzados
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4">
+                    {/* Calidad de exportación */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Calidad de exportación</Label>
+                      <Select
+                        value={exportQuality}
+                        onValueChange={(value: 'fast' | 'high') => setExportQuality(value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fast">⚡ Rápida (WebM, ~15s)</SelectItem>
+                          <SelectItem value="high">✨ Alta (MP4, ~30s)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Rápida: MediaRecorder con códec VP9/VP8. Alta: FFmpeg con H.264 para máxima compatibilidad.
+                      </p>
+                    </div>
+
+                    {/* Botón de prueba de frame */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Prueba de captura</Label>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={async () => {
+                          try {
+                            setIsPlaying(false);
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                            
+                            const { captureFrame } = await import("@/utils/videoGenerator");
+                            const { waitForNextFrame } = await import("@/utils/imageUtils");
+                            
+                            // Esperar a que el DOM esté listo
+                            await waitForNextFrame();
+                            await waitForNextFrame();
+                            
+                            // Capturar frame
+                            const canvas = await captureFrame("reel-capture-canvas", false);
+                            
+                            // Descargar como PNG
+                            canvas.toBlob((blob) => {
+                              if (blob) {
+                                const url = URL.createObjectURL(blob);
+                                const link = document.createElement("a");
+                                link.href = url;
+                                link.download = `frame-test-${Date.now()}.png`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                URL.revokeObjectURL(url);
+                                
+                                toast({
+                                  title: "✅ Frame capturado",
+                                  description: "Revisa la descarga para validar la calidad visual",
+                                });
+                              }
+                            }, 'image/png');
+                          } catch (error) {
+                            console.error('Error capturando frame:', error);
+                            toast({
+                              title: "Error al capturar frame",
+                              description: error instanceof Error ? error.message : "Error desconocido",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        🖼️ Probar 1 frame (PNG)
+                      </Button>
+                      <p className="text-xs text-muted-foreground">
+                        Descarga el frame actual como PNG para validar calidad antes de generar video completo.
+                      </p>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

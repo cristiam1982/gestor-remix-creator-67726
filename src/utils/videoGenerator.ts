@@ -362,7 +362,91 @@ export interface VideoGenerationProgress {
   estimatedTimeLeft?: number;
 }
 
-const captureFrame = async (
+/**
+ * Asegura que el logo de El Gestor esté presente en el canvas
+ * Lo dibuja manualmente si no se detecta
+ */
+let cachedElGestorLogo: HTMLImageElement | null = null;
+
+const ensureElGestorLogo = async (canvas: HTMLCanvasElement): Promise<void> => {
+  try {
+    // Dimensiones esperadas del logo
+    const gestorHeight = 40;
+    const elGestorImg = await (async () => {
+      if (cachedElGestorLogo) return cachedElGestorLogo;
+      const img = new Image();
+      img.src = elGestorLogoImg;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+      cachedElGestorLogo = img;
+      return img;
+    })();
+    
+    const gestorWidth = (gestorHeight / elGestorImg.height) * elGestorImg.width;
+    const gestorX = 1080 - gestorWidth - 16; // right-4 (16px)
+    const gestorY = 1920 - gestorHeight - 48; // bottom-12 (48px)
+    
+    // Intentar samplear el área del logo (si el canvas no está tainted)
+    let needsLogo = false;
+    try {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      // Samplear algunos píxeles en el área del logo
+      const samplePoints = [
+        [gestorX + gestorWidth/2, gestorY + gestorHeight/2],
+        [gestorX + 10, gestorY + 10],
+        [gestorX + gestorWidth - 10, gestorY + gestorHeight - 10]
+      ];
+      
+      let blackPixels = 0;
+      for (const [x, y] of samplePoints) {
+        const imageData = ctx.getImageData(x, y, 1, 1);
+        const [r, g, b] = imageData.data;
+        const brightness = (r + g + b) / 3;
+        if (brightness < 10) blackPixels++;
+      }
+      
+      // Si más de la mitad de los puntos son negros, el logo probablemente no está
+      needsLogo = blackPixels > samplePoints.length / 2;
+    } catch (e) {
+      // Si hay SecurityError (canvas tainted), dibujar el logo por seguridad
+      console.log('⚠️ Canvas tainted, dibujando logo por seguridad');
+      needsLogo = true;
+    }
+    
+    if (needsLogo) {
+      console.log('🎨 Dibujando logo "El Gestor" manualmente...');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      // Aplicar drop-shadow
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 4;
+      
+      // Dibujar logo
+      ctx.drawImage(elGestorImg, gestorX, gestorY, gestorWidth, gestorHeight);
+      
+      // Reset shadow
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
+      console.log('✅ Logo "El Gestor" añadido manualmente');
+    } else {
+      console.log('✅ Logo "El Gestor" ya presente en canvas');
+    }
+  } catch (error) {
+    console.warn('⚠️ Error asegurando logo El Gestor:', error);
+  }
+};
+
+export const captureFrame = async (
   elementId: string,
   hideLogoOnError = false
 ): Promise<HTMLCanvasElement> => {
@@ -541,6 +625,9 @@ const captureFrame = async (
     if (!canvas) {
       throw new Error('No se pudo capturar el frame después de 3 intentos');
     }
+
+    // Asegurar que el logo de El Gestor esté presente
+    await ensureElGestorLogo(canvas);
 
     // Log de diagnóstico con brillo del centro
     try {
