@@ -41,8 +41,14 @@ export async function renderOverlayImage(
 
   // Cargar logos si no fueron proporcionados
   const [loadedLogoImage, loadedElGestorImage] = await Promise.all([
-    logoImage || loadImageFromUrl(aliadoConfig.logo || logoRubyMorales),
-    elGestorLogoImage || loadImageFromUrl(elGestorLogo)
+    logoImage || loadImageFromUrl(aliadoConfig.logo || logoRubyMorales).catch(err => {
+      console.warn('[overlayRenderer] Failed to load aliado logo:', err);
+      return null;
+    }),
+    elGestorLogoImage || loadImageFromUrl(elGestorLogo).catch(err => {
+      console.warn('[overlayRenderer] Failed to load El Gestor logo:', err);
+      return null;
+    })
   ]);
 
   // ===== HEADER: Logo del Aliado =====
@@ -77,16 +83,26 @@ export async function renderOverlayImage(
     ctx.restore();
   }
 
-  // ===== FOOTER: Logo El Gestor =====
+  // ===== FOOTER: Logo El Gestor (right-4 bottom-12, h=40) =====
   if (loadedElGestorImage) {
-    const elGestorSize = 120;
-    const elGestorX = (1080 - elGestorSize) / 2;
-    const elGestorY = 1920 - 96 - elGestorSize; // bottom-24
+    const gestorHeight = 40;
+    const gestorWidth = (loadedElGestorImage.width / loadedElGestorImage.height) * gestorHeight;
+    const gestorX = 1080 - gestorWidth - 16; // right-4
+    const gestorY = 1920 - gestorHeight - 48; // bottom-12
     
     ctx.save();
-    ctx.globalAlpha = 0.95;
-    ctx.drawImage(loadedElGestorImage, elGestorX, elGestorY, elGestorSize, elGestorSize);
+    // Drop-shadow equivalente al DOM
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+    ctx.drawImage(loadedElGestorImage, gestorX, gestorY, gestorWidth, gestorHeight);
     ctx.restore();
+    
+    console.log('[overlayRenderer] El Gestor logo rendered:', {
+      size: `${gestorWidth.toFixed(0)}x${gestorHeight}`,
+      pos: `(${gestorX.toFixed(0)}, ${gestorY})`
+    });
   }
 
   // ===== CONTENIDO SEGÚN VARIANTE =====

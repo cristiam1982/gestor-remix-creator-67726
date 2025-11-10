@@ -17,12 +17,25 @@ export const loadImage = (src: string): Promise<HTMLImageElement> => {
 
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = "anonymous";
+    
+    // Solo aplicar crossOrigin para recursos externos
+    try {
+      const url = new URL(src, window.location.href);
+      if (url.origin !== window.location.origin) {
+        img.crossOrigin = "anonymous";
+      }
+    } catch (e) {
+      // Si falla el parsing, es probablemente un path relativo (mismo origen)
+    }
+    
     img.onload = () => {
       imageCache.set(src, img);
       resolve(img);
     };
-    img.onerror = reject;
+    img.onerror = (error) => {
+      console.warn(`[canvasReelRenderer] Error loading image: ${src}`, error);
+      reject(error);
+    };
     img.src = src;
   });
 };
@@ -162,6 +175,23 @@ const drawText = (
     ctx.fillText(text, x, y, maxWidth);
   } else {
     ctx.fillText(text, x, y);
+  }
+};
+
+// Dibujar texto con letter-spacing (tracking-wider equivalente a ~0.05em)
+const drawSpacedText = (
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  letterSpacingPx: number
+) => {
+  let currentX = x;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    ctx.fillText(char, currentX, y);
+    const charWidth = ctx.measureText(char).width;
+    currentX += charWidth + letterSpacingPx;
   }
 };
 
@@ -394,14 +424,15 @@ export const drawSlide = async (
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     
-    // Label pequeño arriba
+    // Label pequeño arriba con letter-spacing (tracking-wider)
     const padX = Math.round(20 * typographyScale);
     const labelTop = Math.round(10 * typographyScale);
     const priceBottom = Math.round(8 * typographyScale);
 
     ctx.font = `600 ${Math.round(10 * typographyScale)}px Poppins, Inter, system-ui, sans-serif`;
     ctx.textBaseline = 'top';
-    drawText(ctx, modalidadLabel, pillX + padX, pillY + labelTop);
+    const labelLetterSpacing = Math.round(10 * typographyScale * 0.05); // 0.05em equivalente
+    drawSpacedText(ctx, modalidadLabel, pillX + padX, pillY + labelTop, labelLetterSpacing);
     
     // Precio grande abajo
     ctx.font = `900 ${Math.round(32 * typographyScale)}px Poppins, Inter, system-ui, sans-serif`;
@@ -483,10 +514,9 @@ export const drawSlide = async (
   }
   
   
-  // 7. Logo de El Gestor (más pequeño, abajo derecha como DOM)
-  const elGestorImg = await loadImage(elGestorLogo).catch(() => null);
-  if (elGestorImg) {
-    ctx.save();
+  // 7. Logo de El Gestor (siempre visible, abajo derecha como DOM)
+  try {
+    const elGestorImg = await loadImage(elGestorLogo);
     
     // h-10 = 40px, calcular ancho proporcional
     const gestorHeight = 40;
@@ -496,6 +526,8 @@ export const drawSlide = async (
     const gestorX = REEL_WIDTH - gestorWidth - 16;
     const gestorY = REEL_HEIGHT - gestorHeight - 48;
     
+    ctx.save();
+    
     // Sombra drop-shadow equivalente
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 6;
@@ -503,6 +535,27 @@ export const drawSlide = async (
     ctx.shadowOffsetY = 4;
     
     ctx.drawImage(elGestorImg, gestorX, gestorY, gestorWidth, gestorHeight);
+    ctx.restore();
+    
+    console.log('[canvasReelRenderer] El Gestor logo rendered:', {
+      loaded: true,
+      size: `${gestorWidth.toFixed(0)}x${gestorHeight}`,
+      pos: `(${gestorX.toFixed(0)}, ${gestorY.toFixed(0)})`
+    });
+  } catch (error) {
+    console.warn('[canvasReelRenderer] Failed to load El Gestor logo:', error);
+    
+    // Fallback: dibujar texto "El Gestor"
+    ctx.save();
+    ctx.font = 'bold 24px Poppins, Inter, system-ui, sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+    ctx.fillText('El Gestor', REEL_WIDTH - 16, REEL_HEIGHT - 48);
     ctx.restore();
   }
 };
@@ -618,17 +671,28 @@ export const drawSummarySlide = async (
     ctx.restore();
   }
   
-  // 4. Logo de El Gestor (abajo)
-  const elGestorImg = await loadImage(elGestorLogo).catch(() => null);
-  if (elGestorImg) {
-    const gestorSize = 120;
-    const gestorX = (REEL_WIDTH - gestorSize) / 2;
-    const gestorY = REEL_HEIGHT - gestorSize - 40;
+  // 4. Logo de El Gestor (right-4 bottom-12, h=40 para consistencia)
+  try {
+    const elGestorImg = await loadImage(elGestorLogo);
+    const gestorHeight = 40;
+    const gestorWidth = (elGestorImg.width / elGestorImg.height) * gestorHeight;
+    const gestorX = REEL_WIDTH - gestorWidth - 16; // right-4
+    const gestorY = REEL_HEIGHT - gestorHeight - 48; // bottom-12
     
     ctx.save();
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowBlur = 15;
-    ctx.drawImage(elGestorImg, gestorX, gestorY, gestorSize, gestorSize);
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+    ctx.drawImage(elGestorImg, gestorX, gestorY, gestorWidth, gestorHeight);
     ctx.restore();
+    
+    console.log('[canvasReelRenderer/summary] El Gestor logo rendered:', {
+      loaded: true,
+      size: `${gestorWidth.toFixed(0)}x${gestorHeight}`,
+      pos: `(${gestorX.toFixed(0)}, ${gestorY.toFixed(0)})`
+    });
+  } catch (error) {
+    console.warn('[canvasReelRenderer/summary] Failed to load El Gestor logo:', error);
   }
 };

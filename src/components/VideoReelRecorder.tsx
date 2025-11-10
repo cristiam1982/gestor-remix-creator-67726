@@ -313,16 +313,22 @@ export const VideoReelRecorder = ({
       });
     }
 
-    // Logo El Gestor (secundario, más discreto)
+    // Logo El Gestor (right-4 bottom-12, h=40 para paridad con Canvas)
     if (elGestorLogoImage) {
-      const logoHeight = 80; // Reducido 25% (marca secundaria)
-      const logoAspectRatio = elGestorLogoImage.width / elGestorLogoImage.height;
-      const logoWidth = logoHeight * logoAspectRatio;
-      const logoX = (1080 - logoWidth) / 2; // Centrado horizontalmente
+      const gestorHeight = 40;
+      const gestorAspectRatio = elGestorLogoImage.width / elGestorLogoImage.height;
+      const gestorWidth = gestorHeight * gestorAspectRatio;
+      const gestorX = 1080 - gestorWidth - 16; // right-4
+      const gestorY = 1920 - gestorHeight - 48; // bottom-12
       
-      ctx.globalAlpha = 0.75; // Transparencia para marca de respaldo
-      ctx.drawImage(elGestorLogoImage, logoX, 1780, logoWidth, logoHeight);
-      ctx.globalAlpha = 1.0; // Restaurar opacidad
+      ctx.save();
+      // Drop-shadow equivalente al DOM (sin globalAlpha)
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 4;
+      ctx.drawImage(elGestorLogoImage, gestorX, gestorY, gestorWidth, gestorHeight);
+      ctx.restore();
     }
 
     // Reset shadow
