@@ -727,9 +727,11 @@ const waitForCaptureReady = async (elementId: string): Promise<void> => {
   // Esperar frames de renderizado
   await waitForNextFrame();
   await waitForNextFrame();
+  await waitForNextFrame();
+  await waitForNextFrame();
   
-  // Delay adicional
-  await new Promise(resolve => setTimeout(resolve, 100));
+  // Delay adicional aumentado para captura estable
+  await new Promise(resolve => setTimeout(resolve, 300));
 };
 
 /**

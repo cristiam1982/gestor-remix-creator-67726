@@ -1167,15 +1167,14 @@ export const ReelSlideshow = ({
               {/* Logo del aliado - Canvas con estilos dinámicos */}
               {visualLayers.showAllyLogo && (
                 <div 
-                  key={`logo-canvas-${logoSettings.entranceAnimation}-${logoSettings.entranceDuration}`}
                   className={`absolute z-20 ${logoStyle.positionClass}`}
                   style={{ opacity: logoStyle.opacity }}
                 >
                   <img
                     src={getLogoUrl(logoSettings.background)}
                     alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
-                    style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass}`}
+                    style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                     referrerPolicy="no-referrer"
                     data-ally-logo="true"
@@ -1239,7 +1238,7 @@ export const ReelSlideshow = ({
                 <div className="flex flex-wrap gap-2 mt-3">
                   {propertyData.habitaciones && (
                     <div 
-                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
                       style={{ transform: `scale(${textStyle.scale})` }}
                     >
                       <span className="text-base">🛏️</span>
@@ -1248,7 +1247,7 @@ export const ReelSlideshow = ({
                   )}
                   {propertyData.banos && (
                     <div 
-                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
                       style={{ transform: `scale(${textStyle.scale})` }}
                     >
                       <span className="text-base">🚿</span>
@@ -1257,7 +1256,7 @@ export const ReelSlideshow = ({
                   )}
                   {propertyData.parqueaderos && (
                     <div 
-                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
                       style={{ transform: `scale(${textStyle.scale})` }}
                     >
                       <span className="text-base">🚗</span>
@@ -1266,7 +1265,7 @@ export const ReelSlideshow = ({
                   )}
                   {propertyData.area && (
                     <div 
-                      className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg"
+                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
                       style={{ transform: `scale(${textStyle.scale})` }}
                     >
                       <span className="text-base">📐</span>
@@ -1278,7 +1277,13 @@ export const ReelSlideshow = ({
 
               {/* Logo El Gestor - SIEMPRE visible */}
               <div className="absolute bottom-12 right-4 z-40">
-                  <img src={elGestorLogo} alt="El Gestor" data-eg-logo="true" className="h-10 object-contain drop-shadow-2xl" />
+                  <img 
+                    src={elGestorLogo} 
+                    alt="El Gestor" 
+                    data-eg-logo="true" 
+                    className="h-10 object-contain"
+                    style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.5))' }}
+                  />
                 </div>
               </div>
                 );
