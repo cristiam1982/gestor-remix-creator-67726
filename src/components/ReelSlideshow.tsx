@@ -12,15 +12,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import { ALIADO_CONFIG } from "@/config/aliadoConfig";
 import { useLogoStyles } from "@/hooks/useLogoStyles";
-import { generateReelVideo, downloadBlob, VideoGenerationProgress, generateReelVideoMP4_FFmpegFrames, isIOSOrSafari } from "@/utils/videoGenerator";
+import { generateReelVideo, downloadBlob, VideoGenerationProgress, generateReelVideoMP4_FFmpegFrames, isIOSOrSafari, generateReelVideoFromCanvas } from "@/utils/videoGenerator";
 import { fetchFile } from '@ffmpeg/util';
 import { VideoGenerationProgressModal } from "./VideoGenerationProgress";
 import { ReelControlsPanel } from "./ReelControlsPanel";
 import { ReelSummarySlide } from "./ReelSummarySlide";
 import { ReelDurationControl } from "./ReelDurationControl";
+import { CanvasReelPreview } from "./CanvasReelPreview";
 import { formatPrecioColombia } from "@/utils/formatters";
 import { hexToRgba } from "@/utils/colorUtils";
 import { useToast } from "@/hooks/use-toast";
@@ -201,8 +204,19 @@ export const ReelSlideshow = ({
 
   // Estado para el zoom del preview
   const [zoomLevel, setZoomLevel] = useState(80); // 80 = 80% (tamaño perfecto por defecto), rango: 50-200
+  
+  // Motor de renderizado: Canvas (nuevo) vs Legacy (DOM)
+  const [renderEngine, setRenderEngine] = useState<'canvas' | 'legacy'>(() => {
+    const saved = localStorage.getItem('reel-render-engine');
+    return (saved === 'canvas' || saved === 'legacy') ? saved : 'canvas';
+  });
 
   const { toast } = useToast();
+  
+  // Guardar preferencia de motor
+  useEffect(() => {
+    localStorage.setItem('reel-render-engine', renderEngine);
+  }, [renderEngine]);
 
   // Funciones de zoom
   const handleZoomIn = () => {
@@ -428,124 +442,44 @@ export const ReelSlideshow = ({
         description: "Esto tomará 10-30 segundos. No cierres esta pestaña.",
       });
 
-      // Función para cambiar foto durante la captura
-      const changePhoto = async (index: number): Promise<void> => {
-        if (index >= photosList.length) {
-          setShowSummarySlide(true);
-          setCurrentPhotoIndex(photosList.length - 1);
-        } else {
-          setShowSummarySlide(false);
-          setCurrentPhotoIndex(index);
-        }
-        
-        return new Promise((resolve) => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              resolve();
-            });
-          });
-        });
-      };
-
       const photoSources = photosList.map(p => p.src);
       let videoBlob: Blob;
-      let usedFFmpegFrames = false;
 
-      // DETECCIÓN DE NAVEGADOR: Usar FFmpeg frames directamente en iOS/Safari
-      if (isIOSOrSafari()) {
-        console.log('🍎 iOS/Safari detectado - Usando pipeline FFmpeg frames');
-        toast({
-          title: "🍎 Modo compatible activado",
-          description: "Generando video H.264 para iPhone/Safari...",
+      // USAR MOTOR CANVAS (recomendado - paridad 100%)
+      if (renderEngine === 'canvas') {
+        videoBlob = await generateReelVideoFromCanvas({
+          photos: photoSources,
+          propertyData,
+          aliadoConfig,
+          logoSettings,
+          textComposition,
+          visualLayers,
+          summaryBackgroundStyle: summaryBackground,
+          includeSummary: true,
+          slideDuration,
+          onProgress: setGenerationProgress
         });
-        
-        videoBlob = await generateReelVideoMP4_FFmpegFrames(
-          photoSources,
-          "reel-capture-canvas",
-          setGenerationProgress,
-          changePhoto,
-          true,
-          slideDuration
-        );
-        usedFFmpegFrames = true;
       } else {
-        // NAVEGADORES MODERNOS: Intentar MediaRecorder primero
-        try {
-          const { generateReelVideoMP4 } = await import("../utils/videoGenerator");
-          
-      videoBlob = await generateReelVideoMP4(
-        photoSources,
-        "reel-capture-canvas",
-        setGenerationProgress,
-        changePhoto,
-        true,
-        slideDuration,
-        propertyData,
-        aliadoConfig
-      );
-
-          // Si es WebM, necesitamos convertir o usar fallback
-          const blobType = videoBlob.type.toLowerCase();
-          
-          if (blobType.includes('webm')) {
-            // Verificar tamaño del blob (si es muy pequeño, posiblemente falló)
-            if (videoBlob.size < 100000) { // < 100KB
-              throw new Error('Video WebM demasiado pequeño, usando fallback FFmpeg');
-            }
-
-            // Intentar conversión con timeout
-            try {
-              console.log('🔄 Convirtiendo WebM a MP4...');
-              
-              toast({
-                title: "🔄 Convirtiendo a MP4",
-                description: "Optimizando compatibilidad...",
-              });
-
-              const ffmpeg = FFmpegManager.getInstance();
-              
-              if (!ffmpeg.isLoaded()) {
-                await ffmpeg.load();
-              }
-
-              const inputData = new Uint8Array(await videoBlob.arrayBuffer());
-              await ffmpeg.writeFile('input.webm', inputData);
-
-              await Promise.race([
-                ffmpeg.exec([
-                  '-i', 'input.webm',
-                  '-c:v', 'libx264',
-                  '-preset', 'fast',
-                  '-crf', '23',
-                  '-pix_fmt', 'yuv420p',
-                  '-movflags', '+faststart',
-                  '-an',
-                  'output.mp4'
-                ]),
-                new Promise((_, reject) => 
-                  setTimeout(() => reject(new Error('Timeout de conversión')), 20000)
-                )
-              ]);
-
-              const data = await ffmpeg.readFile('output.mp4');
-              videoBlob = new Blob([data as BlobPart], { type: 'video/mp4' });
-
-              await ffmpeg.deleteFile('input.webm');
-              await ffmpeg.deleteFile('output.mp4');
-              
-            } catch (conversionError) {
-              console.warn('⚠️ Conversión falló, usando FFmpeg frames como fallback');
-              throw new Error('Fallback a FFmpeg frames');
-            }
+        // MOTOR LEGACY (DOM con html2canvas)
+        const changePhoto = async (index: number): Promise<void> => {
+          if (index >= photosList.length) {
+            setShowSummarySlide(true);
+            setCurrentPhotoIndex(photosList.length - 1);
+          } else {
+            setShowSummarySlide(false);
+            setCurrentPhotoIndex(index);
           }
-        } catch (mediaRecorderError) {
-          console.warn('⚠️ MediaRecorder falló, usando FFmpeg frames:', mediaRecorderError);
           
-          toast({
-            title: "🔄 Activando modo compatible",
-            description: "Generando video H.264 optimizado...",
+          return new Promise((resolve) => {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                resolve();
+              });
+            });
           });
-          
+        };
+
+        if (isIOSOrSafari()) {
           videoBlob = await generateReelVideoMP4_FFmpegFrames(
             photoSources,
             "reel-capture-canvas",
@@ -554,7 +488,18 @@ export const ReelSlideshow = ({
             true,
             slideDuration
           );
-          usedFFmpegFrames = true;
+        } else {
+          const { generateReelVideoMP4 } = await import("../utils/videoGenerator");
+          videoBlob = await generateReelVideoMP4(
+            photoSources,
+            "reel-capture-canvas",
+            setGenerationProgress,
+            changePhoto,
+            true,
+            slideDuration,
+            propertyData,
+            aliadoConfig
+          );
         }
       }
 
@@ -564,35 +509,15 @@ export const ReelSlideshow = ({
       
       toast({
         title: "✅ Video descargado",
-        description: usedFFmpegFrames 
-          ? "Video H.264 compatible con iPhone e Instagram" 
-          : "Tu reel está listo para compartir",
+        description: "Tu reel está listo para compartir",
       });
 
       if (onDownload) onDownload();
     } catch (error) {
       console.error("Error generando video:", error);
-      
-      let errorTitle = "Error al generar reel";
-      let errorDescription = "Por favor intenta de nuevo.";
-      
-      if (error instanceof Error) {
-        if (error.message.includes("CORS") || error.message.includes("tainted")) {
-          errorDescription = "Se detectó un problema con el logo. El reel se generó sin él.";
-        } else if (error.message.includes("FFmpeg") || error.message.includes("timeout")) {
-          errorTitle = "No se pudo generar el video";
-          errorDescription = "Intenta con menos fotos (3-5) o recarga la página y vuelve a intentar.";
-        } else if (error.message.includes("capturar")) {
-          errorTitle = "Error al capturar frames";
-          errorDescription = "Recarga la página e intenta nuevamente. Asegúrate de tener buena conexión.";
-        } else {
-          errorDescription = error.message;
-        }
-      }
-      
       toast({
-        title: errorTitle,
-        description: errorDescription,
+        title: "Error al generar reel",
+        description: "Por favor intenta de nuevo.",
         variant: "destructive",
       });
     } finally {

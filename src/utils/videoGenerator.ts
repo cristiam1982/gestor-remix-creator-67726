@@ -7,6 +7,7 @@ import { PropertyData } from '@/types/property';
 import { AliadoConfig } from '@/types/property';
 import logoRubyMorales from '@/assets/logo-ruby-morales.png';
 import elGestorLogoImg from '@/assets/el-gestor-logo.png';
+import { fetchFile } from '@ffmpeg/util';
 
 /**
  * Detecta si es iOS o Safari
@@ -1247,6 +1248,328 @@ export const downloadBlob = (blob: Blob, filename: string) => {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+};
+
+/**
+ * Genera un video desde Canvas usando MediaRecorder o FFmpeg como fallback
+ * Este método garantiza paridad 100% entre preview y video exportado
+ */
+export const generateReelVideoFromCanvas = async (
+  options: {
+    photos: string[];
+    propertyData: PropertyData;
+    aliadoConfig: AliadoConfig;
+    logoSettings: any;
+    textComposition: any;
+    visualLayers: any;
+    summaryBackgroundStyle: 'solid' | 'blur' | 'mosaic';
+    includeSummary: boolean;
+    slideDuration: number;
+    onProgress?: (progress: VideoGenerationProgress) => void;
+  }
+): Promise<Blob> => {
+  const {
+    photos,
+    propertyData,
+    aliadoConfig,
+    logoSettings,
+    textComposition,
+    visualLayers,
+    summaryBackgroundStyle,
+    includeSummary,
+    slideDuration,
+    onProgress
+  } = options;
+
+  // Importar funciones de rendering
+  const { drawSlide, drawSummarySlide, preloadImages, REEL_WIDTH, REEL_HEIGHT } = 
+    await import('@/renderer/canvasReelRenderer');
+
+  const fps = 30;
+  const totalSlides = photos.length + (includeSummary ? 1 : 0);
+  const framesPerSlide = Math.round((slideDuration / 1000) * fps);
+  const summaryFrames = Math.round(2.5 * fps); // 2.5s para el resumen
+
+  onProgress?.({
+    stage: 'initializing',
+    progress: 0,
+    currentFrame: 0,
+    totalFrames: photos.length * framesPerSlide + (includeSummary ? summaryFrames : 0),
+    message: 'Preparando canvas...'
+  });
+
+  // Pre-cargar todas las imágenes
+  await preloadImages(
+    photos,
+    logoSettings.background === 'none' 
+      ? (aliadoConfig.logoTransparent || aliadoConfig.logo)
+      : aliadoConfig.logo,
+    true
+  );
+
+  // Crear canvas offscreen
+  const canvas = document.createElement('canvas');
+  canvas.width = REEL_WIDTH;
+  canvas.height = REEL_HEIGHT;
+  const ctx = canvas.getContext('2d', { alpha: false });
+  if (!ctx) {
+    throw new Error('No se pudo crear contexto 2D del canvas');
+  }
+
+  // Verificar si podemos usar MediaRecorder con H.264
+  const canUseMediaRecorder = !isIOSOrSafari() && 
+    (MediaRecorder.isTypeSupported('video/mp4') || 
+     MediaRecorder.isTypeSupported('video/webm;codecs=h264'));
+
+  if (canUseMediaRecorder) {
+    // Método 1: MediaRecorder (más rápido)
+    onProgress?.({
+      stage: 'initializing',
+      progress: 5,
+      currentFrame: 0,
+      totalFrames: photos.length * framesPerSlide + (includeSummary ? summaryFrames : 0),
+      message: 'Iniciando grabación...'
+    });
+
+    return new Promise<Blob>(async (resolve, reject) => {
+      try {
+        const stream = canvas.captureStream(fps);
+        const mimeType = getSupportedMimeType();
+        const mediaRecorder = new MediaRecorder(stream, {
+          mimeType,
+          videoBitsPerSecond: 8000000 // 8 Mbps para calidad alta
+        });
+
+        const chunks: Blob[] = [];
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            chunks.push(e.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunks, { type: mimeType });
+          resolve(blob);
+        };
+
+        mediaRecorder.onerror = (e) => {
+          console.error('MediaRecorder error:', e);
+          reject(new Error('Error durante la grabación'));
+        };
+
+        mediaRecorder.start();
+
+        let frameCount = 0;
+        const totalFrames = photos.length * framesPerSlide + (includeSummary ? summaryFrames : 0);
+
+        // Renderizar cada foto
+        for (let i = 0; i < photos.length; i++) {
+          const progress = Math.round(10 + ((i / photos.length) * 80));
+          
+          onProgress?.({
+            stage: 'capturing',
+            progress,
+            currentFrame: frameCount,
+            totalFrames,
+            message: `Procesando foto ${i + 1}/${photos.length}...`
+          });
+
+          await drawSlide(ctx, {
+            photoUrl: photos[i],
+            propertyData,
+            aliadoConfig,
+            logoSettings,
+            textComposition,
+            visualLayers,
+            photoIndex: i
+          });
+
+          // Mantener el frame por la duración especificada
+          for (let f = 0; f < framesPerSlide; f++) {
+            await waitForNextFrame();
+            frameCount++;
+          }
+        }
+
+        // Renderizar slide de resumen si está habilitado
+        if (includeSummary) {
+          onProgress?.({
+            stage: 'capturing',
+            progress: 90,
+            currentFrame: frameCount,
+            totalFrames,
+            message: 'Generando slide final...'
+          });
+
+          await drawSummarySlide(ctx, {
+            propertyData,
+            aliadoConfig,
+            logoSettings,
+            textComposition,
+            backgroundStyle: summaryBackgroundStyle,
+            photos
+          });
+
+          for (let f = 0; f < summaryFrames; f++) {
+            await waitForNextFrame();
+            frameCount++;
+          }
+        }
+
+        mediaRecorder.stop();
+        stream.getTracks().forEach(track => track.stop());
+
+        onProgress?.({
+          stage: 'complete',
+          progress: 100,
+          currentFrame: totalFrames,
+          totalFrames,
+          message: 'Video generado correctamente'
+        });
+      } catch (error) {
+        console.error('Error en MediaRecorder:', error);
+        reject(error);
+      }
+    });
+  } else {
+    // Método 2: FFmpeg con frames PNG (fallback para iOS/Safari)
+    onProgress?.({
+      stage: 'initializing',
+      progress: 5,
+      currentFrame: 0,
+      totalFrames: photos.length * framesPerSlide + (includeSummary ? summaryFrames : 0),
+      message: 'Preparando FFmpeg...'
+    });
+
+    const ffmpeg = FFmpegManager.getInstance();
+    await ffmpeg.load((p) => {
+      onProgress?.({
+        stage: 'initializing',
+        progress: Math.round(p * 10),
+        currentFrame: 0,
+        totalFrames: photos.length * framesPerSlide + (includeSummary ? summaryFrames : 0),
+        message: 'Cargando FFmpeg...'
+      });
+    });
+
+    let frameIndex = 0;
+    const totalFrames = photos.length * framesPerSlide + (includeSummary ? summaryFrames : 0);
+
+    // Renderizar y guardar frames para cada foto
+    for (let i = 0; i < photos.length; i++) {
+      const progress = Math.round(10 + ((i / photos.length) * 70));
+      
+      onProgress?.({
+        stage: 'capturing',
+        progress,
+        currentFrame: frameIndex,
+        totalFrames,
+        message: `Capturando foto ${i + 1}/${photos.length}...`
+      });
+
+      await drawSlide(ctx, {
+        photoUrl: photos[i],
+        propertyData,
+        aliadoConfig,
+        logoSettings,
+        textComposition,
+        visualLayers,
+        photoIndex: i
+      });
+
+      // Capturar frame como PNG
+      const blob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((b) => resolve(b!), 'image/png');
+      });
+      const data = await fetchFile(blob);
+
+      // Duplicar frame según duración
+      for (let f = 0; f < framesPerSlide; f++) {
+        const frameName = `frame${String(frameIndex).padStart(6, '0')}.png`;
+        await ffmpeg.writeFile(frameName, data);
+        frameIndex++;
+      }
+    }
+
+    // Renderizar slide de resumen si está habilitado
+    if (includeSummary) {
+      onProgress?.({
+        stage: 'capturing',
+        progress: 80,
+        currentFrame: frameIndex,
+        totalFrames,
+        message: 'Capturando slide final...'
+      });
+
+      await drawSummarySlide(ctx, {
+        propertyData,
+        aliadoConfig,
+        logoSettings,
+        textComposition,
+        backgroundStyle: summaryBackgroundStyle,
+        photos
+      });
+
+      const blob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((b) => resolve(b!), 'image/png');
+      });
+      const data = await fetchFile(blob);
+
+      for (let f = 0; f < summaryFrames; f++) {
+        const frameName = `frame${String(frameIndex).padStart(6, '0')}.png`;
+        await ffmpeg.writeFile(frameName, data);
+        frameIndex++;
+      }
+    }
+
+    // Encodear con FFmpeg
+    onProgress?.({
+      stage: 'encoding',
+      progress: 85,
+      currentFrame: frameIndex,
+      totalFrames,
+      message: 'Codificando video con FFmpeg...'
+    });
+
+    await ffmpeg.exec([
+      '-framerate', String(fps),
+      '-i', 'frame%06d.png',
+      '-c:v', 'libx264',
+      '-preset', 'medium',
+      '-crf', '23',
+      '-pix_fmt', 'yuv420p',
+      '-movflags', '+faststart',
+      'output.mp4'
+    ]);
+
+    const outputData = await ffmpeg.readFile('output.mp4');
+    const videoBlob = new Blob([outputData as BlobPart], { type: 'video/mp4' });
+
+    // Limpiar archivos temporales
+    for (let i = 0; i < frameIndex; i++) {
+      const frameName = `frame${String(i).padStart(6, '0')}.png`;
+      try {
+        await ffmpeg.deleteFile(frameName);
+      } catch (e) {
+        // Ignorar errores de eliminación
+      }
+    }
+    try {
+      await ffmpeg.deleteFile('output.mp4');
+    } catch (e) {
+      // Ignorar
+    }
+
+    onProgress?.({
+      stage: 'complete',
+      progress: 100,
+      currentFrame: totalFrames,
+      totalFrames,
+      message: 'Video generado correctamente'
+    });
+
+    return videoBlob;
+  }
 };
 
 // Exportar helpers para uso externo
