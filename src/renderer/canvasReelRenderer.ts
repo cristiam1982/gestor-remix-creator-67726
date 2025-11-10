@@ -122,7 +122,7 @@ const drawGradient = (
           colors.push({
             color: getColorFromName(colorName, shade),
             position: 0,
-            opacity: parseInt(opacity) * intensity / 100
+            opacity: parseInt(opacity) // Sin multiplicar por intensity (ya aplicado por applyGradientIntensity)
           });
         }
       } else if (match.startsWith('to-')) {
@@ -132,7 +132,7 @@ const drawGradient = (
           colors.push({
             color: getColorFromName(colorName, shade),
             position: 1,
-            opacity: parseInt(opacity) * intensity / 100
+            opacity: parseInt(opacity) // Sin multiplicar por intensity (ya aplicado por applyGradientIntensity)
           });
         }
       }
@@ -167,6 +167,7 @@ const drawGradient = (
       gradient.addColorStop(position, `rgba(0, 0, 0, 0)`);
     } else {
       const rgb = hexToRgb(color);
+      // Usar opacity directamente sin multiplicar por intensity (ya fue aplicado por applyGradientIntensity)
       gradient.addColorStop(position, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity / 100})`);
     }
   });
@@ -367,7 +368,7 @@ export const drawSlide = async (
       : formatPrice(propertyData.canon);
     
     ctx.save();
-    ctx.font = `bold ${Math.round(52 * typographyScale)}px Inter, sans-serif`;
+    ctx.font = `bold ${Math.round(60 * typographyScale)}px Inter, sans-serif`; // Ajustado para coincidir con text-6xl del DOM
     ctx.fillStyle = aliadoConfig.colorPrimario;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -397,7 +398,7 @@ export const drawSlide = async (
     const subtitle = propertyData.subtitulos[photoIndex];
     
     ctx.save();
-    ctx.font = `600 ${Math.round(22 * badgeScale)}px Inter, sans-serif`;
+    ctx.font = `600 ${Math.round(20 * badgeScale)}px Inter, sans-serif`; // Ajustado para coincidir con text-lg del DOM
     ctx.fillStyle = '#111827';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -464,7 +465,7 @@ export const drawSlide = async (
   // 8. Dibujar ubicación
   if (propertyData.ubicacion) {
     ctx.save();
-    ctx.font = `600 ${Math.round(24 * typographyScale)}px Inter, sans-serif`;
+    ctx.font = `600 ${Math.round(28 * typographyScale)}px Inter, sans-serif`; // Ajustado para mejor legibilidad
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';

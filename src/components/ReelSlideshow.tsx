@@ -206,10 +206,10 @@ export const ReelSlideshow = ({
   // Estado para el zoom del preview
   const [zoomLevel, setZoomLevel] = useState(80); // 80 = 80% (tamaño perfecto por defecto), rango: 50-200
   
-  // Motor de renderizado: Canvas (nuevo) vs Legacy (DOM)
+  // Motor de renderizado: Canvas (para exportación) vs Legacy (para preview DOM)
   const [renderEngine, setRenderEngine] = useState<'canvas' | 'legacy'>(() => {
     const saved = localStorage.getItem('reel-render-engine');
-    return (saved === 'canvas' || saved === 'legacy') ? saved : 'canvas';
+    return (saved === 'canvas' || saved === 'legacy') ? saved : 'legacy'; // Default: Legacy para preview hermoso
   });
 
   // Calidad de exportación: Rápida (WebM) vs Alta (MP4 FFmpeg)
@@ -457,8 +457,9 @@ export const ReelSlideshow = ({
       const photoSources = photosList.map(p => p.src);
       let videoBlob: Blob;
 
-      // USAR MOTOR CANVAS (recomendado - paridad 100%)
-      if (renderEngine === 'canvas') {
+      // FORZAR MOTOR CANVAS para exportación (paridad 100%)
+      // Preview siempre usa Legacy (DOM), pero exportación usa Canvas
+      if (true) { // Siempre usar Canvas para exportación
         videoBlob = await generateReelVideoFromCanvas({
           photos: photoSources,
           propertyData,
