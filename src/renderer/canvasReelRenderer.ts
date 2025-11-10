@@ -93,94 +93,37 @@ const roundRect = (
   ctx.closePath();
 };
 
-// Dibujar gradiente
+// Dibujar gradiente negro estilo DOM
 const drawGradient = (
   ctx: CanvasRenderingContext2D,
   direction: 'top' | 'bottom' | 'both' | 'none',
-  gradientColors: { top: string; bottom: string; both: string },
   intensity: number,
   width: number,
   height: number
 ) => {
   if (direction === 'none' || intensity === 0) return;
 
-  // Parsear colores del gradiente CSS
-  const parseGradient = (gradientStr: string) => {
-    // Extraer colores del formato "from-color/opacity to-color/opacity"
-    const matches = gradientStr.match(/from-(\w+)-(\d+)\/(\d+)|to-(\w+)-(\d+)\/(\d+)|via-transparent/g);
-    if (!matches) return null;
-
-    const colors: Array<{ color: string; position: number; opacity: number }> = [];
+  // Calcular alpha igual que en el DOM: (intensity / 100) * 0.7
+  const alpha = (intensity / 100) * 0.7;
+  
+  if (direction === 'top' || direction === 'both') {
+    // Gradiente superior: negro a transparente (60% de altura)
+    const gradientTop = ctx.createLinearGradient(0, 0, 0, height * 0.6);
+    gradientTop.addColorStop(0, `rgba(0, 0, 0, ${alpha})`);
+    gradientTop.addColorStop(1, 'rgba(0, 0, 0, 0)');
     
-    matches.forEach((match, index) => {
-      if (match.includes('via-transparent')) {
-        colors.push({ color: 'transparent', position: 0.5, opacity: 0 });
-      } else if (match.startsWith('from-')) {
-        const parts = match.match(/from-(\w+)-(\d+)\/(\d+)/);
-        if (parts) {
-          const [, colorName, shade, opacity] = parts;
-          colors.push({
-            color: getColorFromName(colorName, shade),
-            position: 0,
-            opacity: parseInt(opacity) // Sin multiplicar por intensity (ya aplicado por applyGradientIntensity)
-          });
-        }
-      } else if (match.startsWith('to-')) {
-        const parts = match.match(/to-(\w+)-(\d+)\/(\d+)/);
-        if (parts) {
-          const [, colorName, shade, opacity] = parts;
-          colors.push({
-            color: getColorFromName(colorName, shade),
-            position: 1,
-            opacity: parseInt(opacity) // Sin multiplicar por intensity (ya aplicado por applyGradientIntensity)
-          });
-        }
-      }
-    });
-
-    return colors;
-  };
-
-  const gradientStr = direction === 'both' ? gradientColors.both :
-                      direction === 'top' ? gradientColors.top :
-                      gradientColors.bottom;
-
-  const colors = parseGradient(applyGradientIntensity(gradientStr, intensity));
-  if (!colors || colors.length === 0) return;
-
-  // Crear gradiente lineal según dirección
-  let gradient: CanvasGradient;
-  
-  if (direction === 'both') {
-    // Gradiente completo de arriba a abajo
-    gradient = ctx.createLinearGradient(0, 0, 0, height);
-  } else if (direction === 'top') {
-    // Gradiente solo en la parte superior
-    gradient = ctx.createLinearGradient(0, 0, 0, height / 2);
-  } else {
-    // Gradiente solo en la parte inferior
-    gradient = ctx.createLinearGradient(0, height / 2, 0, height);
+    ctx.fillStyle = gradientTop;
+    ctx.fillRect(0, 0, width, height * 0.6);
   }
-
-  colors.forEach(({ color, position, opacity }) => {
-    if (color === 'transparent') {
-      gradient.addColorStop(position, `rgba(0, 0, 0, 0)`);
-    } else {
-      const rgb = hexToRgb(color);
-      // Usar opacity directamente sin multiplicar por intensity (ya fue aplicado por applyGradientIntensity)
-      gradient.addColorStop(position, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity / 100})`);
-    }
-  });
-
-  ctx.fillStyle = gradient;
   
-  // Solo aplicar el gradiente en la zona correspondiente
-  if (direction === 'top') {
-    ctx.fillRect(0, 0, width, height / 2);
-  } else if (direction === 'bottom') {
-    ctx.fillRect(0, height / 2, width, height / 2);
-  } else {
-    ctx.fillRect(0, 0, width, height);
+  if (direction === 'bottom' || direction === 'both') {
+    // Gradiente inferior: transparente a negro (desde 40% hasta abajo)
+    const gradientBottom = ctx.createLinearGradient(0, height * 0.4, 0, height);
+    gradientBottom.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    gradientBottom.addColorStop(1, `rgba(0, 0, 0, ${alpha})`);
+    
+    ctx.fillStyle = gradientBottom;
+    ctx.fillRect(0, height * 0.4, width, height * 0.6);
   }
 };
 
@@ -334,15 +277,13 @@ export const drawSlide = async (
     }
   }
   
-  // 2. Aplicar gradiente
-  const template = REEL_TEMPLATES[propertyData.template || 'residencial'];
+  // 2. Aplicar gradiente negro estilo DOM
   const gradientDirection = propertyData.gradientDirection || 'both';
   const gradientIntensity = propertyData.gradientIntensity ?? 100;
   
   drawGradient(
     ctx,
     gradientDirection,
-    template.gradient,
     gradientIntensity,
     REEL_WIDTH,
     REEL_HEIGHT
@@ -361,52 +302,123 @@ export const drawSlide = async (
   const typographyScale = 1 + (textComposition.typographyScale / 100);
   const badgeScale = 1 + (textComposition.badgeScale / 100);
   
-  // 5. Dibujar precio/canon
-  if (visualLayers.showPrice) {
-    const priceText = propertyData.modalidad === 'venta' 
-      ? formatPrice(propertyData.valorVenta)
-      : formatPrice(propertyData.canon);
-    
+  // 5. Layout inferior izquierdo estilo DOM
+  const bottomPadding = 48; // bottom-12 = 3rem = 48px
+  const leftPadding = 16; // p-4 = 1rem = 16px
+  const rightPadding = 80; // pr-20 = 5rem = 80px para evitar logo El Gestor
+  let currentY = REEL_HEIGHT - bottomPadding;
+  
+  ctx.textAlign = 'left';
+  
+  // 5a. Ubicación (más abajo)
+  if (propertyData.ubicacion) {
     ctx.save();
-    ctx.font = `bold ${Math.round(60 * typographyScale)}px Inter, sans-serif`; // Ajustado para coincidir con text-6xl del DOM
-    ctx.fillStyle = aliadoConfig.colorPrimario;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.font = `bold ${Math.round(18 * typographyScale)}px Poppins, Inter, system-ui, sans-serif`; // text-lg
+    ctx.fillStyle = '#ffffff';
+    ctx.textBaseline = 'bottom';
     
-    // Fondo del precio
-    const priceWidth = ctx.measureText(priceText).width + 60;
-    const priceHeight = 80;
-    const priceX = (REEL_WIDTH - priceWidth) / 2;
-    const priceY = 120;
+    // Sombra fuerte
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+    ctx.shadowBlur = 12;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
     
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowBlur = 25;
-    ctx.shadowOffsetY = 10;
+    const locationText = `📍 ${propertyData.ubicacion}`;
+    drawText(ctx, locationText, leftPadding, currentY, REEL_WIDTH - leftPadding - rightPadding);
     
-    roundRect(ctx, priceX, priceY, priceWidth, priceHeight, 24);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.98)';
-    ctx.fill();
-    
-    ctx.shadowColor = 'transparent';
-    ctx.fillStyle = aliadoConfig.colorPrimario;
-    drawText(ctx, priceText, REEL_WIDTH / 2, priceY + priceHeight / 2);
+    currentY -= 40; // Espacio entre ubicación y título
     ctx.restore();
   }
   
-  // 6. Dibujar subtítulo/badge
+  // 5b. Título (tipo de propiedad) arriba de ubicación
+  const tipoText = propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1);
+  ctx.save();
+  ctx.font = `900 ${Math.round(32 * typographyScale)}px Poppins, Inter, system-ui, sans-serif`; // text-3xl font-black
+  ctx.fillStyle = '#ffffff';
+  ctx.textBaseline = 'bottom';
+  
+  // Sombra fuerte
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 2;
+  
+  drawText(ctx, tipoText, leftPadding, currentY, REEL_WIDTH - leftPadding - rightPadding);
+  currentY -= 60; // Espacio entre título y precio
+  ctx.restore();
+  
+  // 5c. Precio en píldora con fondo de color estilo DOM
+  if (visualLayers.showPrice) {
+    const priceValue = propertyData.modalidad === 'venta' 
+      ? formatPrice(propertyData.valorVenta)
+      : formatPrice(propertyData.canon);
+    
+    const modalidadLabel = propertyData.modalidad === 'venta' ? 'VENTA' : 'ARRIENDO';
+    
+    ctx.save();
+    
+    // Medir textos
+    ctx.font = '600 10px Poppins, Inter, system-ui, sans-serif';
+    const labelWidth = ctx.measureText(modalidadLabel).width;
+    
+    ctx.font = '900 24px Poppins, Inter, system-ui, sans-serif';
+    const priceWidth = ctx.measureText(priceValue).width;
+    
+    const pillWidth = Math.max(labelWidth, priceWidth) + 40; // padding px-5 = 20px cada lado
+    const pillHeight = 60; // Suficiente para label + precio
+    const pillX = leftPadding;
+    const pillY = currentY - pillHeight;
+    
+    // Dibujar píldora con color del aliado
+    const rgb = hexToRgb(aliadoConfig.colorPrimario);
+    ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.9)`;
+    
+    // Borde blanco translúcido
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 1;
+    
+    // Sombra suave
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 16;
+    ctx.shadowOffsetY = 4;
+    
+    roundRect(ctx, pillX, pillY, pillWidth, pillHeight, 16);
+    ctx.fill();
+    ctx.stroke();
+    
+    ctx.shadowColor = 'transparent';
+    
+    // Texto blanco
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'left';
+    
+    // Label pequeño arriba
+    ctx.font = '600 10px Poppins, Inter, system-ui, sans-serif';
+    ctx.textBaseline = 'top';
+    drawText(ctx, modalidadLabel, pillX + 20, pillY + 10);
+    
+    // Precio grande abajo
+    ctx.font = '900 24px Poppins, Inter, system-ui, sans-serif';
+    ctx.textBaseline = 'bottom';
+    drawText(ctx, priceValue, pillX + 20, pillY + pillHeight - 8);
+    
+    currentY = pillY - 16; // Espacio entre precio y badge
+    ctx.restore();
+  }
+  
+  // 5d. Badge/subtítulo opcional arriba del precio
   if (visualLayers.showBadge && propertyData.subtitulos && propertyData.subtitulos[photoIndex]) {
     const subtitle = propertyData.subtitulos[photoIndex];
     
     ctx.save();
-    ctx.font = `600 ${Math.round(20 * badgeScale)}px Inter, sans-serif`; // Ajustado para coincidir con text-lg del DOM
+    ctx.font = `600 ${Math.round(18 * badgeScale)}px Poppins, Inter, system-ui, sans-serif`;
     ctx.fillStyle = '#111827';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.textBaseline = 'bottom';
     
     const subtitleWidth = ctx.measureText(subtitle).width + 40;
-    const subtitleHeight = 50;
-    const subtitleX = (REEL_WIDTH - subtitleWidth) / 2;
-    const subtitleY = REEL_HEIGHT - 550;
+    const subtitleHeight = 44;
+    const subtitleX = leftPadding;
+    const subtitleY = currentY - subtitleHeight;
     
     // Fondo del badge
     ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
@@ -418,11 +430,13 @@ export const drawSlide = async (
     
     ctx.shadowColor = 'transparent';
     ctx.fillStyle = '#111827';
-    drawText(ctx, subtitle, REEL_WIDTH / 2, subtitleY + subtitleHeight / 2, subtitleWidth - 40);
+    ctx.textAlign = 'left';
+    drawText(ctx, subtitle, subtitleX + 20, subtitleY + subtitleHeight / 2 + 8, subtitleWidth - 40);
     ctx.restore();
   }
   
-  // 7. Dibujar características/iconos
+  
+  // 6. Dibujar características/iconos (centrados arriba del contenido)
   if (visualLayers.showIcons) {
     const features: string[] = [];
     
@@ -432,7 +446,7 @@ export const drawSlide = async (
     if (propertyData.area) features.push(`📐 ${propertyData.area}m²`);
     
     ctx.save();
-    ctx.font = '600 18px Inter, sans-serif';
+    ctx.font = '600 18px Poppins, Inter, system-ui, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
@@ -455,47 +469,34 @@ export const drawSlide = async (
       
       ctx.shadowColor = 'transparent';
       ctx.fillStyle = aliadoConfig.colorSecundario;
-      ctx.font = '600 16px Inter, sans-serif';
+      ctx.font = '600 16px Poppins, Inter, system-ui, sans-serif';
       drawText(ctx, feature, x + iconSize / 2, iconY + iconSize / 2);
     });
     
     ctx.restore();
   }
   
-  // 8. Dibujar ubicación
-  if (propertyData.ubicacion) {
-    ctx.save();
-    ctx.font = `600 ${Math.round(28 * typographyScale)}px Inter, sans-serif`; // Ajustado para mejor legibilidad
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    
-    const locationText = `📍 ${propertyData.ubicacion}`;
-    const locationY = REEL_HEIGHT - 350;
-    
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
-    ctx.shadowBlur = 8;
-    
-    drawText(ctx, locationText, REEL_WIDTH / 2, locationY, REEL_WIDTH - 100);
-    ctx.restore();
-  }
   
-  // 9. Dibujar logo de El Gestor
+  // 7. Logo de El Gestor (más pequeño, abajo derecha como DOM)
   const elGestorImg = await loadImage(elGestorLogo).catch(() => null);
   if (elGestorImg) {
     ctx.save();
     
-    const gestorSize = 140;
-    const gestorX = REEL_WIDTH - gestorSize - 20;
-    const gestorY = REEL_HEIGHT - gestorSize - 20;
+    // h-10 = 40px, calcular ancho proporcional
+    const gestorHeight = 40;
+    const gestorWidth = (elGestorImg.width / elGestorImg.height) * gestorHeight;
     
-    // Sombra para El Gestor
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowBlur = 15;
-    ctx.shadowOffsetX = -3;
-    ctx.shadowOffsetY = 3;
+    // right-4 = 16px, bottom-12 = 48px
+    const gestorX = REEL_WIDTH - gestorWidth - 16;
+    const gestorY = REEL_HEIGHT - gestorHeight - 48;
     
-    ctx.drawImage(elGestorImg, gestorX, gestorY, gestorSize, gestorSize);
+    // Sombra drop-shadow equivalente
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 2;
+    
+    ctx.drawImage(elGestorImg, gestorX, gestorY, gestorWidth, gestorHeight);
     ctx.restore();
   }
 };
@@ -543,7 +544,7 @@ export const drawSummarySlide = async (
   ctx.save();
   
   // Título principal
-  ctx.font = 'bold 56px Inter, sans-serif';
+  ctx.font = 'bold 56px Poppins, Inter, system-ui, sans-serif';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -556,13 +557,13 @@ export const drawSummarySlide = async (
     ? formatPrice(propertyData.valorVenta)
     : formatPrice(propertyData.canon);
   
-  ctx.font = 'bold 72px Inter, sans-serif';
+  ctx.font = 'bold 72px Poppins, Inter, system-ui, sans-serif';
   ctx.fillStyle = '#ffffff';
   drawText(ctx, priceText, REEL_WIDTH / 2, 450);
   
   // Ubicación
   if (propertyData.ubicacion) {
-    ctx.font = '600 32px Inter, sans-serif';
+    ctx.font = '600 32px Poppins, Inter, system-ui, sans-serif';
     ctx.fillStyle = '#ffffff';
     drawText(ctx, `📍 ${propertyData.ubicacion}`, REEL_WIDTH / 2, 570);
   }
@@ -574,23 +575,23 @@ export const drawSummarySlide = async (
   if (propertyData.area) features.push(`${propertyData.area}m²`);
   
   if (features.length > 0) {
-    ctx.font = '600 28px Inter, sans-serif';
+    ctx.font = '600 28px Poppins, Inter, system-ui, sans-serif';
     ctx.fillStyle = '#ffffff';
     drawText(ctx, features.join(' • '), REEL_WIDTH / 2, 680);
   }
   
   // CTA
-  ctx.font = 'bold 36px Inter, sans-serif';
+  ctx.font = 'bold 36px Poppins, Inter, system-ui, sans-serif';
   ctx.fillStyle = '#ffffff';
   drawText(ctx, '¡Agenda tu visita hoy!', REEL_WIDTH / 2, 900);
   
   // WhatsApp
-  ctx.font = '600 32px Inter, sans-serif';
+  ctx.font = '600 32px Poppins, Inter, system-ui, sans-serif';
   ctx.fillStyle = '#ffffff';
   drawText(ctx, `📱 ${aliadoConfig.whatsapp}`, REEL_WIDTH / 2, 1000);
   
   // Nombre del aliado
-  ctx.font = 'bold 28px Inter, sans-serif';
+  ctx.font = 'bold 28px Poppins, Inter, system-ui, sans-serif';
   ctx.fillStyle = '#ffffff';
   drawText(ctx, aliadoConfig.nombre, REEL_WIDTH / 2, 1150);
   
