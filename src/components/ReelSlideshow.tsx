@@ -573,17 +573,25 @@ export const ReelSlideshow = ({
     } catch (error) {
       console.error("Error generando video:", error);
       
+      let errorTitle = "Error al generar reel";
       let errorDescription = "Por favor intenta de nuevo.";
+      
       if (error instanceof Error) {
         if (error.message.includes("CORS") || error.message.includes("tainted")) {
           errorDescription = "Se detectó un problema con el logo. El reel se generó sin él.";
+        } else if (error.message.includes("FFmpeg") || error.message.includes("timeout")) {
+          errorTitle = "No se pudo generar el video";
+          errorDescription = "Intenta con menos fotos (3-5) o recarga la página y vuelve a intentar.";
+        } else if (error.message.includes("capturar")) {
+          errorTitle = "Error al capturar frames";
+          errorDescription = "Recarga la página e intenta nuevamente. Asegúrate de tener buena conexión.";
         } else {
           errorDescription = error.message;
         }
       }
       
       toast({
-        title: "Error al generar reel",
+        title: errorTitle,
         description: errorDescription,
         variant: "destructive",
       });

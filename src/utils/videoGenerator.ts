@@ -48,7 +48,7 @@ const isCanvasLikelyBlack = (canvas: HTMLCanvasElement): boolean => {
     }
 
     const avgBrightness = totalBrightness / points.length;
-    return avgBrightness < 2; // Prácticamente negro
+    return avgBrightness < 5; // Umbral más tolerante
   } catch (e) {
     // Si hay SecurityError (canvas tainted), asumimos que no es negro
     return false;
@@ -397,6 +397,15 @@ const captureFrame = async (
       windowWidth: 1080,
       windowHeight: 1920,
       onclone: (clonedDoc: Document) => {
+        // Hacer visible el elemento capturado en el documento clonado
+        const clonedElement = clonedDoc.getElementById(elementId);
+        if (clonedElement) {
+          const htmlElement = clonedElement as HTMLElement;
+          htmlElement.style.opacity = '1';
+          htmlElement.style.visibility = 'visible';
+        }
+        
+        // Asegurar que todas las imágenes son visibles
         const imgs = clonedDoc.querySelectorAll('img');
         imgs.forEach(img => {
           const imgElement = img as HTMLImageElement;
@@ -494,7 +503,18 @@ const captureFrame = async (
       throw new Error('No se pudo capturar el frame después de 3 intentos');
     }
 
-    console.log(`✅ Frame capturado exitosamente: ${canvas.width}x${canvas.height}`);
+    // Log de diagnóstico con brillo del centro
+    try {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        const imageData = ctx.getImageData(canvas.width/2, canvas.height/2, 1, 1);
+        const brightness = (imageData.data[0] + imageData.data[1] + imageData.data[2]) / 3;
+        console.log(`✅ Frame capturado exitosamente: ${canvas.width}x${canvas.height}, brillo centro: ${brightness.toFixed(1)}`);
+      }
+    } catch (e) {
+      console.log(`✅ Frame capturado exitosamente: ${canvas.width}x${canvas.height}`);
+    }
+    
     return canvas;
     
   } catch (error) {
