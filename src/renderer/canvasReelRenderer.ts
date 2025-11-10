@@ -358,14 +358,16 @@ export const drawSlide = async (
     ctx.save();
     
     // Medir textos
-    ctx.font = '600 10px Poppins, Inter, system-ui, sans-serif';
+    ctx.font = `600 ${Math.round(10 * typographyScale)}px Poppins, Inter, system-ui, sans-serif`;
     const labelWidth = ctx.measureText(modalidadLabel).width;
     
-    ctx.font = '900 24px Poppins, Inter, system-ui, sans-serif';
+    ctx.font = `900 ${Math.round(32 * typographyScale)}px Poppins, Inter, system-ui, sans-serif`;
     const priceWidth = ctx.measureText(priceValue).width;
     
-    const pillWidth = Math.max(labelWidth, priceWidth) + 40; // padding px-5 = 20px cada lado
-    const pillHeight = 60; // Suficiente para label + precio
+    const basePadding = 40 * typographyScale;
+    const baseHeight = 60 * typographyScale;
+    const pillWidth = Math.max(labelWidth, priceWidth) + basePadding; // padding px-5 = 20px cada lado
+    const pillHeight = baseHeight; // Suficiente para label + precio
     const pillX = leftPadding;
     const pillY = currentY - pillHeight;
     
@@ -450,8 +452,8 @@ export const drawSlide = async (
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    const iconSize = 54;
-    const iconSpacing = 20;
+    const iconSize = Math.round(54 * typographyScale);
+    const iconSpacing = Math.round(20 * typographyScale);
     const totalWidth = features.length * iconSize + (features.length - 1) * iconSpacing;
     const startX = (REEL_WIDTH - totalWidth) / 2;
     const iconY = REEL_HEIGHT - 450;
@@ -469,7 +471,7 @@ export const drawSlide = async (
       
       ctx.shadowColor = 'transparent';
       ctx.fillStyle = aliadoConfig.colorSecundario;
-      ctx.font = '600 16px Poppins, Inter, system-ui, sans-serif';
+      ctx.font = `600 ${Math.round(16 * typographyScale)}px Poppins, Inter, system-ui, sans-serif`;
       drawText(ctx, feature, x + iconSize / 2, iconY + iconSize / 2);
     });
     
@@ -491,7 +493,7 @@ export const drawSlide = async (
     const gestorY = REEL_HEIGHT - gestorHeight - 48;
     
     // Sombra drop-shadow equivalente
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 8;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 2;
