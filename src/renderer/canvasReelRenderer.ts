@@ -318,15 +318,15 @@ export const drawSlide = async (
     ctx.textBaseline = 'bottom';
     
     // Sombra fuerte
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-    ctx.shadowBlur = 12;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+    ctx.shadowBlur = 8;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
     
     const locationText = `📍 ${propertyData.ubicacion}`;
     drawText(ctx, locationText, leftPadding, currentY, REEL_WIDTH - leftPadding - rightPadding);
     
-    currentY -= 40; // Espacio entre ubicación y título
+    currentY -= Math.round(18 * typographyScale) + 16; // 18px tamaño + mb-4
     ctx.restore();
   }
   
@@ -338,13 +338,13 @@ export const drawSlide = async (
   ctx.textBaseline = 'bottom';
   
   // Sombra fuerte
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-  ctx.shadowBlur = 12;
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+  ctx.shadowBlur = 8;
   ctx.shadowOffsetX = 2;
   ctx.shadowOffsetY = 2;
   
   drawText(ctx, tipoText, leftPadding, currentY, REEL_WIDTH - leftPadding - rightPadding);
-  currentY -= 60; // Espacio entre título y precio
+  currentY -= Math.round(32 * typographyScale) + 6; // 32px tamaño + mb-1.5
   ctx.restore();
   
   // 5c. Precio en píldora con fondo de color estilo DOM
@@ -395,16 +395,20 @@ export const drawSlide = async (
     ctx.textAlign = 'left';
     
     // Label pequeño arriba
-    ctx.font = '600 10px Poppins, Inter, system-ui, sans-serif';
+    const padX = Math.round(20 * typographyScale);
+    const labelTop = Math.round(10 * typographyScale);
+    const priceBottom = Math.round(8 * typographyScale);
+
+    ctx.font = `600 ${Math.round(10 * typographyScale)}px Poppins, Inter, system-ui, sans-serif`;
     ctx.textBaseline = 'top';
-    drawText(ctx, modalidadLabel, pillX + 20, pillY + 10);
+    drawText(ctx, modalidadLabel, pillX + padX, pillY + labelTop);
     
     // Precio grande abajo
-    ctx.font = '900 24px Poppins, Inter, system-ui, sans-serif';
+    ctx.font = `900 ${Math.round(32 * typographyScale)}px Poppins, Inter, system-ui, sans-serif`;
     ctx.textBaseline = 'bottom';
-    drawText(ctx, priceValue, pillX + 20, pillY + pillHeight - 8);
+    drawText(ctx, priceValue, pillX + padX, pillY + pillHeight - priceBottom);
     
-    currentY = pillY - 16; // Espacio entre precio y badge
+    currentY = pillY - 12; // Espacio entre precio y badge
     ctx.restore();
   }
   
@@ -494,9 +498,9 @@ export const drawSlide = async (
     
     // Sombra drop-shadow equivalente
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-    ctx.shadowBlur = 8;
+    ctx.shadowBlur = 6;
     ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 2;
+    ctx.shadowOffsetY = 4;
     
     ctx.drawImage(elGestorImg, gestorX, gestorY, gestorWidth, gestorHeight);
     ctx.restore();
