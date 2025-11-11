@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { PropertyData, AliadoConfig, ReelTemplate, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
-import { ReelFrame } from "@/components/ReelFrame";
-import { Progress } from "@/components/ui/progress";
-import { X } from "lucide-react";
+import React, { useEffect, useRef, useState } from 'react';
+import { ReelFrame } from './ReelFrame';
+import { Progress } from './ui/progress';
+import type { PropertyData, AliadoConfig, LogoSettings, TextCompositionSettings, VisualLayers, ReelTemplate } from '@/types/property';
 
 interface ScreenCaptureExporterProps {
   photos: string[];
@@ -17,15 +16,15 @@ interface ScreenCaptureExporterProps {
   gradientIntensity: number;
   currentTemplate: ReelTemplate;
   summaryBackground: 'solid' | 'blur' | 'mosaic';
-  summarySolidColor: string;
-  customHashtag: string;
-  customPhone: string;
+  summarySolidColor?: string;
+  customPhone?: string;
+  customHashtag?: string;
   onComplete: (blob: Blob) => void;
   onCancel: () => void;
   onError: (error: string) => void;
 }
 
-export const ScreenCaptureExporter = ({
+export const ScreenCaptureExporter: React.FC<ScreenCaptureExporterProps> = ({
   photos,
   slideDuration,
   showSummarySlide,
@@ -39,205 +38,152 @@ export const ScreenCaptureExporter = ({
   currentTemplate,
   summaryBackground,
   summarySolidColor,
-  customHashtag,
   customPhone,
+  customHashtag,
   onComplete,
   onCancel,
   onError,
-}: ScreenCaptureExporterProps) => {
+}) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-  const [isShowingSummary, setIsShowingSummary] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState<'preparing' | 'waiting-for-screen' | 'recording' | 'processing'>('preparing');
+  const [status, setStatus] = useState<'preparing' | 'waiting' | 'recording' | 'processing'>('preparing');
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-
-  const totalSlides = showSummarySlide ? photos.length + 1 : photos.length;
-  const currentSlide = isShowingSummary ? totalSlides : currentPhotoIndex + 1;
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    startCaptureFlow();
-    
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && status === 'recording') {
-        handleStopRecording(true);
-      }
-    };
-    
-    window.addEventListener('keydown', handleEscape);
-    
-    return () => {
-      window.removeEventListener('keydown', handleEscape);
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop();
-      }
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
-      }
-    };
-  }, [status]);
-
-  const startCaptureFlow = async () => {
-    try {
-      // Paso 1: Entrar a pantalla completa
-      setStatus('preparing');
-      if (containerRef.current) {
-        await containerRef.current.requestFullscreen();
-      }
-      
-      // Preload: esperar fonts y renderizado
-      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-      if ('fonts' in document) await (document as any).fonts.ready;
-      
-      // Esperar un momento para que el usuario vea la instrucción
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Paso 2: Solicitar captura de pantalla
-      setStatus('waiting-for-screen');
-      
-      if (!navigator.mediaDevices?.getDisplayMedia) {
-        throw new Error('Tu navegador no soporta captura de pantalla. Usa Chrome/Edge en escritorio.');
-      }
-      
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: {
-          width: 1080,
-          height: 1920,
-          frameRate: 30,
-        },
-        audio: false,
-      });
-      
-      streamRef.current = stream;
-
-      // Verificar si el usuario canceló
-      if (!stream) {
-        throw new Error('No se seleccionó ninguna pantalla');
-      }
-
-      // Detectar si el usuario detiene la captura
-      stream.getVideoTracks()[0].onended = () => {
-        handleStopRecording(true);
-      };
-
-      // Paso 3: Configurar MediaRecorder
-      const mimeTypes = [
-        'video/webm;codecs=vp9,opus',
-        'video/webm;codecs=vp8,opus',
-        'video/webm;codecs=vp9',
-        'video/webm;codecs=vp8',
-        'video/webm',
-      ];
-
-      let selectedMimeType = '';
-      for (const mimeType of mimeTypes) {
-        if (MediaRecorder.isTypeSupported(mimeType)) {
-          selectedMimeType = mimeType;
-          break;
+    const startCapture = async () => {
+      try {
+        // Verificar soporte
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+          onError('La captura de pantalla no está soportada en este navegador. Usa Chrome o Edge en escritorio.');
+          return;
         }
-      }
 
-      if (!selectedMimeType) {
-        throw new Error('No hay códecs compatibles para grabar video');
-      }
+        setStatus('waiting');
 
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: selectedMimeType,
-        videoBitsPerSecond: 12_000_000, // 12 Mbps
-      });
-
-      chunksRef.current = [];
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data);
+        // Esperar a que se renderice el frame inicial
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        if ('fonts' in document) {
+          await (document as any).fonts.ready;
         }
-      };
 
-      mediaRecorder.onstop = async () => {
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
-          streamRef.current = null;
+        // Solicitar captura INMEDIATAMENTE
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            width: 1080,
+            height: 1920,
+            frameRate: 30,
+          },
+          audio: false,
+        });
+
+        streamRef.current = stream;
+
+        // Detectar si el usuario cierra la captura manualmente
+        stream.getVideoTracks()[0].onended = () => {
+          handleStop(true);
+        };
+
+        // Configurar MediaRecorder con codecs
+        let mimeType = 'video/webm';
+        const codecs = [
+          'video/webm;codecs=vp9,opus',
+          'video/webm;codecs=vp8,opus',
+          'video/webm',
+        ];
+
+        for (const codec of codecs) {
+          if (MediaRecorder.isTypeSupported(codec)) {
+            mimeType = codec;
+            break;
+          }
         }
+
+        const mediaRecorder = new MediaRecorder(stream, {
+          mimeType,
+          videoBitsPerSecond: 12000000,
+        });
+
+        mediaRecorderRef.current = mediaRecorder;
+        chunksRef.current = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data && event.data.size > 0) {
+            chunksRef.current.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunksRef.current, { type: mimeType });
+          onComplete(blob);
+          cleanup();
+        };
+
+        mediaRecorder.onerror = (event: any) => {
+          onError(`Error en la grabación: ${event.error?.message || 'Error desconocido'}`);
+          cleanup();
+        };
+
+        // Iniciar grabación
+        setStatus('recording');
+        mediaRecorder.start(100);
+
+        // Reproducir slideshow
+        await playSlideshow();
+
+        // Detener grabación
+        handleStop(false);
+
+      } catch (error: any) {
+        console.error('Error en captura:', error);
         
-        setStatus('processing');
-        const blob = new Blob(chunksRef.current, { type: selectedMimeType });
-        
-        // Salir de pantalla completa
-        if (document.fullscreenElement) {
-          await document.exitFullscreen();
-        }
-        
-        onComplete(blob);
-      };
-      
-      mediaRecorder.onerror = (event) => {
-        console.error('MediaRecorder error:', event);
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
-        }
-        if (document.fullscreenElement) {
-          document.exitFullscreen();
-        }
-        onError('Error durante la grabación');
-      };
-
-      mediaRecorderRef.current = mediaRecorder;
-      
-      // Paso 4: Iniciar grabación
-      mediaRecorder.start(100); // Capturar cada 100ms
-      setStatus('recording');
-      
-      // Paso 5: Reproducir el slideshow automáticamente
-      playSlideshow();
-
-    } catch (error) {
-      console.error('Error en captura de pantalla:', error);
-      
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      }
-      
-      if (error instanceof Error) {
-        if (error.name === 'NotAllowedError' || error.message.includes('permission')) {
-          onError('Permiso de captura denegado. Asegúrate de seleccionar "Esta pestaña" en el diálogo.');
+        if (error.name === 'NotAllowedError') {
+          onError('Necesitas dar permiso de captura. Selecciona "Esta pestaña" cuando aparezca el diálogo.');
+        } else if (error.name === 'NotFoundError') {
+          onError('No se encontró ninguna fuente de captura disponible.');
+        } else if (error.name === 'AbortError') {
+          onCancel();
         } else {
-          onError(error.message);
+          onError(`Error: ${error.message || 'No se pudo iniciar la captura'}`);
         }
-      } else {
-        onError('Error desconocido al capturar pantalla');
+        
+        cleanup();
       }
-    }
-  };
+    };
+
+    startCapture();
+
+    // Cleanup al desmontar
+    return () => {
+      cleanup();
+    };
+  }, []); // ✅ Array vacío - ejecuta solo una vez
 
   const playSlideshow = async () => {
-    const photoCount = photos.length;
-    
-    // Reproducir todas las fotos
-    for (let i = 0; i < photoCount; i++) {
+    const totalSlides = photos.length + (showSummarySlide ? 1 : 0);
+
+    // Reproducir fotos
+    for (let i = 0; i < photos.length; i++) {
       setCurrentPhotoIndex(i);
       setProgress(((i + 1) / totalSlides) * 100);
-      await new Promise(resolve => setTimeout(resolve, slideDuration));
+      await sleep(slideDuration);
     }
-    
-    // Mostrar slide de resumen si está habilitado
+
+    // Mostrar slide de resumen si está activado
     if (showSummarySlide) {
-      setIsShowingSummary(true);
+      setShowSummary(true);
       setProgress(100);
-      await new Promise(resolve => setTimeout(resolve, 2500)); // 2.5s fijos para resumen
+      await sleep(2500);
     }
-    
-    // Finalizar grabación
-    handleStopRecording(false);
   };
 
-  const handleStopRecording = (cancelled: boolean) => {
+  const handleStop = (cancelled: boolean) => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      setStatus('processing');
       mediaRecorderRef.current.stop();
     }
     
@@ -246,29 +192,44 @@ export const ScreenCaptureExporter = ({
     }
   };
 
+  const cleanup = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current = null;
+    }
+  };
+
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
   const getStatusMessage = () => {
     switch (status) {
       case 'preparing':
-        return '⚙️ Preparando captura...';
-      case 'waiting-for-screen':
-        return '🖥️ Selecciona "Esta pestaña" en el diálogo';
+        return 'Preparando captura...';
+      case 'waiting':
+        return 'Selecciona "Esta pestaña" en el diálogo del navegador';
       case 'recording':
-        return `🎬 Grabando: Slide ${currentSlide} de ${totalSlides}`;
+        return `Grabando slide ${currentPhotoIndex + 1} de ${photos.length + (showSummarySlide ? 1 : 0)}`;
       case 'processing':
-        return '⚡ Procesando video...';
+        return 'Procesando video...';
       default:
         return '';
     }
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="fixed inset-0 z-[9999] bg-black flex items-center justify-center"
-      style={{ width: '100vw', height: '100vh' }}
-    >
-      {/* Contenedor del ReelFrame - Exactamente 1080x1920 */}
-      <div className="relative" style={{ width: '1080px', height: '1920px' }}>
+    <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+      {/* Contenedor del frame */}
+      <div
+        ref={containerRef}
+        className="relative"
+        style={{
+          width: '1080px',
+          height: '1920px',
+        }}
+      >
         <ReelFrame
           mode="preview"
           photoSrc={photos[currentPhotoIndex]}
@@ -281,29 +242,28 @@ export const ScreenCaptureExporter = ({
           gradientDirection={gradientDirection}
           gradientIntensity={gradientIntensity}
           currentTemplate={currentTemplate}
-          showSummarySlide={isShowingSummary}
+          showSummarySlide={showSummary}
           photos={photos}
           summaryBackground={summaryBackground}
           summarySolidColor={summarySolidColor}
-          customHashtag={customHashtag}
           customPhone={customPhone}
+          customHashtag={customHashtag}
         />
       </div>
 
-      {/* Barra de estado - Solo visible antes y después de grabar */}
+      {/* UI de estado - solo visible cuando NO está grabando */}
       {status !== 'recording' && (
-        <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-lg px-8 py-4 rounded-2xl border border-white/20 shadow-2xl max-w-2xl w-full mx-4">
-          <div className="space-y-3">
-            <p className="text-white text-lg font-semibold text-center">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-sm rounded-2xl p-6 min-w-[400px]">
+          <div className="text-center space-y-4">
+            <p className="text-white text-lg font-medium">
               {getStatusMessage()}
             </p>
+            <Progress value={progress} className="w-full" />
             
-            {status === 'waiting-for-screen' && (
-              <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-3">
-                <p className="text-yellow-100 text-sm text-center">
-                  💡 <strong>Importante:</strong> Selecciona "Esta pestaña" para capturar solo el contenido sin UI del navegador
-                </p>
-              </div>
+            {status === 'waiting' && (
+              <p className="text-white/70 text-sm mt-4">
+                💡 Asegúrate de seleccionar "Esta pestaña" para grabar el preview correctamente
+              </p>
             )}
           </div>
         </div>
