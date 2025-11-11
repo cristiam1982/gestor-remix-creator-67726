@@ -30,9 +30,7 @@ interface ReelFrameProps {
 
 // Función helper para obtener el logo apropiado según el fondo
 const getLogoUrl = (backgroundStyle: LogoSettings['background']): string => {
-  if (backgroundStyle === 'none') {
-    return ALIADO_CONFIG.logoTransparent;
-  }
+  // Siempre usar logo con fondo blanco
   return ALIADO_CONFIG.logo;
 };
 
@@ -186,21 +184,22 @@ export const ReelFrame = ({
         {visualLayers.showBadge && propertyData.subtitulos?.[photoIndex] && (
           <div className="w-full flex justify-center" style={{ marginBottom: mode === 'capture' ? '33px' : '12px' }}>
             <div 
-              className={`${template.subtitleStyle.background} shadow-lg max-w-[80%]`}
+              className="shadow-lg max-w-[80%] border border-gray-300/50"
               style={{
+                backgroundColor: '#FFFFFF',
                 padding: mode === 'capture' ? '16.5px 44px' : '6px 16px',
                 borderRadius: textStyle.badgeClass.includes('rounded-full') ? '9999px' : 
                              textStyle.badgeClass.includes('rounded-xl') ? (mode === 'capture' ? '33px' : '12px') : '0'
               }}
             >
               <p 
-                className={`${template.subtitleStyle.textColor} font-semibold text-center leading-tight`}
+                className="text-center leading-tight"
                 style={{ 
+                  color: '#1F2937',
                   fontSize: mode === 'capture' 
-                    ? `${(parseFloat(template.subtitleStyle.textSize.match(/\d+/)?.[0] || '12') * textStyle.badgeScale)}px`
+                    ? `${(parseFloat(template.subtitleStyle.textSize.match(/\d+/)?.[0] || '12') * textStyle.badgeScale * 1.3)}px`
                     : `calc(${template.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})`,
-                  textShadow: '0 2px 6px rgba(0,0,0,0.8)',
-                  fontWeight: 600
+                  fontWeight: 700
                 }}
               >
                 {propertyData.subtitulos[photoIndex]}
