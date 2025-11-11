@@ -49,11 +49,11 @@ export const ScreenCaptureExporter = ({
   const [isShowingSummary, setIsShowingSummary] = useState(false);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState<'preparing' | 'waiting-for-screen' | 'recording' | 'processing'>('preparing');
-  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const totalSlides = showSummarySlide ? photos.length + 1 : photos.length;
   const currentSlide = isShowingSummary ? totalSlides : currentPhotoIndex + 1;
@@ -61,15 +61,27 @@ export const ScreenCaptureExporter = ({
   useEffect(() => {
     startCaptureFlow();
     
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && status === 'recording') {
+        handleStopRecording(true);
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscape);
+    
     return () => {
+      window.removeEventListener('keydown', handleEscape);
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
         mediaRecorderRef.current.stop();
       }
-      if (isFullscreen && document.fullscreenElement) {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      if (document.fullscreenElement) {
         document.exitFullscreen();
       }
     };
-  }, []);
+  }, [status]);
 
   const startCaptureFlow = async () => {
     try {
@@ -77,23 +89,32 @@ export const ScreenCaptureExporter = ({
       setStatus('preparing');
       if (containerRef.current) {
         await containerRef.current.requestFullscreen();
-        setIsFullscreen(true);
       }
       
+      // Preload: esperar fonts y renderizado
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      if ('fonts' in document) await (document as any).fonts.ready;
+      
       // Esperar un momento para que el usuario vea la instrucción
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 800));
       
       // Paso 2: Solicitar captura de pantalla
       setStatus('waiting-for-screen');
       
+      if (!navigator.mediaDevices?.getDisplayMedia) {
+        throw new Error('Tu navegador no soporta captura de pantalla. Usa Chrome/Edge en escritorio.');
+      }
+      
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: {
-          width: 1920,
+          width: 1080,
           height: 1920,
           frameRate: 30,
         },
         audio: false,
       });
+      
+      streamRef.current = stream;
 
       // Verificar si el usuario canceló
       if (!stream) {
@@ -139,7 +160,10 @@ export const ScreenCaptureExporter = ({
       };
 
       mediaRecorder.onstop = async () => {
-        stream.getTracks().forEach(track => track.stop());
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current = null;
+        }
         
         setStatus('processing');
         const blob = new Blob(chunksRef.current, { type: selectedMimeType });
@@ -150,6 +174,17 @@ export const ScreenCaptureExporter = ({
         }
         
         onComplete(blob);
+      };
+      
+      mediaRecorder.onerror = (event) => {
+        console.error('MediaRecorder error:', event);
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+        }
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        }
+        onError('Error durante la grabación');
       };
 
       mediaRecorderRef.current = mediaRecorder;
@@ -255,42 +290,24 @@ export const ScreenCaptureExporter = ({
         />
       </div>
 
-      {/* Barra de estado en la parte superior */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-lg px-8 py-4 rounded-2xl border border-white/20 shadow-2xl max-w-2xl w-full mx-4">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-white text-lg font-semibold">
+      {/* Barra de estado - Solo visible antes y después de grabar */}
+      {status !== 'recording' && (
+        <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-lg px-8 py-4 rounded-2xl border border-white/20 shadow-2xl max-w-2xl w-full mx-4">
+          <div className="space-y-3">
+            <p className="text-white text-lg font-semibold text-center">
               {getStatusMessage()}
             </p>
-            {status === 'recording' && (
-              <button
-                onClick={() => handleStopRecording(true)}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                title="Cancelar"
-              >
-                <X className="w-5 h-5 text-white" />
-              </button>
+            
+            {status === 'waiting-for-screen' && (
+              <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-3">
+                <p className="text-yellow-100 text-sm text-center">
+                  💡 <strong>Importante:</strong> Selecciona "Esta pestaña" para capturar solo el contenido sin UI del navegador
+                </p>
+              </div>
             )}
           </div>
-          
-          {status === 'recording' && (
-            <>
-              <Progress value={progress} className="h-2" />
-              <p className="text-white/70 text-sm text-center">
-                {Math.round(progress)}% completado
-              </p>
-            </>
-          )}
-          
-          {status === 'waiting-for-screen' && (
-            <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-3 mt-2">
-              <p className="text-yellow-100 text-sm text-center">
-                💡 <strong>Importante:</strong> Selecciona "Esta pestaña" para capturar solo el contenido sin UI del navegador
-              </p>
-            </div>
-          )}
         </div>
-      </div>
+      )}
     </div>
   );
 };

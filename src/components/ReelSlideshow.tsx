@@ -611,32 +611,19 @@ export const ReelSlideshow = ({
 
         {/* Botones de descarga FIJOS */}
         <div className="px-4 lg:px-6 space-y-3">
-          <Card className="p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30">
+          <Card className="p-3 bg-gradient-to-br from-primary/20 to-primary/30 border-primary/40">
             <Button 
               onClick={() => {
                 setIsPlaying(false);
                 setShowScreenCapture(true);
               }}
               size="lg" 
-              className="w-full gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold shadow-lg"
+              className="w-full gap-2 bg-primary hover:bg-primary/90 font-bold shadow-lg"
             >
-              ✨ Exportar 100% igual (Captura de pantalla)
+              <Download className="w-5 h-5" /> Descargar video
             </Button>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              Graba exactamente lo que ves en el preview. Máxima paridad visual.
-            </p>
-          </Card>
-          
-          <Card className="p-3 bg-primary/5 border-primary/20">
-            <Button 
-              onClick={handleDownloadVideo} 
-              size="lg" 
-              className="w-full gap-2 bg-primary hover:bg-primary/90"
-            >
-              <Download className="w-5 h-5" /> Descargar Video (Modo Clásico)
-            </Button>
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              Exportación tradicional por captura DOM ({exportQuality === 'high' ? 'MP4 FFmpeg' : 'WebM rápido'})
+              Paridad 1:1 con el preview
             </p>
           </Card>
         </div>
