@@ -58,6 +58,9 @@ export const ReelFrame = ({
   const brand = aliadoConfig.colorPrimario || '#00A5BD';
   const template = REEL_TEMPLATES[currentTemplate];
 
+  // Escala base para modo captura (1080x1920) vs preview (~350-420px)
+  const captureScale = mode === 'capture' ? 2.8 : 1;
+
   // Estilos dinámicos del logo
   const logoStyle = useLogoStyles(logoSettings);
 
@@ -80,10 +83,14 @@ export const ReelFrame = ({
     };
   }, [gradientDirection, gradientIntensity]);
 
-  // Text styling
+  // Text styling con escalado para captura
   const textStyle = useMemo(() => {
-    const scale = 1 + (textComposition.typographyScale / 100);
-    const badgeScale = 1 + (textComposition.badgeScale / 100);
+    const baseScale = 1 + (textComposition.typographyScale / 100);
+    const baseBadgeScale = 1 + (textComposition.badgeScale / 100);
+    
+    // Aplicar escala de captura
+    const scale = baseScale * captureScale;
+    const badgeScale = baseBadgeScale * captureScale;
     
     const badgeClasses = {
       circular: 'rounded-full',
@@ -93,9 +100,9 @@ export const ReelFrame = ({
     };
 
     const spacingValues = {
-      compact: 'gap-0.5',
-      normal: 'gap-2',
-      spacious: 'gap-4'
+      compact: mode === 'capture' ? 'gap-1' : 'gap-0.5',
+      normal: mode === 'capture' ? 'gap-6' : 'gap-2',
+      spacious: mode === 'capture' ? 'gap-11' : 'gap-4'
     };
 
     return {
@@ -105,7 +112,7 @@ export const ReelFrame = ({
       alignmentClass: 'items-start text-left',
       spacingClass: spacingValues[textComposition.verticalSpacing]
     };
-  }, [textComposition]);
+  }, [textComposition, mode, captureScale]);
 
   // Renderizar slide de resumen
   if (showSummarySlide) {
@@ -148,7 +155,11 @@ export const ReelFrame = ({
       {visualLayers.showAllyLogo && (
         <div 
           className={`absolute z-20 ${logoStyle.positionClass}`}
-          style={{ opacity: logoStyle.opacity }}
+          style={{ 
+            opacity: logoStyle.opacity,
+            transform: mode === 'capture' ? `scale(${captureScale})` : 'none',
+            transformOrigin: logoStyle.positionClass.includes('top') ? 'top left' : 'bottom left'
+          }}
         >
           <img
             src={getLogoUrl(logoSettings.background)}
@@ -163,16 +174,31 @@ export const ReelFrame = ({
       )}
 
       {/* Información del inmueble */}
-      <div className={`absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col ${textStyle.alignmentClass} ${textStyle.spacingClass}`}>
+      <div 
+        className={`absolute bottom-0 left-0 right-0 z-10 flex flex-col ${textStyle.alignmentClass} ${textStyle.spacingClass}`}
+        style={{
+          padding: mode === 'capture' ? '44px 220px 132px 44px' : '16px 80px 48px 16px'
+        }}
+      >
         {/* Subtítulo sobre el precio */}
         {visualLayers.showBadge && propertyData.subtitulos?.[photoIndex] && (
-          <div className="w-full flex justify-center mb-3">
-            <div className={`${template.subtitleStyle.background} px-4 py-1.5 ${textStyle.badgeClass} shadow-lg max-w-[80%]`}>
+          <div className="w-full flex justify-center" style={{ marginBottom: mode === 'capture' ? '33px' : '12px' }}>
+            <div 
+              className={`${template.subtitleStyle.background} shadow-lg max-w-[80%]`}
+              style={{
+                padding: mode === 'capture' ? '16.5px 44px' : '6px 16px',
+                borderRadius: textStyle.badgeClass.includes('rounded-full') ? '9999px' : 
+                             textStyle.badgeClass.includes('rounded-xl') ? (mode === 'capture' ? '33px' : '12px') : '0'
+              }}
+            >
               <p 
-                className={`${template.subtitleStyle.textColor} ${template.subtitleStyle.textSize} font-semibold text-center leading-tight`}
+                className={`${template.subtitleStyle.textColor} font-semibold text-center leading-tight`}
                 style={{ 
-                  fontSize: `calc(${template.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})`,
-                  textShadow: '0 2px 6px rgba(0,0,0,0.8)'
+                  fontSize: mode === 'capture' 
+                    ? `${(parseFloat(template.subtitleStyle.textSize.match(/\d+/)?.[0] || '12') * textStyle.badgeScale)}px`
+                    : `calc(${template.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})`,
+                  textShadow: '0 2px 6px rgba(0,0,0,0.8)',
+                  fontWeight: 600
                 }}
               >
                 {propertyData.subtitulos[photoIndex]}
@@ -184,24 +210,41 @@ export const ReelFrame = ({
         {/* Precio */}
         {visualLayers.showPrice && precio && (
           <div 
-            className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 shadow-md mb-2 ${template.priceStyle.className}`}
+            className={`relative z-40 inline-flex flex-col shadow-md`}
             style={{ 
               backgroundColor: aliadoConfig.colorPrimario,
               opacity: 0.9,
               border: '1px solid rgba(255,255,255,0.2)',
               color: '#ffffff',
-              transform: `scale(${textStyle.scale})`
+              transform: `scale(${textStyle.scale})`,
+              transformOrigin: 'left center',
+              padding: mode === 'capture' ? '27.5px 55px' : '10px 20px',
+              gap: mode === 'capture' ? '5.5px' : '2px',
+              marginBottom: mode === 'capture' ? '22px' : '8px',
+              borderRadius: template.priceStyle.className.includes('rounded-full') ? '9999px' :
+                           template.priceStyle.className.includes('rounded-2xl') ? (mode === 'capture' ? '44px' : '16px') :
+                           template.priceStyle.className.includes('rounded-xl') ? (mode === 'capture' ? '33px' : '12px') : '0'
             }}
           >
             <span 
-              className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90"
-              style={{ fontWeight: 600 }}
+              style={{ 
+                fontSize: mode === 'capture' ? '28px' : '10px',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                lineHeight: 1,
+                color: 'rgba(255,255,255,0.9)'
+              }}
             >
               {esVenta ? "Venta" : "Arriendo"}
             </span>
             <span 
-              className="text-2xl font-black leading-none text-white"
-              style={{ fontWeight: 900 }}
+              style={{ 
+                fontSize: mode === 'capture' ? '67.2px' : '24px',
+                fontWeight: 900,
+                lineHeight: 1,
+                color: '#ffffff'
+              }}
             >
               {formatPrecioColombia(precio)}
             </span>
@@ -211,22 +254,26 @@ export const ReelFrame = ({
         {visualLayers.showCTA && (
           <>
             <h3 
-              className="text-white text-2xl font-black mb-1.5"
               style={{ 
                 textShadow: '0 2px 8px rgba(0,0,0,0.9)',
-                fontSize: `calc(2rem * ${textStyle.scale})`,
-                fontWeight: 900
+                fontSize: mode === 'capture' ? `${56 * textStyle.scale}px` : `calc(2rem * ${textStyle.scale})`,
+                fontWeight: 900,
+                color: '#ffffff',
+                marginBottom: mode === 'capture' ? '16.5px' : '6px',
+                lineHeight: 1.2
               }}
             >
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h3>
             {propertyData.ubicacion && (
               <p 
-                className="text-white text-lg font-bold mb-4"
                 style={{ 
                   textShadow: '0 2px 8px rgba(0,0,0,0.9)',
-                  fontSize: `calc(1.125rem * ${textStyle.scale})`,
-                  fontWeight: 700
+                  fontSize: mode === 'capture' ? `${31.5 * textStyle.scale}px` : `calc(1.125rem * ${textStyle.scale})`,
+                  fontWeight: 700,
+                  color: '#ffffff',
+                  marginBottom: mode === 'capture' ? '44px' : '16px',
+                  lineHeight: 1.3
                 }}
               >
                 📍 {propertyData.ubicacion}
@@ -237,41 +284,79 @@ export const ReelFrame = ({
 
         {/* Iconografía de características */}
         {visualLayers.showIcons && (
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div 
+            className="flex flex-wrap"
+            style={{
+              gap: mode === 'capture' ? '22px' : '8px',
+              marginTop: mode === 'capture' ? '33px' : '12px'
+            }}
+          >
             {propertyData.habitaciones && (
               <div 
-                className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                style={{ transform: `scale(${textStyle.scale})` }}
+                className="flex items-center bg-white/95 shadow-lg"
+                style={{ 
+                  transform: `scale(${textStyle.scale})`,
+                  transformOrigin: 'left center',
+                  gap: mode === 'capture' ? '11px' : '4px',
+                  padding: mode === 'capture' ? '16.5px 33px' : '6px 12px',
+                  borderRadius: '9999px'
+                }}
               >
-                <span className="text-base">🛏️</span>
-                <span className="text-sm font-bold text-gray-800" style={{ fontWeight: 700 }}>{propertyData.habitaciones}</span>
+                <span style={{ fontSize: mode === 'capture' ? '44.8px' : '16px' }}>🛏️</span>
+                <span style={{ fontSize: mode === 'capture' ? '39.2px' : '14px', fontWeight: 700, color: '#1f2937' }}>
+                  {propertyData.habitaciones}
+                </span>
               </div>
             )}
             {propertyData.banos && (
               <div 
-                className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                style={{ transform: `scale(${textStyle.scale})` }}
+                className="flex items-center bg-white/95 shadow-lg"
+                style={{ 
+                  transform: `scale(${textStyle.scale})`,
+                  transformOrigin: 'left center',
+                  gap: mode === 'capture' ? '11px' : '4px',
+                  padding: mode === 'capture' ? '16.5px 33px' : '6px 12px',
+                  borderRadius: '9999px'
+                }}
               >
-                <span className="text-base">🚿</span>
-                <span className="text-sm font-bold text-gray-800" style={{ fontWeight: 700 }}>{propertyData.banos}</span>
+                <span style={{ fontSize: mode === 'capture' ? '44.8px' : '16px' }}>🚿</span>
+                <span style={{ fontSize: mode === 'capture' ? '39.2px' : '14px', fontWeight: 700, color: '#1f2937' }}>
+                  {propertyData.banos}
+                </span>
               </div>
             )}
             {propertyData.parqueaderos && (
               <div 
-                className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                style={{ transform: `scale(${textStyle.scale})` }}
+                className="flex items-center bg-white/95 shadow-lg"
+                style={{ 
+                  transform: `scale(${textStyle.scale})`,
+                  transformOrigin: 'left center',
+                  gap: mode === 'capture' ? '11px' : '4px',
+                  padding: mode === 'capture' ? '16.5px 33px' : '6px 12px',
+                  borderRadius: '9999px'
+                }}
               >
-                <span className="text-base">🚗</span>
-                <span className="text-sm font-bold text-gray-800" style={{ fontWeight: 700 }}>{propertyData.parqueaderos}</span>
+                <span style={{ fontSize: mode === 'capture' ? '44.8px' : '16px' }}>🚗</span>
+                <span style={{ fontSize: mode === 'capture' ? '39.2px' : '14px', fontWeight: 700, color: '#1f2937' }}>
+                  {propertyData.parqueaderos}
+                </span>
               </div>
             )}
             {propertyData.area && (
               <div 
-                className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                style={{ transform: `scale(${textStyle.scale})` }}
+                className="flex items-center bg-white/95 shadow-lg"
+                style={{ 
+                  transform: `scale(${textStyle.scale})`,
+                  transformOrigin: 'left center',
+                  gap: mode === 'capture' ? '11px' : '4px',
+                  padding: mode === 'capture' ? '16.5px 33px' : '6px 12px',
+                  borderRadius: '9999px'
+                }}
               >
-                <span className="text-base">📐</span>
-                <span className="text-sm font-bold text-gray-800" style={{ fontWeight: 700 }}>{propertyData.area}m²</span>
+                <span style={{ fontSize: mode === 'capture' ? '44.8px' : '16px' }}>📐</span>
+                <span style={{ fontSize: mode === 'capture' ? '39.2px' : '14px', fontWeight: 700, color: '#1f2937' }}>
+                  {propertyData.area}m²
+                </span>
               </div>
             )}
           </div>
@@ -279,13 +364,20 @@ export const ReelFrame = ({
       </div>
 
       {/* Logo El Gestor - inferior derecha - SIEMPRE visible */}
-      <div className="absolute bottom-12 right-4 z-40">
+      <div 
+        className="absolute z-40"
+        style={{
+          bottom: mode === 'capture' ? '132px' : '48px',
+          right: mode === 'capture' ? '44px' : '16px'
+        }}
+      >
         <img 
           src={elGestorLogo} 
           alt="El Gestor" 
           data-eg-logo="true"
-          className="h-10 object-contain"
+          className="object-contain"
           style={{ 
+            height: mode === 'capture' ? '112px' : '40px',
             filter: mode === 'preview' ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.5))' : 'none'
           }}
           crossOrigin="anonymous"
