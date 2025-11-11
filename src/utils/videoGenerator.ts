@@ -370,8 +370,8 @@ let cachedElGestorLogo: HTMLImageElement | null = null;
 
 const ensureElGestorLogo = async (canvas: HTMLCanvasElement): Promise<void> => {
   try {
-    // Dimensiones esperadas del logo
-    const gestorHeight = 40;
+    // Dimensiones esperadas del logo (sincronizadas con ReelFrame.tsx modo capture)
+    const gestorHeight = 80;
     const elGestorImg = await (async () => {
       if (cachedElGestorLogo) return cachedElGestorLogo;
       const img = new Image();
@@ -385,8 +385,8 @@ const ensureElGestorLogo = async (canvas: HTMLCanvasElement): Promise<void> => {
     })();
     
     const gestorWidth = (gestorHeight / elGestorImg.height) * elGestorImg.width;
-    const gestorX = 1080 - gestorWidth - 16; // right-4 (16px)
-    const gestorY = 1920 - gestorHeight - 48; // bottom-12 (48px)
+    const gestorX = 1080 - gestorWidth - 44; // right: 44px (sincronizado con ReelFrame capture)
+    const gestorY = 1920 - gestorHeight - 132; // bottom: 132px (sincronizado con ReelFrame capture)
     
     // SIEMPRE dibujar el logo manualmente para garantizar su presencia
     console.log('🎨 Dibujando logo "El Gestor" manualmente...');

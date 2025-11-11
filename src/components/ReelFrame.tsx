@@ -155,11 +155,12 @@ export const ReelFrame = ({
       {/* Logo del aliado */}
       {visualLayers.showAllyLogo && (
         <div 
-          className={`absolute z-20 ${logoStyle.positionClass}`}
+          className={`absolute z-20 ${logoStyle.positionClass} ${mode === 'preview' ? `${logoStyle.animationClass} ${logoStyle.entranceAnimationClass}` : ''}`}
           style={{ 
             opacity: logoStyle.opacity,
             transform: mode === 'capture' ? `scale(${captureScale})` : 'none',
-            transformOrigin: logoStyle.positionClass.includes('top') ? 'top left' : 'bottom left'
+            transformOrigin: logoStyle.positionClass.includes('top') ? 'top left' : 'bottom left',
+            ...(mode === 'preview' ? logoStyle.animationStyle : {})
           }}
         >
           <img
