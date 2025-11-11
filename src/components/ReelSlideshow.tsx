@@ -33,7 +33,7 @@ import FFmpegManager from "@/utils/ffmpegManager";
 import { REEL_TEMPLATES, applyGradientIntensity } from "@/utils/reelTemplates";
 import { ReelFrame } from "@/components/ReelFrame";
 import { ParityLab } from "@/components/ParityLab";
-import { ScreenCaptureExporter } from "@/components/ScreenCaptureExporter";
+
 import {
   DndContext,
   closestCenter,
@@ -223,7 +223,6 @@ export const ReelSlideshow = ({
 
   // Paridad Lab
   const [showParityLab, setShowParityLab] = useState(false);
-  const [showScreenCapture, setShowScreenCapture] = useState(false);
 
   const { toast } = useToast();
   
@@ -546,54 +545,6 @@ export const ReelSlideshow = ({
 
   return (
     <>
-      {/* Modal de captura de pantalla */}
-      {showScreenCapture && (
-        <ScreenCaptureExporter
-          photos={photosList.map(p => p.src)}
-          slideDuration={slideDuration}
-          showSummarySlide={true}
-          propertyData={propertyData}
-          aliadoConfig={aliadoConfig}
-          visualLayers={visualLayers}
-          textComposition={textComposition}
-          logoSettings={logoSettings}
-          gradientDirection={gradientDirection}
-          gradientIntensity={gradientIntensity}
-          currentTemplate={selectedTemplate}
-          summaryBackground={summaryBackground}
-          summarySolidColor={summarySolidColor}
-          customHashtag={customHashtag}
-          customPhone={customPhone}
-          onComplete={(blob) => {
-            const extension = blob.type.includes('webm') ? 'webm' : 'mp4';
-            const filename = `reel-${propertyData.tipo}-${Date.now()}.${extension}`;
-            downloadBlob(blob, filename);
-            
-            toast({
-              title: "✅ Video exportado",
-              description: "Tu reel se ha descargado con paridad 100%",
-            });
-            
-            setShowScreenCapture(false);
-            if (onDownload) onDownload();
-          }}
-          onCancel={() => {
-            setShowScreenCapture(false);
-            toast({
-              title: "❌ Exportación cancelada",
-              description: "No se generó el video",
-            });
-          }}
-          onError={(error) => {
-            setShowScreenCapture(false);
-            toast({
-              title: "Error en exportación",
-              description: error,
-              variant: "destructive",
-            });
-          }}
-        />
-      )}
       
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
@@ -613,10 +564,7 @@ export const ReelSlideshow = ({
         <div className="px-4 lg:px-6 space-y-3">
           <Card className="p-3 bg-gradient-to-br from-primary/20 to-primary/30 border-primary/40">
             <Button 
-              onClick={() => {
-                setIsPlaying(false);
-                setShowScreenCapture(true);
-              }}
+              onClick={handleDownloadVideo}
               size="lg" 
               className="w-full gap-2 bg-primary hover:bg-primary/90 font-bold shadow-lg"
             >
