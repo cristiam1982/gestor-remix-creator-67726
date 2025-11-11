@@ -77,14 +77,41 @@ export const ScreenCaptureExporter: React.FC<ScreenCaptureExporterProps> = ({
             width: 1080,
             height: 1920,
             frameRate: 30,
+            // @ts-expect-error - Chrome non-standard preferCurrentTab
+            preferCurrentTab: true,
           },
           audio: false,
         });
 
         streamRef.current = stream;
 
+        // Verificar que se seleccionó "Esta pestaña"
+        const track = stream.getVideoTracks()[0];
+        const settings = track.getSettings() as any;
+        const surface = settings.displaySurface;
+
+        if (surface && surface !== 'browser') {
+          stream.getTracks().forEach(t => t.stop());
+          onError('Debes seleccionar "Esta pestaña" en el diálogo para capturar SOLO el preview.');
+          onCancel();
+          return;
+        }
+
+        // Aplicar Region Capture (CropTarget) si está disponible
+        if ((window as any).CropTarget && containerRef.current) {
+          try {
+            const cropTarget = await (window as any).CropTarget.fromElement(containerRef.current);
+            await (track as any).cropTo(cropTarget);
+            console.log('✅ Region Capture aplicado: capturando solo el contenedor 1080x1920');
+          } catch (cropError) {
+            console.warn('⚠️ Region Capture no disponible o falló. Continuando sin recorte específico.', cropError);
+          }
+        } else {
+          console.warn('⚠️ CropTarget no soportado en este navegador. Usa Chrome en escritorio para 1:1 perfecto.');
+        }
+
         // Detectar si el usuario cierra la captura manualmente
-        stream.getVideoTracks()[0].onended = () => {
+        track.onended = () => {
           handleStop(true);
         };
 
@@ -157,8 +184,17 @@ export const ScreenCaptureExporter: React.FC<ScreenCaptureExporterProps> = ({
 
     startCapture();
 
+    // Listener para cancelar con Escape
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleStop(true);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+
     // Cleanup al desmontar
     return () => {
+      window.removeEventListener('keydown', handleEscape);
       cleanup();
     };
   }, []); // ✅ Array vacío - ejecuta solo una vez
