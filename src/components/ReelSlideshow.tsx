@@ -683,7 +683,7 @@ export const ReelSlideshow = ({
 
                     {/* Botón de prueba de frame */}
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Prueba de captura</Label>
+                      <Label className="text-sm font-medium">Prueba de captura (sin video)</Label>
                       <Button
                         variant="outline"
                         size="sm"
@@ -733,8 +733,83 @@ export const ReelSlideshow = ({
                       >
                         🖼️ Probar 1 frame (PNG)
                       </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={async () => {
+                          try {
+                            setIsPlaying(false);
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                            
+                            const { captureFrame } = await import("@/utils/videoGenerator");
+                            const { waitForNextFrame } = await import("@/utils/imageUtils");
+                            
+                            toast({
+                              title: "📸 Exportando frames...",
+                              description: `Capturando ${photosList.length + 1} frames`,
+                            });
+                            
+                            for (let i = 0; i <= photosList.length; i++) {
+                              // Cambiar foto
+                              if (i >= photosList.length) {
+                                setShowSummarySlide(true);
+                                setCurrentPhotoIndex(photosList.length - 1);
+                              } else {
+                                setShowSummarySlide(false);
+                                setCurrentPhotoIndex(i);
+                              }
+                              
+                              // Esperar renderizado
+                              await waitForNextFrame();
+                              await waitForNextFrame();
+                              await new Promise(resolve => setTimeout(resolve, 300));
+                              
+                              // Capturar frame
+                              const canvas = await captureFrame("reel-capture-canvas", false);
+                              
+                              // Descargar
+                              await new Promise<void>((resolve) => {
+                                canvas.toBlob((blob) => {
+                                  if (blob) {
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement("a");
+                                    link.href = url;
+                                    const frameName = i >= photosList.length ? 'summary' : `frame_${String(i + 1).padStart(4, '0')}`;
+                                    link.download = `${frameName}.png`;
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    URL.revokeObjectURL(url);
+                                  }
+                                  resolve();
+                                }, 'image/png');
+                              });
+                            }
+                            
+                            setShowSummarySlide(false);
+                            setCurrentPhotoIndex(0);
+                            
+                            toast({
+                              title: "✅ Frames exportados",
+                              description: `${photosList.length + 1} frames descargados individualmente`,
+                            });
+                          } catch (error) {
+                            console.error('Error exportando frames:', error);
+                            toast({
+                              title: "Error al exportar frames",
+                              description: error instanceof Error ? error.message : "Error desconocido",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        📦 Solo frames (PNG)
+                      </Button>
+                      
                       <p className="text-xs text-muted-foreground">
-                        Descarga el frame actual como PNG para validar calidad antes de generar video completo.
+                        Exporta frames individuales para validar calidad sin generar video completo (ahorra créditos).
                       </p>
                     </div>
 
@@ -904,7 +979,27 @@ export const ReelSlideshow = ({
                   transformOrigin: 'center center'
                 }}
               >
-          {/* Preview SIEMPRE usa Motor Legacy (DOM) - Hermoso y profesional */}
+          {/* Preview usando ReelFrame - Paridad 1:1 con captura */}
+          <ReelFrame
+            mode="preview"
+            photoSrc={photosList[currentPhotoIndex]?.src || ''}
+            photoIndex={currentPhotoIndex}
+            propertyData={propertyData}
+            aliadoConfig={aliadoConfig}
+            visualLayers={visualLayers}
+            textComposition={textComposition}
+            logoSettings={logoSettings}
+            gradientDirection={gradientDirection}
+            gradientIntensity={gradientIntensity}
+            currentTemplate={selectedTemplate}
+            showSummarySlide={shouldShowSummary}
+            photos={photosList.map(p => p.src)}
+            summaryBackground={summaryBackground}
+            summarySolidColor={summarySolidColor}
+            customHashtag={customHashtag}
+            customPhone={customPhone}
+          />
+
           {/* Overlay clicable para pausar - solo cuando isPlaying */}
           {isPlaying && (
             <div 
@@ -937,198 +1032,6 @@ export const ReelSlideshow = ({
               </div>
             ))}
           </div>
-
-          {/* Slide de resumen - Mostrar si está en reproducción O editando pestaña final */}
-          {shouldShowSummary && (
-            <ReelSummarySlide 
-              propertyData={propertyData}
-              aliadoConfig={aliadoConfig}
-              isVisible={true}
-              photos={photosList.map(p => p.src)}
-              backgroundStyle={summaryBackground}
-              solidColor={summarySolidColor}
-              customHashtag={customHashtag}
-              customPhone={customPhone}
-            />
-          )}
-
-          {/* Foto actual con overlay y crossfade - Solo mostrar si NO es slide de resumen */}
-          {!shouldShowSummary && (
-            <div className="absolute inset-0">
-              {/* Foto anterior (fade out) */}
-              {photosList[previousPhotoIndex] && (
-                <img
-                  src={photosList[previousPhotoIndex].src}
-                  alt={`Foto ${previousPhotoIndex + 1}`}
-                  className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
-                    isTransitioning ? 'photo-crossfade-enter' : 'photo-crossfade-active'
-                  }`}
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                />
-              )}
-              
-              {/* Foto actual (fade in) */}
-              {photosList[currentPhotoIndex] && (
-                <img
-                  src={photosList[currentPhotoIndex].src}
-                  alt={`Foto ${currentPhotoIndex + 1}`}
-                  className={`absolute inset-0 w-full h-full object-cover photo-crossfade ${
-                    isTransitioning ? 'photo-crossfade-active' : 'opacity-0'
-                  }`}
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                />
-              )}
-              
-              {/* PARTE 2: Gradient overlay con CSS inline */}
-              {gradientDirection !== 'none' && (
-                <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
-              )}
-            </div>
-          )}
-
-          {/* Logo del aliado - Fase 6: Estilos dinámicos */}
-          {!shouldShowSummary && visualLayers.showAllyLogo && (
-            <div 
-              key={`logo-${logoSettings.entranceAnimation}-${logoSettings.entranceDuration}`}
-              className={`absolute z-20 ${logoStyle.positionClass}`}
-              style={{ opacity: logoStyle.opacity }}
-            >
-              <img
-                src={getLogoUrl(logoSettings.background)}
-                alt={aliadoConfig.nombre}
-                className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass}`}
-                style={{ width: logoStyle.size, height: logoStyle.size }}
-                crossOrigin="anonymous"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-          )}
-
-          {/* PARTE 3: Información del inmueble con precio más visible */}
-          {!shouldShowSummary && (() => {
-            const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
-            const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
-            
-            return (
-              <div className={`absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col ${textStyle.alignmentClass} ${textStyle.spacingClass}`}>
-                {/* Subtítulo sobre el precio */}
-                {visualLayers.showBadge && propertyData.subtitulos?.[currentPhotoIndex] && (
-                  <div className="w-full flex justify-center mb-3">
-                    <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 ${textStyle.badgeClass} shadow-lg max-w-[80%]`}>
-                      <p 
-                        className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}
-                        style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})` }}
-                      >
-                        {propertyData.subtitulos[currentPhotoIndex]}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Precio con máxima visibilidad */}
-                {visualLayers.showPrice && precio && (
-                  <div 
-                    className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 shadow-md mb-2 ${currentTemplate.priceStyle.className}`}
-                    style={{ 
-                      backgroundColor: aliadoConfig.colorPrimario,
-                      opacity: 0.9,
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      color: '#ffffff',
-                      transform: `scale(${textStyle.scale})`
-                    }}
-                  >
-                    <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
-                      {esVenta ? "Venta" : "Arriendo"}
-                    </span>
-                    <span className="text-2xl font-black leading-none text-white">
-                      {formatPrecioColombia(precio)}
-                    </span>
-                  </div>
-                )}
-                
-                {visualLayers.showCTA && (
-                  <>
-                    <h3 
-                      className="text-white text-2xl font-black mb-1.5" 
-                      style={{ 
-                        textShadow: '2px 2px 8px rgba(0,0,0,0.9)',
-                        fontSize: `calc(2rem * ${textStyle.scale})`
-                      }}
-                    >
-                      {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
-                    </h3>
-                    {propertyData.ubicacion && (
-                      <p 
-                        className="text-white text-lg font-bold mb-4" 
-                        style={{ 
-                          textShadow: '2px 2px 8px rgba(0,0,0,0.9)',
-                          fontSize: `calc(1.125rem * ${textStyle.scale})`
-                        }}
-                      >
-                        📍 {propertyData.ubicacion}
-                      </p>
-                  )}
-                </>
-              )}
-
-              {/* Iconografía de características - Fase 6 */}
-              {visualLayers.showIcons && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {propertyData.habitaciones && (
-                    <div 
-                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                      style={{ transform: `scale(${textStyle.scale})` }}
-                    >
-                      <span className="text-base">🛏️</span>
-                      <span className="text-sm font-bold text-gray-800">{propertyData.habitaciones}</span>
-                    </div>
-                  )}
-                  {propertyData.banos && (
-                    <div 
-                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                      style={{ transform: `scale(${textStyle.scale})` }}
-                    >
-                      <span className="text-base">🚿</span>
-                      <span className="text-sm font-bold text-gray-800">{propertyData.banos}</span>
-                    </div>
-                  )}
-                  {propertyData.parqueaderos && (
-                    <div 
-                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                      style={{ transform: `scale(${textStyle.scale})` }}
-                    >
-                      <span className="text-base">🚗</span>
-                      <span className="text-sm font-bold text-gray-800">{propertyData.parqueaderos}</span>
-                    </div>
-                  )}
-                  {propertyData.area && (
-                    <div 
-                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                      style={{ transform: `scale(${textStyle.scale})` }}
-                    >
-                      <span className="text-base">📐</span>
-                      <span className="text-sm font-bold text-gray-800">{propertyData.area}m²</span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              </div>
-            );
-          })()}
-
-              {/* Logo El Gestor - inferior derecha - SIEMPRE visible */}
-              <div className="absolute bottom-12 right-4 z-40">
-                  <img 
-                    src={elGestorLogo} 
-                    alt="El Gestor" 
-                    data-eg-logo="true"
-                    className="h-10 object-contain"
-                    style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.5))' }}
-                  />
-                </div>
 
           {/* PARTE 4: Feedback visual al cambiar gradiente */}
           {isChangingGradient && (

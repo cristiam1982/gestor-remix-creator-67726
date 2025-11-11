@@ -43,60 +43,45 @@ export const ParityLab = (props: ParityLabProps) => {
       // Esperar renderizado
       await waitForNextFrame();
       await waitForNextFrame();
+      await document.fonts.ready;
 
-      // Capturar frame
-      const canvas = await captureFrame("parity-lab-dom", false);
-      setCapturedCanvas(canvas);
+      // Capturar preview (mode="preview") y capture (mode="capture")
+      const previewCanvas = await captureFrame("parity-lab-preview", false);
+      const captureCanvas = await captureFrame("parity-lab-capture", false);
+      
+      setCapturedCanvas(captureCanvas);
+
+      // Obtener ImageData de ambos
+      const previewCtx = previewCanvas.getContext('2d', { willReadFrequently: true });
+      const captureCtx = captureCanvas.getContext('2d', { willReadFrequently: true });
+      
+      if (!previewCtx || !captureCtx) throw new Error('No se pudo obtener contextos');
+
+      const previewData = previewCtx.getImageData(0, 0, 1080, 1920);
+      const captureData = captureCtx.getImageData(0, 0, 1080, 1920);
 
       // Calcular diferencia pixel por pixel
-      const domCanvas = document.createElement('canvas');
-      const domCtx = domCanvas.getContext('2d', { willReadFrequently: true });
-      if (!domCtx) throw new Error('No se pudo crear contexto DOM');
-
-      domCanvas.width = 1080;
-      domCanvas.height = 1920;
-
-      const domElement = document.getElementById('parity-lab-dom-visible');
-      if (!domElement) throw new Error('Elemento DOM no encontrado');
-
-      // Capturar DOM visible
-      const domRect = domElement.getBoundingClientRect();
-      const scaleX = 1080 / domRect.width;
-      const scaleY = 1920 / domRect.height;
-
-      domCtx.scale(scaleX, scaleY);
-      
-      // Renderizar el DOM en canvas
-      const capturedCtx = canvas.getContext('2d', { willReadFrequently: true });
-      if (!capturedCtx) throw new Error('No se pudo obtener contexto capturado');
-
-      const domData = domCtx.getImageData(0, 0, 1080, 1920);
-      const capturedData = capturedCtx.getImageData(0, 0, 1080, 1920);
-
-      // Calcular diferencia
-      let totalDiff = 0;
       let pixelsWithDiff = 0;
       const threshold = 10; // Tolerancia por canal
 
-      for (let i = 0; i < domData.data.length; i += 4) {
-        const rDiff = Math.abs(domData.data[i] - capturedData.data[i]);
-        const gDiff = Math.abs(domData.data[i + 1] - capturedData.data[i + 1]);
-        const bDiff = Math.abs(domData.data[i + 2] - capturedData.data[i + 2]);
+      for (let i = 0; i < previewData.data.length; i += 4) {
+        const rDiff = Math.abs(previewData.data[i] - captureData.data[i]);
+        const gDiff = Math.abs(previewData.data[i + 1] - captureData.data[i + 1]);
+        const bDiff = Math.abs(previewData.data[i + 2] - captureData.data[i + 2]);
         const avgDiff = (rDiff + gDiff + bDiff) / 3;
 
-        totalDiff += avgDiff;
         if (avgDiff > threshold) {
           pixelsWithDiff++;
         }
       }
 
-      const totalPixels = domData.data.length / 4;
+      const totalPixels = previewData.data.length / 4;
       const diffPercent = (pixelsWithDiff / totalPixels) * 100;
       setDiffPercentage(diffPercent);
 
       toast({
         title: diffPercent <= 1 ? "✅ Paridad excelente" : diffPercent <= 5 ? "⚠️ Diferencias menores" : "❌ Diferencias significativas",
-        description: `${diffPercent.toFixed(2)}% de píxeles con diferencias`,
+        description: `${diffPercent.toFixed(2)}% de píxeles con diferencias > ${threshold}`,
       });
     } catch (error) {
       console.error('Error en captura:', error);
@@ -208,20 +193,6 @@ export const ParityLab = (props: ParityLabProps) => {
           </Button>
         </div>
 
-        {/* DOM visible (escala 1:5) */}
-        <div>
-          <p className="text-xs text-muted-foreground mb-2">Preview DOM (escala 1:5):</p>
-          <div 
-            id="parity-lab-dom-visible"
-            className="relative aspect-story mx-auto rounded-lg overflow-hidden shadow-lg border"
-            style={{ width: '216px', height: '384px', backgroundColor: '#000000' }}
-          >
-            <div style={{ width: '1080px', height: '1920px', transform: 'scale(0.2)', transformOrigin: 'top left' }}>
-              <ReelFrame mode="preview" {...props} />
-            </div>
-          </div>
-        </div>
-
         {/* Captura (escala 1:5) */}
         {capturedCanvas && (
           <div>
@@ -236,9 +207,27 @@ export const ParityLab = (props: ParityLabProps) => {
           </div>
         )}
 
-        {/* DOM oculto para captura */}
+        {/* Preview oculto (mode="preview") */}
         <div 
-          id="parity-lab-dom" 
+          id="parity-lab-preview" 
+          className="absolute pointer-events-none"
+          aria-hidden="true"
+          style={{ 
+            width: '1080px', 
+            height: '1920px',
+            position: 'absolute',
+            left: '-9999px',
+            top: '-9999px',
+            opacity: 0,
+            backgroundColor: '#000000'
+          }}
+        >
+          <ReelFrame mode="preview" {...props} />
+        </div>
+
+        {/* Captura oculta (mode="capture") */}
+        <div 
+          id="parity-lab-capture" 
           className="absolute pointer-events-none"
           aria-hidden="true"
           style={{ 
