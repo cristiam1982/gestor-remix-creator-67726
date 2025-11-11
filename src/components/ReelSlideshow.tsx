@@ -33,6 +33,7 @@ import FFmpegManager from "@/utils/ffmpegManager";
 import { REEL_TEMPLATES, applyGradientIntensity } from "@/utils/reelTemplates";
 import { ReelFrame } from "@/components/ReelFrame";
 import { ParityLab } from "@/components/ParityLab";
+import { ScreenCaptureExporter } from "@/components/ScreenCaptureExporter";
 import {
   DndContext,
   closestCenter,
@@ -222,6 +223,7 @@ export const ReelSlideshow = ({
 
   // Paridad Lab
   const [showParityLab, setShowParityLab] = useState(false);
+  const [showScreenCapture, setShowScreenCapture] = useState(false);
 
   const { toast } = useToast();
   
@@ -544,6 +546,55 @@ export const ReelSlideshow = ({
 
   return (
     <>
+      {/* Modal de captura de pantalla */}
+      {showScreenCapture && (
+        <ScreenCaptureExporter
+          photos={photosList.map(p => p.src)}
+          slideDuration={slideDuration}
+          showSummarySlide={true}
+          propertyData={propertyData}
+          aliadoConfig={aliadoConfig}
+          visualLayers={visualLayers}
+          textComposition={textComposition}
+          logoSettings={logoSettings}
+          gradientDirection={gradientDirection}
+          gradientIntensity={gradientIntensity}
+          currentTemplate={selectedTemplate}
+          summaryBackground={summaryBackground}
+          summarySolidColor={summarySolidColor}
+          customHashtag={customHashtag}
+          customPhone={customPhone}
+          onComplete={(blob) => {
+            const extension = blob.type.includes('webm') ? 'webm' : 'mp4';
+            const filename = `reel-${propertyData.tipo}-${Date.now()}.${extension}`;
+            downloadBlob(blob, filename);
+            
+            toast({
+              title: "✅ Video exportado",
+              description: "Tu reel se ha descargado con paridad 100%",
+            });
+            
+            setShowScreenCapture(false);
+            if (onDownload) onDownload();
+          }}
+          onCancel={() => {
+            setShowScreenCapture(false);
+            toast({
+              title: "❌ Exportación cancelada",
+              description: "No se generó el video",
+            });
+          }}
+          onError={(error) => {
+            setShowScreenCapture(false);
+            toast({
+              title: "Error en exportación",
+              description: error,
+              variant: "destructive",
+            });
+          }}
+        />
+      )}
+      
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
 
       {/* Header y Botón FIJOS - fuera del scroll */}
@@ -558,16 +609,35 @@ export const ReelSlideshow = ({
           </div>
         </div>
 
-        {/* Botón de descarga FIJO */}
-        <div className="px-4 lg:px-6">
+        {/* Botones de descarga FIJOS */}
+        <div className="px-4 lg:px-6 space-y-3">
+          <Card className="p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30">
+            <Button 
+              onClick={() => {
+                setIsPlaying(false);
+                setShowScreenCapture(true);
+              }}
+              size="lg" 
+              className="w-full gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold shadow-lg"
+            >
+              ✨ Exportar 100% igual (Captura de pantalla)
+            </Button>
+            <p className="text-xs text-muted-foreground mt-2 text-center">
+              Graba exactamente lo que ves en el preview. Máxima paridad visual.
+            </p>
+          </Card>
+          
           <Card className="p-3 bg-primary/5 border-primary/20">
             <Button 
               onClick={handleDownloadVideo} 
               size="lg" 
               className="w-full gap-2 bg-primary hover:bg-primary/90"
             >
-              <Download className="w-5 h-5" /> Descargar Video
+              <Download className="w-5 h-5" /> Descargar Video (Modo Clásico)
             </Button>
+            <p className="text-xs text-muted-foreground mt-2 text-center">
+              Exportación tradicional por captura DOM ({exportQuality === 'high' ? 'MP4 FFmpeg' : 'WebM rápido'})
+            </p>
           </Card>
         </div>
       </div>
