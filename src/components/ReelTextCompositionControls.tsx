@@ -57,8 +57,8 @@ export const ReelTextCompositionControls = ({ settings, onChange }: ReelTextComp
         <Slider
           value={[settings.badgeScale]}
           onValueChange={(value) => onChange({ ...settings, badgeScale: value[0] })}
-          min={-20}
-          max={40}
+          min={0}
+          max={60}
           step={10}
           className="py-2"
         />

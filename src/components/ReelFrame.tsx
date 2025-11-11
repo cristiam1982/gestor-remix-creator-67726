@@ -177,14 +177,14 @@ export const ReelFrame = ({
       <div 
         className={`absolute bottom-0 left-0 right-0 z-10 flex flex-col ${textStyle.alignmentClass} ${textStyle.spacingClass}`}
         style={{
-          padding: mode === 'capture' ? '44px 220px 132px 44px' : '16px 80px 48px 16px'
+          padding: mode === 'capture' ? '44px 120px 132px 44px' : '16px 44px 48px 16px'
         }}
       >
         {/* Subtítulo sobre el precio */}
         {visualLayers.showBadge && propertyData.subtitulos?.[photoIndex] && (
           <div className="w-full flex justify-center" style={{ marginBottom: mode === 'capture' ? '33px' : '12px' }}>
             <div 
-              className="shadow-lg max-w-[80%] border border-gray-300/50"
+              className="shadow-xl max-w-[80%] border-2 border-gray-400"
               style={{
                 backgroundColor: '#FFFFFF',
                 padding: mode === 'capture' ? '16.5px 44px' : '6px 16px',
@@ -219,7 +219,7 @@ export const ReelFrame = ({
               color: '#ffffff',
               transform: `scale(${textStyle.scale})`,
               transformOrigin: 'left center',
-              padding: mode === 'capture' ? '27.5px 55px' : '10px 20px',
+              padding: mode === 'capture' ? '16.5px 44px' : '6px 16px',
               gap: mode === 'capture' ? '5.5px' : '2px',
               marginBottom: mode === 'capture' ? '22px' : '8px',
               borderRadius: template.priceStyle.className.includes('rounded-full') ? '9999px' :
