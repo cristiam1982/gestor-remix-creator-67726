@@ -370,8 +370,45 @@ let cachedElGestorLogo: HTMLImageElement | null = null;
 
 const ensureElGestorLogo = async (canvas: HTMLCanvasElement): Promise<void> => {
   try {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
     // Dimensiones esperadas del logo (sincronizadas con ReelFrame.tsx modo capture)
     const gestorHeight = 80;
+    const gestorWidth = 200; // Aproximado para detección
+    const gestorX = 1080 - gestorWidth - 44; // right: 44px
+    const gestorY = 1920 - gestorHeight - 132; // bottom: 132px
+    
+    // Verificar si el logo ya está presente en el canvas (capturado por html2canvas)
+    console.log('🔍 Verificando presencia del logo "El Gestor" en canvas...');
+    const imageData = ctx.getImageData(gestorX, gestorY, gestorWidth, gestorHeight);
+    const pixels = imageData.data;
+    
+    // Contar píxeles no negros en la región esperada del logo
+    let nonBlackPixels = 0;
+    for (let i = 0; i < pixels.length; i += 4) {
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+      const a = pixels[i + 3];
+      // Píxel visible (no negro puro y no transparente)
+      if ((r > 10 || g > 10 || b > 10) && a > 10) {
+        nonBlackPixels++;
+      }
+    }
+    
+    const totalPixels = gestorWidth * gestorHeight;
+    const logoPresenceThreshold = 0.05; // 5% de píxeles visibles indica presencia del logo
+    const logoPresence = nonBlackPixels / totalPixels;
+    
+    if (logoPresence >= logoPresenceThreshold) {
+      console.log(`✅ Logo "El Gestor" detectado en canvas (${(logoPresence * 100).toFixed(2)}% píxeles visibles)`);
+      return; // Logo ya está presente, no necesita dibujo manual
+    }
+    
+    // Logo no detectado, dibujar manualmente como safety net
+    console.log(`⚠️ Logo "El Gestor" no detectado (${(logoPresence * 100).toFixed(2)}% píxeles), dibujando manualmente...`);
+    
     const elGestorImg = await (async () => {
       if (cachedElGestorLogo) return cachedElGestorLogo;
       const img = new Image();
@@ -384,14 +421,8 @@ const ensureElGestorLogo = async (canvas: HTMLCanvasElement): Promise<void> => {
       return img;
     })();
     
-    const gestorWidth = (gestorHeight / elGestorImg.height) * elGestorImg.width;
-    const gestorX = 1080 - gestorWidth - 44; // right: 44px (sincronizado con ReelFrame capture)
-    const gestorY = 1920 - gestorHeight - 132; // bottom: 132px (sincronizado con ReelFrame capture)
-    
-    // SIEMPRE dibujar el logo manualmente para garantizar su presencia
-    console.log('🎨 Dibujando logo "El Gestor" manualmente...');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const actualGestorWidth = (gestorHeight / elGestorImg.height) * elGestorImg.width;
+    const actualGestorX = 1080 - actualGestorWidth - 44;
     
     // Aplicar drop-shadow
     ctx.save();
@@ -401,14 +432,14 @@ const ensureElGestorLogo = async (canvas: HTMLCanvasElement): Promise<void> => {
     ctx.shadowOffsetY = 4;
     
     // Dibujar logo
-    ctx.drawImage(elGestorImg, gestorX, gestorY, gestorWidth, gestorHeight);
+    ctx.drawImage(elGestorImg, actualGestorX, gestorY, actualGestorWidth, gestorHeight);
     
     // Reset shadow
     ctx.restore();
     
-    console.log('✅ Logo "El Gestor" añadido manualmente en canvas');
+    console.log('✅ Logo "El Gestor" añadido manualmente como safety net');
   } catch (error) {
-    console.warn('⚠️ Error asegurando logo El Gestor:', error);
+    console.warn('⚠️ Error verificando/asegurando logo El Gestor:', error);
   }
 };
 
@@ -457,13 +488,14 @@ export const captureFrame = async (
           htmlElement.style.opacity = '1';
           htmlElement.style.visibility = 'visible';
 
-          // OCULTAR logos El Gestor del DOM para que no interfieran con html2canvas
-          // Los dibujaremos manualmente después con ensureElGestorLogo
+          // MANTENER logos El Gestor visibles para captura natural con html2canvas
           const egLogos = htmlElement.querySelectorAll('img[data-eg-logo="true"]') as NodeListOf<HTMLImageElement>;
           egLogos.forEach(img => {
-            img.style.display = 'none';
+            // Remover el filter drop-shadow que html2canvas no captura bien
             img.style.filter = 'none';
-            img.style.opacity = '0';
+            // Asegurar visibilidad total para captura natural
+            img.style.display = 'block';
+            img.style.opacity = '1';
           });
 
           // Inyectar estilos para desactivar animaciones y transiciones SOLO en el elemento capturado

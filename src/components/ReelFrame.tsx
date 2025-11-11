@@ -380,7 +380,8 @@ export const ReelFrame = ({
           className="object-contain"
           style={{ 
             height: mode === 'capture' ? '80px' : '40px',
-            filter: mode === 'preview' ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.5))' : 'none'
+            filter: mode === 'preview' ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.5))' : 'none',
+            imageRendering: 'crisp-edges'
           }}
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
