@@ -4,17 +4,24 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { ExportOptions as ExportOptionsType } from "@/utils/imageExporter";
+import { Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ExportOptionsProps {
   onOptionsChange: (options: ExportOptionsType) => void;
   aliadoNombre?: string;
+  onTestFrame?: () => Promise<void>;
+  onExportFrames?: () => Promise<void>;
 }
 
-export const ExportOptions = ({ onOptionsChange, aliadoNombre }: ExportOptionsProps) => {
+export const ExportOptions = ({ onOptionsChange, aliadoNombre, onTestFrame, onExportFrames }: ExportOptionsProps) => {
   const [format, setFormat] = useState<"png" | "jpg">("png");
   const [quality, setQuality] = useState([95]);
   const [addWatermark, setAddWatermark] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const { toast } = useToast();
 
   const handleChange = () => {
     onOptionsChange({
@@ -87,6 +94,65 @@ export const ExportOptions = ({ onOptionsChange, aliadoNombre }: ExportOptionsPr
             </p>
           </div>
           <Switch checked={addWatermark} onCheckedChange={handleWatermarkChange} />
+        </div>
+
+        {/* Botones de prueba sin generar video */}
+        <div className="space-y-3 pt-4 border-t">
+          <Label className="text-sm font-medium">🧪 Pruebas de Exportación (sin video)</Label>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={async () => {
+              if (!onTestFrame) return;
+              setIsExporting(true);
+              try {
+                await onTestFrame();
+              } catch (error) {
+                toast({
+                  title: "Error al probar frame",
+                  description: error instanceof Error ? error.message : "Error desconocido",
+                  variant: "destructive",
+                });
+              } finally {
+                setIsExporting(false);
+              }
+            }}
+            disabled={isExporting || !onTestFrame}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {isExporting ? "Exportando..." : "Probar 1 frame (PNG)"}
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={async () => {
+              if (!onExportFrames) return;
+              setIsExporting(true);
+              try {
+                await onExportFrames();
+              } catch (error) {
+                toast({
+                  title: "Error al exportar frames",
+                  description: error instanceof Error ? error.message : "Error desconocido",
+                  variant: "destructive",
+                });
+              } finally {
+                setIsExporting(false);
+              }
+            }}
+            disabled={isExporting || !onExportFrames}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {isExporting ? "Exportando..." : "Solo frames (ZIP)"}
+          </Button>
+
+          <p className="text-xs text-muted-foreground">
+            Estos botones te permiten validar la calidad visual antes de gastar créditos en generar el video completo.
+          </p>
         </div>
       </CardContent>
     </Card>

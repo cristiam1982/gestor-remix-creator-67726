@@ -41,10 +41,35 @@ class FFmpegManager {
     }
 
     this.loading = true;
-    const maxRetries = 2; // Reducido de 3 a 2 para no esperar tanto
+    const maxRetries = 2;
     let lastError: Error | null = null;
 
-    // CDNs alternativas en orden de prioridad
+    // Intentar cargar desde assets locales primero
+    const baseUrl = `${window.location.origin}/ffmpeg`;
+    console.log('🔄 Intentando cargar FFmpeg desde assets locales:', baseUrl);
+    
+    try {
+      onProgress?.(20);
+      console.log('📥 Descargando ffmpeg-core.js local...');
+      const coreURL = await toBlobURL(`${baseUrl}/ffmpeg-core.js`, 'text/javascript');
+      
+      console.log('📥 Descargando ffmpeg-core.wasm local...');
+      const wasmURL = await toBlobURL(`${baseUrl}/ffmpeg-core.wasm`, 'application/wasm');
+
+      console.log('🔧 Inicializando FFmpeg desde local...');
+      await this.ffmpeg.load({ coreURL, wasmURL });
+      
+      this.loaded = true;
+      this.loading = false;
+      onProgress?.(100);
+      console.log('✅ FFmpeg cargado desde assets locales');
+      return;
+    } catch (error) {
+      console.warn('⚠️ No se pudo cargar FFmpeg desde assets locales, intentando CDNs...', error);
+      lastError = error as Error;
+    }
+
+    // Fallback: CDNs alternativas
     const cdnUrls = [
       'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd',
       'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd'
@@ -68,11 +93,11 @@ class FFmpegManager {
           this.loaded = true;
           this.loading = false;
           onProgress?.(100);
-          console.log('✅ FFmpeg cargado correctamente');
+          console.log('✅ FFmpeg cargado correctamente desde CDN');
           return;
         } catch (error) {
           lastError = error as Error;
-          console.error(`❌ Error detallado cargando FFmpeg desde ${baseURL}:`, error);
+          console.error(`❌ Error cargando FFmpeg desde ${baseURL}:`, error);
           if (attempt === maxRetries && baseURL === cdnUrls[cdnUrls.length - 1]) {
             this.loading = false;
             throw new Error(`Failed to load FFmpeg after ${maxRetries} attempts: ${error}`);
@@ -80,14 +105,12 @@ class FFmpegManager {
         }
       }
 
-      // Si no es el último intento, esperar antes de reintentar
       if (attempt < maxRetries) {
         console.log(`⏳ Reintentando en 1 segundo...`);
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
 
-    // Si llegamos aquí, todos los intentos fallaron
     this.loading = false;
     throw new Error(
       `No se pudo cargar FFmpeg después de ${maxRetries} intentos desde múltiples CDNs. ` +

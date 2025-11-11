@@ -31,6 +31,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import FFmpegManager from "@/utils/ffmpegManager";
 import { REEL_TEMPLATES, applyGradientIntensity } from "@/utils/reelTemplates";
+import { ReelFrame } from "@/components/ReelFrame";
+import { ParityLab } from "@/components/ParityLab";
 import {
   DndContext,
   closestCenter,
@@ -217,6 +219,9 @@ export const ReelSlideshow = ({
     const saved = localStorage.getItem('reel-export-quality');
     return (saved === 'fast' || saved === 'high') ? saved : 'fast';
   });
+
+  // Paridad Lab
+  const [showParityLab, setShowParityLab] = useState(false);
 
   const { toast } = useToast();
   
@@ -732,8 +737,48 @@ export const ReelSlideshow = ({
                         Descarga el frame actual como PNG para validar calidad antes de generar video completo.
                       </p>
                     </div>
+
+                    {/* Laboratorio de Paridad */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-medium">🔬 Laboratorio de Paridad</Label>
+                        <Switch checked={showParityLab} onCheckedChange={setShowParityLab} />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Activa para validar que el frame capturado sea idéntico al preview antes de generar video.
+                      </p>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
+
+                {/* Laboratorio de Paridad (si está activo) */}
+                {showParityLab && (
+                  <AccordionItem value="parity">
+                    <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+                      🔬 Laboratorio de Paridad
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <ParityLab
+                        photoSrc={photosList[currentPhotoIndex]?.src || ''}
+                        photoIndex={currentPhotoIndex}
+                        propertyData={propertyData}
+                        aliadoConfig={aliadoConfig}
+                        visualLayers={visualLayers}
+                        textComposition={textComposition}
+                        logoSettings={logoSettings}
+                        gradientDirection={gradientDirection}
+                        gradientIntensity={gradientIntensity}
+                        currentTemplate={selectedTemplate}
+                        showSummarySlide={showSummarySlide}
+                        photos={photosList.map(p => p.src)}
+                        summaryBackground={summaryBackground}
+                        summarySolidColor={summarySolidColor}
+                        customHashtag={customHashtag}
+                        customPhone={customPhone}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
               </Accordion>
             </Card>
 
@@ -1144,166 +1189,26 @@ export const ReelSlideshow = ({
           backgroundColor: '#000000'
         }}
       >
-          {/* Slide de resumen para captura */}
-          {showSummarySlide && (
-            <ReelSummarySlide 
-              propertyData={propertyData}
-              aliadoConfig={aliadoConfig}
-              isVisible={true}
-              photos={photosList.map(p => p.src)}
-              backgroundStyle={summaryBackground}
-              solidColor={summarySolidColor}
-              customHashtag={customHashtag}
-              customPhone={customPhone}
-            />
-          )}
-
-          {/* Foto actual con overlay - CÓDIGO IDÉNTICO AL PREVIEW + Template */}
-          {!showSummarySlide && (
-            <>
-              <div className="absolute inset-0">
-                {photosList[currentPhotoIndex] && (
-                  <img
-                    src={photosList[currentPhotoIndex].src}
-                    alt={`Foto ${currentPhotoIndex + 1}`}
-                    className="w-full h-full object-cover"
-                    crossOrigin="anonymous"
-                    referrerPolicy="no-referrer"
-                  />
-                )}
-                {/* PARTE 2: Gradient overlay con CSS inline en canvas */}
-                {gradientDirection !== 'none' && (
-                  <div className="absolute inset-0 pointer-events-none" style={{ ...gradientOverlayStyle, zIndex: 5 }} />
-                )}
-              </div>
-
-              {/* Logo del aliado - Canvas con estilos dinámicos */}
-              {visualLayers.showAllyLogo && (
-                <div 
-                  className={`absolute z-20 ${logoStyle.positionClass}`}
-                  style={{ opacity: logoStyle.opacity }}
-                >
-                  <img
-                    src={getLogoUrl(logoSettings.background)}
-                    alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass}`}
-                    style={{ width: logoStyle.size, height: logoStyle.size }}
-                    crossOrigin="anonymous"
-                    referrerPolicy="no-referrer"
-                    data-ally-logo="true"
-                  />
-                </div>
-              )}
-
-              {/* Precio movido al área inferior - Canvas con estilos dinámicos */}
-              {(() => {
-                const esVenta = propertyData.modalidad === "venta" || (!!propertyData.valorVenta && !propertyData.canon);
-                const precio = esVenta ? propertyData.valorVenta : propertyData.canon;
-                
-                return (
-                  <div className={`absolute bottom-0 left-0 right-0 p-4 pr-20 pb-12 z-10 flex flex-col ${textStyle.alignmentClass} ${textStyle.spacingClass}`}>
-                    {visualLayers.showBadge && propertyData.subtitulos?.[currentPhotoIndex] && (
-                      <div className="w-full flex justify-center mb-3">
-                        <div className={`${currentTemplate.subtitleStyle.background} px-4 py-1.5 ${textStyle.badgeClass} shadow-lg max-w-[80%]`}>
-                          <p 
-                            className={`${currentTemplate.subtitleStyle.textColor} ${currentTemplate.subtitleStyle.textSize} font-semibold text-center leading-tight`}
-                            style={{ fontSize: `calc(${currentTemplate.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})` }}
-                          >
-                            {propertyData.subtitulos[currentPhotoIndex]}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {visualLayers.showPrice && precio && (
-                      <div 
-                        className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 shadow-md mb-2 ${currentTemplate.priceStyle.className}`}
-                        style={{ 
-                          backgroundColor: aliadoConfig.colorPrimario,
-                          opacity: 0.9,
-                          border: '1px solid rgba(255,255,255,0.2)',
-                          color: '#ffffff',
-                          transform: `scale(${textStyle.scale})`
-                        }}
-                      >
-                        <span className="text-[10px] font-semibold uppercase tracking-wider leading-none text-white/90">
-                          {esVenta ? "Venta" : "Arriendo"}
-                        </span>
-                        <span className="text-2xl font-black leading-none text-white">
-                          {formatPrecioColombia(precio)}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {visualLayers.showCTA && (
-                      <>
-                        <h3 className="text-white text-2xl font-black mb-1.5" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)', fontSize: `calc(2rem * ${textStyle.scale})` }}>
-                          {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
-                        </h3>
-                        {propertyData.ubicacion && (
-                          <p className="text-white text-lg font-bold mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)', fontSize: `calc(1.125rem * ${textStyle.scale})` }}>📍 {propertyData.ubicacion}</p>
-                  )}
-                </>
-              )}
-
-              {/* Iconografía de características - Fase 6 - Canvas */}
-              {visualLayers.showIcons && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {propertyData.habitaciones && (
-                    <div 
-                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                      style={{ transform: `scale(${textStyle.scale})` }}
-                    >
-                      <span className="text-base">🛏️</span>
-                      <span className="text-sm font-bold text-gray-800">{propertyData.habitaciones}</span>
-                    </div>
-                  )}
-                  {propertyData.banos && (
-                    <div 
-                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                      style={{ transform: `scale(${textStyle.scale})` }}
-                    >
-                      <span className="text-base">🚿</span>
-                      <span className="text-sm font-bold text-gray-800">{propertyData.banos}</span>
-                    </div>
-                  )}
-                  {propertyData.parqueaderos && (
-                    <div 
-                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                      style={{ transform: `scale(${textStyle.scale})` }}
-                    >
-                      <span className="text-base">🚗</span>
-                      <span className="text-sm font-bold text-gray-800">{propertyData.parqueaderos}</span>
-                    </div>
-                  )}
-                  {propertyData.area && (
-                    <div 
-                      className="flex items-center gap-1 bg-white/95 px-3 py-1.5 rounded-full shadow-lg"
-                      style={{ transform: `scale(${textStyle.scale})` }}
-                    >
-                      <span className="text-base">📐</span>
-                      <span className="text-sm font-bold text-gray-800">{propertyData.area}m²</span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Logo El Gestor - SIEMPRE visible */}
-              <div className="absolute bottom-12 right-4 z-40">
-                  <img 
-                    src={elGestorLogo} 
-                    alt="El Gestor" 
-                    data-eg-logo="true" 
-                    className="h-10 object-contain"
-                    style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.5))' }}
-                  />
-                </div>
-              </div>
-                );
-              })()}
-            </>
-          )}
-        </div>
+        <ReelFrame
+          mode="capture"
+          photoSrc={photosList[currentPhotoIndex]?.src || ''}
+          photoIndex={currentPhotoIndex}
+          propertyData={propertyData}
+          aliadoConfig={aliadoConfig}
+          visualLayers={visualLayers}
+          textComposition={textComposition}
+          logoSettings={logoSettings}
+          gradientDirection={gradientDirection}
+          gradientIntensity={gradientIntensity}
+          currentTemplate={selectedTemplate}
+          showSummarySlide={showSummarySlide}
+          photos={photosList.map(p => p.src)}
+          summaryBackground={summaryBackground}
+          summarySolidColor={summarySolidColor}
+          customHashtag={customHashtag}
+          customPhone={customPhone}
+        />
+      </div>
 
       {/* Layout móvil vertical - ya dentro del div lg:hidden anterior */}
       <div className="space-y-4 lg:hidden">
