@@ -5,6 +5,7 @@ import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
 interface ReelSummarySlideProps {
+  mode?: 'preview' | 'capture';
   propertyData: PropertyData;
   aliadoConfig: AliadoConfig;
   isVisible: boolean;
@@ -16,6 +17,7 @@ interface ReelSummarySlideProps {
 }
 
 export const ReelSummarySlide = ({ 
+  mode = 'preview',
   propertyData, 
   aliadoConfig,
   isVisible,
@@ -35,6 +37,9 @@ export const ReelSummarySlide = ({
   
   // Validación de contraste para fondo sólido
   const textColor = solidColor && isLightColor(solidColor) ? '#000000' : '#FFFFFF';
+
+  // Escala para modo captura
+  const captureScale = mode === 'capture' ? 2.5 : 1;
 
   // Obtener características según tipo de inmueble
   const caracteristicas = [];
@@ -129,52 +134,77 @@ export const ReelSummarySlide = ({
 
   return (
     <div 
-      className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center"
-      style={backgroundStyle === 'solid' ? {
-        backgroundColor: solidColor || hexToRgba(brand, 0.12),
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255,255,255,0.1)'
-      } : {}}
+      className="absolute inset-0 flex flex-col items-center justify-center text-center"
+      style={{
+        padding: `${32 * captureScale}px`,
+        ...(backgroundStyle === 'solid' ? {
+          backgroundColor: solidColor || hexToRgba(brand, 0.12),
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.1)'
+        } : {})
+      }}
     >
       {renderBackground()}
       
-      <div className="space-y-4 relative z-10 pt-12">
+      <div 
+        className="relative z-10"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: `${16 * captureScale}px`,
+          paddingTop: `${48 * captureScale}px`
+        }}
+      >
         {/* Logo del aliado - más grande y protagonista */}
         <img
           src={logoRubyMorales}
           alt={aliadoConfig.nombre}
-          className="w-[140px] h-[140px] mx-auto rounded-xl object-contain bg-white p-2.5 shadow-2xl"
+          className="mx-auto rounded-xl object-contain bg-white shadow-2xl"
+          style={{
+            width: `${140 * captureScale}px`,
+            height: `${140 * captureScale}px`,
+            padding: `${10 * captureScale}px`
+          }}
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
 
         {/* Información del inmueble - más compacta internamente */}
-        <div className="space-y-2 mb-4">
-          {/* Tipo de inmueble - más pequeño */}
-          <h2 className="text-xl font-bold text-white drop-shadow-2xl">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: `${8 * captureScale}px`, marginBottom: `${16 * captureScale}px` }}>
+          {/* Tipo de inmueble */}
+          <h2 
+            className="font-bold text-white drop-shadow-2xl"
+            style={{ fontSize: `${20 * captureScale}px` }}
+          >
             {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
           </h2>
           
-          {/* Ubicación - más pequeña */}
+          {/* Ubicación */}
           {propertyData.ubicacion && (
-            <p className="text-base font-semibold text-white drop-shadow-xl">
+            <p 
+              className="font-semibold text-white drop-shadow-xl"
+              style={{ fontSize: `${16 * captureScale}px` }}
+            >
               📍 {propertyData.ubicacion}
             </p>
           )}
           
-          {/* Precio - single-brand color */}
+          {/* Precio */}
           {precio && (
             <div 
-              className="inline-block px-5 py-2 rounded-xl shadow-2xl"
+              className="inline-block shadow-2xl"
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario,
                 opacity: 0.95,
-                border: '2px solid rgba(255,255,255,0.25)'
+                border: `${2 * captureScale}px solid rgba(255,255,255,0.25)`,
+                borderRadius: `${12 * captureScale}px`,
+                padding: `${8 * captureScale}px ${20 * captureScale}px`
               }}
             >
               <p 
-                className="text-xl font-black drop-shadow-2xl"
+                className="font-black drop-shadow-2xl"
                 style={{ 
+                  fontSize: `${20 * captureScale}px`,
                   color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
                   textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' 
                 }}
@@ -185,16 +215,22 @@ export const ReelSummarySlide = ({
           )}
         </div>
 
-        {/* Características clave - single-brand color */}
+        {/* Características clave */}
         {caracteristicas.length > 0 && (
-          <div className="flex flex-wrap gap-2 justify-center">
+          <div 
+            className="flex flex-wrap justify-center"
+            style={{ gap: `${8 * captureScale}px` }}
+          >
             {caracteristicas.map((car, idx) => (
               <span
                 key={idx}
-                className="px-4 py-2 rounded-xl shadow-xl font-semibold text-base"
+                className="shadow-xl font-semibold"
                 style={{ 
+                  padding: `${8 * captureScale}px ${16 * captureScale}px`,
+                  borderRadius: `${12 * captureScale}px`,
+                  fontSize: `${16 * captureScale}px`,
                   backgroundColor: hexToRgba(brand, 0.88),
-                  border: '1.5px solid rgba(255,255,255,0.2)',
+                  border: `${1.5 * captureScale}px solid rgba(255,255,255,0.2)`,
                   color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
                   textShadow: '0 2px 6px rgba(0,0,0,0.85)'
                 }}
@@ -205,17 +241,21 @@ export const ReelSummarySlide = ({
           </div>
         )}
 
-        {/* Call to Action - single-brand color */}
+        {/* Call to Action */}
         <div 
-          className="px-6 py-3 rounded-xl shadow-2xl"
+          className="shadow-2xl"
           style={{ 
+            padding: `${12 * captureScale}px ${24 * captureScale}px`,
+            borderRadius: `${12 * captureScale}px`,
             backgroundColor: hexToRgba(brand, 0.94),
-            border: '2px solid rgba(255,255,255,0.3)'
+            border: `${2 * captureScale}px solid rgba(255,255,255,0.3)`
           }}
         >
           <p 
-            className="font-bold text-base mb-1"
+            className="font-bold"
             style={{ 
+              fontSize: `${16 * captureScale}px`,
+              marginBottom: `${4 * captureScale}px`,
               color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
               textShadow: '0 2px 6px rgba(0,0,0,0.8)' 
             }}
@@ -223,8 +263,8 @@ export const ReelSummarySlide = ({
             📱 Agenda tu visita
           </p>
           <p 
-            className="text-base" 
             style={{ 
+              fontSize: `${16 * captureScale}px`,
               color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
               textShadow: '0 2px 6px rgba(0,0,0,0.8)' 
             }}
@@ -235,8 +275,10 @@ export const ReelSummarySlide = ({
 
         {/* Hashtag personalizado */}
         <p 
-          className="text-sm font-medium mt-4"
+          className="font-medium"
           style={{ 
+            fontSize: `${14 * captureScale}px`,
+            marginTop: `${16 * captureScale}px`,
             color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
             textShadow: '0 2px 8px rgba(0,0,0,0.9)' 
           }}
@@ -249,7 +291,11 @@ export const ReelSummarySlide = ({
           src={elGestorLogo}
           alt="El Gestor"
           data-eg-logo="true"
-          className="h-[35px] mx-auto mt-14 object-contain drop-shadow-2xl"
+          className="mx-auto object-contain drop-shadow-2xl"
+          style={{
+            height: `${35 * captureScale}px`,
+            marginTop: `${56 * captureScale}px`
+          }}
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
