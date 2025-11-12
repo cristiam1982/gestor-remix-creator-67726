@@ -196,18 +196,25 @@ export const ReelFrame = ({
               style={{
                 maxWidth: '80%',
                 backgroundColor: '#FFFFFF',
-                padding: mode === 'capture' ? '16.5px 44px' : '6px 16px',
+                padding: mode === 'capture' ? '16px 44px' : '6px 16px',
                 borderRadius: textStyle.badgeClass.includes('rounded-full') ? '9999px' : 
                              textStyle.badgeClass.includes('rounded-xl') ? (mode === 'capture' ? '33px' : '12px') : '0',
-                boxShadow: mode === 'capture' 
-                  ? '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)'
-                  : '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                border: mode === 'capture' 
-                  ? '3px solid rgba(156, 163, 175, 0.8)'
-                  : '2px solid rgba(156, 163, 175, 0.6)',
+                boxShadow: [
+                  // Anillo-borde (entero, sin costuras)
+                  mode === 'capture'
+                    ? '0 0 0 3px rgba(156,163,175,0.8)'
+                    : '0 0 0 2px rgba(156,163,175,0.6)',
+                  // Sombra suave única
+                  mode === 'capture'
+                    ? '0 12px 24px rgba(0,0,0,0.18)'
+                    : '0 8px 16px rgba(0,0,0,0.12)'
+                ].join(', '),
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                backgroundClip: 'padding-box',
+                isolation: 'isolate',
+                position: 'relative'
               }}
             >
               <p 
@@ -239,7 +246,7 @@ export const ReelFrame = ({
               color: '#ffffff',
               transform: `scale(${textStyle.scale})`,
               transformOrigin: 'left center',
-              padding: mode === 'capture' ? '11px 44px' : '5px 16px',
+              padding: mode === 'capture' ? '12px 44px' : '5px 16px',
               gap: mode === 'capture' ? '5.5px' : '2px',
               marginBottom: mode === 'capture' ? '22px' : '8px',
               borderRadius: template.priceStyle.className.includes('rounded-full') ? '9999px' :

@@ -104,7 +104,7 @@ export const ReelSummarySlide = ({
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20" />
           </>
         ) : null;
         
@@ -122,7 +122,7 @@ export const ReelSummarySlide = ({
                 />
               ))}
             </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/50" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20" />
           </>
         ) : null;
         
@@ -159,11 +159,12 @@ export const ReelSummarySlide = ({
         <img
           src={logoRubyMorales}
           alt={aliadoConfig.nombre}
-          className="mx-auto rounded-xl object-contain bg-white shadow-2xl"
+          className="mx-auto rounded-xl object-contain bg-white"
           style={{
             width: `${140 * captureScale}px`,
             height: `${140 * captureScale}px`,
-            padding: `${10 * captureScale}px`
+            padding: `${10 * captureScale}px`,
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
           }}
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
@@ -198,13 +199,13 @@ export const ReelSummarySlide = ({
           {/* Precio */}
           {precio && (
             <div 
-              className="inline-block shadow-2xl"
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario,
                 opacity: 0.95,
                 border: `${2 * captureScale}px solid rgba(255,255,255,0.25)`,
                 borderRadius: `${12 * captureScale}px`,
-                padding: `${8 * captureScale}px ${20 * captureScale}px`
+                padding: `${8 * captureScale}px ${20 * captureScale}px`,
+                boxShadow: '0 4px 6px rgba(0,0,0,0.15)'
               }}
             >
               <p 
@@ -230,15 +231,16 @@ export const ReelSummarySlide = ({
             {caracteristicas.map((car, idx) => (
               <span
                 key={idx}
-                className="shadow-xl font-semibold"
-                style={{ 
+                className="font-semibold"
+                style={{
                   padding: `${8 * captureScale}px ${16 * captureScale}px`,
                   borderRadius: `${12 * captureScale}px`,
                   fontSize: `${16 * captureScale}px`,
                   backgroundColor: hexToRgba(brand, 0.88),
                   border: `${1.5 * captureScale}px solid rgba(255,255,255,0.2)`,
                   color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-                  textShadow: '0 1px 3px rgba(0,0,0,0.3)'
+                  textShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                 }}
               >
                 {car.icon} {car.text}
@@ -249,12 +251,12 @@ export const ReelSummarySlide = ({
 
         {/* Call to Action */}
         <div 
-          className="shadow-2xl"
           style={{ 
             padding: `${12 * captureScale}px ${24 * captureScale}px`,
             borderRadius: `${12 * captureScale}px`,
             backgroundColor: hexToRgba(brand, 0.94),
-            border: `${2 * captureScale}px solid rgba(255,255,255,0.3)`
+            border: `${2 * captureScale}px solid rgba(255,255,255,0.3)`,
+            boxShadow: '0 4px 6px rgba(0,0,0,0.15)'
           }}
         >
           <p 
@@ -297,10 +299,11 @@ export const ReelSummarySlide = ({
           src={elGestorLogo}
           alt="El Gestor"
           data-eg-logo="true"
-          className="mx-auto object-contain drop-shadow-2xl"
+          className="mx-auto object-contain"
           style={{
             height: `${35 * captureScale}px`,
-            marginTop: `${56 * captureScale}px`
+            marginTop: `${56 * captureScale}px`,
+            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
           }}
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"

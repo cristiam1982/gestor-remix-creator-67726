@@ -872,7 +872,7 @@ const waitForCaptureReady = async (elementId: string): Promise<void> => {
 
 /**
  * Genera un video MP4 usando MediaRecorder API (Fase 2)
- * Más rápido, mejor calidad y menor peso que GIF
+ * PRE-CAPTURA todos los frames ANTES de grabar para mantener timing exacto
  * Incluye slide de resumen al final
  */
 export const generateReelVideoMP4 = async (
@@ -888,8 +888,8 @@ export const generateReelVideoMP4 = async (
   const startTime = Date.now();
   
   try {
-    console.log('🎬 Iniciando generación de video MP4 con MediaRecorder');
-    console.log('🎯 Captura DOM activada:', elementId);
+    console.log('🎬 Iniciando generación de video MP4 con MediaRecorder (PRE-CAPTURA)');
+    console.log(`⏱️ Duración por foto: ${slideDuration}ms (${(slideDuration/1000).toFixed(1)}s)`);
     
     onProgress({
       stage: "initializing",
@@ -905,63 +905,38 @@ export const generateReelVideoMP4 = async (
     const element = document.getElementById(elementId);
     if (!element) throw new Error("Elemento no encontrado");
 
-    // Crear canvas para captura
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1920;
-    const ctx = canvas.getContext('2d', { 
-      alpha: false,
-      desynchronized: true 
-    });
-    
-    if (!ctx) throw new Error("No se pudo crear contexto de canvas");
-
-    // Configurar MediaRecorder
-    const stream = canvas.captureStream(30); // 30 FPS
-    const mimeType = getSupportedMimeType();
-    const mediaRecorder = new MediaRecorder(stream, {
-      mimeType,
-      videoBitsPerSecond: 5000000 // 5 Mbps para buena calidad
-    });
-
-    const chunks: Blob[] = [];
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) {
-        chunks.push(e.data);
-      }
-    };
-
-    // Iniciar grabación
-    mediaRecorder.start();
-    
-    onProgress({
-      stage: "capturing",
-      progress: 10,
-      totalFrames: photos.length + (includeSummary ? 1 : 0),
-      currentFrame: 0,
-      message: "Grabando video...",
-    });
-
-    // Usar duración dinámica proporcionada
+    // Configuración de timing
+    const fps = 30;
     const photoDuration = slideDuration;
     const summaryDuration = 2500; // 2.5 segundos para slide de resumen
-    const fps = 30;
     const framesPerPhoto = Math.floor((photoDuration / 1000) * fps);
     const framesPerSummary = Math.floor((summaryDuration / 1000) * fps);
-
     const totalSlides = photos.length + (includeSummary ? 1 : 0);
+    
+    console.log(`📊 Configuración: ${fps}fps, ${framesPerPhoto} frames/foto, ${totalSlides} slides totales`);
+    const expectedDuration = ((photos.length * framesPerPhoto + (includeSummary ? framesPerSummary : 0)) / fps).toFixed(1);
+    console.log(`⏰ Duración esperada: ${expectedDuration}s`);
 
-    // Generar frames para cada foto
+    // ========== FASE 1: PRE-CAPTURAR TODOS LOS SLIDES ==========
+    onProgress({
+      stage: "capturing",
+      progress: 5,
+      message: "Pre-capturando slides...",
+    });
+    
+    const slideCanvases: HTMLCanvasElement[] = [];
+    
+    // Pre-capturar fotos
     for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
-      const progressPercent = Math.round(((photoIndex + 1) / totalSlides) * 80) + 10;
+      const progressPercent = 5 + Math.round(((photoIndex + 1) / totalSlides) * 60);
       onProgress({
         stage: "capturing",
         progress: progressPercent,
         currentFrame: photoIndex + 1,
         totalFrames: totalSlides,
-        message: `Grabando foto ${photoIndex + 1} de ${photos.length}...`,
+        message: `Pre-capturando foto ${photoIndex + 1} de ${photos.length}...`,
       });
-      console.log(`📸 Preparando slide ${photoIndex + 1}/${photos.length} (esperando assets)...`);
+      console.log(`📸 Pre-capturando slide ${photoIndex + 1}/${photos.length}...`);
 
       // Actualizar el DOM con la foto actual
       await onPhotoChange(photoIndex);
@@ -987,7 +962,7 @@ export const generateReelVideoMP4 = async (
           }
           
           frameCanvas = capturedCanvas;
-          console.log('🖼️ Capturado', frameCanvas.width, 'x', frameCanvas.height);
+          console.log(`✅ Slide ${photoIndex + 1} pre-capturado: ${frameCanvas.width}x${frameCanvas.height}`);
         } catch (error) {
           if (retryCount === 0 && error instanceof Error && 
               (error.message.includes("tainted") || error.message.includes("cross-origin"))) {
@@ -1011,7 +986,6 @@ export const generateReelVideoMP4 = async (
       // Si todos los reintentos fallaron, fallback a FFmpeg
       if (!frameCanvas || isCanvasLikelyBlack(frameCanvas)) {
         console.error('❌ No se pudo capturar frame válido, activando fallback FFmpeg...');
-        console.log('🍎 Fallback FFmpeg frames activado');
         return generateReelVideoMP4_FFmpegFrames(
           photos,
           elementId,
@@ -1022,24 +996,19 @@ export const generateReelVideoMP4 = async (
         );
       }
       
-      // Dibujar este frame múltiples veces para mantener la duración
-      for (let frameNum = 0; frameNum < framesPerPhoto; frameNum++) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(frameCanvas, 0, 0, canvas.width, canvas.height);
-        await new Promise(resolve => setTimeout(resolve, 1000 / fps));
-      }
+      slideCanvases.push(frameCanvas);
     }
 
-    // Generar frames para el slide de resumen si está habilitado
+    // Pre-capturar slide de resumen si está habilitado
     if (includeSummary) {
       onProgress({
         stage: "capturing",
-        progress: 95,
+        progress: 65,
         currentFrame: totalSlides,
         totalFrames: totalSlides,
-        message: 'Grabando slide de resumen...',
+        message: 'Pre-capturando slide de resumen...',
       });
-      console.log('📊 Preparando slide de resumen (esperando assets)...');
+      console.log('📊 Pre-capturando slide de resumen...');
 
       // Actualizar el DOM para mostrar el slide de resumen
       await onPhotoChange(photos.length);
@@ -1064,7 +1033,7 @@ export const generateReelVideoMP4 = async (
           }
           
           summaryCanvas = capturedCanvas;
-          console.log('🖼️ Frame resumen capturado');
+          console.log('✅ Slide de resumen pre-capturado');
         } catch (error) {
           if (retryCount === 0 && error instanceof Error && 
               (error.message.includes("tainted") || error.message.includes("cross-origin"))) {
@@ -1087,7 +1056,6 @@ export const generateReelVideoMP4 = async (
 
       if (!summaryCanvas || isCanvasLikelyBlack(summaryCanvas)) {
         console.error('❌ No se pudo capturar slide de resumen, activando fallback FFmpeg...');
-        console.log('🍎 Fallback FFmpeg frames activado');
         return generateReelVideoMP4_FFmpegFrames(
           photos,
           elementId,
@@ -1097,19 +1065,90 @@ export const generateReelVideoMP4 = async (
           slideDuration
         );
       }
+      
+      slideCanvases.push(summaryCanvas);
+    }
 
-      // Dibujar el slide de resumen durante ~2.5 segundos
+    console.log(`✅ Pre-captura completa: ${slideCanvases.length} slides listos`);
+
+    // ========== FASE 2: INICIAR MEDIARECORDER Y REPRODUCIR ==========
+    onProgress({
+      stage: "encoding",
+      progress: 70,
+      message: "Generando video a partir de frames...",
+    });
+
+    // Crear canvas para salida
+    const outputCanvas = document.createElement('canvas');
+    outputCanvas.width = 1080;
+    outputCanvas.height = 1920;
+    const ctx = outputCanvas.getContext('2d', { 
+      alpha: false,
+      desynchronized: true 
+    });
+    
+    if (!ctx) throw new Error("No se pudo crear contexto de canvas");
+
+    // Configurar MediaRecorder
+    const stream = outputCanvas.captureStream(fps);
+    const mimeType = getSupportedMimeType();
+    const mediaRecorder = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond: 5000000 // 5 Mbps para buena calidad
+    });
+
+    const chunks: Blob[] = [];
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        chunks.push(e.data);
+      }
+    };
+
+    // Iniciar grabación DESPUÉS de tener todos los frames
+    console.log('🎥 Iniciando MediaRecorder...');
+    mediaRecorder.start();
+
+    // Reproducir fotos pre-capturadas
+    for (let slideIndex = 0; slideIndex < photos.length; slideIndex++) {
+      const slideCanvas = slideCanvases[slideIndex];
+      const framesForThisSlide = framesPerPhoto;
+      
+      console.log(`▶️ Reproduciendo slide ${slideIndex + 1}: ${framesForThisSlide} frames a ${fps}fps = ${(framesForThisSlide/fps).toFixed(1)}s`);
+      
+      for (let frameNum = 0; frameNum < framesForThisSlide; frameNum++) {
+        ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+        ctx.drawImage(slideCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
+        await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+      }
+      
+      const progressPercent = 70 + Math.round(((slideIndex + 1) / totalSlides) * 25);
+      onProgress({
+        stage: "encoding",
+        progress: progressPercent,
+        currentFrame: slideIndex + 1,
+        totalFrames: totalSlides,
+        message: `Generando video: ${slideIndex + 1}/${totalSlides} slides...`,
+      });
+    }
+
+    // Reproducir slide de resumen pre-capturado
+    if (includeSummary && slideCanvases.length > photos.length) {
+      const summaryCanvas = slideCanvases[photos.length];
+      console.log(`▶️ Reproduciendo resumen: ${framesPerSummary} frames a ${fps}fps = ${(framesPerSummary/fps).toFixed(1)}s`);
+      
       for (let frameNum = 0; frameNum < framesPerSummary; frameNum++) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(summaryCanvas, 0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+        ctx.drawImage(summaryCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
         await new Promise(resolve => setTimeout(resolve, 1000 / fps));
       }
     }
 
+    console.log('✅ Reproducción completa, finalizando grabación...');
+
     // Finalizar grabación
     onProgress({
       stage: "encoding",
-      progress: 95,
+      progress: 98,
       message: "Finalizando video...",
     });
 
@@ -1117,6 +1156,10 @@ export const generateReelVideoMP4 = async (
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunks, { type: mimeType });
         const totalTime = Math.round((Date.now() - startTime) / 1000);
+        const actualDuration = (blob.size / (5000000 / 8)).toFixed(1); // Estimado basado en bitrate
+        
+        console.log(`✅ Video generado: ${blob.size} bytes, tiempo de proceso: ${totalTime}s`);
+        console.log(`📊 Duración esperada: ${expectedDuration}s, duración real: ~${actualDuration}s`);
         
         onProgress({
           stage: "complete",
