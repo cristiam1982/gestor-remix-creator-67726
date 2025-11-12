@@ -184,7 +184,14 @@ export const ReelFrame = ({
       >
         {/* Subtítulo sobre el precio */}
         {visualLayers.showBadge && propertyData.subtitulos?.[photoIndex] && (
-          <div className="w-full flex justify-center" style={{ marginBottom: mode === 'capture' ? '33px' : '12px' }}>
+          <div 
+            style={{ 
+              width: '100%',
+              display: 'flex', 
+              justifyContent: 'center',
+              marginBottom: mode === 'capture' ? '33px' : '12px' 
+            }}
+          >
             <div 
               className="max-w-[80%]"
               style={{
@@ -197,18 +204,22 @@ export const ReelFrame = ({
                   : '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                 border: mode === 'capture' 
                   ? '3px solid rgba(156, 163, 175, 0.8)'
-                  : '2px solid rgba(156, 163, 175, 0.6)'
+                  : '2px solid rgba(156, 163, 175, 0.6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               <p 
-                className="text-center leading-tight"
                 style={{ 
                   color: '#1F2937',
                   fontSize: mode === 'capture' 
                     ? `${(parseFloat(template.subtitleStyle.textSize.match(/\d+/)?.[0] || '12') * textStyle.badgeScale * 1.3)}px`
                     : `calc(${template.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})`,
                   fontWeight: 700,
-                  textShadow: 'none'
+                  textShadow: 'none',
+                  textAlign: 'center',
+                  lineHeight: 1.25
                 }}
               >
                 {propertyData.subtitulos[photoIndex]}
