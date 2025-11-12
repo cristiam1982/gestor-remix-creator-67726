@@ -173,8 +173,11 @@ export const ReelSummarySlide = ({
         <div style={{ display: 'flex', flexDirection: 'column', gap: `${8 * captureScale}px`, marginBottom: `${16 * captureScale}px` }}>
           {/* Tipo de inmueble */}
           <h2 
-            className="font-bold text-white drop-shadow-2xl"
-            style={{ fontSize: `${20 * captureScale}px` }}
+            className="font-bold text-white"
+            style={{ 
+              fontSize: `${20 * captureScale}px`,
+              textShadow: '0 2px 4px rgba(0,0,0,0.4)'
+            }}
           >
             {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
           </h2>
@@ -182,8 +185,11 @@ export const ReelSummarySlide = ({
           {/* Ubicación */}
           {propertyData.ubicacion && (
             <p 
-              className="font-semibold text-white drop-shadow-xl"
-              style={{ fontSize: `${16 * captureScale}px` }}
+              className="font-semibold text-white"
+              style={{ 
+                fontSize: `${16 * captureScale}px`,
+                textShadow: '0 1px 3px rgba(0,0,0,0.3)'
+              }}
             >
               📍 {propertyData.ubicacion}
             </p>
@@ -202,11 +208,11 @@ export const ReelSummarySlide = ({
               }}
             >
               <p 
-                className="font-black drop-shadow-2xl"
+                className="font-black"
                 style={{ 
                   fontSize: `${20 * captureScale}px`,
                   color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-                  textShadow: '0 3px 10px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,1)' 
+                  textShadow: '0 2px 4px rgba(0,0,0,0.3)' 
                 }}
               >
                 💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
@@ -232,7 +238,7 @@ export const ReelSummarySlide = ({
                   backgroundColor: hexToRgba(brand, 0.88),
                   border: `${1.5 * captureScale}px solid rgba(255,255,255,0.2)`,
                   color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-                  textShadow: '0 2px 6px rgba(0,0,0,0.85)'
+                  textShadow: '0 1px 3px rgba(0,0,0,0.3)'
                 }}
               >
                 {car.icon} {car.text}
@@ -257,7 +263,7 @@ export const ReelSummarySlide = ({
               fontSize: `${16 * captureScale}px`,
               marginBottom: `${4 * captureScale}px`,
               color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-              textShadow: '0 2px 6px rgba(0,0,0,0.8)' 
+              textShadow: '0 1px 3px rgba(0,0,0,0.3)' 
             }}
           >
             📱 Agenda tu visita
@@ -266,7 +272,7 @@ export const ReelSummarySlide = ({
             style={{ 
               fontSize: `${16 * captureScale}px`,
               color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-              textShadow: '0 2px 6px rgba(0,0,0,0.8)' 
+              textShadow: '0 1px 3px rgba(0,0,0,0.3)' 
             }}
           >
             {customPhone || aliadoConfig.whatsapp}
@@ -280,7 +286,7 @@ export const ReelSummarySlide = ({
             fontSize: `${14 * captureScale}px`,
             marginTop: `${16 * captureScale}px`,
             color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-            textShadow: '0 2px 8px rgba(0,0,0,0.9)' 
+            textShadow: '0 1px 3px rgba(0,0,0,0.3)' 
           }}
         >
           {customHashtag || `#TuNuevoHogarEn${aliadoConfig.ciudad.charAt(0).toUpperCase() + aliadoConfig.ciudad.slice(1)}`} 🏡

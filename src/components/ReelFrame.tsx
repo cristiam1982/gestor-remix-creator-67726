@@ -193,8 +193,8 @@ export const ReelFrame = ({
             }}
           >
             <div 
-              className="max-w-[80%]"
               style={{
+                maxWidth: '80%',
                 backgroundColor: '#FFFFFF',
                 padding: mode === 'capture' ? '16.5px 44px' : '6px 16px',
                 borderRadius: textStyle.badgeClass.includes('rounded-full') ? '9999px' : 
