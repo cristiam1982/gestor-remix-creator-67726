@@ -153,11 +153,13 @@ export const ReelFrame = ({
       {/* Logo del aliado */}
       {visualLayers.showAllyLogo && (
         <div 
-          className={`absolute z-20 ${logoStyle.positionClass} ${mode === 'preview' ? `${logoStyle.animationClass} ${logoStyle.entranceAnimationClass}` : ''}`}
+          className={`absolute z-20 ${logoStyle.positionClass.replace('top-6', '').replace('right-6', '')} ${mode === 'preview' ? `${logoStyle.animationClass} ${logoStyle.entranceAnimationClass}` : ''}`}
           style={{ 
             opacity: logoStyle.opacity,
+            top: mode === 'capture' ? '48px' : '24px',
+            right: mode === 'capture' ? '48px' : '24px',
             transform: mode === 'capture' ? `scale(${captureScale})` : 'none',
-            transformOrigin: logoStyle.positionClass.includes('top') ? 'top left' : 'bottom left',
+            transformOrigin: 'top right',
             ...(mode === 'preview' ? logoStyle.animationStyle : {})
           }}
         >
@@ -184,12 +186,18 @@ export const ReelFrame = ({
         {visualLayers.showBadge && propertyData.subtitulos?.[photoIndex] && (
           <div className="w-full flex justify-center" style={{ marginBottom: mode === 'capture' ? '33px' : '12px' }}>
             <div 
-              className="shadow-xl max-w-[80%] border-2 border-gray-400"
+              className="max-w-[80%]"
               style={{
                 backgroundColor: '#FFFFFF',
                 padding: mode === 'capture' ? '16.5px 44px' : '6px 16px',
                 borderRadius: textStyle.badgeClass.includes('rounded-full') ? '9999px' : 
-                             textStyle.badgeClass.includes('rounded-xl') ? (mode === 'capture' ? '33px' : '12px') : '0'
+                             textStyle.badgeClass.includes('rounded-xl') ? (mode === 'capture' ? '33px' : '12px') : '0',
+                boxShadow: mode === 'capture' 
+                  ? '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)'
+                  : '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                border: mode === 'capture' 
+                  ? '3px solid rgba(156, 163, 175, 0.8)'
+                  : '2px solid rgba(156, 163, 175, 0.6)'
               }}
             >
               <p 
@@ -199,7 +207,8 @@ export const ReelFrame = ({
                   fontSize: mode === 'capture' 
                     ? `${(parseFloat(template.subtitleStyle.textSize.match(/\d+/)?.[0] || '12') * textStyle.badgeScale * 1.3)}px`
                     : `calc(${template.subtitleStyle.textSize.match(/\d+/)?.[0] || 12}px * ${textStyle.badgeScale})`,
-                  fontWeight: 700
+                  fontWeight: 700,
+                  textShadow: 'none'
                 }}
               >
                 {propertyData.subtitulos[photoIndex]}
@@ -219,7 +228,7 @@ export const ReelFrame = ({
               color: '#ffffff',
               transform: `scale(${textStyle.scale})`,
               transformOrigin: 'left center',
-              padding: mode === 'capture' ? '16.5px 44px' : '6px 16px',
+              padding: mode === 'capture' ? '11px 44px' : '5px 16px',
               gap: mode === 'capture' ? '5.5px' : '2px',
               marginBottom: mode === 'capture' ? '22px' : '8px',
               borderRadius: template.priceStyle.className.includes('rounded-full') ? '9999px' :
