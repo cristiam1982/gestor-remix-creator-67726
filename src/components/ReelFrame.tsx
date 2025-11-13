@@ -199,16 +199,6 @@ export const ReelFrame = ({
                 padding: mode === 'capture' ? '16px 44px' : '6px 16px',
                 borderRadius: textStyle.badgeClass.includes('rounded-full') ? '9999px' : 
                              textStyle.badgeClass.includes('rounded-xl') ? (mode === 'capture' ? '33px' : '12px') : '0',
-                boxShadow: [
-                  // Anillo-borde (entero, sin costuras)
-                  mode === 'capture'
-                    ? '0 0 0 3px rgba(156,163,175,0.8)'
-                    : '0 0 0 2px rgba(156,163,175,0.6)',
-                  // Sombra suave única
-                  mode === 'capture'
-                    ? '0 12px 24px rgba(0,0,0,0.18)'
-                    : '0 8px 16px rgba(0,0,0,0.12)'
-                ].join(', '),
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

@@ -163,8 +163,7 @@ export const ReelSummarySlide = ({
           style={{
             width: `${140 * captureScale}px`,
             height: `${140 * captureScale}px`,
-            padding: `${10 * captureScale}px`,
-            boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+            padding: `${10 * captureScale}px`
           }}
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
@@ -176,8 +175,7 @@ export const ReelSummarySlide = ({
           <h2 
             className="font-bold text-white"
             style={{ 
-              fontSize: `${20 * captureScale}px`,
-              textShadow: '0 2px 4px rgba(0,0,0,0.4)'
+              fontSize: `${20 * captureScale}px`
             }}
           >
             {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
@@ -188,8 +186,7 @@ export const ReelSummarySlide = ({
             <p 
               className="font-semibold text-white"
               style={{ 
-                fontSize: `${16 * captureScale}px`,
-                textShadow: '0 1px 3px rgba(0,0,0,0.3)'
+                fontSize: `${16 * captureScale}px`
               }}
             >
               📍 {propertyData.ubicacion}
@@ -204,16 +201,14 @@ export const ReelSummarySlide = ({
                 opacity: 0.95,
                 border: `${2 * captureScale}px solid rgba(255,255,255,0.25)`,
                 borderRadius: `${12 * captureScale}px`,
-                padding: `${8 * captureScale}px ${20 * captureScale}px`,
-                boxShadow: '0 4px 6px rgba(0,0,0,0.15)'
+                padding: `${8 * captureScale}px ${20 * captureScale}px`
               }}
             >
               <p 
                 className="font-black"
                 style={{ 
                   fontSize: `${20 * captureScale}px`,
-                  color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-                  textShadow: '0 2px 4px rgba(0,0,0,0.3)' 
+                  color: backgroundStyle === 'solid' ? textColor : '#FFFFFF'
                 }}
               >
                 💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
@@ -238,9 +233,7 @@ export const ReelSummarySlide = ({
                   fontSize: `${16 * captureScale}px`,
                   backgroundColor: hexToRgba(brand, 0.88),
                   border: `${1.5 * captureScale}px solid rgba(255,255,255,0.2)`,
-                  color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-                  textShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  color: backgroundStyle === 'solid' ? textColor : '#FFFFFF'
                 }}
               >
                 {car.icon} {car.text}
@@ -255,8 +248,7 @@ export const ReelSummarySlide = ({
             padding: `${12 * captureScale}px ${24 * captureScale}px`,
             borderRadius: `${12 * captureScale}px`,
             backgroundColor: hexToRgba(brand, 0.94),
-            border: `${2 * captureScale}px solid rgba(255,255,255,0.3)`,
-            boxShadow: '0 4px 6px rgba(0,0,0,0.15)'
+            border: `${2 * captureScale}px solid rgba(255,255,255,0.3)`
           }}
         >
           <p 
@@ -264,8 +256,7 @@ export const ReelSummarySlide = ({
             style={{ 
               fontSize: `${16 * captureScale}px`,
               marginBottom: `${4 * captureScale}px`,
-              color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-              textShadow: '0 1px 3px rgba(0,0,0,0.3)' 
+              color: backgroundStyle === 'solid' ? textColor : '#FFFFFF'
             }}
           >
             📱 Agenda tu visita
@@ -273,8 +264,7 @@ export const ReelSummarySlide = ({
           <p 
             style={{ 
               fontSize: `${16 * captureScale}px`,
-              color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-              textShadow: '0 1px 3px rgba(0,0,0,0.3)' 
+              color: backgroundStyle === 'solid' ? textColor : '#FFFFFF'
             }}
           >
             {customPhone || aliadoConfig.whatsapp}
@@ -287,8 +277,7 @@ export const ReelSummarySlide = ({
           style={{ 
             fontSize: `${14 * captureScale}px`,
             marginTop: `${16 * captureScale}px`,
-            color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
-            textShadow: '0 1px 3px rgba(0,0,0,0.3)' 
+            color: backgroundStyle === 'solid' ? textColor : '#FFFFFF'
           }}
         >
           {customHashtag || `#TuNuevoHogarEn${aliadoConfig.ciudad.charAt(0).toUpperCase() + aliadoConfig.ciudad.slice(1)}`} 🏡
@@ -302,8 +291,7 @@ export const ReelSummarySlide = ({
           className="mx-auto object-contain"
           style={{
             height: `${35 * captureScale}px`,
-            marginTop: `${56 * captureScale}px`,
-            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+            marginTop: `${56 * captureScale}px`
           }}
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
