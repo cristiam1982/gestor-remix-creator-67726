@@ -160,13 +160,16 @@ export const ReelFrame = ({
       {/* Logo del aliado */}
       {visualLayers.showAllyLogo && (
         <div 
-          className={`absolute z-20 ${logoStyle.positionClass.replace('top-6', '').replace('right-6', '')} ${mode === 'preview' ? `${logoStyle.animationClass} ${logoStyle.entranceAnimationClass}` : ''}`}
+          className={`absolute z-20 ${mode === 'preview' ? `${logoStyle.animationClass} ${logoStyle.entranceAnimationClass}` : ''}`}
           style={{ 
             opacity: logoStyle.opacity,
             top: mode === 'capture' ? '48px' : '24px',
-            right: mode === 'capture' ? '48px' : '24px',
+            ...(logoSettings.position === 'top-left' 
+              ? { left: mode === 'capture' ? '48px' : '24px' }
+              : { right: mode === 'capture' ? '48px' : '24px' }
+            ),
             transform: mode === 'capture' ? `scale(${captureScale})` : 'none',
-            transformOrigin: 'top right',
+            transformOrigin: logoSettings.position === 'top-left' ? 'top left' : 'top right',
             ...(mode === 'preview' ? logoStyle.animationStyle : {})
           }}
         >
