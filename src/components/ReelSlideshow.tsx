@@ -127,13 +127,16 @@ const SortablePhoto = ({ id, src, index, isActive, onClick }: SortablePhotoProps
 };
 
 // Función helper para obtener el logo apropiado según el fondo
-const getLogoUrl = (backgroundStyle: LogoSettings['background']): string => {
-  // Si el fondo es 'none' (flotante), usar logo transparente
+const getLogoUrl = (
+  backgroundStyle: LogoSettings['background'],
+  config: AliadoConfig
+): string => {
+  // Si el fondo es 'none', usar logo transparente si está disponible
   if (backgroundStyle === 'none') {
-    return ALIADO_CONFIG.logoTransparent;
+    return config.logoTransparent || config.logo;
   }
-  // Para otros fondos, usar logo con fondo
-  return ALIADO_CONFIG.logo;
+  // Para cualquier otro fondo, usar logo con fondo blanco
+  return config.logo;
 };
 
 export const ReelSlideshow = ({ 
@@ -1394,7 +1397,7 @@ export const ReelSlideshow = ({
                   style={{ opacity: logoStyle.opacity }}
                 >
                   <img
-                    src={getLogoUrl(logoSettings.background)}
+                    src={getLogoUrl(logoSettings.background, aliadoConfig)}
                     alt={aliadoConfig.nombre}
                     className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
                     style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
@@ -1426,11 +1429,11 @@ export const ReelSlideshow = ({
 
                     {visualLayers.showPrice && precio && (
                       <div 
-                        className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 shadow-md mb-2 ${currentTemplate.priceStyle.className}`}
+                        className={`relative z-40 inline-flex flex-col gap-0.5 px-5 py-2.5 mb-2 ${currentTemplate.priceStyle.className}`}
                         style={{ 
                           backgroundColor: aliadoConfig.colorPrimario,
-                          opacity: 0.9,
-                          border: '1px solid rgba(255,255,255,0.2)',
+                          opacity: 1,
+                          border: '2px solid rgba(255,255,255,0.5)',
                           color: '#ffffff',
                           transform: `scale(${textStyle.scale})`
                         }}

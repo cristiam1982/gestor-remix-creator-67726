@@ -235,11 +235,11 @@ export const ReelFrame = ({
         {/* Precio */}
         {visualLayers.showPrice && precio && (
           <div 
-            className={`relative z-40 inline-flex flex-col shadow-md`}
+            className={`relative z-40 inline-flex flex-col`}
             style={{ 
               backgroundColor: aliadoConfig.colorPrimario,
-              opacity: 0.9,
-              border: '1px solid rgba(255,255,255,0.2)',
+              opacity: 1,
+              border: '2px solid rgba(255,255,255,0.5)',
               color: '#ffffff',
               transform: `scale(${textStyle.scale})`,
               transformOrigin: 'left center',
