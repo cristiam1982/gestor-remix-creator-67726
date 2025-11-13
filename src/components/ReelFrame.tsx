@@ -29,9 +29,16 @@ interface ReelFrameProps {
 }
 
 // Función helper para obtener el logo apropiado según el fondo
-const getLogoUrl = (backgroundStyle: LogoSettings['background']): string => {
-  // Siempre usar logo con fondo blanco
-  return ALIADO_CONFIG.logo;
+const getLogoUrl = (
+  backgroundStyle: LogoSettings['background'],
+  config: AliadoConfig
+): string => {
+  // Si el fondo es 'none', usar logo transparente si está disponible
+  if (backgroundStyle === 'none') {
+    return config.logoTransparent || config.logo;
+  }
+  // Para cualquier otro fondo, usar logo con fondo blanco
+  return config.logo;
 };
 
 export const ReelFrame = ({
@@ -164,7 +171,7 @@ export const ReelFrame = ({
           }}
         >
           <img
-            src={getLogoUrl(logoSettings.background)}
+            src={getLogoUrl(logoSettings.background, aliadoConfig)}
             alt={aliadoConfig.nombre}
             className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass}`}
             style={{ width: logoStyle.size, height: logoStyle.size }}
