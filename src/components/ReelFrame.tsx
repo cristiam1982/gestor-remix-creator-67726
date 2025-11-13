@@ -160,7 +160,7 @@ export const ReelFrame = ({
       {/* Logo del aliado */}
       {visualLayers.showAllyLogo && (
         <div 
-          className={`absolute z-20 ${mode === 'preview' ? `${logoStyle.animationClass} ${logoStyle.entranceAnimationClass}` : ''}`}
+          className={`absolute z-20 ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass}`}
           style={{ 
             opacity: logoStyle.opacity,
             top: mode === 'capture' ? '48px' : '24px',
@@ -170,7 +170,7 @@ export const ReelFrame = ({
             ),
             transform: mode === 'capture' ? `scale(${captureScale})` : 'none',
             transformOrigin: logoSettings.position === 'top-left' ? 'top left' : 'top right',
-            ...(mode === 'preview' ? logoStyle.animationStyle : {})
+            ...logoStyle.animationStyle
           }}
         >
           <img
@@ -238,7 +238,7 @@ export const ReelFrame = ({
         {/* Precio */}
         {visualLayers.showPrice && precio && (
           <div 
-            className={`relative z-40 inline-flex flex-col`}
+            className={`relative z-40 inline-flex flex-col ${template.priceStyle.className}`}
             style={{ 
               backgroundColor: aliadoConfig.colorPrimario,
               opacity: 1,
@@ -246,17 +246,14 @@ export const ReelFrame = ({
               color: '#ffffff',
               transform: `scale(${textStyle.scale})`,
               transformOrigin: 'left center',
-              padding: mode === 'capture' ? '12px 44px' : '5px 16px',
-              gap: mode === 'capture' ? '5.5px' : '2px',
-              marginBottom: mode === 'capture' ? '22px' : '8px',
-              borderRadius: template.priceStyle.className.includes('rounded-full') ? '9999px' :
-                           template.priceStyle.className.includes('rounded-2xl') ? (mode === 'capture' ? '44px' : '16px') :
-                           template.priceStyle.className.includes('rounded-xl') ? (mode === 'capture' ? '33px' : '12px') : '0'
+              padding: mode === 'capture' ? '20px 40px' : '10px 20px',
+              gap: mode === 'capture' ? '4px' : '2px',
+              marginBottom: mode === 'capture' ? '16px' : '8px'
             }}
           >
             <span 
               style={{ 
-                fontSize: mode === 'capture' ? '28px' : '10px',
+                fontSize: mode === 'capture' ? '20px' : '10px',
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
