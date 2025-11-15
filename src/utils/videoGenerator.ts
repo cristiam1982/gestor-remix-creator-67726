@@ -1525,18 +1525,21 @@ export const generateReelVideoFromCanvas = async (
             message: `Procesando foto ${i + 1}/${photos.length}...`
           });
 
-          await drawSlide(ctx, {
-            photoUrl: photos[i],
-            propertyData,
-            aliadoConfig,
-            logoSettings,
-            textComposition,
-            visualLayers,
-            photoIndex: i
-          });
-
-          // Mantener el frame por la duración especificada
+          // Renderizar cada frame de esta foto
           for (let f = 0; f < framesPerSlide; f++) {
+            const elapsedTime = frameCount / fps; // Tiempo transcurrido en segundos
+            
+            await drawSlide(ctx, {
+              photoUrl: photos[i],
+              propertyData,
+              aliadoConfig,
+              logoSettings,
+              textComposition,
+              visualLayers,
+              photoIndex: i,
+              elapsedTime // Pasar tiempo para animación del logo
+            });
+
             await waitForNextFrame();
             frameCount++;
           }
@@ -1618,6 +1621,9 @@ export const generateReelVideoFromCanvas = async (
         message: `Capturando foto ${i + 1}/${photos.length}...`
       });
 
+      // Calcular tiempo transcurrido para esta foto (inicio del slide)
+      const elapsedTime = (i * slideDuration) / 1000; // Convertir ms a segundos
+
       await drawSlide(ctx, {
         photoUrl: photos[i],
         propertyData,
@@ -1625,7 +1631,8 @@ export const generateReelVideoFromCanvas = async (
         logoSettings,
         textComposition,
         visualLayers,
-        photoIndex: i
+        photoIndex: i,
+        elapsedTime // Pasar tiempo para animación del logo
       });
 
       // Capturar frame como PNG
