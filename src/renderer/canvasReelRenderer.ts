@@ -321,9 +321,7 @@ export const drawSlide = async (
   
   // 3. Dibujar logo del aliado
   if (visualLayers.showAllyLogo) {
-    const logoUrl = logoSettings.background === 'none' 
-      ? (aliadoConfig.logoTransparent || aliadoConfig.logo)
-      : aliadoConfig.logo;
+    const logoUrl = aliadoConfig.logo; // Siempre logo regular
     
     await drawLogoWithBackground(ctx, logoUrl, logoSettings, aliadoConfig, REEL_WIDTH, REEL_HEIGHT);
   }
@@ -657,7 +655,7 @@ export const drawSummarySlide = async (
   ctx.restore();
   
   // 3. Logo del aliado (centrado)
-  const logoUrl = aliadoConfig.logoTransparent || aliadoConfig.logo;
+  const logoUrl = aliadoConfig.logo; // Siempre logo regular
   const logoImg = await loadImage(logoUrl).catch(() => null);
   if (logoImg) {
     const logoSize = 180;

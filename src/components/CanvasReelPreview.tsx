@@ -49,9 +49,7 @@ export const CanvasReelPreview = ({
         
         await preloadImages(
           propertyData.fotos,
-          logoSettings.background === 'none' 
-            ? (aliadoConfig.logoTransparent || aliadoConfig.logo)
-            : aliadoConfig.logo,
+          aliadoConfig.logo, // Siempre logo regular
           true
         );
         setIsLoading(false);
@@ -63,7 +61,7 @@ export const CanvasReelPreview = ({
     };
 
     loadAllImages();
-  }, [propertyData.fotos, aliadoConfig.logo, aliadoConfig.logoTransparent, logoSettings.background]);
+  }, [propertyData.fotos, aliadoConfig.logo, logoSettings.background]);
 
   // Redibujar canvas cuando cambian los parámetros
   useEffect(() => {
