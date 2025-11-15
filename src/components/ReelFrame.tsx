@@ -28,16 +28,12 @@ interface ReelFrameProps {
   customPhone?: string;
 }
 
-// Función helper para obtener el logo apropiado según el fondo
+// Función helper para obtener el logo apropiado
 const getLogoUrl = (
   backgroundStyle: LogoSettings['background'],
   config: AliadoConfig
 ): string => {
-  // Si el fondo es 'none', usar logo transparente si está disponible
-  if (backgroundStyle === 'none') {
-    return config.logoTransparent || config.logo;
-  }
-  // Para cualquier otro fondo, usar logo con fondo blanco
+  // Siempre usar logo regular (con fondo blanco)
   return config.logo;
 };
 

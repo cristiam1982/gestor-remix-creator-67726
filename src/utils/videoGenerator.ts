@@ -1450,9 +1450,7 @@ export const generateReelVideoFromCanvas = async (
   // Pre-cargar todas las imágenes
   await preloadImages(
     photos,
-    logoSettings.background === 'none' 
-      ? (aliadoConfig.logoTransparent || aliadoConfig.logo)
-      : aliadoConfig.logo,
+    aliadoConfig.logo, // Siempre logo regular
     true
   );
 
