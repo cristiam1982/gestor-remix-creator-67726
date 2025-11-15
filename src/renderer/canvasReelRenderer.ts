@@ -207,6 +207,35 @@ const formatPrice = (value?: string): string => {
   }).format(num);
 };
 
+/**
+ * Pre-carga las fuentes necesarias para garantizar renderizado consistente
+ */
+const preloadFonts = async (): Promise<void> => {
+  if (!document.fonts || !document.fonts.load) {
+    console.warn('Font loading API no disponible');
+    return;
+  }
+  
+  try {
+    await Promise.all([
+      // Poppins (usado en precios y badges)
+      document.fonts.load('900 48px Poppins'),
+      document.fonts.load('700 24px Poppins'),
+      document.fonts.load('600 20px Poppins'),
+      document.fonts.load('600 18px Poppins'),
+      
+      // Inter (tipografía secundaria)
+      document.fonts.load('900 48px Inter'),
+      document.fonts.load('700 24px Inter'),
+      document.fonts.load('600 20px Inter')
+    ]);
+    
+    console.log('✅ Fuentes pre-cargadas correctamente');
+  } catch (error) {
+    console.warn('⚠️ Error pre-cargando fuentes:', error);
+  }
+};
+
 // Dibujar logo con fondo
 const drawLogoWithBackground = async (
   ctx: CanvasRenderingContext2D,
@@ -214,11 +243,21 @@ const drawLogoWithBackground = async (
   settings: LogoSettings,
   aliadoConfig: AliadoConfig,
   width: number,
-  height: number
+  height: number,
+  elapsedTime?: number // Tiempo transcurrido para animación
 ) => {
   const sizes = { small: 80, medium: 90, large: 100 };
   const logoSize = sizes[settings.size];
   const margin = 20;
+  
+  // Calcular opacidad con fade-in durante los primeros 0.6 segundos
+  let animatedOpacity = settings.opacity / 100;
+  if (elapsedTime !== undefined && elapsedTime < 0.6) {
+    // Fade-in suave usando ease-out
+    const progress = elapsedTime / 0.6;
+    const easedProgress = 1 - Math.pow(1 - progress, 3); // cubic ease-out
+    animatedOpacity *= easedProgress;
+  }
   
   // Posición
   const x = settings.position === 'top-left' ? margin : width - logoSize - margin;
@@ -261,9 +300,9 @@ const drawLogoWithBackground = async (
     ctx.restore();
   }
   
-  // Dibujar logo con opacidad
+  // Dibujar logo con opacidad animada
   ctx.save();
-  ctx.globalAlpha = settings.opacity / 100;
+  ctx.globalAlpha = animatedOpacity; // Usar opacidad animada
   
   // Clip para forma del logo
   const radius = settings.shape === 'square' ? 0 :
@@ -288,13 +327,17 @@ export const drawSlide = async (
     textComposition: TextCompositionSettings;
     visualLayers: VisualLayers;
     photoIndex: number;
+    elapsedTime?: number; // Tiempo transcurrido en segundos
   }
 ) => {
-  const { photoUrl, propertyData, aliadoConfig, logoSettings, textComposition, visualLayers, photoIndex } = options;
+  const { photoUrl, propertyData, aliadoConfig, logoSettings, textComposition, visualLayers, photoIndex, elapsedTime } = options;
   
   // Habilitar suavizado de alta calidad
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
+  
+  // Pre-cargar fuentes para garantizar renderizado consistente
+  await preloadFonts();
   
   // Limpiar canvas
   ctx.clearRect(0, 0, REEL_WIDTH, REEL_HEIGHT);
@@ -319,11 +362,11 @@ export const drawSlide = async (
     REEL_HEIGHT
   );
   
-  // 3. Dibujar logo del aliado
+  // 3. Dibujar logo del aliado con animación
   if (visualLayers.showAllyLogo) {
     const logoUrl = aliadoConfig.logo; // Siempre logo regular
     
-    await drawLogoWithBackground(ctx, logoUrl, logoSettings, aliadoConfig, REEL_WIDTH, REEL_HEIGHT);
+    await drawLogoWithBackground(ctx, logoUrl, logoSettings, aliadoConfig, REEL_WIDTH, REEL_HEIGHT, elapsedTime);
   }
   
   // 4. Calcular escala de texto
