@@ -1511,6 +1511,7 @@ export const generateReelVideoFromCanvas = async (
         mediaRecorder.start();
 
         let frameCount = 0;
+        const frameInterval = 1000 / fps; // Intervalo preciso en ms (33.33ms para 30fps)
         const totalFrames = photos.length * framesPerSlide + (includeSummary ? summaryFrames : 0);
 
         // Renderizar cada foto
@@ -1540,7 +1541,7 @@ export const generateReelVideoFromCanvas = async (
               elapsedTime // Pasar tiempo para animación del logo
             });
 
-            await waitForNextFrame();
+            await new Promise(resolve => setTimeout(resolve, frameInterval));
             frameCount++;
           }
         }
@@ -1568,7 +1569,7 @@ export const generateReelVideoFromCanvas = async (
               elapsedTime // Pasar tiempo para mantener logo visible
             });
 
-            await waitForNextFrame();
+            await new Promise(resolve => setTimeout(resolve, frameInterval));
             frameCount++;
           }
         }
