@@ -287,17 +287,42 @@ const calculateLogoEntranceTransform = (
     return { opacity: 1, scale: 1, translateX: 0, translateY: 0, rotation: 0 };
   }
 
-  // Solo fade-in simple y robusto
   const progress = Math.min(elapsedTime / entranceDuration, 1);
-  const fadeOpacity = easing.easeOut(progress);
   
-  return { 
-    opacity: fadeOpacity, 
-    scale: 1, 
-    translateX: 0, 
-    translateY: 0, 
-    rotation: 0 
-  };
+  switch (entranceAnimation) {
+    case 'fade-in':
+      // Fade simple y robusto
+      return { 
+        opacity: easing.easeOut(progress), 
+        scale: 1, 
+        translateX: 0, 
+        translateY: 0, 
+        rotation: 0 
+      };
+    
+    case 'slide-in':
+      // Desliza desde arriba con movimiento suave
+      return {
+        opacity: 1,
+        scale: 1,
+        translateX: 0,
+        translateY: -80 * (1 - easing.easeOut(progress)), // Desliza 80px desde arriba
+        rotation: 0
+      };
+    
+    case 'scale-fade':
+      // Crece desde 70% a 100% mientras aparece
+      return {
+        opacity: easing.easeOut(progress),
+        scale: 0.7 + (0.3 * easing.easeOut(progress)), // 0.7 → 1.0
+        translateX: 0,
+        translateY: 0,
+        rotation: 0
+      };
+    
+    default:
+      return { opacity: 1, scale: 1, translateX: 0, translateY: 0, rotation: 0 };
+  }
 };
 
 // Dibujar logo con fondo
