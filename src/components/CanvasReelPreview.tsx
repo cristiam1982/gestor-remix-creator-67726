@@ -96,7 +96,8 @@ export const CanvasReelPreview = ({
               logoSettings,
               textComposition,
               visualLayers,
-              photoIndex: currentPhotoIndex
+              photoIndex: currentPhotoIndex,
+              elapsedTime: 0 // Mostrar inicio del fade-in (logo casi transparente)
             });
           }
         }

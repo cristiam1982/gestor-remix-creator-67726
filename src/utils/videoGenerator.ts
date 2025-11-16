@@ -1555,16 +1555,19 @@ export const generateReelVideoFromCanvas = async (
             message: 'Generando slide final...'
           });
 
-          await drawSummarySlide(ctx, {
-            propertyData,
-            aliadoConfig,
-            logoSettings,
-            textComposition,
-            backgroundStyle: summaryBackgroundStyle,
-            photos
-          });
-
           for (let f = 0; f < summaryFrames; f++) {
+            const elapsedTime = frameCount / fps; // Tiempo global del video
+            
+            await drawSummarySlide(ctx, {
+              propertyData,
+              aliadoConfig,
+              logoSettings,
+              textComposition,
+              backgroundStyle: summaryBackgroundStyle,
+              photos,
+              elapsedTime // Pasar tiempo para mantener logo visible
+            });
+
             await waitForNextFrame();
             frameCount++;
           }

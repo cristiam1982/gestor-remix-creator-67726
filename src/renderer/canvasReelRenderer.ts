@@ -691,9 +691,10 @@ export const drawSummarySlide = async (
     textComposition: TextCompositionSettings;
     backgroundStyle: 'solid' | 'blur' | 'mosaic';
     photos: string[];
+    elapsedTime?: number;
   }
 ) => {
-  const { propertyData, aliadoConfig, logoSettings, textComposition, backgroundStyle, photos } = options;
+  const { propertyData, aliadoConfig, logoSettings, textComposition, backgroundStyle, photos, elapsedTime } = options;
   
   // Habilitar suavizado de alta calidad
   ctx.imageSmoothingEnabled = true;
@@ -777,7 +778,7 @@ export const drawSummarySlide = async (
   
   ctx.restore();
   
-  // 3. Logo del aliado (centrado)
+  // 3. Logo del aliado (centrado) con soporte para fade-in
   const logoUrl = aliadoConfig.logo; // Siempre logo regular
   const logoImg = await loadImage(logoUrl).catch(() => null);
   if (logoImg) {
@@ -786,6 +787,19 @@ export const drawSummarySlide = async (
     const logoY = 1300;
     
     ctx.save();
+    
+    // Aplicar fade-in si está configurado y hay elapsedTime
+    if (logoSettings.entranceAnimation === 'fade-in' && typeof elapsedTime === 'number') {
+      const transform = calculateLogoEntranceTransform(
+        elapsedTime,
+        logoSettings.entranceAnimation,
+        0.8 // Duración del fade-in
+      );
+      ctx.globalAlpha = transform.opacity * (logoSettings.opacity / 100);
+    } else {
+      ctx.globalAlpha = logoSettings.opacity / 100;
+    }
+    
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 20;
     ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
