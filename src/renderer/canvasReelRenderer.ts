@@ -287,65 +287,17 @@ const calculateLogoEntranceTransform = (
     return { opacity: 1, scale: 1, translateX: 0, translateY: 0, rotation: 0 };
   }
 
+  // Solo fade-in simple y robusto
   const progress = Math.min(elapsedTime / entranceDuration, 1);
-  const transform: LogoTransform = { opacity: 1, scale: 1, translateX: 0, translateY: 0, rotation: 0 };
-
-  switch (entranceAnimation) {
-    case 'fade-in':
-      transform.opacity = easing.easeOut(progress);
-      break;
-
-    case 'zoom-in':
-      const zoomProgress = easing.easeOut(progress);
-      transform.scale = 0.3 + 0.7 * zoomProgress;
-      transform.opacity = zoomProgress;
-      break;
-
-    case 'slide-in':
-      const slideProgress = easing.easeOut(progress);
-      transform.translateY = -30 * (1 - slideProgress);
-      transform.opacity = slideProgress;
-      break;
-
-    case 'bounce-in':
-      let bounceScale = 1;
-      if (progress < 0.5) {
-        bounceScale = 0.3 + 0.8 * easing.bounceOut(progress * 2);
-      } else if (progress < 0.7) {
-        bounceScale = 1.1 - 0.2 * ((progress - 0.5) / 0.2);
-      } else {
-        bounceScale = 0.9 + 0.1 * easing.easeOut((progress - 0.7) / 0.3);
-      }
-      transform.scale = bounceScale;
-      transform.opacity = progress < 0.1 ? progress * 10 : 1;
-      break;
-
-    case 'spin-in':
-      const spinProgress = easing.easeOut(progress);
-      transform.rotation = -360 * (1 - spinProgress);
-      transform.scale = 0.3 + 0.7 * spinProgress;
-      transform.opacity = spinProgress;
-      break;
-
-    case 'elastic':
-      let elasticScale = 1;
-      if (progress < 0.5) {
-        elasticScale = easing.elasticOut(progress * 2) * 1.2;
-      } else if (progress < 0.65) {
-        elasticScale = 1.2 - 0.15 * ((progress - 0.5) / 0.15);
-      } else if (progress < 0.85) {
-        elasticScale = 1.05 - 0.1 * ((progress - 0.65) / 0.2);
-      } else if (progress < 0.95) {
-        elasticScale = 0.95 + 0.03 * ((progress - 0.85) / 0.1);
-      } else {
-        elasticScale = 0.98 + 0.02 * easing.easeOut((progress - 0.95) / 0.05);
-      }
-      transform.scale = Math.max(0, elasticScale);
-      transform.opacity = progress < 0.1 ? progress * 10 : 1;
-      break;
-  }
-
-  return transform;
+  const fadeOpacity = easing.easeOut(progress);
+  
+  return { 
+    opacity: fadeOpacity, 
+    scale: 1, 
+    translateX: 0, 
+    translateY: 0, 
+    rotation: 0 
+  };
 };
 
 // Dibujar logo con fondo
