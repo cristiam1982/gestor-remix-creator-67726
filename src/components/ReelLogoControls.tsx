@@ -42,6 +42,8 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
   const entranceAnimations: Array<{ value: NonNullable<LogoSettings['entranceAnimation']>; icon: string; label: string }> = [
     { value: 'none', icon: '⏸️', label: 'Sin Entrada' },
     { value: 'fade-in', icon: '🌅', label: 'Fade In' },
+    { value: 'slide-in', icon: '📥', label: 'Slide In' },
+    { value: 'scale-fade', icon: '🎯', label: 'Scale + Fade' },
   ];
 
   return (
