@@ -236,6 +236,118 @@ const preloadFonts = async (): Promise<void> => {
   }
 };
 
+/**
+ * Funciones de easing para animaciones suaves
+ */
+const easing = {
+  easeOut: (t: number): number => 1 - Math.pow(1 - t, 3),
+  easeInOut: (t: number): number => t < 0.5 
+    ? 4 * t * t * t 
+    : 1 - Math.pow(-2 * t + 2, 3) / 2,
+  elasticOut: (t: number): number => {
+    if (t === 0 || t === 1) return t;
+    return Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * ((2 * Math.PI) / 3)) + 1;
+  },
+  bounceOut: (t: number): number => {
+    const n1 = 7.5625;
+    const d1 = 2.75;
+    if (t < 1 / d1) {
+      return n1 * t * t;
+    } else if (t < 2 / d1) {
+      return n1 * (t -= 1.5 / d1) * t + 0.75;
+    } else if (t < 2.5 / d1) {
+      return n1 * (t -= 2.25 / d1) * t + 0.9375;
+    } else {
+      return n1 * (t -= 2.625 / d1) * t + 0.984375;
+    }
+  }
+};
+
+/**
+ * Interfaz para transformaciones del logo
+ */
+interface LogoTransform {
+  opacity: number;
+  scale: number;
+  translateX: number;
+  translateY: number;
+  rotation: number;
+}
+
+/**
+ * Calcula las transformaciones de entrada del logo basadas en el tiempo transcurrido
+ */
+const calculateLogoEntranceTransform = (
+  elapsedTime: number,
+  entranceAnimation: LogoSettings['entranceAnimation'],
+  entranceDuration: number
+): LogoTransform => {
+  // Si no hay animación o ya terminó
+  if (!entranceAnimation || entranceAnimation === 'none' || elapsedTime >= entranceDuration) {
+    return { opacity: 1, scale: 1, translateX: 0, translateY: 0, rotation: 0 };
+  }
+
+  const progress = Math.min(elapsedTime / entranceDuration, 1);
+  const transform: LogoTransform = { opacity: 1, scale: 1, translateX: 0, translateY: 0, rotation: 0 };
+
+  switch (entranceAnimation) {
+    case 'fade-in':
+      transform.opacity = easing.easeOut(progress);
+      break;
+
+    case 'zoom-in':
+      const zoomProgress = easing.easeOut(progress);
+      transform.scale = 0.3 + 0.7 * zoomProgress;
+      transform.opacity = zoomProgress;
+      break;
+
+    case 'slide-in':
+      const slideProgress = easing.easeOut(progress);
+      transform.translateY = -30 * (1 - slideProgress);
+      transform.opacity = slideProgress;
+      break;
+
+    case 'bounce-in':
+      let bounceScale = 1;
+      if (progress < 0.5) {
+        bounceScale = 0.3 + 0.8 * easing.bounceOut(progress * 2);
+      } else if (progress < 0.7) {
+        bounceScale = 1.1 - 0.2 * ((progress - 0.5) / 0.2);
+      } else {
+        bounceScale = 0.9 + 0.1 * easing.easeOut((progress - 0.7) / 0.3);
+      }
+      transform.scale = bounceScale;
+      transform.opacity = progress < 0.1 ? progress * 10 : 1;
+      break;
+
+    case 'spin-in':
+      const spinProgress = easing.easeOut(progress);
+      transform.rotation = -360 * (1 - spinProgress);
+      transform.scale = 0.3 + 0.7 * spinProgress;
+      transform.opacity = spinProgress;
+      break;
+
+    case 'elastic':
+      let elasticScale = 1;
+      if (progress < 0.5) {
+        elasticScale = easing.elasticOut(progress * 2) * 1.2;
+      } else if (progress < 0.65) {
+        elasticScale = 1.2 - 0.15 * ((progress - 0.5) / 0.15);
+      } else if (progress < 0.85) {
+        elasticScale = 1.05 - 0.1 * ((progress - 0.65) / 0.2);
+      } else if (progress < 0.95) {
+        elasticScale = 0.95 + 0.03 * ((progress - 0.85) / 0.1);
+      } else {
+        elasticScale = 0.98 + 0.02 * easing.easeOut((progress - 0.95) / 0.05);
+      }
+      transform.scale = Math.max(0, elasticScale);
+      transform.opacity = progress < 0.1 ? progress * 10 : 1;
+      break;
+  }
+
+  return transform;
+};
+
 // Dibujar logo con fondo
 const drawLogoWithBackground = async (
   ctx: CanvasRenderingContext2D,
@@ -250,18 +362,20 @@ const drawLogoWithBackground = async (
   const logoSize = sizes[settings.size];
   const margin = 20;
   
-  // Calcular opacidad con fade-in durante los primeros 0.6 segundos
-  let animatedOpacity = settings.opacity / 100;
-  if (elapsedTime !== undefined && elapsedTime < 0.6) {
-    // Fade-in suave usando ease-out
-    const progress = elapsedTime / 0.6;
-    const easedProgress = 1 - Math.pow(1 - progress, 3); // cubic ease-out
-    animatedOpacity *= easedProgress;
-  }
+  // Calcular transformación de entrada usando configuración del usuario
+  const entranceDuration = settings.entranceDuration || 0.8;
+  const entranceTransform = elapsedTime !== undefined
+    ? calculateLogoEntranceTransform(elapsedTime, settings.entranceAnimation, entranceDuration)
+    : { opacity: 1, scale: 1, translateX: 0, translateY: 0, rotation: 0 };
   
-  // Posición
-  const x = settings.position === 'top-left' ? margin : width - logoSize - margin;
-  const y = margin;
+  const animatedOpacity = (settings.opacity / 100) * entranceTransform.opacity;
+  
+  // Posición con desplazamiento de entrada
+  let x = settings.position === 'top-left' ? margin : width - logoSize - margin;
+  let y = margin;
+  
+  x += entranceTransform.translateX;
+  y += entranceTransform.translateY;
   
   // Cargar logo
   const logoImg = await loadImage(logoUrl).catch(() => null);
@@ -300,9 +414,23 @@ const drawLogoWithBackground = async (
     ctx.restore();
   }
   
-  // Dibujar logo con opacidad animada
+  // Dibujar logo con transformaciones de entrada
   ctx.save();
-  ctx.globalAlpha = animatedOpacity; // Usar opacidad animada
+  ctx.globalAlpha = animatedOpacity;
+  
+  // Aplicar transformaciones desde el centro del logo
+  const centerX = x + logoSize / 2;
+  const centerY = y + logoSize / 2;
+  ctx.translate(centerX, centerY);
+  
+  if (entranceTransform.rotation !== 0) {
+    ctx.rotate((entranceTransform.rotation * Math.PI) / 180);
+  }
+  if (entranceTransform.scale !== 1) {
+    ctx.scale(entranceTransform.scale, entranceTransform.scale);
+  }
+  
+  ctx.translate(-centerX, -centerY);
   
   // Clip para forma del logo
   const radius = settings.shape === 'square' ? 0 :
