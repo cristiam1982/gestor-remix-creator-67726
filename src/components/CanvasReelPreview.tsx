@@ -85,7 +85,7 @@ export const CanvasReelPreview = ({
             textComposition,
             backgroundStyle: summaryBackgroundStyle,
             photos: propertyData.fotos,
-            elapsedTime: 1.0 // Mostrar estado final del logo (completamente visible)
+            elapsedTime: 10 // Logo siempre visible sin animaciones
           });
         } else {
           const photoUrl = propertyData.fotos[currentPhotoIndex];
@@ -98,7 +98,7 @@ export const CanvasReelPreview = ({
               textComposition,
               visualLayers,
               photoIndex: currentPhotoIndex,
-              elapsedTime: 1.0 // Mostrar estado final del logo (completamente visible)
+              elapsedTime: 10 // Logo siempre visible sin animaciones
             });
           }
         }
