@@ -1514,6 +1514,9 @@ export const generateReelVideoFromCanvas = async (
         const frameInterval = 1000 / fps; // Intervalo preciso en ms (33.33ms para 30fps)
         const totalFrames = photos.length * framesPerSlide + (includeSummary ? summaryFrames : 0);
 
+        // Logo siempre visible sin animaciones (elapsedTime alto = animación ya terminada)
+        const elapsedTime = 10; // Valor fijo: logo siempre en estado final visible
+
         // Renderizar cada foto
         for (let i = 0; i < photos.length; i++) {
           const progress = Math.round(10 + ((i / photos.length) * 80));
@@ -1528,8 +1531,6 @@ export const generateReelVideoFromCanvas = async (
 
           // Renderizar cada frame de esta foto
           for (let f = 0; f < framesPerSlide; f++) {
-            const elapsedTime = frameCount / fps; // Tiempo transcurrido en segundos
-            
             await drawSlide(ctx, {
               photoUrl: photos[i],
               propertyData,
@@ -1557,8 +1558,6 @@ export const generateReelVideoFromCanvas = async (
           });
 
           for (let f = 0; f < summaryFrames; f++) {
-            const elapsedTime = frameCount / fps; // Tiempo global del video
-            
             await drawSummarySlide(ctx, {
               propertyData,
               aliadoConfig,
