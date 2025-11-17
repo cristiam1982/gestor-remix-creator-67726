@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Play, Pause, Download, GripVertical, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -224,6 +225,8 @@ export const ReelSlideshow = ({
     const saved = localStorage.getItem('reel-export-quality');
     return (saved === 'fast' || saved === 'high') ? saved : 'fast';
   });
+  const [showQualityDialog, setShowQualityDialog] = useState(false);
+  const [selectedQuality, setSelectedQuality] = useState<'fast' | 'high'>('fast');
 
   // Estados para la entrada elegante del logo (0..1)
   // Estado de animación de entrada del logo
@@ -491,6 +494,15 @@ export const ReelSlideshow = ({
     }
   };
 
+  // ============= PARTE 3: Generación y descarga del video =============
+  const handleConfirmDownload = async () => {
+    setShowQualityDialog(false);
+    setExportQuality(selectedQuality);
+    // Esperar un frame para que se actualice el estado
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await handleDownloadVideo();
+  };
+
   const handleDownloadVideo = async () => {
     try {
       setIsPlaying(false);
@@ -622,7 +634,7 @@ export const ReelSlideshow = ({
         <div className="px-4 lg:px-6 space-y-3">
           <Card className="p-3 bg-gradient-to-br from-primary/20 to-primary/30 border-primary/40">
             <Button 
-              onClick={handleDownloadVideo}
+              onClick={() => setShowQualityDialog(true)}
               size="lg" 
               className="w-full gap-2 bg-primary hover:bg-primary/90 font-bold shadow-lg"
             >
@@ -632,6 +644,74 @@ export const ReelSlideshow = ({
               Paridad 1:1 con el preview
             </p>
           </Card>
+
+          {/* Diálogo de Selección de Calidad */}
+          <AlertDialog open={showQualityDialog} onOpenChange={setShowQualityDialog}>
+            <AlertDialogContent className="max-w-md">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-xl font-bold">
+                  🎬 Selecciona la Calidad de Exportación
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-sm text-muted-foreground">
+                  Elige la calidad del video antes de descargar
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              
+              <div className="space-y-3 py-4">
+                {/* Opción Rápida */}
+                <button
+                  onClick={() => setSelectedQuality('fast')}
+                  className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                    selectedQuality === 'fast' 
+                      ? 'border-primary bg-primary/10' 
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl">⚡</div>
+                    <div className="flex-1">
+                      <div className="font-bold text-base">Rápida (WebM)</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        • Exportación en ~15-25 segundos<br/>
+                        • Formato WebM (compatible con Instagram/TikTok)<br/>
+                        • Calidad excelente para redes sociales
+                      </div>
+                    </div>
+                  </div>
+                </button>
+                
+                {/* Opción Alta */}
+                <button
+                  onClick={() => setSelectedQuality('high')}
+                  className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                    selectedQuality === 'high' 
+                      ? 'border-primary bg-primary/10' 
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl">✨</div>
+                    <div className="flex-1">
+                      <div className="font-bold text-base">Alta Calidad (MP4)</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        • Exportación en ~30-45 segundos<br/>
+                        • Formato MP4 (máxima compatibilidad)<br/>
+                        • Calidad profesional con FFmpeg
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+              
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleConfirmDownload}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Descargar ({selectedQuality === 'fast' ? 'Rápida' : 'Alta'})
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
@@ -714,171 +794,10 @@ export const ReelSlideshow = ({
                       onTextCompositionChange={setTextComposition}
                       visualLayers={visualLayers}
                       onVisualLayersChange={setVisualLayers}
-                      firstPhotoConfig={firstPhotoConfig}
-                      onFirstPhotoConfigChange={setFirstPhotoConfig}
                     />
                   </AccordionContent>
                 </AccordionItem>
 
-                {/* Ajustes Avanzados */}
-                <AccordionItem value="advanced">
-                  <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-                    ⚙️ Ajustes Avanzados
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-4">
-                    {/* Calidad de exportación */}
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Calidad de exportación</Label>
-                      <Select
-                        value={exportQuality}
-                        onValueChange={(value: 'fast' | 'high') => setExportQuality(value)}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="fast">⚡ Rápida (WebM, ~15s)</SelectItem>
-                          <SelectItem value="high">✨ Alta (MP4, ~30s)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-muted-foreground">
-                        Rápida: MediaRecorder con códec VP9/VP8. Alta: FFmpeg con H.264 para máxima compatibilidad.
-                      </p>
-                    </div>
-
-                    {/* Botón de prueba de frame */}
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Prueba de captura (sin video)</Label>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={async () => {
-                          try {
-                            setIsPlaying(false);
-                            await new Promise(resolve => setTimeout(resolve, 100));
-                            
-                            const { captureFrame } = await import("@/utils/videoGenerator");
-                            const { waitForNextFrame } = await import("@/utils/imageUtils");
-                            
-                            // Esperar a que el DOM esté listo
-                            await waitForNextFrame();
-                            await waitForNextFrame();
-                            
-                            // Capturar frame
-                            const canvas = await captureFrame("reel-capture-canvas", false);
-                            
-                            // Descargar como PNG
-                            canvas.toBlob((blob) => {
-                              if (blob) {
-                                const url = URL.createObjectURL(blob);
-                                const link = document.createElement("a");
-                                link.href = url;
-                                link.download = `frame-test-${Date.now()}.png`;
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                                URL.revokeObjectURL(url);
-                                
-                                toast({
-                                  title: "✅ Frame capturado",
-                                  description: "Revisa la descarga para validar la calidad visual",
-                                });
-                              }
-                            }, 'image/png');
-                          } catch (error) {
-                            console.error('Error capturando frame:', error);
-                            toast({
-                              title: "Error al capturar frame",
-                              description: error instanceof Error ? error.message : "Error desconocido",
-                              variant: "destructive",
-                            });
-                          }
-                        }}
-                      >
-                        🖼️ Probar 1 frame (PNG)
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={async () => {
-                          try {
-                            setIsPlaying(false);
-                            await new Promise(resolve => setTimeout(resolve, 100));
-                            
-                            const { captureFrame } = await import("@/utils/videoGenerator");
-                            const { waitForNextFrame } = await import("@/utils/imageUtils");
-                            
-                            toast({
-                              title: "📸 Exportando frames...",
-                              description: `Capturando ${photosList.length + 1} frames`,
-                            });
-                            
-                            for (let i = 0; i <= photosList.length; i++) {
-                              // Cambiar foto
-                              if (i >= photosList.length) {
-                                setShowSummarySlide(true);
-                                setCurrentPhotoIndex(photosList.length - 1);
-                              } else {
-                                setShowSummarySlide(false);
-                                setCurrentPhotoIndex(i);
-                              }
-                              
-                              // Esperar renderizado
-                              await waitForNextFrame();
-                              await waitForNextFrame();
-                              await new Promise(resolve => setTimeout(resolve, 300));
-                              
-                              // Capturar frame
-                              const canvas = await captureFrame("reel-capture-canvas", false);
-                              
-                              // Descargar
-                              await new Promise<void>((resolve) => {
-                                canvas.toBlob((blob) => {
-                                  if (blob) {
-                                    const url = URL.createObjectURL(blob);
-                                    const link = document.createElement("a");
-                                    link.href = url;
-                                    const frameName = i >= photosList.length ? 'summary' : `frame_${String(i + 1).padStart(4, '0')}`;
-                                    link.download = `${frameName}.png`;
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                    URL.revokeObjectURL(url);
-                                  }
-                                  resolve();
-                                }, 'image/png');
-                              });
-                            }
-                            
-                            setShowSummarySlide(false);
-                            setCurrentPhotoIndex(0);
-                            
-                            toast({
-                              title: "✅ Frames exportados",
-                              description: `${photosList.length + 1} frames descargados individualmente`,
-                            });
-                          } catch (error) {
-                            console.error('Error exportando frames:', error);
-                            toast({
-                              title: "Error al exportar frames",
-                              description: error instanceof Error ? error.message : "Error desconocido",
-                              variant: "destructive",
-                            });
-                          }
-                        }}
-                      >
-                        📦 Solo frames (PNG)
-                      </Button>
-                      
-                      <p className="text-xs text-muted-foreground">
-                        Exporta frames individuales para validar calidad sin generar video completo (ahorra créditos).
-                      </p>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
               </Accordion>
             </Card>
 
@@ -1300,8 +1219,6 @@ export const ReelSlideshow = ({
                     onTextCompositionChange={setTextComposition}
                     visualLayers={visualLayers}
                     onVisualLayersChange={setVisualLayers}
-                    firstPhotoConfig={firstPhotoConfig}
-                    onFirstPhotoConfigChange={setFirstPhotoConfig}
                   />
                 </AccordionContent>
               </AccordionItem>

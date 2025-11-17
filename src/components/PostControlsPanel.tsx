@@ -1,8 +1,7 @@
-import { LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
+import { LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
 import { ReelLogoControls } from "@/components/ReelLogoControls";
 import { ReelTextCompositionControls } from "@/components/ReelTextCompositionControls";
 import { ReelLayersPanel } from "@/components/ReelLayersPanel";
-import { FirstPhotoControls } from "@/components/FirstPhotoControls";
 import { GradientSelector } from "@/components/GradientSelector";
 import { GradientIntensitySlider } from "@/components/GradientIntensitySlider";
 import {
@@ -26,8 +25,6 @@ interface PostControlsPanelProps {
   onGradientDirectionChange: (direction: GradientDirection) => void;
   gradientIntensity: number;
   onGradientIntensityChange: (intensity: number) => void;
-  firstPhotoConfig: FirstPhotoConfig;
-  onFirstPhotoConfigChange: (config: FirstPhotoConfig) => void;
 }
 
 export const PostControlsPanel = ({
@@ -41,8 +38,6 @@ export const PostControlsPanel = ({
   onGradientDirectionChange,
   gradientIntensity,
   onGradientIntensityChange,
-  firstPhotoConfig,
-  onFirstPhotoConfigChange,
 }: PostControlsPanelProps) => {
   return (
     <Card className="p-6 space-y-6">
@@ -105,19 +100,6 @@ export const PostControlsPanel = ({
           </AccordionContent>
         </AccordionItem>
 
-        {/* Primera Foto (Portada) */}
-        <AccordionItem value="first-photo">
-          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-            🌟 Primera Foto (Portada)
-          </AccordionTrigger>
-          <AccordionContent className="pt-4">
-            <FirstPhotoControls
-              settings={firstPhotoConfig}
-              onChange={onFirstPhotoConfigChange}
-              showDuration={false}
-            />
-          </AccordionContent>
-        </AccordionItem>
 
         {/* Efectos de Sombreado */}
         <AccordionItem value="gradient">
