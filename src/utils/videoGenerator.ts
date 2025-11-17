@@ -883,7 +883,8 @@ export const generateReelVideoMP4 = async (
   includeSummary: boolean = true,
   slideDuration: number = 1300, // Duración dinámica por foto en ms
   propertyData?: PropertyData,
-  aliadoConfig?: AliadoConfig
+  aliadoConfig?: AliadoConfig,
+  setEntranceProgress?: (progress: number) => Promise<void>
 ): Promise<Blob> => {
   const startTime = Date.now();
   
@@ -924,7 +925,7 @@ export const generateReelVideoMP4 = async (
       message: "Pre-capturando slides...",
     });
     
-    const slideCanvases: HTMLCanvasElement[] = [];
+    const slideCanvases: (HTMLCanvasElement | { entranceFrames: HTMLCanvasElement[], finalFrame: HTMLCanvasElement, entranceCount: number })[] = [];
     
     // Pre-capturar fotos
     for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
@@ -941,7 +942,29 @@ export const generateReelVideoMP4 = async (
       // Actualizar el DOM con la foto actual
       await onPhotoChange(photoIndex);
 
-      // Esperar a que el contenedor esté listo para captura
+      // CAPTURA ESPECIAL: Entrada del logo en la primera foto
+      const entranceFrames = Math.min(Math.round(0.5 * fps), framesPerPhoto); // 0.5s de entrada (15 frames a 30fps)
+      const entranceCanvases: HTMLCanvasElement[] = [];
+      
+      if (photoIndex === 0 && typeof setEntranceProgress === 'function') {
+        console.log(`✨ Capturando entrada del logo: ${entranceFrames} frames de fade-in`);
+        
+        // Capturar frames de entrada progresivamente (0.0 → 1.0)
+        for (let i = 0; i < entranceFrames; i++) {
+          const progress = i / (entranceFrames - 1); // 0.0, 0.066, 0.133, ..., 1.0
+          await setEntranceProgress(progress);
+          await waitForCaptureReady(elementId);
+          
+          const entranceCanvas = await captureFrame(elementId, false);
+          entranceCanvases.push(entranceCanvas);
+          console.log(`  📸 Frame entrada ${i + 1}/${entranceFrames}: progress=${progress.toFixed(3)}`);
+        }
+      }
+
+      // Logo completamente visible para el resto del slide
+      if (typeof setEntranceProgress === 'function') {
+        await setEntranceProgress(1);
+      }
       await waitForCaptureReady(elementId);
 
       // Capturar el frame del DOM con reintentos
@@ -992,11 +1015,17 @@ export const generateReelVideoMP4 = async (
           onProgress,
           onPhotoChange,
           includeSummary,
-          slideDuration
+          slideDuration,
+          setEntranceProgress
         );
       }
       
-      slideCanvases.push(frameCanvas);
+      // Para el primer slide: guardar entrada + frame completo
+      if (photoIndex === 0 && entranceCanvases.length > 0) {
+        slideCanvases.push({ entranceFrames: entranceCanvases, finalFrame: frameCanvas, entranceCount: entranceFrames });
+      } else {
+        slideCanvases.push(frameCanvas);
+      }
     }
 
     // Pre-capturar slide de resumen si está habilitado
@@ -1110,15 +1139,36 @@ export const generateReelVideoMP4 = async (
 
     // Reproducir fotos pre-capturadas
     for (let slideIndex = 0; slideIndex < photos.length; slideIndex++) {
-      const slideCanvas = slideCanvases[slideIndex];
-      const framesForThisSlide = framesPerPhoto;
+      const slide = slideCanvases[slideIndex];
       
-      console.log(`▶️ Reproduciendo slide ${slideIndex + 1}: ${framesForThisSlide} frames a ${fps}fps = ${(framesForThisSlide/fps).toFixed(1)}s`);
-      
-      for (let frameNum = 0; frameNum < framesForThisSlide; frameNum++) {
-        ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
-        ctx.drawImage(slideCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
-        await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+      // Slide 0 con entrada
+      if (slideIndex === 0 && typeof slide === 'object' && 'entranceFrames' in slide) {
+        console.log(`▶️ Reproduciendo slide 1 con entrada: ${slide.entranceCount} frames fade-in + ${framesPerPhoto - slide.entranceCount} frames estáticos`);
+        
+        // Reproducir frames de entrada
+        for (const entranceCanvas of slide.entranceFrames) {
+          ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+          ctx.drawImage(entranceCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
+          await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+        }
+        
+        // Reproducir el resto del slide con frame completo
+        const remainingFrames = framesPerPhoto - slide.entranceCount;
+        for (let f = 0; f < remainingFrames; f++) {
+          ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+          ctx.drawImage(slide.finalFrame, 0, 0, outputCanvas.width, outputCanvas.height);
+          await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+        }
+      } else {
+        // Slides 2+ sin entrada
+        const slideCanvas = slide as HTMLCanvasElement;
+        console.log(`▶️ Reproduciendo slide ${slideIndex + 1}: ${framesPerPhoto} frames`);
+        
+        for (let frameNum = 0; frameNum < framesPerPhoto; frameNum++) {
+          ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+          ctx.drawImage(slideCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
+          await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+        }
       }
       
       const progressPercent = 70 + Math.round(((slideIndex + 1) / totalSlides) * 25);
@@ -1133,7 +1183,8 @@ export const generateReelVideoMP4 = async (
 
     // Reproducir slide de resumen pre-capturado
     if (includeSummary && slideCanvases.length > photos.length) {
-      const summaryCanvas = slideCanvases[photos.length];
+      const summarySlide = slideCanvases[photos.length];
+      const summaryCanvas = summarySlide instanceof HTMLCanvasElement ? summarySlide : summarySlide.finalFrame;
       console.log(`▶️ Reproduciendo resumen: ${framesPerSummary} frames a ${fps}fps = ${(framesPerSummary/fps).toFixed(1)}s`);
       
       for (let frameNum = 0; frameNum < framesPerSummary; frameNum++) {
@@ -1198,7 +1249,8 @@ export const generateReelVideoMP4_FFmpegFrames = async (
   onProgress: (progress: VideoGenerationProgress) => void,
   onPhotoChange: (index: number) => Promise<void>,
   includeSummary: boolean = true,
-  slideDuration: number = 1300
+  slideDuration: number = 1300,
+  setEntranceProgress?: (progress: number) => Promise<void>
 ): Promise<Blob> => {
   const startTime = Date.now();
   

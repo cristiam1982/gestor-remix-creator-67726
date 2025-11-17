@@ -219,6 +219,10 @@ export const ReelSlideshow = ({
   // Paridad Lab
   const [showParityLab, setShowParityLab] = useState(false);
 
+  // Estados para la entrada elegante del logo (0..1)
+  const [previewEntranceProgress, setPreviewEntranceProgress] = useState(1);
+  const [captureEntranceProgress, setCaptureEntranceProgress] = useState(1);
+
   const { toast } = useToast();
   
   // Guardar preferencia de motor
@@ -349,6 +353,31 @@ export const ReelSlideshow = ({
     });
   }, []);
 
+  // Animación de entrada del logo en el preview (solo primera foto)
+  useEffect(() => {
+    if (currentPhotoIndex === 0 && !showSummarySlide) {
+      // Animar desde 0 a 1 en 500ms
+      const startTime = performance.now();
+      const duration = 500; // 0.5 segundos
+      
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        setPreviewEntranceProgress(progress);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+      
+      setPreviewEntranceProgress(0);
+      requestAnimationFrame(animate);
+    } else {
+      // En otras fotos o en resumen, logo totalmente visible
+      setPreviewEntranceProgress(1);
+    }
+  }, [currentPhotoIndex, showSummarySlide]);
+
   // PARTE 1: Autoplay mejorado con goToPhoto
   useEffect(() => {
     if (!isPlaying || photosList.length === 0) return;
@@ -477,6 +506,18 @@ export const ReelSlideshow = ({
         });
       };
 
+      // Callback para actualizar el progreso de entrada del logo durante captura
+      const setEntranceProgressForCapture = async (progress: number): Promise<void> => {
+        setCaptureEntranceProgress(progress);
+        return new Promise((resolve) => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              resolve();
+            });
+          });
+        });
+      };
+
       if (exportQuality === 'high') {
         // Alta calidad: FFmpeg + frames PNG
         videoBlob = await generateReelVideoMP4_FFmpegFrames(
@@ -485,7 +526,8 @@ export const ReelSlideshow = ({
           setGenerationProgress,
           changePhoto,
           true,
-          slideDuration
+          slideDuration,
+          setEntranceProgressForCapture
         );
       } else {
         // Rápida: MediaRecorder (WebM)
@@ -497,7 +539,8 @@ export const ReelSlideshow = ({
           true,
           slideDuration,
           propertyData,
-          aliadoConfig
+          aliadoConfig,
+          setEntranceProgressForCapture
         );
       }
 
@@ -998,6 +1041,7 @@ export const ReelSlideshow = ({
             summarySolidColor={summarySolidColor}
             customHashtag={customHashtag}
             customPhone={customPhone}
+            logoEntranceProgress={previewEntranceProgress}
           />
 
           {/* Overlay clicable para pausar - solo cuando isPlaying */}
@@ -1110,6 +1154,7 @@ export const ReelSlideshow = ({
           summarySolidColor={summarySolidColor}
           customHashtag={customHashtag}
           customPhone={customPhone}
+          logoEntranceProgress={captureEntranceProgress}
         />
       </div>
 

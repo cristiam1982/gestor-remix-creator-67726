@@ -26,6 +26,7 @@ interface ReelFrameProps {
   summarySolidColor?: string;
   customHashtag?: string;
   customPhone?: string;
+  logoEntranceProgress?: number; // 0..1 para controlar la entrada del logo
 }
 
 // Función helper para obtener el logo apropiado
@@ -35,6 +36,11 @@ const getLogoUrl = (
 ): string => {
   // Siempre usar logo regular (con fondo blanco)
   return config.logo;
+};
+
+// Función de easing suave para la entrada del logo
+const easeOutCubic = (t: number): number => {
+  return 1 - Math.pow(1 - t, 3);
 };
 
 export const ReelFrame = ({
@@ -54,7 +60,8 @@ export const ReelFrame = ({
   summaryBackground = 'solid',
   summarySolidColor,
   customHashtag,
-  customPhone
+  customPhone,
+  logoEntranceProgress = 1 // Default: logo completamente visible
 }: ReelFrameProps) => {
   const brand = aliadoConfig.colorPrimario || '#00A5BD';
   const template = REEL_TEMPLATES[currentTemplate];
@@ -158,7 +165,7 @@ export const ReelFrame = ({
         <div 
           className="absolute z-20"
           style={{ 
-            opacity: logoStyle.opacity,
+            opacity: logoStyle.opacity * easeOutCubic(logoEntranceProgress), // Aplicar entrada con easing
             top: mode === 'capture' ? '48px' : '24px',
             ...(logoSettings.position === 'top-left' 
               ? { left: mode === 'capture' ? '48px' : '24px' }
