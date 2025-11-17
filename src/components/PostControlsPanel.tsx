@@ -84,6 +84,7 @@ export const PostControlsPanel = ({
             <ReelLayersPanel
               layers={visualLayers}
               onChange={onVisualLayersChange}
+              hiddenLayers={['showCTA', 'showBadge']}
             />
           </AccordionContent>
         </AccordionItem>
