@@ -1,6 +1,6 @@
 import { VisualLayers } from "@/types/property";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ReelLayersPanelProps {
   layers: VisualLayers;
@@ -9,13 +9,13 @@ interface ReelLayersPanelProps {
 }
 
 export const ReelLayersPanel = ({ layers, onChange, hiddenLayers = [] }: ReelLayersPanelProps) => {
-  const allLayerItems: Array<{ key: keyof VisualLayers; icon: string; label: string; description: string }> = [
-    { key: 'showPhoto', icon: '🖼️', label: 'Foto Principal', description: 'Imagen de fondo' },
-    { key: 'showPrice', icon: '💰', label: 'Precio', description: 'Canon o valor de venta' },
-    { key: 'showIcons', icon: '🛏️', label: 'Iconografía', description: 'Íconos de características' },
-    { key: 'showAllyLogo', icon: '🎨', label: 'Logo del Aliado', description: 'Tu marca personal' },
-    { key: 'showCTA', icon: '📣', label: 'Call to Action', description: 'Llamado a la acción' },
-    { key: 'showBadge', icon: '🏷️', label: 'Badge Subtítulo', description: 'Información adicional' },
+  const allLayerItems: Array<{ key: keyof VisualLayers; icon: string; label: string }> = [
+    { key: 'showPhoto', icon: '🖼️', label: 'Foto Principal' },
+    { key: 'showPrice', icon: '💰', label: 'Precio' },
+    { key: 'showIcons', icon: '🛏️', label: 'Iconografía' },
+    { key: 'showAllyLogo', icon: '🎨', label: 'Logo del Aliado' },
+    { key: 'showCTA', icon: '📣', label: 'Call to Action' },
+    { key: 'showBadge', icon: '🏷️', label: 'Badge Subtítulo' },
   ];
 
   // Filtrar capas según hiddenLayers
@@ -27,40 +27,38 @@ export const ReelLayersPanel = ({ layers, onChange, hiddenLayers = [] }: ReelLay
 
   return (
     <div className="space-y-3">
-      <div className="bg-accent/30 p-2.5 rounded-lg border border-border/50">
-        <p className="text-xs text-muted-foreground">
-          💡 Controla qué elementos aparecen en tu reel. Desactiva capas para crear composiciones minimalistas.
+      <div className="bg-accent/30 p-2 rounded-lg border border-border/50">
+        <p className="text-[10px] text-muted-foreground">
+          💡 Activa/desactiva elementos visuales del reel
         </p>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {layerItems.map((item) => (
           <div
             key={item.key}
-            className="flex items-center justify-between p-2.5 rounded-lg border border-border hover:bg-accent/20 transition-colors"
+            className="flex items-center gap-2.5 py-1.5"
           >
-            <div className="flex items-center gap-2 flex-1">
-              <span className="text-xl">{item.icon}</span>
-              <div className="flex-1">
-                <Label htmlFor={item.key} className="text-sm font-semibold cursor-pointer">
-                  {item.label}
-                </Label>
-                <p className="text-xs text-muted-foreground">{item.description}</p>
-              </div>
-            </div>
-            <Switch
+            <Checkbox
               id={item.key}
               checked={layers[item.key]}
               onCheckedChange={() => toggleLayer(item.key)}
-              disabled={item.key === 'showPhoto'} // La foto siempre debe estar visible
+              disabled={item.key === 'showPhoto'}
             />
+            <Label 
+              htmlFor={item.key} 
+              className="text-sm font-medium cursor-pointer flex items-center gap-2 flex-1"
+            >
+              <span className="text-base">{item.icon}</span>
+              <span>{item.label}</span>
+            </Label>
           </div>
         ))}
       </div>
 
-      <div className="bg-accent/30 p-2.5 rounded-lg border border-border/50">
-        <p className="text-xs text-muted-foreground">
-          ℹ️ La foto principal no se puede desactivar. Es el elemento base del reel.
+      <div className="bg-accent/30 p-2 rounded-lg border border-border/50">
+        <p className="text-[10px] text-muted-foreground">
+          ℹ️ La foto principal no se puede desactivar
         </p>
       </div>
     </div>
