@@ -279,7 +279,7 @@ export const ReelFrame = ({
               color: '#ffffff',
               transform: `scale(${textStyle.scale})`,
               transformOrigin: 'left center',
-              padding: mode === 'capture' ? '20px 40px' : '10px 20px',
+              padding: mode === 'capture' ? '12px 40px' : '6px 20px',
               gap: mode === 'capture' ? '4px' : '2px',
               marginBottom: mode === 'capture' ? '16px' : '8px'
             }}
