@@ -1,6 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { FirstPhotoConfig } from "@/types/property";
 
 interface FirstPhotoControlsProps {
@@ -97,6 +98,24 @@ export const FirstPhotoControls = ({ settings, onChange, showDuration = false }:
           </p>
         </div>
       )}
+
+      {/* Control de Logo del Aliado */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-1">
+            <Label className="text-sm font-medium">Mostrar Logo del Aliado</Label>
+            <span className="text-xs text-muted-foreground">
+              Controla si el logo aparece en la portada
+            </span>
+          </div>
+          <Switch
+            checked={settings.showAllyLogo !== false}
+            onCheckedChange={(checked) => 
+              onChange({ ...settings, showAllyLogo: checked })
+            }
+          />
+        </div>
+      </div>
     </div>
   );
 };

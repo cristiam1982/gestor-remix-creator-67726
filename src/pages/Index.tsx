@@ -93,6 +93,7 @@ const Index = () => {
   const [postFirstPhotoConfig, setPostFirstPhotoConfig] = useState<FirstPhotoConfig>({
     overlayStyle: 'full',
     textScaleOverride: 0,
+    showAllyLogo: true,
   });
   
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);

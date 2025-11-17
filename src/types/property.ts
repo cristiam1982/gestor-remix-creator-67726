@@ -66,6 +66,7 @@ export interface FirstPhotoConfig {
   duration?: number; // 1000-5000ms (solo Reel)
   overlayStyle: 'full' | 'simple' | 'clean'; // full: precio+título+iconos, simple: precio+título, clean: sin overlays
   textScaleOverride?: number; // -40 a +40 (porcentaje)
+  showAllyLogo?: boolean; // Mostrar/ocultar logo del aliado en primera foto
 }
 
 export interface PropertyData {

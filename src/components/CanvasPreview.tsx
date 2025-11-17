@@ -78,29 +78,40 @@ export const CanvasPreview = ({
   const effectiveVisualLayers = useMemo(() => {
     if (!isFirstPhoto || !firstPhotoConfig) return visualLayers;
 
+    let layers = { ...visualLayers };
+
+    // Aplicar showAllyLogo de primera foto si está definido
+    if (firstPhotoConfig.showAllyLogo !== undefined) {
+      layers.showAllyLogo = firstPhotoConfig.showAllyLogo;
+    }
+
     // Aplicar overlayStyle de primera foto
     switch (firstPhotoConfig.overlayStyle) {
       case 'clean':
         // Sin overlays, solo foto y logo
-        return {
-          ...visualLayers,
+        layers = {
+          ...layers,
           showPrice: false,
           showBadge: false,
           showIcons: false,
           showCTA: false
         };
+        break;
       case 'simple':
         // Solo precio + título, sin iconos
-        return {
-          ...visualLayers,
+        layers = {
+          ...layers,
           showIcons: false,
           showCTA: false
         };
+        break;
       case 'full':
       default:
-        // Completo: precio + título + iconos
-        return visualLayers;
+        // Completo: precio + título + iconos (mantener layers actual)
+        break;
     }
+
+    return layers;
   }, [isFirstPhoto, firstPhotoConfig, visualLayers]);
 
   const effectiveTextComposition = useMemo(() => {

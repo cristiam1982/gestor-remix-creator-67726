@@ -206,7 +206,8 @@ export const ReelSlideshow = ({
     propertyData.firstPhotoConfig || {
       duration: slideDuration, // Por defecto igual al resto
       overlayStyle: 'full',
-      textScaleOverride: 0
+      textScaleOverride: 0,
+      showAllyLogo: true,
     }
   );
 
