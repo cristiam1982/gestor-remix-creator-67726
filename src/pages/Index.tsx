@@ -971,6 +971,11 @@ const Index = () => {
                         contentType={selectedContentType!}
                         template="residencial"
                         currentPhotoIndexOverride={currentPhotoIndexOverride}
+                        logoSettings={postLogoSettings}
+                        textComposition={postTextComposition}
+                        visualLayers={postVisualLayers}
+                        gradientDirection={postGradientDirection}
+                        gradientIntensity={postGradientIntensity}
                       />
                     )}
                   </div>
