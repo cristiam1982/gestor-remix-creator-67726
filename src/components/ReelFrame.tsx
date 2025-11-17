@@ -234,9 +234,9 @@ export const ReelFrame = ({
           }}
         >
           <div
-            className={`${logoStyle.shapeClass} ${logoStyle.backgroundClass} ${logoSettings.background === 'none' ? 'p-0' : 'p-2.5'} flex items-center justify-center`}
+            className={`${logoStyle.shapeClass} ${logoStyle.backgroundClass} ${logoSettings.shape === 'circle' || logoSettings.background === 'none' ? 'p-0' : 'p-2.5'} flex items-center justify-center overflow-hidden`}
             style={{
-              ...(mode === 'capture' && logoSettings.background === 'frosted' && {
+              ...(mode === 'capture' && logoSettings.background === 'frosted' && logoSettings.shape !== 'circle' && {
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.8)',
               }),
