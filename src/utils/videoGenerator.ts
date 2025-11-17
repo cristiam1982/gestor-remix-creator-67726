@@ -958,7 +958,7 @@ export const generateReelVideoMP4 = async (
           const progress = i / (entranceFrames - 1); // 0.0, 0.066, 0.133, ..., 1.0
           await setEntranceProgress(progress);
           await waitForCaptureReady(elementId);
-          await new Promise(resolve => setTimeout(resolve, 30)); // micro delay para máquinas lentas
+          await new Promise(resolve => setTimeout(resolve, 10)); // micro delay optimizado
           
           const entranceCanvas = await captureFrame(elementId, false);
           entranceCanvases.push(entranceCanvas);
@@ -975,7 +975,7 @@ export const generateReelVideoMP4 = async (
       // Capturar el frame del DOM con reintentos
       let frameCanvas: HTMLCanvasElement | null = null;
       let retryCount = 0;
-      const maxRetries = 3;
+      const maxRetries = 2;
 
       while (!frameCanvas && retryCount < maxRetries) {
         try {
@@ -984,7 +984,7 @@ export const generateReelVideoMP4 = async (
           // Validar que el frame no esté oscuro
           if (isCanvasLikelyBlack(capturedCanvas)) {
             console.warn(`⚠️ Frame oscuro detectado, reintento #${retryCount + 1}...`);
-            await new Promise(resolve => setTimeout(resolve, 150));
+            await new Promise(resolve => setTimeout(resolve, 100));
             retryCount++;
             continue;
           }
@@ -1007,7 +1007,7 @@ export const generateReelVideoMP4 = async (
             }
           }
           retryCount++;
-          await new Promise(resolve => setTimeout(resolve, 200));
+          await new Promise(resolve => setTimeout(resolve, 150));
         }
       }
 
@@ -1053,7 +1053,7 @@ export const generateReelVideoMP4 = async (
       // Capturar el frame del slide de resumen con reintentos
       let summaryCanvas: HTMLCanvasElement | null = null;
       let retryCount = 0;
-      const maxRetries = 3;
+      const maxRetries = 2;
 
       while (!summaryCanvas && retryCount < maxRetries) {
         try {
@@ -1061,7 +1061,7 @@ export const generateReelVideoMP4 = async (
           
           if (isCanvasLikelyBlack(capturedCanvas)) {
             console.warn(`⚠️ Frame resumen oscuro, reintento #${retryCount + 1}...`);
-            await new Promise(resolve => setTimeout(resolve, 150));
+            await new Promise(resolve => setTimeout(resolve, 100));
             retryCount++;
             continue;
           }
@@ -1084,7 +1084,7 @@ export const generateReelVideoMP4 = async (
             }
           }
           retryCount++;
-          await new Promise(resolve => setTimeout(resolve, 200));
+          await new Promise(resolve => setTimeout(resolve, 150));
         }
       }
 
@@ -1372,16 +1372,15 @@ export const generateReelVideoMP4_FFmpegFrames = async (
         console.log(`📸 Capturando frames para foto ${photoIndex + 1}/${photos.length}...`);
         const frameCanvas = await captureFrame(elementId, false);
         
-        // Duplicar frame según duración
+        // Convertir canvas a PNG una sola vez
+        const blob = await new Promise<Blob>((resolve) => {
+          frameCanvas.toBlob((b) => resolve(b!), 'image/png', 1.0);
+        });
+        const data = new Uint8Array(await blob.arrayBuffer());
+        
+        // Duplicar frame según duración (escribir múltiples veces el mismo data)
         for (let i = 0; i < framesPerPhoto; i++) {
           frameNumber++;
-          
-          // Convertir canvas a PNG
-          const blob = await new Promise<Blob>((resolve) => {
-            frameCanvas.toBlob((b) => resolve(b!), 'image/png', 1.0);
-          });
-          
-          const data = new Uint8Array(await blob.arrayBuffer());
           const frameName = `frame_${String(frameNumber).padStart(4, '0')}.png`;
           await ffmpeg.writeFile(frameName, data);
         }
