@@ -8,19 +8,12 @@ import { useLogoStyles } from "@/hooks/useLogoStyles";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
-interface CarouselMode {
-  isLastSlide: boolean;
-  slideNumber: number;
-  totalSlides: number;
-}
-
 interface CanvasPreviewProps {
   propertyData: PropertyData;
   aliadoConfig: AliadoConfig;
   contentType: ContentType;
   template?: TemplateTheme;
   onReady?: () => void;
-  carouselMode?: CarouselMode;
   currentPhotoIndexOverride?: number;
   logoSettings?: LogoSettings;
   textComposition?: TextCompositionSettings;
@@ -36,7 +29,6 @@ export const CanvasPreview = ({
   contentType, 
   template = "residencial", 
   onReady, 
-  carouselMode, 
   currentPhotoIndexOverride,
   logoSettings = {
     position: 'top-right',
@@ -67,7 +59,7 @@ export const CanvasPreview = ({
   const templateConfig = TEMPLATE_THEMES[template];
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const activePhotoIndex = currentPhotoIndexOverride !== undefined ? currentPhotoIndexOverride : currentPhotoIndex;
-  const hasMultiplePhotos = propertyData.fotos && propertyData.fotos.length > 1 && !carouselMode;
+  const hasMultiplePhotos = propertyData.fotos && propertyData.fotos.length > 1;
 
   // Estilos dinámicos del logo
   const logoStyle = useLogoStyles(logoSettings);
@@ -200,7 +192,7 @@ export const CanvasPreview = ({
       style={{ backgroundColor: "#000" }}
     >
       {/* Foto principal con navegación */}
-      {propertyData.fotos && propertyData.fotos.length > 0 && !carouselMode?.isLastSlide && (
+      {propertyData.fotos && propertyData.fotos.length > 0 && (
         <div className="absolute inset-0">
           <img 
             src={propertyData.fotos[activePhotoIndex]} 
@@ -254,54 +246,8 @@ export const CanvasPreview = ({
         </div>
       )}
 
-      {/* Slide CTA final para carrusel */}
-      {carouselMode?.isLastSlide && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-8 space-y-6"
-          style={{ background: `linear-gradient(135deg, ${templateConfig.colors.primary}, ${templateConfig.colors.secondary})` }}
-        >
-          <img 
-            src={aliadoConfig.logo} 
-            alt={aliadoConfig.nombre}
-            className="w-48 h-auto object-contain mb-4"
-          />
-          <h2 className="text-4xl font-black text-white text-center leading-tight">
-            ¡Tu {propertyData.tipo} ideal te espera!
-          </h2>
-          <p className="text-2xl font-bold text-white/90 text-center">
-            {isVenta ? "¡Compra" : "¡Arrienda"} con confianza
-          </p>
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 space-y-3 border border-white/20">
-            <p className="text-xl font-bold text-white text-center">
-              📱 {aliadoConfig.whatsapp}
-            </p>
-            <p className="text-lg font-semibold text-white/90 text-center">
-              {aliadoConfig.nombre}
-            </p>
-            <p className="text-base text-white/80 text-center">
-              📍 {aliadoConfig.ciudad}
-            </p>
-          </div>
-          <div className="absolute bottom-6 right-6">
-            <img 
-              src={elGestorLogo} 
-              alt="El Gestor"
-              className="h-10 w-auto object-contain opacity-90"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Indicador de slide número para carrusel */}
-      {carouselMode && !carouselMode.isLastSlide && (
-        <div className="absolute top-4 right-4 z-30 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2">
-          <p className="text-sm font-bold text-white">
-            {carouselMode.slideNumber}/{carouselMode.totalSlides}
-          </p>
-        </div>
-      )}
-
       {/* Header con logo del aliado - diseño reel */}
-      {!carouselMode?.isLastSlide && effectiveVisualLayers.showAllyLogo && (
+      {effectiveVisualLayers.showAllyLogo && (
       <div 
         className={`absolute ${logoStyle.positionClass} z-20`}
         style={{ 
@@ -323,7 +269,7 @@ export const CanvasPreview = ({
       )}
 
       {/* Información inferior - diseño reel minimalista */}
-      {!carouselMode?.isLastSlide && (
+      {(
       <div className="absolute bottom-4 left-4 right-4 pr-20 pb-8 z-30">
         <div className="space-y-2">
           {/* Título y ubicación */}
@@ -593,7 +539,7 @@ export const CanvasPreview = ({
       )}
 
       {/* Logo El Gestor - inferior derecha (marca secundaria) */}
-      {!carouselMode?.isLastSlide && (
+      {(
       <div className={`absolute ${isStory ? "bottom-24 right-6" : "bottom-4 right-4"} z-30`}>
         <img 
           src={elGestorLogo} 

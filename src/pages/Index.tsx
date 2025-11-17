@@ -16,7 +16,6 @@ import { MetricsPanel } from "@/components/MetricsPanel";
 import { PostControlsPanel } from "@/components/PostControlsPanel";
 
 import { LoadingState } from "@/components/LoadingState";
-import { CarouselGenerator } from "@/components/CarouselGenerator";
 import { AliadoConfig, PropertyData, ContentType, LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
 import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
 import { Button } from "@/components/ui/button";
@@ -421,14 +420,6 @@ const Index = () => {
                 onClick={() => handleContentTypeSelect("post")}
               />
               <ContentTypeCard
-                icon={ImageIcon}
-                title="Carrusel (3-10 fotos)"
-                description="Múltiples slides para Instagram - 1.4x más engagement"
-                primaryColor={aliadoConfig.colorPrimario}
-                secondaryColor={aliadoConfig.colorSecundario}
-                onClick={() => handleContentTypeSelect("carrusel")}
-              />
-              <ContentTypeCard
                 icon={Smartphone}
                 title="Historia"
                 description="9:16 para Stories de Instagram"
@@ -695,9 +686,7 @@ const Index = () => {
                         size="lg"
                         disabled={
                           !propertyData.tipo || 
-                          propertyData.fotos?.length === 0 ||
-                          (selectedContentType === "carrusel" && 
-                            (propertyData.fotos?.length < 3 || propertyData.fotos?.length > 10))
+                          propertyData.fotos?.length === 0
                         }
                       >
                         Generar Vista Previa
@@ -706,13 +695,6 @@ const Index = () => {
                     {(!propertyData.tipo || propertyData.fotos?.length === 0) && (
                       <TooltipContent>
                         <p>Completa el formulario y sube al menos una foto</p>
-                      </TooltipContent>
-                    )}
-                    {selectedContentType === "carrusel" && 
-                      propertyData.fotos && 
-                      (propertyData.fotos.length < 3 || propertyData.fotos.length > 10) && (
-                      <TooltipContent>
-                        <p>El carrusel requiere entre 3 y 10 fotos</p>
                       </TooltipContent>
                     )}
                   </Tooltip>
@@ -931,13 +913,6 @@ const Index = () => {
                 onCaptionChange={(v) => setGeneratedCaption(v)}
                 onCopyCaption={handleCopyCaption}
                 onRegenerateCaption={handleRegenerateCaption}
-              />
-            ) : selectedContentType === "carrusel" && aliadoConfig ? (
-              // Carrusel con múltiples slides
-              <CarouselGenerator
-                propertyData={propertyData as PropertyData}
-                aliadoConfig={aliadoConfig}
-                caption={generatedCaption}
               />
             ) : selectedContentType === "reel-video" && aliadoConfig && propertyData.fotos?.[0] ? (
               <VideoReelRecorder

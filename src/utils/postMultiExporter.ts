@@ -1,6 +1,31 @@
 import { PropertyData, AliadoConfig, ContentType } from "@/types/property";
 import { ExportOptions } from "@/utils/imageExporter";
-import { captureCurrentSlide } from "./unifiedCarouselExporter";
+import html2canvas from "html2canvas";
+import { saveAs } from "file-saver";
+
+/**
+ * Captura el slide actual del preview y lo descarga
+ */
+const captureCurrentSlide = async (filename: string): Promise<void> => {
+  const previewElement = document.querySelector('[data-canvas-preview]');
+  
+  if (!previewElement) {
+    throw new Error('No se encontró el elemento del preview');
+  }
+
+  const canvas = await html2canvas(previewElement as HTMLElement, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: null,
+  });
+
+  canvas.toBlob((blob) => {
+    if (blob) {
+      saveAs(blob, filename);
+    }
+  }, 'image/png');
+};
 
 /**
  * Exporta todas las fotos del post cuadrado como PNGs individuales numerados
