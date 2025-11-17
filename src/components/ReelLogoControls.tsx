@@ -47,10 +47,10 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
               variant={settings.position === pos.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, position: pos.value })}
-              className="flex flex-col h-16 gap-1.5"
+              className="flex flex-col h-12 gap-0.5"
             >
-              <span className="text-xl">{pos.icon}</span>
-              <span className="text-xs leading-tight">{pos.label}</span>
+              <span className="text-lg">{pos.icon}</span>
+              <span className="text-[10px] leading-tight">{pos.label}</span>
             </Button>
           ))}
         </div>
@@ -88,10 +88,10 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
               variant={settings.background === bg.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, background: bg.value })}
-              className="flex flex-col h-16 gap-1.5"
+              className="flex flex-col h-12 gap-0.5"
             >
-              <span className="text-xl">{bg.icon}</span>
-              <span className="text-xs leading-tight">{bg.label}</span>
+              <span className="text-lg">{bg.icon}</span>
+              <span className="text-[10px] leading-tight">{bg.label}</span>
             </Button>
           ))}
         </div>
@@ -107,10 +107,10 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
               variant={settings.size === size.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, size: size.value })}
-              className="flex flex-col h-16 gap-1"
+              className="flex flex-col h-12 gap-0.5"
             >
-              <span className="text-lg font-bold">{size.px}px</span>
-              <span className="text-xs">{size.label}</span>
+              <span className="text-base font-bold">{size.px}px</span>
+              <span className="text-[10px]">{size.label}</span>
             </Button>
           ))}
         </div>
@@ -126,10 +126,10 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
               variant={(settings.shape || 'rounded') === shape.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, shape: shape.value })}
-              className="flex flex-col h-16 gap-1"
+              className="flex flex-col h-12 gap-0.5"
             >
-              <span className="text-xl">{shape.icon}</span>
-              <span className="text-xs">{shape.label}</span>
+              <span className="text-lg">{shape.icon}</span>
+              <span className="text-[10px]">{shape.label}</span>
             </Button>
           ))}
         </div>

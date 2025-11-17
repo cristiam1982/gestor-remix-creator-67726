@@ -55,11 +55,11 @@ export const SummaryBackgroundSelector = ({
             }`}
             onClick={() => onChange(key)}
           >
-            <CardContent className="p-4 text-center">
-              <div className="text-3xl mb-2">{option.icon}</div>
-              <h4 className="font-semibold text-xs mb-1">{option.label}</h4>
-              <p className="text-xs text-muted-foreground">{option.description}</p>
-              {selected === key && <div className="mt-2 text-primary">✓</div>}
+            <CardContent className="p-3 text-center">
+              <div className="text-2xl mb-1">{option.icon}</div>
+              <h4 className="font-semibold text-[10px] mb-0.5">{option.label}</h4>
+              <p className="text-[9px] text-muted-foreground leading-tight">{option.description}</p>
+              {selected === key && <div className="mt-1 text-primary text-sm">✓</div>}
             </CardContent>
           </Card>
         ))}

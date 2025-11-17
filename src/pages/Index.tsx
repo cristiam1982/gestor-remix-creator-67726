@@ -1017,18 +1017,20 @@ const Index = () => {
                     </div>
                   </Card>
 
-                  <PostControlsPanel
-                    logoSettings={postLogoSettings}
-                    onLogoSettingsChange={setPostLogoSettings}
-                    textComposition={postTextComposition}
-                    onTextCompositionChange={setPostTextComposition}
-                    visualLayers={postVisualLayers}
-                    onVisualLayersChange={setPostVisualLayers}
-                    gradientDirection={postGradientDirection}
-                    onGradientDirectionChange={setPostGradientDirection}
-                    gradientIntensity={postGradientIntensity}
-                    onGradientIntensityChange={setPostGradientIntensity}
-                  />
+                <PostControlsPanel
+                  logoSettings={postLogoSettings}
+                  onLogoSettingsChange={setPostLogoSettings}
+                  textComposition={postTextComposition}
+                  onTextCompositionChange={setPostTextComposition}
+                  visualLayers={postVisualLayers}
+                  onVisualLayersChange={setPostVisualLayers}
+                  gradientDirection={postGradientDirection}
+                  onGradientDirectionChange={setPostGradientDirection}
+                  gradientIntensity={postGradientIntensity}
+                  onGradientIntensityChange={setPostGradientIntensity}
+                  firstPhotoConfig={postFirstPhotoConfig}
+                  onFirstPhotoConfigChange={setPostFirstPhotoConfig}
+                />
                 </div>
 
                 {/* DESKTOP: Grid con ScrollArea en controles + preview fijo */}
@@ -1048,6 +1050,8 @@ const Index = () => {
                       onGradientDirectionChange={setPostGradientDirection}
                       gradientIntensity={postGradientIntensity}
                       onGradientIntensityChange={setPostGradientIntensity}
+                      firstPhotoConfig={postFirstPhotoConfig}
+                      onFirstPhotoConfigChange={setPostFirstPhotoConfig}
                     />
                     </div>
                   </ScrollArea>
