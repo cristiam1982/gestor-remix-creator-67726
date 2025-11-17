@@ -19,13 +19,13 @@ export const useLogoStyles = (logoSettings: LogoSettings) => {
         backgroundClass = '';
         break;
       case 'frosted':
-        backgroundClass = 'backdrop-blur-[24px] bg-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.8)] border border-white/20';
+        backgroundClass = 'backdrop-blur-[24px] bg-white/50 border border-white/20';
         break;
       case 'glow':
-        backgroundClass = 'bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.4),0_0_40px_rgba(255,255,255,0.2),inset_0_0_20px_rgba(255,255,255,0.1)]';
+        backgroundClass = 'bg-white/90';
         break;
       case 'elevated':
-        backgroundClass = 'bg-gradient-to-br from-white via-white/98 to-gray-50/95 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.04),0_4px_8px_rgba(0,0,0,0.04),0_8px_16px_rgba(0,0,0,0.04),0_16px_32px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.9)]';
+        backgroundClass = 'bg-gradient-to-br from-white via-white/98 to-gray-50/95';
         break;
     }
 
