@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 type GradientDirection = 'top' | 'bottom' | 'both' | 'none';
 
 interface GradientSelectorProps {
-  selected: GradientDirection;
+  direction: GradientDirection;
   onChange: (direction: GradientDirection) => void;
 }
 
@@ -31,7 +31,7 @@ const GRADIENT_OPTIONS: Record<GradientDirection, { label: string; icon: string;
   }
 };
 
-export const GradientSelector = ({ selected, onChange }: GradientSelectorProps) => {
+export const GradientSelector = ({ direction, onChange }: GradientSelectorProps) => {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
@@ -41,7 +41,7 @@ export const GradientSelector = ({ selected, onChange }: GradientSelectorProps) 
       <div className="grid grid-cols-4 gap-3">
         {(Object.keys(GRADIENT_OPTIONS) as GradientDirection[]).map((key) => {
           const option = GRADIENT_OPTIONS[key];
-          const isSelected = selected === key;
+          const isSelected = direction === key;
           
           return (
             <Card

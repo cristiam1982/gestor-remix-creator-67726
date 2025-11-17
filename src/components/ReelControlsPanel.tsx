@@ -145,7 +145,7 @@ export const ReelControlsPanel = ({
         </AccordionTrigger>
         <AccordionContent className="space-y-4 pt-2">
           <GradientSelector
-            selected={gradientDirection}
+            direction={gradientDirection}
             onChange={onGradientDirectionChange}
           />
           

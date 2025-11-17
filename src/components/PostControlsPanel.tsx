@@ -130,7 +130,7 @@ export const PostControlsPanel = ({
           </AccordionTrigger>
           <AccordionContent className="pt-4 space-y-6">
             <GradientSelector
-              selected={gradientDirection}
+              direction={gradientDirection}
               onChange={onGradientDirectionChange}
             />
             <GradientIntensitySlider
