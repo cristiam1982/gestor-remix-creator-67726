@@ -32,7 +32,6 @@ import { Textarea } from "@/components/ui/textarea";
 import FFmpegManager from "@/utils/ffmpegManager";
 import { REEL_TEMPLATES, applyGradientIntensity } from "@/utils/reelTemplates";
 import { ReelFrame } from "@/components/ReelFrame";
-import { ParityLab } from "@/components/ParityLab";
 
 import {
   DndContext,
@@ -225,9 +224,6 @@ export const ReelSlideshow = ({
     const saved = localStorage.getItem('reel-export-quality');
     return (saved === 'fast' || saved === 'high') ? saved : 'fast';
   });
-
-  // Paridad Lab
-  const [showParityLab, setShowParityLab] = useState(false);
 
   // Estados para la entrada elegante del logo (0..1)
   // Estado de animación de entrada del logo
@@ -881,48 +877,8 @@ export const ReelSlideshow = ({
                         Exporta frames individuales para validar calidad sin generar video completo (ahorra créditos).
                       </p>
                     </div>
-
-                    {/* Laboratorio de Paridad */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm font-medium">🔬 Laboratorio de Paridad</Label>
-                        <Switch checked={showParityLab} onCheckedChange={setShowParityLab} />
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Activa para validar que el frame capturado sea idéntico al preview antes de generar video.
-                      </p>
-                    </div>
                   </AccordionContent>
                 </AccordionItem>
-
-                {/* Laboratorio de Paridad (si está activo) */}
-                {showParityLab && (
-                  <AccordionItem value="parity">
-                    <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-                      🔬 Laboratorio de Paridad
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <ParityLab
-                        photoSrc={photosList[currentPhotoIndex]?.src || ''}
-                        photoIndex={currentPhotoIndex}
-                        propertyData={propertyData}
-                        aliadoConfig={aliadoConfig}
-                        visualLayers={visualLayers}
-                        textComposition={textComposition}
-                        logoSettings={logoSettings}
-                        gradientDirection={gradientDirection}
-                        gradientIntensity={gradientIntensity}
-                        currentTemplate={selectedTemplate}
-                        showSummarySlide={showSummarySlide}
-                        photos={photosList.map(p => p.src)}
-                        summaryBackground={summaryBackground}
-                        summarySolidColor={summarySolidColor}
-                        customHashtag={customHashtag}
-                        customPhone={customPhone}
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
               </Accordion>
             </Card>
 
