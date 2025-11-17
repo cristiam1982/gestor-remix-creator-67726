@@ -220,6 +220,7 @@ export const ReelSlideshow = ({
   const [showParityLab, setShowParityLab] = useState(false);
 
   // Estados para la entrada elegante del logo (0..1)
+  // Estado de animación de entrada del logo
   const [previewEntranceProgress, setPreviewEntranceProgress] = useState(1);
   const [captureEntranceProgress, setCaptureEntranceProgress] = useState(1);
 
@@ -353,27 +354,27 @@ export const ReelSlideshow = ({
     });
   }, []);
 
-  // Animación de entrada del logo en el preview (solo primera foto)
+  // Animación de entrada del logo en preview (solo primera foto)
   useEffect(() => {
     if (currentPhotoIndex === 0 && !showSummarySlide) {
-      // Animar desde 0 a 1 en 500ms
-      const startTime = performance.now();
-      const duration = 500; // 0.5 segundos
-      
-      const animate = (currentTime: number) => {
-        const elapsed = currentTime - startTime;
+      // Reset explícito antes de animar
+      setPreviewEntranceProgress(0);
+      const startTime = Date.now();
+      const duration = 480;
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
         setPreviewEntranceProgress(progress);
-        
+
         if (progress < 1) {
           requestAnimationFrame(animate);
         }
       };
-      
-      setPreviewEntranceProgress(0);
+
       requestAnimationFrame(animate);
     } else {
-      // En otras fotos o en resumen, logo totalmente visible
+      // Asegurar que otras fotos tengan logo visible
       setPreviewEntranceProgress(1);
     }
   }, [currentPhotoIndex, showSummarySlide]);
@@ -479,6 +480,10 @@ export const ReelSlideshow = ({
       setCurrentPhotoIndex(0);
       setShowSummarySlide(false);
       
+      // Reset explícito del progreso de entrada antes de exportar
+      setCaptureEntranceProgress(0);
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      
       toast({
         title: "✨ ¡Generando tu reel!",
         description: "Esto tomará 10-30 segundos. No cierres esta pestaña.",
@@ -506,16 +511,12 @@ export const ReelSlideshow = ({
         });
       };
 
-      // Callback para actualizar el progreso de entrada del logo durante captura
+      // Callback robusto para actualizar el progreso de entrada del logo durante captura
       const setEntranceProgressForCapture = async (progress: number): Promise<void> => {
         setCaptureEntranceProgress(progress);
-        return new Promise((resolve) => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              resolve();
-            });
-          });
-        });
+        // Doble RAF + micro delay para garantizar render
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        await new Promise(resolve => setTimeout(resolve, 25));
       };
 
       if (exportQuality === 'high') {

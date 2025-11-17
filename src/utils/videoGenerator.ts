@@ -949,11 +949,16 @@ export const generateReelVideoMP4 = async (
       if (photoIndex === 0 && typeof setEntranceProgress === 'function') {
         console.log(`✨ Capturando entrada del logo: ${entranceFrames} frames de fade-in`);
         
+        // Reset a 0 antes de capturar entrada
+        await setEntranceProgress(0);
+        await waitForCaptureReady(elementId);
+        
         // Capturar frames de entrada progresivamente (0.0 → 1.0)
         for (let i = 0; i < entranceFrames; i++) {
           const progress = i / (entranceFrames - 1); // 0.0, 0.066, 0.133, ..., 1.0
           await setEntranceProgress(progress);
           await waitForCaptureReady(elementId);
+          await new Promise(resolve => setTimeout(resolve, 30)); // micro delay para máquinas lentas
           
           const entranceCanvas = await captureFrame(elementId, false);
           entranceCanvases.push(entranceCanvas);
@@ -1313,21 +1318,73 @@ export const generateReelVideoMP4_FFmpegFrames = async (
       // Esperar a que el contenedor esté listo
       await waitForCaptureReady(elementId);
 
-      console.log(`📸 Capturando frames para foto ${photoIndex + 1}/${photos.length}...`);
-      const frameCanvas = await captureFrame(elementId, false);
-      
-      // Duplicar frame según duración
-      for (let i = 0; i < framesPerPhoto; i++) {
-        frameNumber++;
-        
-        // Convertir canvas a PNG
-        const blob = await new Promise<Blob>((resolve) => {
-          frameCanvas.toBlob((b) => resolve(b!), 'image/png', 1.0);
+      // Slide 0: entrada del logo (fade-in 0.5s)
+      if (photoIndex === 0 && typeof setEntranceProgress === 'function') {
+        const entranceFrames = Math.min(Math.round(0.5 * fps), framesPerPhoto);
+        console.log(`✨ Capturando entrada del logo FFmpeg: ${entranceFrames} frames`);
+
+        // Reset a 0
+        await setEntranceProgress(0);
+        await waitForCaptureReady(elementId);
+
+        // Capturar y escribir frames de entrada progresivos
+        for (let i = 0; i < entranceFrames; i++) {
+          const progress = i / (entranceFrames - 1);
+          await setEntranceProgress(progress);
+          await waitForCaptureReady(elementId);
+          await new Promise(resolve => setTimeout(resolve, 30)); // micro delay
+
+          frameNumber++;
+          const entranceCanvas = await captureFrame(elementId, false);
+          const blob = await new Promise<Blob>((resolve) => {
+            entranceCanvas.toBlob((b) => resolve(b!), 'image/png', 1.0);
+          });
+
+          const data = new Uint8Array(await blob.arrayBuffer());
+          const frameName = `frame_${String(frameNumber).padStart(4, '0')}.png`;
+          await ffmpeg.writeFile(frameName, data);
+        }
+
+        // Frame final a opacity=1
+        await setEntranceProgress(1);
+        await waitForCaptureReady(elementId);
+        const finalCanvas = await captureFrame(elementId, false);
+        const finalBlob = await new Promise<Blob>((resolve) => {
+          finalCanvas.toBlob((b) => resolve(b!), 'image/png', 1.0);
         });
+
+        const finalData = new Uint8Array(await finalBlob.arrayBuffer());
+        const finalFrameName = `frame_${String(frameNumber + 1).padStart(4, '0')}.png`;
+        await ffmpeg.writeFile(finalFrameName, finalData);
+
+        // Duplicar el frame final por el resto de la duración
+        const remainingFrames = framesPerPhoto - entranceFrames;
+        for (let i = 0; i < remainingFrames; i++) {
+          frameNumber++;
+        }
+      } else {
+        // Otras fotos: sin entrada, capturar una vez y duplicar
+        if (typeof setEntranceProgress === 'function') {
+          await setEntranceProgress(1);
+          await waitForCaptureReady(elementId);
+        }
+
+        console.log(`📸 Capturando frames para foto ${photoIndex + 1}/${photos.length}...`);
+        const frameCanvas = await captureFrame(elementId, false);
         
-        const data = new Uint8Array(await blob.arrayBuffer());
-        const frameName = `frame_${String(frameNumber).padStart(4, '0')}.png`;
-        await ffmpeg.writeFile(frameName, data);
+        // Duplicar frame según duración
+        for (let i = 0; i < framesPerPhoto; i++) {
+          frameNumber++;
+          
+          // Convertir canvas a PNG
+          const blob = await new Promise<Blob>((resolve) => {
+            frameCanvas.toBlob((b) => resolve(b!), 'image/png', 1.0);
+          });
+          
+          const data = new Uint8Array(await blob.arrayBuffer());
+          const frameName = `frame_${String(frameNumber).padStart(4, '0')}.png`;
+          await ffmpeg.writeFile(frameName, data);
+        }
       }
 
       const captureProgress = 15 + ((photoIndex + 1) / totalSlides) * 60;

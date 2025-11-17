@@ -71,6 +71,10 @@ export const ReelFrame = ({
 
   // Estilos dinámicos del logo
   const logoStyle = useLogoStyles(logoSettings);
+  const logoUrl = getLogoUrl(logoSettings.background, aliadoConfig);
+
+  // Calcular opacidad con entrada
+  const finalOpacity = logoStyle.opacity * easeOutCubic(logoEntranceProgress);
 
   // Gradient overlay style
   const gradientOverlayStyle = useMemo(() => {
@@ -165,25 +169,45 @@ export const ReelFrame = ({
         <div 
           className="absolute z-20"
           style={{ 
-            opacity: logoStyle.opacity * easeOutCubic(logoEntranceProgress), // Aplicar entrada con easing
+            opacity: finalOpacity,
             top: mode === 'capture' ? '48px' : '24px',
             ...(logoSettings.position === 'top-left' 
               ? { left: mode === 'capture' ? '48px' : '24px' }
               : { right: mode === 'capture' ? '48px' : '24px' }
             ),
-            transform: mode === 'capture' ? `scale(${captureScale})` : 'none',
-            transformOrigin: logoSettings.position === 'top-left' ? 'top left' : 'top right'
+            transform: mode === 'capture' ? `scale(${captureScale})` : 'scale(1)',
+            transformOrigin: logoSettings.position === 'top-left' ? 'top left' : 'top right',
+            ...(mode === 'preview' && {
+              transition: 'opacity 480ms cubic-bezier(0.22, 1, 0.36, 1), transform 480ms cubic-bezier(0.22, 1, 0.36, 1)',
+              transform: `scale(1) translateY(${(1 - easeOutCubic(logoEntranceProgress)) * 6}px)`,
+            }),
           }}
         >
-          <img
-            src={getLogoUrl(logoSettings.background, aliadoConfig)}
-            alt={aliadoConfig.nombre}
-            className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass}`}
-            style={{ width: logoStyle.size, height: logoStyle.size }}
-            crossOrigin="anonymous"
-            referrerPolicy="no-referrer"
-            data-ally-logo="true"
-          />
+          <div
+            className={`${logoStyle.shapeClass} ${logoStyle.backgroundClass} p-3 flex items-center justify-center`}
+            style={{
+              borderBottom: `3px solid ${aliadoConfig.colorPrimario}`,
+              ...(mode === 'capture' && logoSettings.background === 'frosted' && {
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.8)',
+              }),
+            }}
+          >
+            <img
+              src={logoUrl}
+              alt={aliadoConfig.nombre}
+              className="w-full h-full object-contain"
+              style={{ 
+                width: logoStyle.size, 
+                height: logoStyle.size,
+                maxWidth: mode === 'capture' ? '240px' : '120px',
+                maxHeight: mode === 'capture' ? '240px' : '120px',
+              }}
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
+              data-ally-logo="true"
+            />
+          </div>
         </div>
       )}
 
