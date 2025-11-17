@@ -90,9 +90,14 @@ export const CanvasPreview = ({
     layers.showBadge = firstPhotoConfig.showTitle;
     layers.showIcons = firstPhotoConfig.showIcons;
     
-    // CTA siempre oculto en primera foto cuando no hay elementos
-    if (!firstPhotoConfig.showPrice && !firstPhotoConfig.showTitle && !firstPhotoConfig.showIcons) {
-      layers.showCTA = false;
+    // Aplicar showCTA si está definido explícitamente
+    if (firstPhotoConfig.showCTA !== undefined) {
+      layers.showCTA = firstPhotoConfig.showCTA;
+    } else {
+      // Auto-ocultar CTA cuando no hay elementos visibles
+      if (!firstPhotoConfig.showPrice && !firstPhotoConfig.showTitle && !firstPhotoConfig.showIcons) {
+        layers.showCTA = false;
+      }
     }
 
     return layers;
