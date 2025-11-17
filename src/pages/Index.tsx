@@ -17,7 +17,7 @@ import { PostControlsPanel } from "@/components/PostControlsPanel";
 
 import { LoadingState } from "@/components/LoadingState";
 import { CarouselGenerator } from "@/components/CarouselGenerator";
-import { AliadoConfig, PropertyData, ContentType, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
+import { AliadoConfig, PropertyData, ContentType, LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
 import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -90,6 +90,10 @@ const Index = () => {
   });
   const [postGradientDirection, setPostGradientDirection] = useState<'top' | 'bottom' | 'both' | 'none'>('both');
   const [postGradientIntensity, setPostGradientIntensity] = useState(60);
+  const [postFirstPhotoConfig, setPostFirstPhotoConfig] = useState<FirstPhotoConfig>({
+    overlayStyle: 'full',
+    textScaleOverride: 0,
+  });
   
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
@@ -1022,6 +1026,8 @@ const Index = () => {
                     onGradientDirectionChange={setPostGradientDirection}
                     gradientIntensity={postGradientIntensity}
                     onGradientIntensityChange={setPostGradientIntensity}
+                    firstPhotoConfig={postFirstPhotoConfig}
+                    onFirstPhotoConfigChange={setPostFirstPhotoConfig}
                   />
                 </div>
 
@@ -1031,18 +1037,20 @@ const Index = () => {
                   {/* COLUMNA IZQUIERDA: Controles con scroll independiente */}
                   <ScrollArea className="h-full pr-4">
                     <div className="space-y-4 pb-6">
-                      <PostControlsPanel
-                        logoSettings={postLogoSettings}
-                        onLogoSettingsChange={setPostLogoSettings}
-                        textComposition={postTextComposition}
-                        onTextCompositionChange={setPostTextComposition}
-                        visualLayers={postVisualLayers}
-                        onVisualLayersChange={setPostVisualLayers}
-                        gradientDirection={postGradientDirection}
-                        onGradientDirectionChange={setPostGradientDirection}
-                        gradientIntensity={postGradientIntensity}
-                        onGradientIntensityChange={setPostGradientIntensity}
-                      />
+                    <PostControlsPanel
+                      logoSettings={postLogoSettings}
+                      onLogoSettingsChange={setPostLogoSettings}
+                      textComposition={postTextComposition}
+                      onTextCompositionChange={setPostTextComposition}
+                      visualLayers={postVisualLayers}
+                      onVisualLayersChange={setPostVisualLayers}
+                      gradientDirection={postGradientDirection}
+                      onGradientDirectionChange={setPostGradientDirection}
+                      gradientIntensity={postGradientIntensity}
+                      onGradientIntensityChange={setPostGradientIntensity}
+                      firstPhotoConfig={postFirstPhotoConfig}
+                      onFirstPhotoConfigChange={setPostFirstPhotoConfig}
+                    />
                     </div>
                   </ScrollArea>
 

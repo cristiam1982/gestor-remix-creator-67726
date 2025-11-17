@@ -61,6 +61,13 @@ export interface VisualLayers {
   showCTA: boolean;
 }
 
+// First Photo Configuration (Portada especial)
+export interface FirstPhotoConfig {
+  duration?: number; // 1000-5000ms (solo Reel)
+  overlayStyle: 'full' | 'simple' | 'clean'; // full: precio+título+iconos, simple: precio+título, clean: sin overlays
+  textScaleOverride?: number; // -40 a +40 (porcentaje)
+}
+
 export interface PropertyData {
   tipo: PropertyType;
   modalidad?: "arriendo" | "venta";
@@ -90,4 +97,5 @@ export interface PropertyData {
   logoSettings?: LogoSettings;
   textComposition?: TextCompositionSettings;
   visualLayers?: VisualLayers;
+  firstPhotoConfig?: FirstPhotoConfig; // Configuración especial para primera foto
 }

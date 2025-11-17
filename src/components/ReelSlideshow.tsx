@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { PropertyData, AliadoConfig, ReelTemplate, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
+import { PropertyData, AliadoConfig, ReelTemplate, LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -198,6 +198,15 @@ export const ReelSlideshow = ({
       showIcons: false,
       showAllyLogo: true,
       showCTA: true
+    }
+  );
+
+  // Primera foto (Portada): Configuración especial
+  const [firstPhotoConfig, setFirstPhotoConfig] = useState<FirstPhotoConfig>(
+    propertyData.firstPhotoConfig || {
+      duration: slideDuration, // Por defecto igual al resto
+      overlayStyle: 'full',
+      textScaleOverride: 0
     }
   );
 
@@ -695,6 +704,8 @@ export const ReelSlideshow = ({
                       onTextCompositionChange={setTextComposition}
                       visualLayers={visualLayers}
                       onVisualLayersChange={setVisualLayers}
+                      firstPhotoConfig={firstPhotoConfig}
+                      onFirstPhotoConfigChange={setFirstPhotoConfig}
                     />
                   </AccordionContent>
                 </AccordionItem>
@@ -1318,6 +1329,8 @@ export const ReelSlideshow = ({
                     onTextCompositionChange={setTextComposition}
                     visualLayers={visualLayers}
                     onVisualLayersChange={setVisualLayers}
+                    firstPhotoConfig={firstPhotoConfig}
+                    onFirstPhotoConfigChange={setFirstPhotoConfig}
                   />
                 </AccordionContent>
               </AccordionItem>
