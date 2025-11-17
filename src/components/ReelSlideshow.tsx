@@ -389,9 +389,20 @@ export const ReelSlideshow = ({
     }
   }, [currentPhotoIndex, showSummarySlide]);
 
+  // Helper para obtener duración dinámica según foto actual
+  const getCurrentDuration = useCallback(() => {
+    if (showSummarySlide) return summaryDuration;
+    if (currentPhotoIndex === 0 && firstPhotoConfig?.duration) {
+      return firstPhotoConfig.duration;
+    }
+    return slideDuration;
+  }, [currentPhotoIndex, showSummarySlide, summaryDuration, slideDuration, firstPhotoConfig]);
+
   // PARTE 1: Autoplay mejorado con goToPhoto
   useEffect(() => {
     if (!isPlaying || photosList.length === 0) return;
+
+    const currentDuration = getCurrentDuration();
 
     const interval = setInterval(() => {
       if (showSummarySlide) {
@@ -407,15 +418,15 @@ export const ReelSlideshow = ({
         goToPhoto(currentPhotoIndex + 1);
       }
       setProgress(0);
-    }, showSummarySlide ? summaryDuration : slideDuration);
+    }, currentDuration);
 
     return () => clearInterval(interval);
-  }, [isPlaying, photosList.length, slideDuration, summaryDuration, showSummarySlide, currentPhotoIndex, goToPhoto]);
+  }, [isPlaying, photosList.length, showSummarySlide, currentPhotoIndex, goToPhoto, getCurrentDuration]);
 
   useEffect(() => {
     if (!isPlaying) return;
 
-    const duration = showSummarySlide ? summaryDuration : slideDuration;
+    const duration = getCurrentDuration();
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) return 0;
@@ -424,7 +435,7 @@ export const ReelSlideshow = ({
     }, 100);
 
     return () => clearInterval(progressInterval);
-  }, [isPlaying, currentPhotoIndex, slideDuration, summaryDuration, showSummarySlide]);
+  }, [isPlaying, currentPhotoIndex, showSummarySlide, getCurrentDuration]);
 
   // Precargar FFmpeg para evitar timeouts
   useEffect(() => {

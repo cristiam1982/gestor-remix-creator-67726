@@ -102,7 +102,14 @@ export const ReelFrame = ({
         break;
       case 'full':
       default:
-        // Completo: precio + título + iconos (mantener layers actual)
+        // Completo: FORZAR todos los overlays visibles
+        layers = {
+          ...layers,
+          showPrice: true,
+          showBadge: true,
+          showIcons: true,
+          showCTA: true
+        };
         break;
     }
 
