@@ -67,25 +67,25 @@ function SortableVideoItem({ video, index, onRemove, onSubtitleChange }: Sortabl
     <div
       ref={setNodeRef}
       style={style}
-      className="flex flex-col gap-2 p-3 bg-accent rounded-lg border border-border"
+      className="flex flex-col gap-1.5 p-2.5 bg-accent rounded-lg border border-border"
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <button
           className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
           {...attributes}
           {...listeners}
         >
-          <GripVertical className="w-5 h-5" />
+          <GripVertical className="w-4 h-4" />
         </button>
         
-        <div className="flex items-center gap-3 flex-1">
-          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-            <Video className="w-6 h-6 text-primary" />
+        <div className="flex items-center gap-2 flex-1">
+          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <Video className="w-5 h-5 text-primary" />
           </div>
           
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm truncate">Video {index + 1}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="font-medium text-xs truncate">Video {index + 1}</p>
+            <p className="text-[10px] text-muted-foreground">
               {formatDuration(video.duration)}
             </p>
           </div>
@@ -94,14 +94,14 @@ function SortableVideoItem({ video, index, onRemove, onSubtitleChange }: Sortabl
             variant="ghost"
             size="icon"
             onClick={() => onRemove(video.id)}
-            className="text-destructive hover:text-destructive"
+            className="text-destructive hover:text-destructive h-8 w-8"
           >
             <X className="w-4 h-4" />
           </Button>
         </div>
       </div>
       
-      <div className="ml-8 flex items-center gap-2">
+      <div className="ml-6 flex items-center gap-1.5">
         <span className="text-xs text-muted-foreground">💬</span>
         <input
           type="text"
@@ -109,9 +109,9 @@ function SortableVideoItem({ video, index, onRemove, onSubtitleChange }: Sortabl
           value={video.subtitle || ""}
           onChange={(e) => onSubtitleChange(video.id, e.target.value.slice(0, 40))}
           maxLength={40}
-          className="flex-1 text-sm px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+          className="flex-1 text-xs px-2.5 py-1.5 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
         />
-        <span className="text-xs text-muted-foreground">
+        <span className="text-[10px] text-muted-foreground">
           {(video.subtitle || "").length}/40
         </span>
       </div>
