@@ -10,6 +10,8 @@ import {
   CheckCircle,
   DollarSign,
   Images,
+  ChevronLeft,
+  Info,
 } from "lucide-react";
 import { ContentTypeCard } from "@/components/ContentTypeCard";
 import { BrandedHeroSection } from "@/components/BrandedHeroSection";
@@ -24,6 +26,8 @@ import { VideoReelRecorder } from "@/components/VideoReelRecorder";
 import { MultiVideoManager } from "@/components/MultiVideoManager";
 import { MultiVideoProcessingModal } from "@/components/MultiVideoProcessingModal";
 import { MultiVideoControlsPanel } from "@/components/MultiVideoControlsPanel";
+import { MultiVideoStaticPreview } from "@/components/MultiVideoStaticPreview";
+import { generateMultiVideoReel } from "@/utils/multiVideoGenerator";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { PostControlsPanel } from "@/components/PostControlsPanel";
 
@@ -50,7 +54,6 @@ import { savePublicationMetric, clearMetrics } from "@/utils/metricsManager";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useToast } from "@/hooks/use-toast";
 import { ALIADO_CONFIG } from "@/config/aliadoConfig";
-import { generateMultiVideoReel } from "@/utils/multiVideoGenerator";
 import { exportAllPhotos } from "@/utils/postMultiExporter";
 
 interface VideoInfo {
@@ -810,13 +813,26 @@ const Index = () => {
               <div className="h-[calc(100vh-180px)]">
                 {/* Layout móvil: vertical simple */}
                 <div className="lg:hidden space-y-4">
-                  {/* Manager de videos móvil */}
-                  <MultiVideoManager
-                    videos={multiVideos}
-                    onVideosChange={setMultiVideos}
-                    maxVideos={10}
-                    maxTotalDuration={100}
-                  />
+                  {/* Info resumida de videos */}
+                  <Card className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Video className="w-5 h-5 text-primary" />
+                        <span className="font-semibold text-sm">
+                          {multiVideos.length} video{multiVideos.length !== 1 ? 's' : ''} • {Math.round(multiVideos.reduce((acc, v) => acc + v.duration, 0))}s total
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCurrentStep(2)}
+                        className="text-xs"
+                      >
+                        <ChevronLeft className="w-4 h-4 mr-1" />
+                        Editar
+                      </Button>
+                    </div>
+                  </Card>
                   
                   {/* Panel de personalización móvil */}
                   <Card className="p-4">
@@ -839,14 +855,21 @@ const Index = () => {
                   <Card className="p-4">
                     <h3 className="text-lg font-semibold mb-3 text-primary">🎬 Reel Multi-Video</h3>
                     <div className="space-y-3">
-                      <div className="p-3 bg-accent rounded-lg">
-                        <p className="text-xs text-muted-foreground mb-1.5">
-                          <strong>{multiVideos.length} videos</strong> • Historia vertical (9:16)
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          Duración total: {Math.round(multiVideos.reduce((sum, v) => sum + v.duration, 0))} segundos
-                        </p>
-                      </div>
+                      {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && (
+                        <MultiVideoStaticPreview
+                          videoFile={multiVideos[0].file!}
+                          propertyData={propertyData as PropertyData}
+                          aliadoConfig={aliadoConfig}
+                          visualSettings={{
+                            logoSettings: multiVideoLogoSettings,
+                            textComposition: multiVideoTextComposition,
+                            visualLayers: multiVideoVisualLayers,
+                            gradientDirection: multiVideoGradientDirection,
+                            gradientIntensity: multiVideoGradientIntensity
+                          }}
+                          subtitle={multiVideos[0].subtitle}
+                        />
+                      )}
 
                       {isProcessingMultiVideo && (
                         <MultiVideoProcessingModal
@@ -994,12 +1017,25 @@ const Index = () => {
                 <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-full">
                   <ScrollArea className="h-full pr-4">
                     <div className="space-y-4">
-                      <MultiVideoManager
-                        videos={multiVideos}
-                        onVideosChange={setMultiVideos}
-                        maxVideos={10}
-                        maxTotalDuration={100}
-                      />
+                      {/* Info resumida de videos */}
+                      <Card className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Video className="w-5 h-5 text-primary" />
+                            <span className="font-semibold">
+                              {multiVideos.length} video{multiVideos.length !== 1 ? 's' : ''} • {Math.round(multiVideos.reduce((acc, v) => acc + v.duration, 0))}s total
+                            </span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setCurrentStep(2)}
+                          >
+                            <ChevronLeft className="w-4 h-4 mr-1" />
+                            Editar videos
+                          </Button>
+                        </div>
+                      </Card>
                       
                       <Card className="p-4">
                         <h3 className="text-lg font-semibold mb-3 text-primary">🎨 Personalización</h3>
@@ -1025,14 +1061,21 @@ const Index = () => {
                     
                     <div className="flex-1 overflow-auto">
                       <div className="space-y-3">
-                        <div className="p-3 bg-accent rounded-lg">
-                          <p className="text-xs text-muted-foreground mb-1.5">
-                            <strong>{multiVideos.length} videos</strong> • Historia vertical (9:16)
-                          </p>
-                          <p className="text-[10px] text-muted-foreground">
-                            Duración total: {Math.round(multiVideos.reduce((sum, v) => sum + v.duration, 0))} segundos
-                          </p>
-                        </div>
+                        {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && (
+                          <MultiVideoStaticPreview
+                            videoFile={multiVideos[0].file!}
+                            propertyData={propertyData as PropertyData}
+                            aliadoConfig={aliadoConfig}
+                            visualSettings={{
+                              logoSettings: multiVideoLogoSettings,
+                              textComposition: multiVideoTextComposition,
+                              visualLayers: multiVideoVisualLayers,
+                              gradientDirection: multiVideoGradientDirection,
+                              gradientIntensity: multiVideoGradientIntensity
+                            }}
+                            subtitle={multiVideos[0].subtitle}
+                          />
+                        )}
 
                         {isProcessingMultiVideo && (
                           <MultiVideoProcessingModal
