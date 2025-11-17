@@ -1154,7 +1154,7 @@ export const generateReelVideoMP4 = async (
         for (const entranceCanvas of slide.entranceFrames) {
           ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
           ctx.drawImage(entranceCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
-          await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+          await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
         }
         
         // Reproducir el resto del slide con frame completo
@@ -1162,7 +1162,7 @@ export const generateReelVideoMP4 = async (
         for (let f = 0; f < remainingFrames; f++) {
           ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
           ctx.drawImage(slide.finalFrame, 0, 0, outputCanvas.width, outputCanvas.height);
-          await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+          await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
         }
       } else {
         // Slides 2+ sin entrada
@@ -1172,7 +1172,7 @@ export const generateReelVideoMP4 = async (
         for (let frameNum = 0; frameNum < framesPerPhoto; frameNum++) {
           ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
           ctx.drawImage(slideCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
-          await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+          await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
         }
       }
       
@@ -1195,7 +1195,7 @@ export const generateReelVideoMP4 = async (
       for (let frameNum = 0; frameNum < framesPerSummary; frameNum++) {
         ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
         ctx.drawImage(summaryCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
-        await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+        await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
       }
     }
 
