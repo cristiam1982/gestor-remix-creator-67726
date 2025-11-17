@@ -1,10 +1,20 @@
-import { PropertyData, AliadoConfig } from "./property";
+import { PropertyData, AliadoConfig, LogoSettings, TextCompositionSettings, VisualLayers } from "./property";
+
+// Configuración visual del Multi-Video Reel
+export interface MultiVideoVisualSettings {
+  logoSettings: LogoSettings;
+  textComposition: TextCompositionSettings;
+  visualLayers: VisualLayers;
+  gradientDirection: 'none' | 'top' | 'bottom' | 'both';
+  gradientIntensity: number;
+}
 
 export interface MultiVideoConfig {
   propertyData: PropertyData;
   aliadoConfig: AliadoConfig;
   videoUrls: string[];
   totalDuration: number;
+  visualSettings?: MultiVideoVisualSettings;
 }
 
 export interface VideoInfo {

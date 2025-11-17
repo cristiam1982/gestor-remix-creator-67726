@@ -3,7 +3,8 @@
  * Usado como fallback cuando FFmpeg no está disponible
  */
 
-import { PropertyData, AliadoConfig } from "@/types/property";
+import { PropertyData, AliadoConfig, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
+import { MultiVideoVisualSettings } from "@/types/multiVideo";
 import { preloadImage } from "./imageUtils";
 import elGestorLogoSrc from "@/assets/el-gestor-logo.png";
 
@@ -12,6 +13,7 @@ export async function generateSimpleMultiVideoReel(
   subtitles: string[],
   propertyData: PropertyData,
   aliadoConfig: AliadoConfig,
+  visualSettings: MultiVideoVisualSettings,
   onProgress: (progress: number, stage: string) => void
 ): Promise<Blob> {
   onProgress(5, 'Preparando canvas de grabación...');
@@ -82,58 +84,101 @@ export async function generateSimpleMultiVideoReel(
   
   // Función helper para dibujar overlays
   const drawOverlays = (currentSubtitle: string) => {
-    // Logo del aliado (superior izquierda, ZONA SEGURA para redes sociales) - +8% tamaño
-    if (aliadoLogo) {
-      const logoHeight = 197;  // 182 × 1.08 = 197px (+8%)
-      const logoWidth = Math.min(
-        (aliadoLogo.width / aliadoLogo.height) * logoHeight,
-        864  // 800 × 1.08 = 864px
-      );
-      // Posición en zona segura (debajo de username/perfil de redes sociales)
-      ctx.drawImage(aliadoLogo, 30, 128, logoWidth, logoHeight);
+    // Aplicar gradiente de fondo (si está habilitado)
+    if (visualSettings.gradientDirection !== 'none') {
+      const intensity = visualSettings.gradientIntensity / 100;
+      const gradientAlpha = 0.7 * intensity;
+      
+      if (visualSettings.gradientDirection === 'top' || visualSettings.gradientDirection === 'both') {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 800);
+        gradient.addColorStop(0, `rgba(0, 0, 0, ${gradientAlpha})`);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 1080, 800);
+      }
+      
+      if (visualSettings.gradientDirection === 'bottom' || visualSettings.gradientDirection === 'both') {
+        const gradient = ctx.createLinearGradient(0, 1920 - 800, 0, 1920);
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        gradient.addColorStop(1, `rgba(0, 0, 0, ${gradientAlpha})`);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 1920 - 800, 1080, 800);
+      }
     }
     
-    // Subtítulo (si existe) - CON SOPORTE MULTI-LÍNEA
-    if (currentSubtitle) {
+    // Logo del aliado (condicional y configurable)
+    if (aliadoLogo && visualSettings.visualLayers.showAllyLogo) {
+      const logoSizes = { small: 150, medium: 180, large: 210, xlarge: 240 };
+      const logoHeight = logoSizes[visualSettings.logoSettings.size as keyof typeof logoSizes] || 180;
+      const logoWidth = Math.min(
+        (aliadoLogo.width / aliadoLogo.height) * logoHeight,
+        900
+      );
+      
+      // Aplicar opacidad
+      ctx.globalAlpha = visualSettings.logoSettings.opacity / 100;
+      
+      // Posición según settings
+      const xPos = visualSettings.logoSettings.position === 'top-left' ? 30 : 1080 - logoWidth - 30;
+      const yPos = 128;
+      
+      // Aplicar fondo según settings
+      if (visualSettings.logoSettings.background !== 'none') {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        const padding = 12;
+        
+        ctx.beginPath();
+        if (visualSettings.logoSettings.shape === 'circle') {
+          const radius = Math.max(logoWidth, logoHeight) / 2 + padding;
+          ctx.arc(xPos + logoWidth/2, yPos + logoHeight/2, radius, 0, Math.PI * 2);
+        } else {
+          const borderRadius = visualSettings.logoSettings.shape === 'squircle' ? 24 : 
+                               visualSettings.logoSettings.shape === 'rounded' ? 16 : 0;
+          ctx.roundRect(xPos - padding, yPos - padding, 
+                        logoWidth + padding*2, logoHeight + padding*2, 
+                        borderRadius);
+        }
+        ctx.fill();
+      }
+      
+      ctx.drawImage(aliadoLogo, xPos, yPos, logoWidth, logoHeight);
+      ctx.globalAlpha = 1.0; // Restaurar opacidad
+    }
+    
+    // Subtítulo con textComposition
+    if (currentSubtitle && visualSettings.visualLayers.showBadge) {
       const lines = splitSubtitle(currentSubtitle, 30);
       
-      ctx.font = 'bold 56px Poppins, sans-serif';
+      // Aplicar escala de texto del badge
+      const baseSize = 56;
+      const scaleFactor = 1 + (visualSettings.textComposition.badgeScale / 100);
+      const fontSize = baseSize * scaleFactor;
       
-      // Calcular ancho máximo de todas las líneas
+      ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
+      
       const maxWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
       
       const padding = 40;
       const bgWidth = maxWidth + padding * 2;
-      const lineHeight = 70;
+      const lineHeight = fontSize + 14;
       const bgHeight = lines.length * lineHeight + padding;
       const x = (1080 - bgWidth) / 2;
-      const y = 1920 * 0.68;  // Subir un poco más arriba
+      const y = 1920 * 0.68;
       
-      // Fondo semi-transparente (ajustado al número de líneas)
+      // Fondo semi-transparente
       ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
       ctx.beginPath();
       ctx.roundRect(x, y, bgWidth, bgHeight, 20);
       ctx.fill();
       
-      // Sombra del texto
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-      ctx.shadowBlur = 12;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      
-      // Renderizar cada línea centrada
+      // Texto
       ctx.fillStyle = '#FFFFFF';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       
-      lines.forEach((line, index) => {
-        const lineY = y + padding / 2 + (index + 0.5) * lineHeight;
-        ctx.fillText(line, 1080 / 2, lineY);
+      lines.forEach((line, idx) => {
+        ctx.fillText(line, 1080 / 2, y + padding/2 + lineHeight/2 + idx * lineHeight);
       });
-      
-      // Resetear sombra
-      ctx.shadowColor = 'transparent';
-      ctx.shadowBlur = 0;
     }
     
   // Footer con información de propiedad
