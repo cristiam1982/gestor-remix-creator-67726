@@ -3,7 +3,7 @@ import html2canvas from "html2canvas";
 import GIF from "gif.js";
 import { waitForNextFrame } from "./imageUtils";
 import FFmpegManager from "./ffmpegManager";
-import { PropertyData } from '@/types/property';
+import { PropertyData, FirstPhotoConfig } from '@/types/property';
 import { AliadoConfig } from '@/types/property';
 import logoRubyMorales from '@/assets/logo-ruby-morales.png';
 import elGestorLogoImg from '@/assets/el-gestor-logo.png';
@@ -884,7 +884,8 @@ export const generateReelVideoMP4 = async (
   slideDuration: number = 1300, // Duración dinámica por foto en ms
   propertyData?: PropertyData,
   aliadoConfig?: AliadoConfig,
-  setEntranceProgress?: (progress: number) => Promise<void>
+  setEntranceProgress?: (progress: number) => Promise<void>,
+  firstPhotoConfig?: FirstPhotoConfig // Configuración especial primera foto
 ): Promise<Blob> => {
   const startTime = Date.now();
   
@@ -910,6 +911,15 @@ export const generateReelVideoMP4 = async (
     const fps = 30;
     const photoDuration = slideDuration;
     const summaryDuration = 2500; // 2.5 segundos para slide de resumen
+    
+    // Helper para calcular frames de cada foto (puede variar si es primera foto)
+    const getFramesForPhoto = (photoIndex: number): number => {
+      if (photoIndex === 0 && firstPhotoConfig?.duration) {
+        return Math.floor((firstPhotoConfig.duration / 1000) * fps);
+      }
+      return Math.floor((photoDuration / 1000) * fps);
+    };
+    
     const framesPerPhoto = Math.floor((photoDuration / 1000) * fps);
     const framesPerSummary = Math.floor((summaryDuration / 1000) * fps);
     const totalSlides = photos.length + (includeSummary ? 1 : 0);
@@ -917,8 +927,11 @@ export const generateReelVideoMP4 = async (
     console.log(`⚙️ CONFIGURACIÓN DE VELOCIDAD:`);
     console.log(`  slideDuration recibido: ${slideDuration}ms`);
     console.log(`  photoDuration calculado: ${photoDuration}ms`);
+    if (firstPhotoConfig?.duration) {
+      console.log(`  🌟 Primera foto duración especial: ${firstPhotoConfig.duration}ms (${getFramesForPhoto(0)} frames)`);
+    }
     console.log(`  fps: ${fps}`);
-    console.log(`  framesPerPhoto: ${framesPerPhoto} frames`);
+    console.log(`  framesPerPhoto (estándar): ${framesPerPhoto} frames`);
     console.log(`  framesPerSummary: ${framesPerSummary} frames`);
     console.log(`  Duración esperada por foto: ${(framesPerPhoto / fps).toFixed(2)}s`);
     const expectedDuration = ((photos.length * framesPerPhoto + (includeSummary ? framesPerSummary : 0)) / fps).toFixed(1);
@@ -1115,11 +1128,12 @@ export const generateReelVideoMP4 = async (
     
     for (let slideIndex = 0; slideIndex < photos.length; slideIndex++) {
       const slideCanvas = slideCanvases[slideIndex];
-      console.log(`▶️ Reproduciendo slide ${slideIndex + 1}/${photos.length}: ${framesPerPhoto} frames...`);
+      const currentFramesPerPhoto = getFramesForPhoto(slideIndex); // Duración dinámica por foto
+      console.log(`▶️ Reproduciendo slide ${slideIndex + 1}/${photos.length}: ${currentFramesPerPhoto} frames...`);
       
       const frameStartTime = performance.now();
       
-      for (let frameNum = 0; frameNum < framesPerPhoto; frameNum++) {
+      for (let frameNum = 0; frameNum < currentFramesPerPhoto; frameNum++) {
         // Esperar hasta el momento exacto del frame
         const targetTime = frameStartTime + (frameNum * frameDuration);
         const now = performance.now();
@@ -1220,7 +1234,8 @@ export const generateReelVideoMP4_FFmpegFrames = async (
   onPhotoChange: (index: number) => Promise<void>,
   includeSummary: boolean = true,
   slideDuration: number = 1300,
-  setEntranceProgress?: (progress: number) => Promise<void>
+  setEntranceProgress?: (progress: number) => Promise<void>,
+  firstPhotoConfig?: FirstPhotoConfig // Configuración especial primera foto
 ): Promise<Blob> => {
   const startTime = Date.now();
   
@@ -1270,9 +1285,27 @@ export const generateReelVideoMP4_FFmpegFrames = async (
     console.log('✅ Imágenes pre-cargadas');
 
     const fps = 30;
-    const framesPerPhoto = Math.floor((slideDuration / 1000) * fps);
-    const framesPerSummary = Math.floor((2.5) * fps); // 2.5s para resumen
+    const photoDuration = slideDuration; // Duración base por foto
+    const summaryDuration = 2500; // 2.5 segundos para slide de resumen
+    
+    // Helper para calcular frames de cada foto (puede variar si es primera foto)
+    const getFramesForPhoto = (photoIndex: number): number => {
+      if (photoIndex === 0 && firstPhotoConfig?.duration) {
+        return Math.floor((firstPhotoConfig.duration / 1000) * fps);
+      }
+      return Math.floor((photoDuration / 1000) * fps);
+    };
+    
+    const framesPerPhoto = Math.floor((photoDuration / 1000) * fps);
+    const framesPerSummary = Math.floor((summaryDuration / 1000) * fps);
     const totalSlides = photos.length + (includeSummary ? 1 : 0);
+
+    console.log(`⚙️ FFmpeg CONFIGURACIÓN:`);
+    console.log(`  slideDuration: ${slideDuration}ms`);
+    if (firstPhotoConfig?.duration) {
+      console.log(`  🌟 Primera foto duración especial: ${firstPhotoConfig.duration}ms (${getFramesForPhoto(0)} frames)`);
+    }
+    console.log(`  fps: ${fps}, framesPerPhoto: ${framesPerPhoto}`);
 
     let frameNumber = 0;
 
@@ -1283,9 +1316,12 @@ export const generateReelVideoMP4_FFmpegFrames = async (
       // Esperar a que el contenedor esté listo
       await waitForCaptureReady(elementId);
 
+      // Calcular frames dinámicamente para esta foto
+      const currentFramesPerPhoto = getFramesForPhoto(photoIndex);
+
       // Slide 0: entrada del logo (fade-in 0.5s)
       if (photoIndex === 0 && typeof setEntranceProgress === 'function') {
-        const entranceFrames = Math.min(Math.round(0.5 * fps), framesPerPhoto);
+        const entranceFrames = Math.min(Math.round(0.5 * fps), currentFramesPerPhoto);
         console.log(`✨ Capturando entrada del logo FFmpeg: ${entranceFrames} frames`);
 
         // Reset a 0
@@ -1323,7 +1359,7 @@ export const generateReelVideoMP4_FFmpegFrames = async (
         await ffmpeg.writeFile(finalFrameName, finalData);
 
         // Duplicar el frame final por el resto de la duración
-        const remainingFrames = framesPerPhoto - entranceFrames;
+        const remainingFrames = currentFramesPerPhoto - entranceFrames;
         for (let i = 0; i < remainingFrames; i++) {
           frameNumber++;
         }
@@ -1334,7 +1370,7 @@ export const generateReelVideoMP4_FFmpegFrames = async (
           await waitForCaptureReady(elementId);
         }
 
-        console.log(`📸 Capturando frames para foto ${photoIndex + 1}/${photos.length}...`);
+        console.log(`📸 Capturando frames para foto ${photoIndex + 1}/${photos.length} - ${currentFramesPerPhoto} frames...`);
         const frameCanvas = await captureFrame(elementId, false);
         
         // Convertir canvas a PNG una sola vez
@@ -1344,7 +1380,7 @@ export const generateReelVideoMP4_FFmpegFrames = async (
         const data = new Uint8Array(await blob.arrayBuffer());
         
         // Duplicar frame según duración (escribir múltiples veces el mismo data)
-        for (let i = 0; i < framesPerPhoto; i++) {
+        for (let i = 0; i < currentFramesPerPhoto; i++) {
           frameNumber++;
           const frameName = `frame_${String(frameNumber).padStart(4, '0')}.png`;
           await ffmpeg.writeFile(frameName, data);

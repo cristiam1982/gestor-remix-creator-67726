@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from "react";
-import { PropertyData, AliadoConfig, ContentType, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
+import { PropertyData, AliadoConfig, ContentType, LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
 import { TemplateTheme, TEMPLATE_THEMES } from "@/types/templates";
 import { Bed, Bath, Car, MapPin, Square, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ interface CanvasPreviewProps {
   visualLayers?: VisualLayers;
   gradientDirection?: 'none' | 'top' | 'bottom' | 'both';
   gradientIntensity?: number;
+  firstPhotoConfig?: FirstPhotoConfig; // Configuración especial primera foto
 }
 
 export const CanvasPreview = ({ 
@@ -59,7 +60,8 @@ export const CanvasPreview = ({
     showPhoto: true
   },
   gradientDirection = 'both',
-  gradientIntensity = 60
+  gradientIntensity = 60,
+  firstPhotoConfig // Configuración especial primera foto
 }: CanvasPreviewProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const templateConfig = TEMPLATE_THEMES[template];
@@ -71,12 +73,54 @@ export const CanvasPreview = ({
   const logoStyle = useLogoStyles(logoSettings);
   const logoUrl = aliadoConfig.logo;
 
+  // PRIMERA FOTO: Aplicar configuración especial si activePhotoIndex === 0
+  const isFirstPhoto = activePhotoIndex === 0;
+  const effectiveVisualLayers = useMemo(() => {
+    if (!isFirstPhoto || !firstPhotoConfig) return visualLayers;
+
+    // Aplicar overlayStyle de primera foto
+    switch (firstPhotoConfig.overlayStyle) {
+      case 'clean':
+        // Sin overlays, solo foto y logo
+        return {
+          ...visualLayers,
+          showPrice: false,
+          showBadge: false,
+          showIcons: false,
+          showCTA: false
+        };
+      case 'simple':
+        // Solo precio + título, sin iconos
+        return {
+          ...visualLayers,
+          showIcons: false,
+          showCTA: false
+        };
+      case 'full':
+      default:
+        // Completo: precio + título + iconos
+        return visualLayers;
+    }
+  }, [isFirstPhoto, firstPhotoConfig, visualLayers]);
+
+  const effectiveTextComposition = useMemo(() => {
+    if (!isFirstPhoto || !firstPhotoConfig || firstPhotoConfig.textScaleOverride === undefined) {
+      return textComposition;
+    }
+
+    // Aplicar textScaleOverride de primera foto
+    return {
+      ...textComposition,
+      typographyScale: firstPhotoConfig.textScaleOverride
+    };
+  }, [isFirstPhoto, firstPhotoConfig, textComposition]);
+
   // Escalas de texto dinámicas
   const textStyle = useMemo(() => {
-    const scale = 1 + (textComposition.typographyScale / 100);
-    const badgeScale = 1 + (textComposition.badgeScale / 100);
+    const scale = 1 + (effectiveTextComposition.typographyScale / 100);
+    const badgeScale = 1 + (effectiveTextComposition.badgeScale / 100);
     return { scale, badgeScale };
-  }, [textComposition]);
+  }, [effectiveTextComposition]);
 
   // Map vertical spacing to pixel values
   const spacingMap = {
@@ -84,7 +128,7 @@ export const CanvasPreview = ({
     normal: 8,
     spacious: 16
   };
-  const verticalGap = spacingMap[textComposition.verticalSpacing];
+  const verticalGap = spacingMap[effectiveTextComposition.verticalSpacing];
 
   // Gradiente dinámico
   const gradientOverlayStyle = useMemo(() => {
@@ -257,7 +301,7 @@ export const CanvasPreview = ({
       )}
 
       {/* Header con logo del aliado - diseño reel */}
-      {!carouselMode?.isLastSlide && visualLayers.showAllyLogo && (
+      {!carouselMode?.isLastSlide && effectiveVisualLayers.showAllyLogo && (
       <div 
         className={`absolute ${logoStyle.positionClass} z-20`}
         style={{ 
@@ -311,7 +355,7 @@ export const CanvasPreview = ({
           </div>
 
           {/* Precio destacado - fondo opaco sin sombras */}
-          {hasPrice && visualLayers.showPrice && (
+          {hasPrice && effectiveVisualLayers.showPrice && (
             <div 
               data-canon-value={priceText}
               className="inline-block px-4 py-2 rounded-xl z-[60] ring-2 ring-white/70"
@@ -336,7 +380,7 @@ export const CanvasPreview = ({
           )}
 
           {/* Iconos de atributos con fondo más opaco */}
-          {visualLayers.showIcons && (
+          {effectiveVisualLayers.showIcons && (
           <div className="flex flex-wrap" style={{ gap: `${verticalGap / 2}px` }}>
             {propertyData.habitaciones && (
               <div 

@@ -967,6 +967,7 @@ const Index = () => {
                           visualLayers={postVisualLayers}
                           gradientDirection={postGradientDirection}
                           gradientIntensity={postGradientIntensity}
+                          firstPhotoConfig={postFirstPhotoConfig}
                         />
                       )}
                     </div>
@@ -1072,6 +1073,7 @@ const Index = () => {
                             visualLayers={postVisualLayers}
                             gradientDirection={postGradientDirection}
                             gradientIntensity={postGradientIntensity}
+                            firstPhotoConfig={postFirstPhotoConfig}
                           />
                         )}
                       </div>

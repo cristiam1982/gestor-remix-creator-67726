@@ -1,4 +1,4 @@
-import { PropertyData, AliadoConfig, LogoSettings, TextCompositionSettings, VisualLayers, ReelTemplate } from "@/types/property";
+import { PropertyData, AliadoConfig, LogoSettings, TextCompositionSettings, VisualLayers, ReelTemplate, FirstPhotoConfig } from "@/types/property";
 import { formatPrecioColombia } from "@/utils/formatters";
 import { hexToRgba, isLightColor } from "@/utils/colorUtils";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
@@ -27,6 +27,7 @@ interface ReelFrameProps {
   customHashtag?: string;
   customPhone?: string;
   logoEntranceProgress?: number; // 0..1 para controlar la entrada del logo
+  firstPhotoConfig?: FirstPhotoConfig; // Configuración especial primera foto
 }
 
 // Función helper para obtener el logo apropiado
@@ -61,10 +62,53 @@ export const ReelFrame = ({
   summarySolidColor,
   customHashtag,
   customPhone,
-  logoEntranceProgress = 1 // Default: logo completamente visible
+  logoEntranceProgress = 1, // Default: logo completamente visible
+  firstPhotoConfig // Configuración especial primera foto
 }: ReelFrameProps) => {
   const brand = aliadoConfig.colorPrimario || '#00A5BD';
   const template = REEL_TEMPLATES[currentTemplate];
+
+  // PRIMERA FOTO: Aplicar configuración especial si photoIndex === 0
+  const isFirstPhoto = photoIndex === 0;
+  const effectiveVisualLayers = useMemo(() => {
+    if (!isFirstPhoto || !firstPhotoConfig) return visualLayers;
+
+    // Aplicar overlayStyle de primera foto
+    switch (firstPhotoConfig.overlayStyle) {
+      case 'clean':
+        // Sin overlays, solo foto y logo
+        return {
+          ...visualLayers,
+          showPrice: false,
+          showBadge: false,
+          showIcons: false,
+          showCTA: false
+        };
+      case 'simple':
+        // Solo precio + título, sin iconos
+        return {
+          ...visualLayers,
+          showIcons: false,
+          showCTA: false
+        };
+      case 'full':
+      default:
+        // Completo: precio + título + iconos
+        return visualLayers;
+    }
+  }, [isFirstPhoto, firstPhotoConfig, visualLayers]);
+
+  const effectiveTextComposition = useMemo(() => {
+    if (!isFirstPhoto || !firstPhotoConfig || firstPhotoConfig.textScaleOverride === undefined) {
+      return textComposition;
+    }
+
+    // Aplicar textScaleOverride de primera foto
+    return {
+      ...textComposition,
+      typographyScale: firstPhotoConfig.textScaleOverride
+    };
+  }, [isFirstPhoto, firstPhotoConfig, textComposition]);
 
   // Escala base para modo captura (1080x1920) vs preview (~350-420px)
   const captureScale = mode === 'capture' ? 2.0 : 1;
@@ -172,8 +216,8 @@ export const ReelFrame = ({
       </div>
 
       {/* Logo del aliado */}
-      {visualLayers.showAllyLogo && (
-        <div 
+      {effectiveVisualLayers.showAllyLogo && (
+        <div
           className="absolute z-20"
           style={{ 
             opacity: finalOpacity,
@@ -224,7 +268,7 @@ export const ReelFrame = ({
         }}
       >
         {/* Subtítulo sobre el precio */}
-        {visualLayers.showBadge && propertyData.subtitulos?.[photoIndex] && (
+        {effectiveVisualLayers.showBadge && propertyData.subtitulos?.[photoIndex] && (
           <div 
             style={{ 
               width: '100%',
@@ -269,7 +313,7 @@ export const ReelFrame = ({
         )}
 
         {/* Precio */}
-        {visualLayers.showPrice && precio && (
+        {effectiveVisualLayers.showPrice && precio && (
           <div 
             className={`relative z-40 inline-flex flex-col ${template.priceStyle.className}`}
             style={{ 
@@ -309,9 +353,9 @@ export const ReelFrame = ({
           </div>
         )}
         
-        {visualLayers.showCTA && (
+        {effectiveVisualLayers.showCTA && (
           <>
-            <h3 
+            <h3
               style={{ 
                 textShadow: '0 2px 8px rgba(0,0,0,0.9)',
                 fontSize: mode === 'capture' ? `${42 * textStyle.scale}px` : `calc(2rem * ${textStyle.scale})`,
@@ -341,7 +385,7 @@ export const ReelFrame = ({
         )}
 
         {/* Iconografía de características */}
-        {visualLayers.showIcons && (
+        {effectiveVisualLayers.showIcons && (
           <div 
             className="flex flex-wrap"
             style={{

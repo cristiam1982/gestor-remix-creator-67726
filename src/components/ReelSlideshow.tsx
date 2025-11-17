@@ -537,7 +537,8 @@ export const ReelSlideshow = ({
           changePhoto,
           true,
           slideDuration,
-          setEntranceProgressForCapture
+          setEntranceProgressForCapture,
+          firstPhotoConfig
         );
       } else {
         // Rápida: MediaRecorder (WebM)
@@ -550,7 +551,8 @@ export const ReelSlideshow = ({
           slideDuration,
           propertyData,
           aliadoConfig,
-          setEntranceProgressForCapture
+          setEntranceProgressForCapture,
+          firstPhotoConfig
         );
       }
 
@@ -1054,6 +1056,7 @@ export const ReelSlideshow = ({
             customHashtag={customHashtag}
             customPhone={customPhone}
             logoEntranceProgress={previewEntranceProgress}
+            firstPhotoConfig={firstPhotoConfig}
           />
 
           {/* Overlay clicable para pausar - solo cuando isPlaying */}
