@@ -197,10 +197,10 @@ export const ReelFrame = ({
               alt={aliadoConfig.nombre}
               className="w-full h-full object-contain"
               style={{ 
-                width: logoStyle.size, 
-                height: logoStyle.size,
-                maxWidth: mode === 'capture' ? '200px' : '100px',
-                maxHeight: mode === 'capture' ? '200px' : '100px',
+                width: mode === 'capture' ? '160px' : '80px',
+                height: mode === 'capture' ? '160px' : '80px',
+                maxWidth: mode === 'capture' ? '160px' : '80px',
+                maxHeight: mode === 'capture' ? '160px' : '80px',
               }}
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
