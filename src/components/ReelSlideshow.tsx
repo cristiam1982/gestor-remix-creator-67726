@@ -205,7 +205,9 @@ export const ReelSlideshow = ({
   const [firstPhotoConfig, setFirstPhotoConfig] = useState<FirstPhotoConfig>(
     propertyData.firstPhotoConfig || {
       duration: slideDuration, // Por defecto igual al resto
-      overlayStyle: 'full',
+      showPrice: true,
+      showTitle: true,
+      showIcons: true,
       textScaleOverride: 0,
       showAllyLogo: true,
     }

@@ -80,37 +80,14 @@ export const ReelFrame = ({
       layers.showAllyLogo = firstPhotoConfig.showAllyLogo;
     }
 
-    // Aplicar overlayStyle de primera foto
-    switch (firstPhotoConfig.overlayStyle) {
-      case 'clean':
-        // Sin overlays, solo foto y logo
-        layers = {
-          ...layers,
-          showPrice: false,
-          showBadge: false,
-          showIcons: false,
-          showCTA: false
-        };
-        break;
-      case 'simple':
-        // Solo precio + título, sin iconos
-        layers = {
-          ...layers,
-          showIcons: false,
-          showCTA: false
-        };
-        break;
-      case 'full':
-      default:
-        // Completo: FORZAR todos los overlays visibles
-        layers = {
-          ...layers,
-          showPrice: true,
-          showBadge: true,
-          showIcons: true,
-          showCTA: true
-        };
-        break;
+    // Aplicar configuración individual de elementos visibles en primera foto
+    layers.showPrice = firstPhotoConfig.showPrice;
+    layers.showBadge = firstPhotoConfig.showTitle;
+    layers.showIcons = firstPhotoConfig.showIcons;
+    
+    // CTA siempre oculto en primera foto cuando no hay elementos
+    if (!firstPhotoConfig.showPrice && !firstPhotoConfig.showTitle && !firstPhotoConfig.showIcons) {
+      layers.showCTA = false;
     }
 
     return layers;
