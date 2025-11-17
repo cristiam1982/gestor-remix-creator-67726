@@ -13,10 +13,11 @@ import { VideoReelRecorder } from "@/components/VideoReelRecorder";
 import { MultiVideoManager } from "@/components/MultiVideoManager";
 import { MultiVideoProcessingModal } from "@/components/MultiVideoProcessingModal";
 import { MetricsPanel } from "@/components/MetricsPanel";
+import { PostControlsPanel } from "@/components/PostControlsPanel";
 
 import { LoadingState } from "@/components/LoadingState";
 import { CarouselGenerator } from "@/components/CarouselGenerator";
-import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
+import { AliadoConfig, PropertyData, ContentType, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
 import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -63,6 +64,31 @@ const Index = () => {
   const [currentPhotoIndexOverride, setCurrentPhotoIndexOverride] = useState<number | undefined>(undefined);
   const [isExportingAllPhotos, setIsExportingAllPhotos] = useState(false);
   const [exportProgress, setExportProgress] = useState({ current: 0, total: 0 });
+  
+  // Estados para personalización del post cuadrado
+  const [postLogoSettings, setPostLogoSettings] = useState<LogoSettings>({
+    position: 'top-right',
+    size: 'medium',
+    opacity: 90,
+    background: 'elevated',
+    shape: 'rounded',
+  });
+  const [postTextComposition, setPostTextComposition] = useState<TextCompositionSettings>({
+    typographyScale: 1.0,
+    badgeScale: 1.0,
+    badgeStyle: 'rounded',
+    verticalSpacing: 'normal',
+  });
+  const [postVisualLayers, setPostVisualLayers] = useState<VisualLayers>({
+    showPhoto: true,
+    showPrice: true,
+    showBadge: true,
+    showIcons: true,
+    showAllyLogo: true,
+    showCTA: true,
+  });
+  const [postGradientDirection, setPostGradientDirection] = useState<'top' | 'bottom' | 'both' | 'none'>('both');
+  const [postGradientIntensity, setPostGradientIntensity] = useState(60);
   
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
