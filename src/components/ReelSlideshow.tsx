@@ -175,11 +175,7 @@ export const ReelSlideshow = ({
       opacity: 90,
       background: 'elevated',
       size: 'medium',
-      shape: 'rounded',
-      animation: 'none',
-      floatingSpeed: 3,
-      entranceAnimation: 'zoom-in',
-      entranceDuration: 0.8
+      shape: 'rounded'
     }
   );
 
@@ -1388,15 +1384,14 @@ export const ReelSlideshow = ({
               {/* Logo del aliado */}
               {!shouldShowSummary && visualLayers.showAllyLogo && (
                 <div 
-                  key={`logo-mini-${logoSettings.entranceAnimation}-${logoSettings.entranceDuration}`}
                   className={`absolute z-20 ${logoStyle.positionClass}`}
                   style={{ opacity: logoStyle.opacity }}
                 >
                   <img
                     src={getLogoUrl(logoSettings.background, aliadoConfig)}
                     alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
-                    style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} transition-all duration-300`}
+                    style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                     referrerPolicy="no-referrer"
                   />

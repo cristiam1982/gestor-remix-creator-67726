@@ -34,6 +34,8 @@ export const CanvasReelPreview = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [logoElapsedTime, setLogoElapsedTime] = useState(0);
+  const animationFrameRef = useRef<number>();
 
   // Pre-cargar imágenes al montar
   useEffect(() => {
@@ -62,6 +64,38 @@ export const CanvasReelPreview = ({
 
     loadAllImages();
   }, [propertyData.fotos, aliadoConfig.logo, logoSettings.background]);
+
+  // Animar logo solo en primer slide
+  useEffect(() => {
+    if (currentPhotoIndex === 0 && !isSummary && !isLoading) {
+      // Animar entrada del logo en primer slide (0 a 0.5 segundos)
+      const entranceDuration = 500; // 0.5 segundos en ms
+      const startTime = Date.now();
+      
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / entranceDuration, 1);
+        setLogoElapsedTime(progress * 0.5); // 0 a 0.5 segundos
+        
+        if (progress < 1) {
+          animationFrameRef.current = requestAnimationFrame(animate);
+        } else {
+          setLogoElapsedTime(10); // Completamente visible después de animación
+        }
+      };
+      
+      animate();
+      
+      return () => {
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+      };
+    } else {
+      // En otros slides o resumen: logo siempre visible
+      setLogoElapsedTime(10);
+    }
+  }, [currentPhotoIndex, isSummary, isLoading]);
 
   // Redibujar canvas cuando cambian los parámetros
   useEffect(() => {
@@ -98,7 +132,7 @@ export const CanvasReelPreview = ({
               textComposition,
               visualLayers,
               photoIndex: currentPhotoIndex,
-              elapsedTime: 10 // Logo siempre visible sin animaciones
+              elapsedTime: logoElapsedTime
             });
           }
         }
@@ -118,7 +152,8 @@ export const CanvasReelPreview = ({
     textComposition,
     visualLayers,
     summaryBackgroundStyle,
-    isLoading
+    isLoading,
+    logoElapsedTime
   ]);
 
   // Pasar referencia del canvas al padre

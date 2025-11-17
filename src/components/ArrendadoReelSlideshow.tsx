@@ -115,11 +115,7 @@ export const ArrendadoReelSlideshow = ({
     size: 'medium',
     opacity: 90,
     background: 'elevated',
-    shape: 'rounded',
-    animation: 'none',
-    floatingSpeed: 3,
-    entranceAnimation: 'zoom-in',
-    entranceDuration: 0.8
+    shape: 'rounded'
   });
   const { toast } = useToast();
   
@@ -392,15 +388,14 @@ export const ArrendadoReelSlideshow = ({
 
               {aliadoConfig.logo && (
                 <div 
-                  key={`logo-arrendado-${logoSettings.entranceAnimation}-${logoSettings.entranceDuration}`}
                   className={`absolute ${logoStyle.positionClass} z-20`}
-                  style={{ opacity: logoStyle.opacity / 100 }}
+                  style={{ opacity: logoStyle.opacity }}
                 >
                   <img
                     src={getLogoUrl()}
                     alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
-                    style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} transition-all duration-300`}
+                    style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                   />
                 </div>
@@ -505,15 +500,14 @@ export const ArrendadoReelSlideshow = ({
 
               {aliadoConfig.logo && (
                 <div 
-                  key={`logo-arrendado-canvas-${logoSettings.entranceAnimation}-${logoSettings.entranceDuration}`}
                   className={`absolute ${logoStyle.positionClass} z-20`}
-                  style={{ opacity: logoStyle.opacity / 100 }}
+                  style={{ opacity: logoStyle.opacity }}
                 >
                   <img
                     src={getLogoUrl()}
                     alt={aliadoConfig.nombre}
-                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} ${logoStyle.animationClass} ${logoStyle.entranceAnimationClass} transition-all duration-300`}
-                    style={{ width: logoStyle.size, height: logoStyle.size, ...logoStyle.animationStyle }}
+                    className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} transition-all duration-300`}
+                    style={{ width: logoStyle.size, height: logoStyle.size }}
                     crossOrigin="anonymous"
                   />
                 </div>
