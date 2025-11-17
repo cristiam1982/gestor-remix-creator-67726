@@ -12,11 +12,11 @@ export const useLogoStyles = (logoSettings: LogoSettings) => {
     const size = sizes[logoSettings.size as keyof typeof sizes] || sizes.medium;
     
     // Efectos de fondo profesionales (4 efectos disponibles en UI)
-    let backgroundClass = 'bg-white/95 shadow-[0_2px_12px_rgba(0,0,0,0.08)]';
+    let backgroundClass = '';
     
     switch (logoSettings.background) {
       case 'none':
-        backgroundClass = 'bg-transparent drop-shadow-[0_4px_12px_rgba(0,0,0,0.25)]';
+        backgroundClass = '';
         break;
       case 'frosted':
         backgroundClass = 'backdrop-blur-[24px] bg-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.8)] border border-white/20';
