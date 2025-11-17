@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { PropertyData, AliadoConfig, ContentType } from "@/types/property";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { PropertyData, AliadoConfig, ContentType, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
 import { TemplateTheme, TEMPLATE_THEMES } from "@/types/templates";
 import { Bed, Bath, Car, MapPin, Square, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPrecioColombia } from "@/utils/formatters";
+import { useLogoStyles } from "@/hooks/useLogoStyles";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 import logoRubyMorales from "@/assets/logo-ruby-morales.png";
 
@@ -21,14 +22,81 @@ interface CanvasPreviewProps {
   onReady?: () => void;
   carouselMode?: CarouselMode;
   currentPhotoIndexOverride?: number;
+  logoSettings?: LogoSettings;
+  textComposition?: TextCompositionSettings;
+  visualLayers?: VisualLayers;
+  gradientDirection?: 'none' | 'top' | 'bottom' | 'both';
+  gradientIntensity?: number;
 }
 
-export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, template = "residencial", onReady, carouselMode, currentPhotoIndexOverride }: CanvasPreviewProps) => {
+export const CanvasPreview = ({ 
+  propertyData, 
+  aliadoConfig, 
+  contentType, 
+  template = "residencial", 
+  onReady, 
+  carouselMode, 
+  currentPhotoIndexOverride,
+  logoSettings = {
+    position: 'top-right',
+    size: 'medium',
+    opacity: 100,
+    background: 'elevated',
+    shape: 'rounded'
+  },
+  textComposition = {
+    typographyScale: 0,
+    badgeScale: 0,
+    badgeStyle: 'rounded',
+    verticalSpacing: 'normal'
+  },
+  visualLayers = {
+    showPrice: true,
+    showBadge: true,
+    showIcons: true,
+    showAllyLogo: true,
+    showCTA: true,
+    showPhoto: true
+  },
+  gradientDirection = 'both',
+  gradientIntensity = 60
+}: CanvasPreviewProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const templateConfig = TEMPLATE_THEMES[template];
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const activePhotoIndex = currentPhotoIndexOverride !== undefined ? currentPhotoIndexOverride : currentPhotoIndex;
   const hasMultiplePhotos = propertyData.fotos && propertyData.fotos.length > 1 && !carouselMode;
+
+  // Estilos dinámicos del logo
+  const logoStyle = useLogoStyles(logoSettings);
+  const logoUrl = aliadoConfig.logo;
+
+  // Escalas de texto dinámicas
+  const textStyle = useMemo(() => {
+    const scale = 1 + (textComposition.typographyScale / 100);
+    const badgeScale = 1 + (textComposition.badgeScale / 100);
+    return { scale, badgeScale };
+  }, [textComposition]);
+
+  // Gradiente dinámico
+  const gradientOverlayStyle = useMemo(() => {
+    if (gradientDirection === 'none') return {};
+    
+    const intensity = Math.max(0, Math.min(100, gradientIntensity));
+    const alpha = (intensity / 100) * 0.7;
+    const rgba = (a: number) => `rgba(0,0,0,${a.toFixed(3)})`;
+    
+    if (gradientDirection === 'top') {
+      return { background: `linear-gradient(to bottom, ${rgba(alpha)} 0%, ${rgba(0)} 60%)` };
+    }
+    if (gradientDirection === 'bottom') {
+      return { background: `linear-gradient(to top, ${rgba(alpha)} 0%, ${rgba(0)} 60%)` };
+    }
+    // both
+    return {
+      background: `linear-gradient(to bottom, ${rgba(alpha)} 0%, ${rgba(0)} 60%), linear-gradient(to top, ${rgba(alpha)} 0%, ${rgba(0)} 60%)`
+    };
+  }, [gradientDirection, gradientIntensity]);
 
   // Precio robusto para todas las vistas
   const sanitizeNumber = (v?: string | number) => {
@@ -87,7 +155,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
             alt={`Propiedad ${activePhotoIndex + 1}`}
             className="w-full h-full object-cover transition-opacity duration-300"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
+          <div className="absolute inset-0" style={gradientOverlayStyle} />
           
           {/* Photo navigation */}
           {hasMultiplePhotos && (
@@ -181,13 +249,24 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
       )}
 
       {/* Header con logo del aliado - diseño reel */}
-      {!carouselMode?.isLastSlide && (
-      <div className={`absolute ${isStory ? "top-32 left-6" : "top-6 left-6"} z-20 flex items-center gap-3`}>
-        <img 
-          src={logoRubyMorales} 
-          alt={aliadoConfig.nombre}
-          className={`${isStory ? "w-[90px] h-[90px]" : "w-24 h-24"} rounded-xl border-2 border-white/80 object-contain bg-white/90 p-1`}
-        />
+      {!carouselMode?.isLastSlide && visualLayers.showAllyLogo && (
+      <div 
+        className={`absolute ${logoStyle.positionClass} z-20`}
+        style={{ 
+          width: `${logoStyle.size}px`, 
+          height: `${logoStyle.size}px`,
+          opacity: logoStyle.opacity 
+        }}
+      >
+        <div 
+          className={`${logoStyle.backgroundClass} ${logoStyle.shapeClass} p-2.5 w-full h-full flex items-center justify-center overflow-hidden`}
+        >
+          <img 
+            src={logoUrl}
+            alt={aliadoConfig.nombre}
+            className="w-full h-full object-contain"
+          />
+        </div>
       </div>
       )}
 
@@ -211,7 +290,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           </div>
 
           {/* Precio destacado - fondo opaco sin sombras */}
-          {hasPrice && (
+          {hasPrice && visualLayers.showPrice && (
             <div 
               data-canon-value={priceText}
               className="inline-block px-4 py-2 rounded-xl z-[60] ring-2 ring-white/70"
@@ -229,6 +308,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
           )}
 
           {/* Iconos de atributos con fondo más opaco */}
+          {visualLayers.showIcons && (
           <div className="flex flex-wrap gap-1">
             {propertyData.habitaciones && (
               <div 
@@ -386,6 +466,7 @@ export const CanvasPreview = ({ propertyData, aliadoConfig, contentType, templat
               </div>
             )}
           </div>
+          )}
 
         </div>
       </div>
