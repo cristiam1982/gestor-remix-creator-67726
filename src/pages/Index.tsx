@@ -23,6 +23,7 @@ import { ArrendadoReelSlideshow } from "@/components/ArrendadoReelSlideshow";
 import { VideoReelRecorder } from "@/components/VideoReelRecorder";
 import { MultiVideoManager } from "@/components/MultiVideoManager";
 import { MultiVideoProcessingModal } from "@/components/MultiVideoProcessingModal";
+import { MultiVideoControlsPanel } from "@/components/MultiVideoControlsPanel";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { PostControlsPanel } from "@/components/PostControlsPanel";
 
@@ -116,6 +117,31 @@ const Index = () => {
     textScaleOverride: 0,
     showAllyLogo: true,
   });
+
+  // Multi-video visual settings
+  const [multiVideoLogoSettings, setMultiVideoLogoSettings] = useState<LogoSettings>({
+    position: 'top-right',
+    opacity: 100,
+    background: 'elevated',
+    size: 'medium',
+    shape: 'rounded'
+  });
+  const [multiVideoTextComposition, setMultiVideoTextComposition] = useState<TextCompositionSettings>({
+    typographyScale: 0,
+    badgeScale: 0,
+    badgeStyle: 'rounded',
+    verticalSpacing: 'normal'
+  });
+  const [multiVideoVisualLayers, setMultiVideoVisualLayers] = useState<VisualLayers>({
+    showPhoto: true,
+    showPrice: true,
+    showBadge: true,
+    showIcons: true,
+    showAllyLogo: true,
+    showCTA: true
+  });
+  const [multiVideoGradientDirection, setMultiVideoGradientDirection] = useState<'none' | 'top' | 'bottom' | 'both'>('bottom');
+  const [multiVideoGradientIntensity, setMultiVideoGradientIntensity] = useState(60);
 
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
@@ -784,7 +810,7 @@ const Index = () => {
               <div className="h-[calc(100vh-180px)]">
                 {/* Layout móvil: vertical simple */}
                 <div className="lg:hidden space-y-4">
-                  {/* Manager de videos (permite editar mientras ve preview) */}
+                  {/* Manager de videos móvil */}
                   <MultiVideoManager
                     videos={multiVideos}
                     onVideosChange={setMultiVideos}
@@ -792,13 +818,30 @@ const Index = () => {
                     maxTotalDuration={100}
                   />
                   
-                  {/* Preview/generación */}
+                  {/* Panel de personalización móvil */}
+                  <Card className="p-4">
+                    <h3 className="text-lg font-semibold mb-3 text-primary">🎨 Personalización</h3>
+                    <MultiVideoControlsPanel
+                      gradientDirection={multiVideoGradientDirection}
+                      onGradientDirectionChange={setMultiVideoGradientDirection}
+                      gradientIntensity={multiVideoGradientIntensity}
+                      onGradientIntensityChange={setMultiVideoGradientIntensity}
+                      logoSettings={multiVideoLogoSettings}
+                      onLogoSettingsChange={setMultiVideoLogoSettings}
+                      textComposition={multiVideoTextComposition}
+                      onTextCompositionChange={setMultiVideoTextComposition}
+                      visualLayers={multiVideoVisualLayers}
+                      onVisualLayersChange={setMultiVideoVisualLayers}
+                    />
+                  </Card>
+                  
+                  {/* Preview/generación móvil */}
                   <Card className="p-4">
                     <h3 className="text-lg font-semibold mb-3 text-primary">🎬 Reel Multi-Video</h3>
                     <div className="space-y-3">
                       <div className="p-3 bg-accent rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1.5">
-                          <strong>{multiVideos.length} videos</strong> listos para concatenar
+                          <strong>{multiVideos.length} videos</strong> • Historia vertical (9:16)
                         </p>
                         <p className="text-[10px] text-muted-foreground">
                           Duración total: {Math.round(multiVideos.reduce((sum, v) => sum + v.duration, 0))} segundos
@@ -833,6 +876,13 @@ const Index = () => {
                                 subtitles,
                                 propertyData: propertyData as PropertyData,
                                 aliadoConfig,
+                                visualSettings: {
+                                  logoSettings: multiVideoLogoSettings,
+                                  textComposition: multiVideoTextComposition,
+                                  visualLayers: multiVideoVisualLayers,
+                                  gradientDirection: multiVideoGradientDirection,
+                                  gradientIntensity: multiVideoGradientIntensity
+                                },
                                 onProgress: (progress, stage) => {
                                   setMultiVideoProgress(progress);
                                   setMultiVideoStage(stage);
@@ -942,14 +992,31 @@ const Index = () => {
 
                 {/* Layout desktop: grid 2 columnas */}
                 <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-full">
-                  {/* Columna izquierda: controles scrolleables */}
                   <ScrollArea className="h-full pr-4">
-                    <MultiVideoManager
-                      videos={multiVideos}
-                      onVideosChange={setMultiVideos}
-                      maxVideos={10}
-                      maxTotalDuration={100}
-                    />
+                    <div className="space-y-4">
+                      <MultiVideoManager
+                        videos={multiVideos}
+                        onVideosChange={setMultiVideos}
+                        maxVideos={10}
+                        maxTotalDuration={100}
+                      />
+                      
+                      <Card className="p-4">
+                        <h3 className="text-lg font-semibold mb-3 text-primary">🎨 Personalización</h3>
+                        <MultiVideoControlsPanel
+                          gradientDirection={multiVideoGradientDirection}
+                          onGradientDirectionChange={setMultiVideoGradientDirection}
+                          gradientIntensity={multiVideoGradientIntensity}
+                          onGradientIntensityChange={setMultiVideoGradientIntensity}
+                          logoSettings={multiVideoLogoSettings}
+                          onLogoSettingsChange={setMultiVideoLogoSettings}
+                          textComposition={multiVideoTextComposition}
+                          onTextCompositionChange={setMultiVideoTextComposition}
+                          visualLayers={multiVideoVisualLayers}
+                          onVisualLayersChange={setMultiVideoVisualLayers}
+                        />
+                      </Card>
+                    </div>
                   </ScrollArea>
 
                   {/* Columna derecha: preview/generación fijo */}
@@ -960,7 +1027,7 @@ const Index = () => {
                       <div className="space-y-3">
                         <div className="p-3 bg-accent rounded-lg">
                           <p className="text-xs text-muted-foreground mb-1.5">
-                            <strong>{multiVideos.length} videos</strong> listos para concatenar
+                            <strong>{multiVideos.length} videos</strong> • Historia vertical (9:16)
                           </p>
                           <p className="text-[10px] text-muted-foreground">
                             Duración total: {Math.round(multiVideos.reduce((sum, v) => sum + v.duration, 0))} segundos
@@ -1019,6 +1086,13 @@ const Index = () => {
                                 subtitles,
                                 propertyData: propertyData as PropertyData,
                                 aliadoConfig,
+                                visualSettings: {
+                                  logoSettings: multiVideoLogoSettings,
+                                  textComposition: multiVideoTextComposition,
+                                  visualLayers: multiVideoVisualLayers,
+                                  gradientDirection: multiVideoGradientDirection,
+                                  gradientIntensity: multiVideoGradientIntensity
+                                },
                                 onProgress: (progress, stage) => {
                                   setMultiVideoProgress(progress);
                                   setMultiVideoStage(stage);

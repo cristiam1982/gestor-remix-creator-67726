@@ -1,12 +1,14 @@
 import FFmpegManager from './ffmpegManager';
 import { generateSimpleMultiVideoReel } from './simpleMultiVideoGenerator';
 import { PropertyData, AliadoConfig } from '@/types/property';
+import { MultiVideoVisualSettings } from '@/types/multiVideo';
 
 export interface GenerateMultiVideoOptions {
   videoBlobs: Blob[];
   subtitles: string[];
   propertyData: PropertyData;
   aliadoConfig: AliadoConfig;
+  visualSettings: MultiVideoVisualSettings;
   onProgress?: (progress: number, stage: string) => void;
 }
 
@@ -53,6 +55,7 @@ export async function generateMultiVideoReel(
         subtitles,
         propertyData,
         aliadoConfig,
+        options.visualSettings,
         (progress, stage) => {
           onProgress?.(progress, `[Modo rápido] ${stage}`);
         }
