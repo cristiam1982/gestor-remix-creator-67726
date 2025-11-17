@@ -8,7 +8,7 @@ import { LogoSettings } from '@/types/property';
 export const useLogoStyles = (logoSettings: LogoSettings) => {
   return useMemo(() => {
     // Tamaños unificados
-    const sizes = { small: 80, medium: 90, large: 100 };
+    const sizes = { small: 70, medium: 80, large: 90 };
     const size = sizes[logoSettings.size];
     
     // Efectos de fondo profesionales (4 efectos disponibles en UI)
