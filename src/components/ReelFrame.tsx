@@ -182,7 +182,6 @@ export const ReelFrame = ({
               ? { left: mode === 'capture' ? '48px' : '24px' }
               : { right: mode === 'capture' ? '48px' : '24px' }
             ),
-            transform: mode === 'capture' ? `scale(${captureScale})` : 'scale(1)',
             transformOrigin: logoSettings.position === 'top-left' ? 'top left' : 'top right',
             ...(mode === 'preview' && {
               transition: 'opacity 480ms cubic-bezier(0.22, 1, 0.36, 1), transform 480ms cubic-bezier(0.22, 1, 0.36, 1)',
