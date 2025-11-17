@@ -340,7 +340,7 @@ export const CanvasPreview = ({
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * textStyle.badgeScale}px`,
+                    fontSize: `${14 * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -361,7 +361,7 @@ export const CanvasPreview = ({
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * textStyle.badgeScale}px`,
+                    fontSize: `${14 * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -382,7 +382,7 @@ export const CanvasPreview = ({
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * textStyle.badgeScale}px`,
+                    fontSize: `${14 * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -403,7 +403,7 @@ export const CanvasPreview = ({
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * textStyle.badgeScale}px`,
+                    fontSize: `${14 * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -420,7 +420,13 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span 
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${14 * textStyle.scale}px`,
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
+                  }}
+                >
                   🏢 Estrato {propertyData.estrato}
                 </span>
               </div>
@@ -434,7 +440,13 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span 
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${14 * textStyle.scale}px`,
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
+                  }}
+                >
                   🏢 Piso {propertyData.piso}
                 </span>
               </div>
@@ -448,7 +460,13 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span 
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${14 * textStyle.scale}px`,
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
+                  }}
+                >
                   🚦 Tráfico {propertyData.trafico}
                 </span>
               </div>
@@ -462,7 +480,13 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span 
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${14 * textStyle.scale}px`,
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
+                  }}
+                >
                   📏 {propertyData.alturaLibre}m altura
                 </span>
               </div>
@@ -476,7 +500,13 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span 
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${14 * textStyle.scale}px`,
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
+                  }}
+                >
                   🪟 Con vitrina
                 </span>
               </div>
@@ -490,7 +520,13 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <span className="text-sm font-semibold text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}>
+                <span 
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${14 * textStyle.scale}px`,
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
+                  }}
+                >
                   🏗️ Uso {propertyData.uso}
                 </span>
               </div>

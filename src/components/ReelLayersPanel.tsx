@@ -5,16 +5,21 @@ import { Switch } from "@/components/ui/switch";
 interface ReelLayersPanelProps {
   layers: VisualLayers;
   onChange: (layers: VisualLayers) => void;
+  hiddenLayers?: Array<keyof VisualLayers>; // Capas a ocultar del panel
 }
 
-export const ReelLayersPanel = ({ layers, onChange }: ReelLayersPanelProps) => {
-  const layerItems: Array<{ key: keyof VisualLayers; icon: string; label: string; description: string }> = [
+export const ReelLayersPanel = ({ layers, onChange, hiddenLayers = [] }: ReelLayersPanelProps) => {
+  const allLayerItems: Array<{ key: keyof VisualLayers; icon: string; label: string; description: string }> = [
     { key: 'showPhoto', icon: '🖼️', label: 'Foto Principal', description: 'Imagen de fondo' },
     { key: 'showPrice', icon: '💰', label: 'Precio', description: 'Canon o valor de venta' },
     { key: 'showIcons', icon: '🛏️', label: 'Iconografía', description: 'Íconos de características' },
     { key: 'showAllyLogo', icon: '🎨', label: 'Logo del Aliado', description: 'Tu marca personal' },
     { key: 'showCTA', icon: '📣', label: 'Call to Action', description: 'Llamado a la acción' },
+    { key: 'showBadge', icon: '🏷️', label: 'Badge Subtítulo', description: 'Información adicional' },
   ];
+
+  // Filtrar capas según hiddenLayers
+  const layerItems = allLayerItems.filter(item => !hiddenLayers.includes(item.key));
 
   const toggleLayer = (key: keyof VisualLayers) => {
     onChange({ ...layers, [key]: !layers[key] });
