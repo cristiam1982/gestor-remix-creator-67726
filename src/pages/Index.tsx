@@ -1,5 +1,16 @@
 import { useState, useEffect } from "react";
-import { Square, Smartphone, Image as ImageIcon, Video, Film, Download, RefreshCw, CheckCircle, DollarSign, Images } from "lucide-react";
+import {
+  Square,
+  Smartphone,
+  Image as ImageIcon,
+  Video,
+  Film,
+  Download,
+  RefreshCw,
+  CheckCircle,
+  DollarSign,
+  Images,
+} from "lucide-react";
 import { ContentTypeCard } from "@/components/ContentTypeCard";
 import { BrandedHeroSection } from "@/components/BrandedHeroSection";
 import { PropertyForm } from "@/components/PropertyForm";
@@ -16,7 +27,15 @@ import { MetricsPanel } from "@/components/MetricsPanel";
 import { PostControlsPanel } from "@/components/PostControlsPanel";
 
 import { LoadingState } from "@/components/LoadingState";
-import { AliadoConfig, PropertyData, ContentType, LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
+import {
+  AliadoConfig,
+  PropertyData,
+  ContentType,
+  LogoSettings,
+  TextCompositionSettings,
+  VisualLayers,
+  FirstPhotoConfig,
+} from "@/types/property";
 import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -64,20 +83,20 @@ const Index = () => {
   const [currentPhotoIndexOverride, setCurrentPhotoIndexOverride] = useState<number | undefined>(undefined);
   const [isExportingAllPhotos, setIsExportingAllPhotos] = useState(false);
   const [exportProgress, setExportProgress] = useState({ current: 0, total: 0 });
-  
+
   // Estados para personalización del post cuadrado
   const [postLogoSettings, setPostLogoSettings] = useState<LogoSettings>({
-    position: 'top-right',
-    size: 'small',
+    position: "top-right",
+    size: "small",
     opacity: 90,
-    background: 'elevated',
-    shape: 'rounded',
+    background: "elevated",
+    shape: "rounded",
   });
   const [postTextComposition, setPostTextComposition] = useState<TextCompositionSettings>({
     typographyScale: 1.0,
     badgeScale: 1.0,
-    badgeStyle: 'rounded',
-    verticalSpacing: 'normal',
+    badgeStyle: "rounded",
+    verticalSpacing: "normal",
   });
   const [postVisualLayers, setPostVisualLayers] = useState<VisualLayers>({
     showPhoto: true,
@@ -87,7 +106,7 @@ const Index = () => {
     showAllyLogo: true,
     showCTA: true,
   });
-  const [postGradientDirection, setPostGradientDirection] = useState<'top' | 'bottom' | 'both' | 'none'>('both');
+  const [postGradientDirection, setPostGradientDirection] = useState<"top" | "bottom" | "both" | "none">("both");
   const [postGradientIntensity, setPostGradientIntensity] = useState(60);
   const [postFirstPhotoConfig, setPostFirstPhotoConfig] = useState<FirstPhotoConfig>({
     showPrice: true,
@@ -97,7 +116,7 @@ const Index = () => {
     textScaleOverride: 0,
     showAllyLogo: true,
   });
-  
+
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
   const isArrendadoType = selectedContentType === "arrendado" || selectedContentType === "vendido";
@@ -118,7 +137,6 @@ const Index = () => {
       console.error("Error loading auto-saved data:", error);
     }
   }, []);
-
 
   const handleContentTypeSelect = (type: ContentType) => {
     setSelectedContentType(type);
@@ -220,13 +238,13 @@ const Index = () => {
       const caption = generateArrendadoCaption(
         arrendadoData as ArrendadoData,
         aliadoConfig,
-        selectedContentType as ArrendadoType
+        selectedContentType as ArrendadoType,
       );
       setGeneratedCaption(caption);
       setCurrentStep(3);
-      
+
       savePublicationMetric(arrendadoData.tipo!, selectedContentType!, "celebratorio");
-      
+
       toast({
         title: "🎉 ¡Publicación celebratoria lista!",
         description: "Comparte tu éxito en redes sociales.",
@@ -245,7 +263,7 @@ const Index = () => {
     }
 
     const validation = validatePropertyData(propertyData, propertyData.tipo);
-    
+
     if (!validation.success) {
       setValidationErrors(validation.errors);
       toast({
@@ -255,21 +273,16 @@ const Index = () => {
       });
       return;
     }
-    
+
     setValidationErrors({});
-    
+
     if (aliadoConfig && propertyData.tipo) {
-      const caption = generateCaption(
-        propertyData as PropertyData, 
-        aliadoConfig, 
-        "residencial",
-        true
-      );
+      const caption = generateCaption(propertyData as PropertyData, aliadoConfig, "residencial", true);
       setGeneratedCaption(caption);
       setCurrentStep(3);
-      
+
       savePublicationMetric(propertyData.tipo, selectedContentType!, "residencial");
-      
+
       toast({
         title: "✨ Tu publicación está lista",
         description: "Revisa el caption y descarga tu imagen.",
@@ -295,11 +308,7 @@ const Index = () => {
 
   const handleRegenerateCaption = () => {
     if (aliadoConfig && propertyData.tipo) {
-      const newCaption = regenerateCaption(
-        propertyData as PropertyData,
-        aliadoConfig,
-        "residencial"
-      );
+      const newCaption = regenerateCaption(propertyData as PropertyData, aliadoConfig, "residencial");
       setGeneratedCaption(newCaption);
       toast({
         title: "✨ Caption regenerado",
@@ -310,12 +319,12 @@ const Index = () => {
 
   const handleDownloadImage = async () => {
     setIsDownloading(true);
-    
+
     toast({
       title: "🎨 Generando imagen...",
       description: "Esto tomará unos segundos",
     });
-    
+
     try {
       if (selectedContentType === "reel-video" && propertyData.fotos && propertyData.fotos[0]) {
         await exportVideo(propertyData.fotos[0], `reel-${propertyData.tipo}-${Date.now()}.mp4`);
@@ -326,7 +335,7 @@ const Index = () => {
         return;
       }
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const tipo = isArrendadoType ? arrendadoData.tipo : propertyData.tipo;
       const filename = `publicacion-${tipo}-${Date.now()}.png`;
@@ -372,7 +381,7 @@ const Index = () => {
         { format: "png", quality: 0.95 },
         selectedContentType!,
         setCurrentPhotoIndexOverride,
-        (current, total) => setExportProgress({ current, total })
+        (current, total) => setExportProgress({ current, total }),
       );
 
       toast({
@@ -413,7 +422,7 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <ContentTypeCard
                 icon={Square}
-                title="Post Cuadrado"
+                title="Post"
                 description="1:1 para feed de Instagram y Facebook"
                 primaryColor={aliadoConfig.colorPrimario}
                 secondaryColor={aliadoConfig.colorSecundario}
@@ -495,7 +504,7 @@ const Index = () => {
         stage={multiVideoStage}
         isComplete={generatedMultiVideoBlob !== null}
       />
-      
+
       <div className="w-full max-w-[1600px] 2xl:max-w-[1920px] mx-auto px-2 lg:px-4">
         <div className="mb-6 flex items-center justify-between">
           <Button variant="outline" onClick={handleBackToHub}>
@@ -506,9 +515,7 @@ const Index = () => {
               <div
                 key={step}
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                  currentStep >= step
-                    ? "bg-secondary text-secondary-foreground"
-                    : "bg-muted text-muted-foreground"
+                  currentStep >= step ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"
                 }`}
               >
                 {step}
@@ -536,9 +543,7 @@ const Index = () => {
 
                 {/* Selector de formato */}
                 <Card className="p-6">
-                  <h3 className="font-semibold mb-4 text-primary">
-                    📱 Elige el formato de tu publicación
-                  </h3>
+                  <h3 className="font-semibold mb-4 text-primary">📱 Elige el formato de tu publicación</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Button
                       variant={arrendadoFormat === "historia" ? "default" : "outline"}
@@ -551,7 +556,7 @@ const Index = () => {
                         <div className="text-xs opacity-70 mt-1">Imagen 9:16 para stories</div>
                       </div>
                     </Button>
-                    
+
                     <Button
                       variant={arrendadoFormat === "reel-fotos" ? "default" : "outline"}
                       onClick={() => setArrendadoFormat("reel-fotos")}
@@ -563,7 +568,7 @@ const Index = () => {
                         <div className="text-xs opacity-70 mt-1">Slideshow GIF animado</div>
                       </div>
                     </Button>
-                    
+
                     <Button
                       variant={arrendadoFormat === "reel-video" ? "default" : "outline"}
                       onClick={() => setArrendadoFormat("reel-video")}
@@ -576,21 +581,26 @@ const Index = () => {
                       </div>
                     </Button>
                   </div>
-                  
+
                   <div className="mt-4 p-3 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground">
-                      {arrendadoFormat === "historia" && "📸 Generarás una imagen estática optimizada para historias de Instagram."}
-                      {arrendadoFormat === "reel-fotos" && "🎬 Generarás un GIF animado con todas las fotos que subiste."}
-                      {arrendadoFormat === "reel-video" && "🎥 Generarás un video con overlays celebratorios sobre tu video subido."}
+                      {arrendadoFormat === "historia" &&
+                        "📸 Generarás una imagen estática optimizada para historias de Instagram."}
+                      {arrendadoFormat === "reel-fotos" &&
+                        "🎬 Generarás un GIF animado con todas las fotos que subiste."}
+                      {arrendadoFormat === "reel-video" &&
+                        "🎥 Generarás un video con overlays celebratorios sobre tu video subido."}
                     </p>
                   </div>
                 </Card>
 
                 <PhotoManager
                   photos={
-                    arrendadoFormat === "reel-video" 
-                      ? (arrendadoData.videoUrl ? [arrendadoData.videoUrl] : [])
-                      : (arrendadoData.fotos || [])
+                    arrendadoFormat === "reel-video"
+                      ? arrendadoData.videoUrl
+                        ? [arrendadoData.videoUrl]
+                        : []
+                      : arrendadoData.fotos || []
                   }
                   onPhotosChange={(photos) => {
                     if (arrendadoFormat === "reel-video") {
@@ -602,8 +612,11 @@ const Index = () => {
                     }
                   }}
                   contentType={
-                    arrendadoFormat === "reel-video" ? "reel-video" :
-                    arrendadoFormat === "reel-fotos" ? "reel-fotos" : "historia"
+                    arrendadoFormat === "reel-video"
+                      ? "reel-video"
+                      : arrendadoFormat === "reel-fotos"
+                        ? "reel-fotos"
+                        : "historia"
                   }
                   context="arrendado"
                 />
@@ -614,8 +627,8 @@ const Index = () => {
                   variant="hero"
                   size="lg"
                   disabled={
-                    !arrendadoData.tipo || 
-                    !arrendadoData.ubicacion || 
+                    !arrendadoData.tipo ||
+                    !arrendadoData.ubicacion ||
                     !arrendadoData.diasEnMercado ||
                     !arrendadoData.precio ||
                     (arrendadoFormat === "reel-video" ? !arrendadoData.videoUrl : arrendadoData.fotos?.length === 0)
@@ -626,11 +639,7 @@ const Index = () => {
               </>
             ) : selectedContentType === "reel-multi-video" ? (
               <>
-                <PropertyForm 
-                  data={propertyData} 
-                  onDataChange={setPropertyData}
-                  errors={validationErrors}
-                />
+                <PropertyForm data={propertyData} onDataChange={setPropertyData} errors={validationErrors} />
 
                 <MultiVideoManager
                   videos={multiVideos}
@@ -662,11 +671,7 @@ const Index = () => {
               </>
             ) : (
               <>
-                <PropertyForm 
-                  data={propertyData} 
-                  onDataChange={setPropertyData}
-                  errors={validationErrors}
-                />
+                <PropertyForm data={propertyData} onDataChange={setPropertyData} errors={validationErrors} />
 
                 <PhotoManager
                   photos={propertyData.fotos || []}
@@ -684,10 +689,7 @@ const Index = () => {
                         className="w-full"
                         variant="hero"
                         size="lg"
-                        disabled={
-                          !propertyData.tipo || 
-                          propertyData.fotos?.length === 0
-                        }
+                        disabled={!propertyData.tipo || propertyData.fotos?.length === 0}
                       >
                         Generar Vista Previa
                       </Button>
@@ -712,9 +714,7 @@ const Index = () => {
               <>
                 {arrendadoFormat === "historia" && (
                   <Card className="p-6">
-                    <h3 className="text-xl font-semibold mb-4 text-primary">
-                      🎉 Vista Previa Celebratoria
-                    </h3>
+                    <h3 className="text-xl font-semibold mb-4 text-primary">🎉 Vista Previa Celebratoria</h3>
                     <div className="flex justify-center mb-6">
                       <ArrendadoPreview
                         data={arrendadoData as ArrendadoData}
@@ -722,9 +722,9 @@ const Index = () => {
                         tipo={selectedContentType as ArrendadoType}
                       />
                     </div>
-                    <Button 
-                      onClick={handleDownloadImage} 
-                      variant="hero" 
+                    <Button
+                      onClick={handleDownloadImage}
+                      variant="hero"
                       size="lg"
                       className="w-full"
                       disabled={isDownloading}
@@ -763,14 +763,14 @@ const Index = () => {
                       const url = URL.createObjectURL(blob);
                       const a = document.createElement("a");
                       a.href = url;
-                      const ubicacion = arrendadoData.ubicacion?.toLowerCase().replace(/\s+/g, '-') || 'inmueble';
-                      const ext = blob.type.includes('mp4') ? 'mp4' : blob.type.includes('webm') ? 'webm' : 'mp4';
+                      const ubicacion = arrendadoData.ubicacion?.toLowerCase().replace(/\s+/g, "-") || "inmueble";
+                      const ext = blob.type.includes("mp4") ? "mp4" : blob.type.includes("webm") ? "webm" : "mp4";
                       a.download = `reel-${selectedContentType}-${ubicacion}-${Date.now()}.${ext}`;
                       document.body.appendChild(a);
                       a.click();
                       document.body.removeChild(a);
                       URL.revokeObjectURL(url);
-                      
+
                       toast({
                         title: "🎉 Video generado exitosamente",
                         description: `Tu reel celebratorio se ha descargado correctamente. ${(blob.size / (1024 * 1024)).toFixed(1)} MB en ${Math.round(duration)}s`,
@@ -782,9 +782,7 @@ const Index = () => {
             ) : selectedContentType === "reel-multi-video" && aliadoConfig ? (
               // Multi-video Reel
               <Card className="p-6">
-                <h3 className="text-xl font-semibold mb-4 text-primary">
-                  🎬 Reel Multi-Video
-                </h3>
+                <h3 className="text-xl font-semibold mb-4 text-primary">🎬 Reel Multi-Video</h3>
                 <div className="space-y-4">
                   <div className="p-4 bg-accent rounded-lg">
                     <p className="text-sm text-muted-foreground mb-2">
@@ -804,10 +802,10 @@ const Index = () => {
 
                         try {
                           const videoBlobs = await Promise.all(
-                            multiVideos.map(v => fetch(v.url).then(r => r.blob()))
+                            multiVideos.map((v) => fetch(v.url).then((r) => r.blob())),
                           );
 
-                          const subtitles = multiVideos.map(v => v.subtitle || "");
+                          const subtitles = multiVideos.map((v) => v.subtitle || "");
 
                           const resultBlob = await generateMultiVideoReel({
                             videoBlobs,
@@ -826,10 +824,10 @@ const Index = () => {
                           // Generar caption automáticamente
                           if (!generatedCaption) {
                             const caption = generateCaption(
-                              propertyData as PropertyData, 
-                              aliadoConfig, 
+                              propertyData as PropertyData,
+                              aliadoConfig,
                               "residencial",
-                              true
+                              true,
                             );
                             setGeneratedCaption(caption);
                           }
@@ -868,27 +866,25 @@ const Index = () => {
                   ) : (
                     <div className="space-y-4">
                       <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-green-800 font-medium">
-                          ✨ Tu reel multi-video está listo para descargar
-                        </p>
+                        <p className="text-green-800 font-medium">✨ Tu reel multi-video está listo para descargar</p>
                       </div>
                       <Button
                         onClick={() => {
                           const url = URL.createObjectURL(generatedMultiVideoBlob);
                           const a = document.createElement("a");
                           a.href = url;
-                          const tipo = propertyData.tipo || 'inmueble';
-                          
+                          const tipo = propertyData.tipo || "inmueble";
+
                           // Detectar formato del blob y usar extensión correcta
-                          const ext = generatedMultiVideoBlob.type.includes('webm') ? 'webm' : 'mp4';
+                          const ext = generatedMultiVideoBlob.type.includes("webm") ? "webm" : "mp4";
                           a.download = `reel-multi-video-${tipo}-${Date.now()}.${ext}`;
-                          
+
                           document.body.appendChild(a);
                           a.click();
                           document.body.removeChild(a);
                           URL.revokeObjectURL(url);
 
-                          const formatNote = ext === 'webm' ? ' (Formato WebM, compatible con Chrome/Android)' : '';
+                          const formatNote = ext === "webm" ? " (Formato WebM, compatible con Chrome/Android)" : "";
                           toast({
                             title: "✅ Descarga completada",
                             description: `Tu reel multi-video se ha descargado correctamente.${formatNote}`,
@@ -951,9 +947,9 @@ const Index = () => {
                       )}
                     </div>
                     <div className="space-y-3">
-                      <Button 
-                        onClick={handleDownloadImage} 
-                        variant="hero" 
+                      <Button
+                        onClick={handleDownloadImage}
+                        variant="hero"
                         size="lg"
                         className="w-full"
                         disabled={isDownloading || isExportingAllPhotos}
@@ -972,9 +968,9 @@ const Index = () => {
                       </Button>
 
                       {propertyData.fotos && propertyData.fotos.length > 1 && (
-                        <Button 
-                          onClick={handleExportAllPhotos} 
-                          variant="outline" 
+                        <Button
+                          onClick={handleExportAllPhotos}
+                          variant="outline"
                           size="lg"
                           className="w-full"
                           disabled={isDownloading || isExportingAllPhotos}
@@ -995,42 +991,41 @@ const Index = () => {
                     </div>
                   </Card>
 
-                <PostControlsPanel
-                  logoSettings={postLogoSettings}
-                  onLogoSettingsChange={setPostLogoSettings}
-                  textComposition={postTextComposition}
-                  onTextCompositionChange={setPostTextComposition}
-                  visualLayers={postVisualLayers}
-                  onVisualLayersChange={setPostVisualLayers}
-                  gradientDirection={postGradientDirection}
-                  onGradientDirectionChange={setPostGradientDirection}
-                  gradientIntensity={postGradientIntensity}
-                  onGradientIntensityChange={setPostGradientIntensity}
-                  firstPhotoConfig={postFirstPhotoConfig}
-                  onFirstPhotoConfigChange={setPostFirstPhotoConfig}
-                />
+                  <PostControlsPanel
+                    logoSettings={postLogoSettings}
+                    onLogoSettingsChange={setPostLogoSettings}
+                    textComposition={postTextComposition}
+                    onTextCompositionChange={setPostTextComposition}
+                    visualLayers={postVisualLayers}
+                    onVisualLayersChange={setPostVisualLayers}
+                    gradientDirection={postGradientDirection}
+                    onGradientDirectionChange={setPostGradientDirection}
+                    gradientIntensity={postGradientIntensity}
+                    onGradientIntensityChange={setPostGradientIntensity}
+                    firstPhotoConfig={postFirstPhotoConfig}
+                    onFirstPhotoConfigChange={setPostFirstPhotoConfig}
+                  />
                 </div>
 
                 {/* DESKTOP: Grid con ScrollArea en controles + preview fijo */}
                 <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-[calc(100vh-180px)]">
-                  
                   {/* COLUMNA IZQUIERDA: Controles con scroll independiente */}
                   <ScrollArea className="h-full pr-4">
                     <div className="space-y-4 pb-6">
-                    <PostControlsPanel
-                      logoSettings={postLogoSettings}
-                      onLogoSettingsChange={setPostLogoSettings}
-                      textComposition={postTextComposition}
-                      onTextCompositionChange={setPostTextComposition}
-                      visualLayers={postVisualLayers}
-                      onVisualLayersChange={setPostVisualLayers}
-                      gradientDirection={postGradientDirection}
-                      onGradientDirectionChange={setPostGradientDirection}
-                      gradientIntensity={postGradientIntensity}
-                      onGradientIntensityChange={setPostGradientIntensity}
-                      firstPhotoConfig={postFirstPhotoConfig}
-                      onFirstPhotoConfigChange={setPostFirstPhotoConfig}
-                    />
+                      <PostControlsPanel
+                        logoSettings={postLogoSettings}
+                        onLogoSettingsChange={setPostLogoSettings}
+                        textComposition={postTextComposition}
+                        onTextCompositionChange={setPostTextComposition}
+                        visualLayers={postVisualLayers}
+                        onVisualLayersChange={setPostVisualLayers}
+                        gradientDirection={postGradientDirection}
+                        onGradientDirectionChange={setPostGradientDirection}
+                        gradientIntensity={postGradientIntensity}
+                        onGradientIntensityChange={setPostGradientIntensity}
+                        firstPhotoConfig={postFirstPhotoConfig}
+                        onFirstPhotoConfigChange={setPostFirstPhotoConfig}
+                      />
                     </div>
                   </ScrollArea>
 
@@ -1038,7 +1033,7 @@ const Index = () => {
                   <div className="h-full flex flex-col">
                     <Card className="p-6 flex-1 flex flex-col overflow-hidden">
                       <h3 className="text-xl font-semibold mb-4 text-primary flex-shrink-0">Vista Previa</h3>
-                      
+
                       <div className="flex-1 flex items-center justify-center mb-6 min-h-0">
                         {aliadoConfig && (
                           <CanvasPreview
@@ -1058,9 +1053,9 @@ const Index = () => {
                       </div>
 
                       <div className="space-y-3 flex-shrink-0">
-                        <Button 
-                          onClick={handleDownloadImage} 
-                          variant="hero" 
+                        <Button
+                          onClick={handleDownloadImage}
+                          variant="hero"
                           size="lg"
                           className="w-full"
                           disabled={isDownloading || isExportingAllPhotos}
@@ -1079,9 +1074,9 @@ const Index = () => {
                         </Button>
 
                         {propertyData.fotos && propertyData.fotos.length > 1 && (
-                          <Button 
-                            onClick={handleExportAllPhotos} 
-                            variant="outline" 
+                          <Button
+                            onClick={handleExportAllPhotos}
+                            variant="outline"
                             size="lg"
                             className="w-full"
                             disabled={isDownloading || isExportingAllPhotos}
@@ -1102,7 +1097,6 @@ const Index = () => {
                       </div>
                     </Card>
                   </div>
-
                 </div>
               </>
             )}
@@ -1111,54 +1105,45 @@ const Index = () => {
               <Card className="p-6">
                 <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
                 <div className="space-y-2 mb-4">
-                <Textarea
-                  value={generatedCaption}
-                  onChange={(e) => setGeneratedCaption(e.target.value)}
-                  className="min-h-[150px] font-mono text-sm"
-                  placeholder="Tu caption aparecerá aquí..."
-                />
-                <p className="text-xs text-muted-foreground">
-                  {generatedCaption.length} caracteres
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button onClick={handleCopyCaption} variant="secondary" className="flex-1">
-                        📋 Copiar Caption
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Copia el texto para pegar en Instagram o Facebook</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                  <Textarea
+                    value={generatedCaption}
+                    onChange={(e) => setGeneratedCaption(e.target.value)}
+                    className="min-h-[150px] font-mono text-sm"
+                    placeholder="Tu caption aparecerá aquí..."
+                  />
+                  <p className="text-xs text-muted-foreground">{generatedCaption.length} caracteres</p>
+                </div>
+                <div className="flex gap-3">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button onClick={handleCopyCaption} variant="secondary" className="flex-1">
+                          📋 Copiar Caption
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Copia el texto para pegar en Instagram o Facebook</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
 
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        onClick={handleRegenerateCaption}
-                        variant="outline"
-                      >
-                        <RefreshCw className="w-4 h-4 mr-2" />
-                        Regenerar
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Genera una versión alternativa del caption</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <Button 
-                  onClick={handleBackToHub}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  🎉 Crear Otra
-                </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button onClick={handleRegenerateCaption} variant="outline">
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Regenerar
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Genera una versión alternativa del caption</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  <Button onClick={handleBackToHub} variant="outline" className="flex-1">
+                    🎉 Crear Otra
+                  </Button>
                 </div>
               </Card>
             )}
