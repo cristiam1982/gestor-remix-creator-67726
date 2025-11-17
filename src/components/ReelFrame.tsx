@@ -72,6 +72,13 @@ export const ReelFrame = ({
   // Estilos dinámicos del logo
   const logoStyle = useLogoStyles(logoSettings);
   const logoUrl = getLogoUrl(logoSettings.background, aliadoConfig);
+  
+  // Tamaño dinámico del logo basado en la selección del usuario
+  const logoBaseSize = parseInt(logoStyle.size); // 70, 80 o 90
+  const logoCaptureScale = 1.8; // Escala específica para el logo
+  const logoFinalSize = mode === 'capture' 
+    ? logoBaseSize * logoCaptureScale  // ej: 80 * 1.8 = 144px
+    : logoBaseSize;                     // ej: 80px
 
   // Calcular opacidad con entrada
   const finalOpacity = logoStyle.opacity * easeOutCubic(logoEntranceProgress);
@@ -197,10 +204,10 @@ export const ReelFrame = ({
               alt={aliadoConfig.nombre}
               className="w-full h-full object-contain"
               style={{ 
-                width: mode === 'capture' ? '160px' : '80px',
-                height: mode === 'capture' ? '160px' : '80px',
-                maxWidth: mode === 'capture' ? '160px' : '80px',
-                maxHeight: mode === 'capture' ? '160px' : '80px',
+                width: `${logoFinalSize}px`,
+                height: `${logoFinalSize}px`,
+                maxWidth: `${logoFinalSize}px`,
+                maxHeight: `${logoFinalSize}px`,
               }}
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
