@@ -1514,9 +1514,6 @@ export const generateReelVideoFromCanvas = async (
         const frameInterval = 1000 / fps; // Intervalo preciso en ms (33.33ms para 30fps)
         const totalFrames = photos.length * framesPerSlide + (includeSummary ? summaryFrames : 0);
 
-        // Logo siempre visible sin animaciones (elapsedTime alto = animación ya terminada)
-        const elapsedTime = 10; // Valor fijo: logo siempre en estado final visible
-
         // Renderizar cada foto
         for (let i = 0; i < photos.length; i++) {
           const progress = Math.round(10 + ((i / photos.length) * 80));
@@ -1529,8 +1526,35 @@ export const generateReelVideoFromCanvas = async (
             message: `Procesando foto ${i + 1}/${photos.length}...`
           });
 
-          // Renderizar cada frame de esta foto
-          for (let f = 0; f < framesPerSlide; f++) {
+          // PRIMER SLIDE: Animación de entrada del logo (0 a 0.5s)
+          if (i === 0) {
+            const entranceDuration = 0.5; // segundos
+            const entranceFrames = Math.ceil(entranceDuration * fps); // ~15 frames a 30fps
+            
+            for (let ef = 0; ef < entranceFrames; ef++) {
+              const progress = ef / entranceFrames;
+              const elapsedTime = progress * entranceDuration; // 0.0 a 0.5s
+              
+              await drawSlide(ctx, {
+                photoUrl: photos[i],
+                propertyData,
+                aliadoConfig,
+                logoSettings,
+                textComposition,
+                visualLayers,
+                photoIndex: i,
+                elapsedTime
+              });
+
+              await new Promise(resolve => setTimeout(resolve, frameInterval));
+              frameCount++;
+            }
+          }
+
+          // Resto del primer slide y TODOS los demás slides: logo visible (elapsedTime = 10)
+          const remainingFrames = (i === 0) ? (framesPerSlide - Math.ceil(0.5 * fps)) : framesPerSlide;
+          
+          for (let f = 0; f < remainingFrames; f++) {
             await drawSlide(ctx, {
               photoUrl: photos[i],
               propertyData,
@@ -1539,7 +1563,7 @@ export const generateReelVideoFromCanvas = async (
               textComposition,
               visualLayers,
               photoIndex: i,
-              elapsedTime // Pasar tiempo para animación del logo
+              elapsedTime: 10 // Logo completamente visible
             });
 
             await new Promise(resolve => setTimeout(resolve, frameInterval));
@@ -1565,7 +1589,7 @@ export const generateReelVideoFromCanvas = async (
               textComposition,
               backgroundStyle: summaryBackgroundStyle,
               photos,
-              elapsedTime // Pasar tiempo para mantener logo visible
+              elapsedTime: 10 // Logo siempre visible en resumen
             });
 
             await new Promise(resolve => setTimeout(resolve, frameInterval));
@@ -1624,9 +1648,39 @@ export const generateReelVideoFromCanvas = async (
         message: `Capturando foto ${i + 1}/${photos.length}...`
       });
 
-      // Logo siempre visible sin animaciones (elapsedTime alto = animación ya terminada)
-      const elapsedTime = 10; // Valor fijo: logo siempre en estado final visible
+      // PRIMER SLIDE: Animación de entrada del logo (0 a 0.5s)
+      if (i === 0) {
+        const entranceDuration = 0.5; // segundos
+        const entranceFrames = Math.ceil(entranceDuration * fps); // ~15 frames a 30fps
+        
+        for (let ef = 0; ef < entranceFrames; ef++) {
+          const progress = ef / entranceFrames;
+          const elapsedTime = progress * entranceDuration; // 0.0 a 0.5s
+          
+          await drawSlide(ctx, {
+            photoUrl: photos[i],
+            propertyData,
+            aliadoConfig,
+            logoSettings,
+            textComposition,
+            visualLayers,
+            photoIndex: i,
+            elapsedTime
+          });
 
+          // Capturar frame como PNG
+          const blob = await new Promise<Blob>((resolve) => {
+            canvas.toBlob((b) => resolve(b!), 'image/png');
+          });
+          const data = await fetchFile(blob);
+          
+          const frameName = `frame${String(frameIndex).padStart(6, '0')}.png`;
+          await ffmpeg.writeFile(frameName, data);
+          frameIndex++;
+        }
+      }
+
+      // Resto del primer slide y TODOS los demás slides: logo visible (elapsedTime = 10)
       await drawSlide(ctx, {
         photoUrl: photos[i],
         propertyData,
@@ -1635,7 +1689,7 @@ export const generateReelVideoFromCanvas = async (
         textComposition,
         visualLayers,
         photoIndex: i,
-        elapsedTime // Pasar tiempo para animación del logo
+        elapsedTime: 10 // Logo completamente visible
       });
 
       // Capturar frame como PNG
@@ -1644,8 +1698,10 @@ export const generateReelVideoFromCanvas = async (
       });
       const data = await fetchFile(blob);
 
-      // Duplicar frame según duración
-      for (let f = 0; f < framesPerSlide; f++) {
+      // Duplicar frame según duración (restar frames de entrada si es el primer slide)
+      const remainingFrames = (i === 0) ? (framesPerSlide - Math.ceil(0.5 * fps)) : framesPerSlide;
+      
+      for (let f = 0; f < remainingFrames; f++) {
         const frameName = `frame${String(frameIndex).padStart(6, '0')}.png`;
         await ffmpeg.writeFile(frameName, data);
         frameIndex++;

@@ -276,53 +276,28 @@ interface LogoTransform {
 
 /**
  * Calcula las transformaciones de entrada del logo basadas en el tiempo transcurrido
+ * AHORA SIMPLIFICADO: Solo soporta fade-in de 0.5 segundos
  */
 const calculateLogoEntranceTransform = (
-  elapsedTime: number,
-  entranceAnimation: LogoSettings['entranceAnimation'],
-  entranceDuration: number
+  elapsedTime: number
 ): LogoTransform => {
-  // Si no hay animación o ya terminó
-  if (!entranceAnimation || entranceAnimation === 'none' || elapsedTime >= entranceDuration) {
+  const entranceDuration = 0.5; // Duración fija de 0.5 segundos
+  
+  // Si la animación ya terminó
+  if (elapsedTime >= entranceDuration) {
     return { opacity: 1, scale: 1, translateX: 0, translateY: 0, rotation: 0 };
   }
 
   const progress = Math.min(elapsedTime / entranceDuration, 1);
   
-  switch (entranceAnimation) {
-    case 'fade-in':
-      // Fade simple y robusto
-      return { 
-        opacity: easing.easeOut(progress), 
-        scale: 1, 
-        translateX: 0, 
-        translateY: 0, 
-        rotation: 0 
-      };
-    
-    case 'slide-in':
-      // Desliza desde arriba con movimiento suave
-      return {
-        opacity: 1,
-        scale: 1,
-        translateX: 0,
-        translateY: -80 * (1 - easing.easeOut(progress)), // Desliza 80px desde arriba
-        rotation: 0
-      };
-    
-    case 'scale-fade':
-      // Crece desde 70% a 100% mientras aparece
-      return {
-        opacity: easing.easeOut(progress),
-        scale: 0.7 + (0.3 * easing.easeOut(progress)), // 0.7 → 1.0
-        translateX: 0,
-        translateY: 0,
-        rotation: 0
-      };
-    
-    default:
-      return { opacity: 1, scale: 1, translateX: 0, translateY: 0, rotation: 0 };
-  }
+  // Fade-in simple y robusto
+  return { 
+    opacity: easing.easeOut(progress), 
+    scale: 1, 
+    translateX: 0, 
+    translateY: 0, 
+    rotation: 0 
+  };
 };
 
 // Dibujar logo con fondo
@@ -339,10 +314,9 @@ const drawLogoWithBackground = async (
   const logoSize = sizes[settings.size];
   const margin = 20;
   
-  // Calcular transformación de entrada usando configuración del usuario
-  const entranceDuration = settings.entranceDuration || 0.8;
+  // Calcular transformación de entrada automática (0.5s fade-in)
   const entranceTransform = elapsedTime !== undefined
-    ? calculateLogoEntranceTransform(elapsedTime, settings.entranceAnimation, entranceDuration)
+    ? calculateLogoEntranceTransform(elapsedTime)
     : { opacity: 1, scale: 1, translateX: 0, translateY: 0, rotation: 0 };
   
   const animatedOpacity = (settings.opacity / 100) * entranceTransform.opacity;
@@ -813,13 +787,9 @@ export const drawSummarySlide = async (
     
     ctx.save();
     
-    // Aplicar fade-in si está configurado y hay elapsedTime
-    if (logoSettings.entranceAnimation === 'fade-in' && typeof elapsedTime === 'number') {
-      const transform = calculateLogoEntranceTransform(
-        elapsedTime,
-        logoSettings.entranceAnimation,
-        0.8 // Duración del fade-in
-      );
+    // Aplicar fade-in automático si hay elapsedTime (0.5s fade-in)
+    if (typeof elapsedTime === 'number') {
+      const transform = calculateLogoEntranceTransform(elapsedTime);
       ctx.globalAlpha = transform.opacity * (logoSettings.opacity / 100);
     } else {
       ctx.globalAlpha = logoSettings.opacity / 100;

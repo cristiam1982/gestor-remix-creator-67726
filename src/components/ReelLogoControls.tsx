@@ -21,11 +21,6 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
     { value: 'none', icon: '✨', label: 'Flotante' },
   ];
 
-  const animations: Array<{ value: NonNullable<LogoSettings['animation']>; icon: string; label: string }> = [
-    { value: 'none', icon: '🚫', label: 'Sin Animación' },
-    { value: 'floating', icon: '☁️', label: 'Flotante' },
-  ];
-
   const sizes: Array<{ value: LogoSettings['size']; px: number; label: string }> = [
     { value: 'small', px: 80, label: 'Pequeño' },
     { value: 'medium', px: 90, label: 'Mediano' },
@@ -37,13 +32,6 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
     { value: 'rounded', icon: '▢', label: 'Redondeado' },
     { value: 'circle', icon: '⚪', label: 'Círculo' },
     { value: 'squircle', icon: '◉', label: 'Squircle' },
-  ];
-
-  const entranceAnimations: Array<{ value: NonNullable<LogoSettings['entranceAnimation']>; icon: string; label: string }> = [
-    { value: 'none', icon: '⏸️', label: 'Sin Entrada' },
-    { value: 'fade-in', icon: '🌅', label: 'Fade In' },
-    { value: 'slide-in', icon: '📥', label: 'Slide In' },
-    { value: 'scale-fade', icon: '🎯', label: 'Scale + Fade' },
   ];
 
   return (
@@ -99,57 +87,14 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
               variant={settings.background === bg.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, background: bg.value })}
-              className="flex flex-col h-16 gap-1"
+              className="flex flex-col h-20 gap-2"
             >
-              <span className="text-xl">{bg.icon}</span>
+              <span className="text-2xl">{bg.icon}</span>
               <span className="text-xs leading-tight">{bg.label}</span>
             </Button>
           ))}
         </div>
       </div>
-
-      {/* Animación */}
-      <div className="space-y-3">
-        <Label className="text-sm font-semibold">Animación del Logo</Label>
-        <div className="grid grid-cols-3 gap-2">
-          {animations.map((anim) => (
-            <Button
-              key={anim.value}
-              variant={(settings.animation || 'none') === anim.value ? "default" : "outline"}
-              size="sm"
-              onClick={() => onChange({ ...settings, animation: anim.value })}
-              className="flex flex-col h-16 gap-1"
-            >
-              <span className="text-xl">{anim.icon}</span>
-              <span className="text-xs">{anim.label}</span>
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Velocidad de Flotación (solo visible si floating está activo) */}
-      {settings.animation === 'floating' && (
-        <div className="space-y-3 bg-accent/20 p-4 rounded-lg border border-accent/30">
-          <div className="flex justify-between items-center">
-            <Label className="text-sm font-semibold">⏱️ Velocidad Flotante</Label>
-            <span className="text-sm font-bold bg-primary text-primary-foreground px-3 py-1 rounded-full">
-              {settings.floatingSpeed || 5}s
-            </span>
-          </div>
-          <Slider
-            value={[settings.floatingSpeed || 5]}
-            onValueChange={(value) => onChange({ ...settings, floatingSpeed: value[0] })}
-            min={3}
-            max={8}
-            step={0.5}
-            className="py-2"
-          />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>⚡ Rápido (3s)</span>
-            <span>🐌 Suave (8s)</span>
-          </div>
-        </div>
-      )}
 
       {/* Tamaño */}
       <div className="space-y-3">
@@ -188,49 +133,6 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
           ))}
         </div>
       </div>
-
-      {/* Animación de Entrada */}
-      <div className="space-y-3">
-        <Label className="text-sm font-semibold">🎬 Entrada del Logo</Label>
-        <div className="grid grid-cols-2 gap-2">
-          {entranceAnimations.map((entrance) => (
-            <Button
-              key={entrance.value}
-              variant={(settings.entranceAnimation || 'none') === entrance.value ? "default" : "outline"}
-              size="sm"
-              onClick={() => onChange({ ...settings, entranceAnimation: entrance.value })}
-              className="flex flex-col h-16 gap-1"
-            >
-              <span className="text-xl">{entrance.icon}</span>
-              <span className="text-xs leading-tight">{entrance.label}</span>
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Duración de Entrada (solo visible si hay animación de entrada) */}
-      {settings.entranceAnimation && settings.entranceAnimation !== 'none' && (
-        <div className="space-y-3 bg-secondary/20 p-4 rounded-lg border border-secondary/30">
-          <div className="flex justify-between items-center">
-            <Label className="text-sm font-semibold">⏱️ Duración de Entrada</Label>
-            <span className="text-sm font-bold bg-primary text-primary-foreground px-3 py-1 rounded-full">
-              {settings.entranceDuration || 0.8}s
-            </span>
-          </div>
-          <Slider
-            value={[settings.entranceDuration || 0.8]}
-            onValueChange={(value) => onChange({ ...settings, entranceDuration: value[0] })}
-            min={0.6}
-            max={1.2}
-            step={0.1}
-            className="py-2"
-          />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>⚡ Rápido (0.6s)</span>
-            <span>🐌 Suave (1.2s)</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
