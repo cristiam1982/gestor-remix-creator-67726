@@ -65,11 +65,11 @@ export const ReelControlsPanel = ({
   onFirstPhotoConfigChange
 }: ReelControlsPanelProps) => {
   return (
-    <Accordion type="multiple" defaultValue={["logo"]} className="w-full">
+    <Accordion type="multiple" defaultValue={["logo", "visual-elements"]} className="w-full">
       
-      {/* Sección 1: Logo del Aliado (FASE 6 - NUEVA) */}
+      {/* Sección 1: Logo del Aliado */}
       <AccordionItem value="logo">
-        <AccordionTrigger className="text-base font-semibold">
+        <AccordionTrigger className="text-sm font-semibold">
           🎨 Logo del Aliado
         </AccordionTrigger>
         <AccordionContent className="space-y-4 pt-2">
@@ -83,38 +83,46 @@ export const ReelControlsPanel = ({
         </AccordionContent>
       </AccordionItem>
 
-      {/* Sección 2: Composición de Texto (FASE 6 - NUEVA) */}
-      <AccordionItem value="text">
-        <AccordionTrigger className="text-base font-semibold">
-          📝 Composición de Texto
+      {/* Sección 2: Elementos Visuales (FUSIÓN de Texto + Capas) */}
+      <AccordionItem value="visual-elements">
+        <AccordionTrigger className="text-sm font-semibold">
+          📊 Elementos Visuales
         </AccordionTrigger>
         <AccordionContent className="space-y-4 pt-2">
-          <ReelTextCompositionControls
-            settings={textComposition}
-            onChange={onTextCompositionChange}
-          />
+          {/* Composición de Texto */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Tamaños de Texto
+            </h4>
+            <ReelTextCompositionControls
+              settings={textComposition}
+              onChange={onTextCompositionChange}
+            />
+          </div>
+          
+          {/* Separador */}
+          <div className="border-t my-4" />
+          
+          {/* Capas Visuales */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Visibilidad de Capas
+            </h4>
+            <ReelLayersPanel
+              layers={visualLayers}
+              onChange={onVisualLayersChange}
+            />
+          </div>
+          
           <p className="text-xs text-muted-foreground mt-2">
-            Ajusta la distribución y estilo de los elementos de texto del reel.
+            Controla el tamaño de los textos y la visibilidad de cada elemento del reel.
           </p>
         </AccordionContent>
       </AccordionItem>
 
-      {/* Sección 3: Capas Visuales (FASE 6 - NUEVA) */}
-      <AccordionItem value="layers">
-        <AccordionTrigger className="text-base font-semibold">
-          🎭 Capas Visuales
-        </AccordionTrigger>
-        <AccordionContent className="space-y-4 pt-2">
-          <ReelLayersPanel
-            layers={visualLayers}
-            onChange={onVisualLayersChange}
-          />
-        </AccordionContent>
-      </AccordionItem>
-
-      {/* Sección 3.5: Primera Foto (Portada) */}
+      {/* Sección 3: Primera Foto (Portada) */}
       <AccordionItem value="first-photo">
-        <AccordionTrigger className="text-base font-semibold">
+        <AccordionTrigger className="text-sm font-semibold">
           🌟 Primera Foto (Portada)
         </AccordionTrigger>
         <AccordionContent className="space-y-4 pt-2">
@@ -131,7 +139,7 @@ export const ReelControlsPanel = ({
       
       {/* Sección 4: Efectos de Sombreado */}
       <AccordionItem value="gradients">
-        <AccordionTrigger className="text-base font-semibold">
+        <AccordionTrigger className="text-sm font-semibold">
           🌗 Efectos de Sombreado en Fotos
         </AccordionTrigger>
         <AccordionContent className="space-y-4 pt-2">
@@ -155,7 +163,7 @@ export const ReelControlsPanel = ({
       
       {/* Sección 5: Fondo del Slide Final */}
       <AccordionItem value="summary">
-        <AccordionTrigger className="text-base font-semibold">
+        <AccordionTrigger className="text-sm font-semibold">
           🎬 Fondo del Slide Final
         </AccordionTrigger>
         <AccordionContent className="pt-2">

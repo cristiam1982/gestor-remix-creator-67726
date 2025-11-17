@@ -26,21 +26,21 @@ export const ReelLayersPanel = ({ layers, onChange, hiddenLayers = [] }: ReelLay
   };
 
   return (
-    <div className="space-y-4">
-      <div className="bg-accent/30 p-3 rounded-lg border border-border/50">
+    <div className="space-y-3">
+      <div className="bg-accent/30 p-2.5 rounded-lg border border-border/50">
         <p className="text-xs text-muted-foreground">
           💡 Controla qué elementos aparecen en tu reel. Desactiva capas para crear composiciones minimalistas.
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {layerItems.map((item) => (
           <div
             key={item.key}
-            className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent/20 transition-colors"
+            className="flex items-center justify-between p-2.5 rounded-lg border border-border hover:bg-accent/20 transition-colors"
           >
-            <div className="flex items-center gap-3 flex-1">
-              <span className="text-2xl">{item.icon}</span>
+            <div className="flex items-center gap-2 flex-1">
+              <span className="text-xl">{item.icon}</span>
               <div className="flex-1">
                 <Label htmlFor={item.key} className="text-sm font-semibold cursor-pointer">
                   {item.label}
@@ -58,7 +58,7 @@ export const ReelLayersPanel = ({ layers, onChange, hiddenLayers = [] }: ReelLay
         ))}
       </div>
 
-      <div className="bg-accent/30 p-3 rounded-lg border border-border/50">
+      <div className="bg-accent/30 p-2.5 rounded-lg border border-border/50">
         <p className="text-xs text-muted-foreground">
           ℹ️ La foto principal no se puede desactivar. Es el elemento base del reel.
         </p>
