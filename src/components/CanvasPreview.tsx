@@ -78,6 +78,14 @@ export const CanvasPreview = ({
     return { scale, badgeScale };
   }, [textComposition]);
 
+  // Map vertical spacing to pixel values
+  const spacingMap = {
+    compact: 4,
+    normal: 8,
+    spacious: 16
+  };
+  const verticalGap = spacingMap[textComposition.verticalSpacing];
+
   // Gradiente dinámico
   const gradientOverlayStyle = useMemo(() => {
     if (gradientDirection === 'none') return {};
@@ -275,18 +283,19 @@ export const CanvasPreview = ({
       <div className="absolute bottom-4 left-4 right-4 pr-20 pb-8 z-30">
         <div className="space-y-2">
           {/* Título y ubicación */}
-          <div>
+          <div style={{ marginBottom: `${verticalGap * 2}px` }}>
             <h2 
-              className="font-bold mb-1 text-white"
+              className="font-bold text-white"
               style={{ 
                 fontSize: `${24 * textStyle.scale}px`,
-                textShadow: '0 2px 8px rgba(0,0,0,0.5)'
+                textShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                marginBottom: `${verticalGap / 2}px`
               }}
             >
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h2>
             {propertyData.ubicacion && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center" style={{ gap: `${verticalGap / 2}px` }}>
                 <MapPin className="w-4 h-4 text-white drop-shadow-lg" />
                 <span 
                   className="font-semibold text-white"
@@ -307,7 +316,8 @@ export const CanvasPreview = ({
               data-canon-value={priceText}
               className="inline-block px-4 py-2 rounded-xl z-[60] ring-2 ring-white/70"
               style={{ 
-                backgroundColor: aliadoConfig.colorPrimario
+                backgroundColor: aliadoConfig.colorPrimario,
+                marginBottom: `${verticalGap * 2}px`
               }}
             >
               <p className="text-[10px] text-white font-semibold mb-0.5 uppercase tracking-wide relative z-[70]">
@@ -327,7 +337,7 @@ export const CanvasPreview = ({
 
           {/* Iconos de atributos con fondo más opaco */}
           {visualLayers.showIcons && (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap" style={{ gap: `${verticalGap / 2}px` }}>
             {propertyData.habitaciones && (
               <div 
                 className="flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg"

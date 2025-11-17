@@ -28,7 +28,7 @@ export const ReelTextCompositionControls = ({ settings, onChange }: ReelTextComp
         <Slider
           value={[settings.typographyScale]}
           onValueChange={(value) => onChange({ ...settings, typographyScale: value[0] })}
-          min={-20}
+          min={-40}
           max={40}
           step={10}
           className="py-2"
