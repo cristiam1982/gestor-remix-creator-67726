@@ -914,9 +914,15 @@ export const generateReelVideoMP4 = async (
     const framesPerSummary = Math.floor((summaryDuration / 1000) * fps);
     const totalSlides = photos.length + (includeSummary ? 1 : 0);
     
-    console.log(`📊 Configuración: ${fps}fps, ${framesPerPhoto} frames/foto, ${totalSlides} slides totales`);
+    console.log(`⚙️ CONFIGURACIÓN DE VELOCIDAD:`);
+    console.log(`  slideDuration recibido: ${slideDuration}ms`);
+    console.log(`  photoDuration calculado: ${photoDuration}ms`);
+    console.log(`  fps: ${fps}`);
+    console.log(`  framesPerPhoto: ${framesPerPhoto} frames`);
+    console.log(`  framesPerSummary: ${framesPerSummary} frames`);
+    console.log(`  Duración esperada por foto: ${(framesPerPhoto / fps).toFixed(2)}s`);
     const expectedDuration = ((photos.length * framesPerPhoto + (includeSummary ? framesPerSummary : 0)) / fps).toFixed(1);
-    console.log(`⏰ Duración esperada: ${expectedDuration}s`);
+    console.log(`  Duración total esperada: ${expectedDuration}s`);
 
     // ========== FASE 1: PRE-CAPTURAR TODOS LOS SLIDES ==========
     onProgress({
@@ -925,7 +931,7 @@ export const generateReelVideoMP4 = async (
       message: "Pre-capturando slides...",
     });
     
-    const slideCanvases: (HTMLCanvasElement | { entranceFrames: HTMLCanvasElement[], finalFrame: HTMLCanvasElement, entranceCount: number })[] = [];
+    const slideCanvases: HTMLCanvasElement[] = [];
     
     // Pre-capturar fotos
     for (let photoIndex = 0; photoIndex < photos.length; photoIndex++) {
@@ -942,31 +948,7 @@ export const generateReelVideoMP4 = async (
       // Actualizar el DOM con la foto actual
       await onPhotoChange(photoIndex);
 
-      // CAPTURA ESPECIAL: Entrada del logo en la primera foto
-      const entranceFrames = Math.min(Math.round(0.5 * fps), framesPerPhoto); // 0.5s de entrada (15 frames a 30fps)
-      const entranceCanvases: HTMLCanvasElement[] = [];
-      
-      if (photoIndex === 0 && typeof setEntranceProgress === 'function') {
-        console.log(`✨ Capturando entrada del logo: ${entranceFrames} frames de fade-in`);
-        
-        // Reset a 0 antes de capturar entrada
-        await setEntranceProgress(0);
-        await waitForCaptureReady(elementId);
-        
-        // Capturar frames de entrada progresivamente (0.0 → 1.0)
-        for (let i = 0; i < entranceFrames; i++) {
-          const progress = i / (entranceFrames - 1); // 0.0, 0.066, 0.133, ..., 1.0
-          await setEntranceProgress(progress);
-          await waitForCaptureReady(elementId);
-          await new Promise(resolve => setTimeout(resolve, 10)); // micro delay optimizado
-          
-          const entranceCanvas = await captureFrame(elementId, false);
-          entranceCanvases.push(entranceCanvas);
-          console.log(`  📸 Frame entrada ${i + 1}/${entranceFrames}: progress=${progress.toFixed(3)}`);
-        }
-      }
-
-      // Logo completamente visible para el resto del slide
+      // Logo siempre visible desde el inicio
       if (typeof setEntranceProgress === 'function') {
         await setEntranceProgress(1);
       }
@@ -1025,12 +1007,7 @@ export const generateReelVideoMP4 = async (
         );
       }
       
-      // Para el primer slide: guardar entrada + frame completo
-      if (photoIndex === 0 && entranceCanvases.length > 0) {
-        slideCanvases.push({ entranceFrames: entranceCanvases, finalFrame: frameCanvas, entranceCount: entranceFrames });
-      } else {
-        slideCanvases.push(frameCanvas);
-      }
+      slideCanvases.push(frameCanvas);
     }
 
     // Pre-capturar slide de resumen si está habilitado
@@ -1050,23 +1027,15 @@ export const generateReelVideoMP4 = async (
       // Esperar a que el contenedor esté listo
       await waitForCaptureReady(elementId);
 
-      // Capturar el frame del slide de resumen con reintentos
+      // Capturar el frame del slide de resumen con reintento reducido
       let summaryCanvas: HTMLCanvasElement | null = null;
       let retryCount = 0;
-      const maxRetries = 2;
+      const maxRetries = 1; // Reducido a 1 reintento
 
       while (!summaryCanvas && retryCount < maxRetries) {
         try {
           const capturedCanvas = await captureFrame(elementId, false);
-          
-          if (isCanvasLikelyBlack(capturedCanvas)) {
-            console.warn(`⚠️ Frame resumen oscuro, reintento #${retryCount + 1}...`);
-            await new Promise(resolve => setTimeout(resolve, 100));
-            retryCount++;
-            continue;
-          }
-          
-          summaryCanvas = capturedCanvas;
+          summaryCanvas = capturedCanvas; // Aceptar directamente
           console.log('✅ Slide de resumen pre-capturado');
         } catch (error) {
           if (retryCount === 0 && error instanceof Error && 
@@ -1074,21 +1043,19 @@ export const generateReelVideoMP4 = async (
             console.warn('⚠️ Error CORS en resumen, reintentando sin logo del aliado...');
             try {
               const capturedCanvas = await captureFrame(elementId, true);
-              if (!isCanvasLikelyBlack(capturedCanvas)) {
-                summaryCanvas = capturedCanvas;
-                console.log('🖼️ Resumen capturado sin logo del aliado');
-                break;
-              }
+              summaryCanvas = capturedCanvas;
+              console.log('🖼️ Resumen capturado sin logo del aliado');
+              break;
             } catch (e) {
               console.error('⚠️ Error en reintento resumen sin logo:', e);
             }
           }
           retryCount++;
-          await new Promise(resolve => setTimeout(resolve, 150));
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
       }
 
-      if (!summaryCanvas || isCanvasLikelyBlack(summaryCanvas)) {
+      if (!summaryCanvas) {
         console.error('❌ No se pudo capturar slide de resumen, activando fallback FFmpeg...');
         return generateReelVideoMP4_FFmpegFrames(
           photos,
@@ -1142,38 +1109,28 @@ export const generateReelVideoMP4 = async (
     console.log('🎥 Iniciando MediaRecorder...');
     mediaRecorder.start();
 
-    // Reproducir fotos pre-capturadas
+    // Reproducir fotos pre-capturadas con timing preciso
+    const frameDuration = 1000 / fps; // 33.33ms a 30fps
+    console.log(`🎬 Iniciando reproducción con timing preciso: ${frameDuration.toFixed(2)}ms por frame`);
+    
     for (let slideIndex = 0; slideIndex < photos.length; slideIndex++) {
-      const slide = slideCanvases[slideIndex];
+      const slideCanvas = slideCanvases[slideIndex];
+      console.log(`▶️ Reproduciendo slide ${slideIndex + 1}/${photos.length}: ${framesPerPhoto} frames...`);
       
-      // Slide 0 con entrada
-      if (slideIndex === 0 && typeof slide === 'object' && 'entranceFrames' in slide) {
-        console.log(`▶️ Reproduciendo slide 1 con entrada: ${slide.entranceCount} frames fade-in + ${framesPerPhoto - slide.entranceCount} frames estáticos`);
+      const frameStartTime = performance.now();
+      
+      for (let frameNum = 0; frameNum < framesPerPhoto; frameNum++) {
+        // Esperar hasta el momento exacto del frame
+        const targetTime = frameStartTime + (frameNum * frameDuration);
+        const now = performance.now();
+        const delay = Math.max(0, targetTime - now);
         
-        // Reproducir frames de entrada
-        for (const entranceCanvas of slide.entranceFrames) {
-          ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
-          ctx.drawImage(entranceCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
-          await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
+        if (delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, delay));
         }
         
-        // Reproducir el resto del slide con frame completo
-        const remainingFrames = framesPerPhoto - slide.entranceCount;
-        for (let f = 0; f < remainingFrames; f++) {
-          ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
-          ctx.drawImage(slide.finalFrame, 0, 0, outputCanvas.width, outputCanvas.height);
-          await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
-        }
-      } else {
-        // Slides 2+ sin entrada
-        const slideCanvas = slide as HTMLCanvasElement;
-        console.log(`▶️ Reproduciendo slide ${slideIndex + 1}: ${framesPerPhoto} frames`);
-        
-        for (let frameNum = 0; frameNum < framesPerPhoto; frameNum++) {
-          ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
-          ctx.drawImage(slideCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
-          await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
-        }
+        ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+        ctx.drawImage(slideCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
       }
       
       const progressPercent = 70 + Math.round(((slideIndex + 1) / totalSlides) * 25);
@@ -1186,16 +1143,24 @@ export const generateReelVideoMP4 = async (
       });
     }
 
-    // Reproducir slide de resumen pre-capturado
+    // Slide de resumen con timing preciso
     if (includeSummary && slideCanvases.length > photos.length) {
-      const summarySlide = slideCanvases[photos.length];
-      const summaryCanvas = summarySlide instanceof HTMLCanvasElement ? summarySlide : summarySlide.finalFrame;
-      console.log(`▶️ Reproduciendo resumen: ${framesPerSummary} frames a ${fps}fps = ${(framesPerSummary/fps).toFixed(1)}s`);
+      const summaryCanvas = slideCanvases[photos.length];
+      console.log(`▶️ Reproduciendo resumen: ${framesPerSummary} frames = ${(framesPerSummary/fps).toFixed(1)}s`);
+      
+      const frameStartTime = performance.now();
       
       for (let frameNum = 0; frameNum < framesPerSummary; frameNum++) {
+        const targetTime = frameStartTime + (frameNum * frameDuration);
+        const now = performance.now();
+        const delay = Math.max(0, targetTime - now);
+        
+        if (delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+        
         ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
         ctx.drawImage(summaryCanvas, 0, 0, outputCanvas.width, outputCanvas.height);
-        await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
       }
     }
 
