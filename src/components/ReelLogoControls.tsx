@@ -81,6 +81,11 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
       {/* Efecto de Fondo */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Efecto de Fondo</Label>
+        {settings.shape === 'circle' && (
+          <p className="text-xs text-muted-foreground">
+            ℹ️ Deshabilitado con forma circular
+          </p>
+        )}
         <div className="grid grid-cols-4 gap-1.5">
           {backgrounds.map((bg) => (
             <Button
@@ -88,6 +93,7 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
               variant={settings.background === bg.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, background: bg.value })}
+              disabled={settings.shape === 'circle'}
               className="flex flex-col h-14 gap-0.5 px-1"
             >
               <span className="text-xl">{bg.icon}</span>

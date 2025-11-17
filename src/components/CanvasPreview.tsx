@@ -311,7 +311,7 @@ export const CanvasPreview = ({
         }}
       >
         <div 
-          className={`${logoStyle.backgroundClass} ${logoStyle.shapeClass} p-2.5 w-full h-full flex items-center justify-center overflow-hidden`}
+          className={`${logoStyle.backgroundClass} ${logoStyle.shapeClass} ${logoSettings.shape === 'circle' || logoSettings.background === 'none' ? 'p-0' : 'p-2.5'} w-full h-full flex items-center justify-center overflow-hidden`}
         >
           <img 
             src={logoUrl}
