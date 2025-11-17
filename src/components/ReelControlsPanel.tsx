@@ -5,8 +5,7 @@ import { SummaryBackgroundSelector } from "./SummaryBackgroundSelector";
 import { ReelLogoControls } from "./ReelLogoControls";
 import { ReelTextCompositionControls } from "./ReelTextCompositionControls";
 import { ReelLayersPanel } from "./ReelLayersPanel";
-import { FirstPhotoControls } from "./FirstPhotoControls";
-import { LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
+import { LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
 
 interface ReelControlsPanelProps {
   // Gradient
@@ -36,10 +35,6 @@ interface ReelControlsPanelProps {
   // Visual layers (Fase 6)
   visualLayers: VisualLayers;
   onVisualLayersChange: (layers: VisualLayers) => void;
-
-  // First photo config
-  firstPhotoConfig: FirstPhotoConfig;
-  onFirstPhotoConfigChange: (config: FirstPhotoConfig) => void;
 }
 
 export const ReelControlsPanel = ({
@@ -60,9 +55,7 @@ export const ReelControlsPanel = ({
   textComposition,
   onTextCompositionChange,
   visualLayers,
-  onVisualLayersChange,
-  firstPhotoConfig,
-  onFirstPhotoConfigChange
+  onVisualLayersChange
 }: ReelControlsPanelProps) => {
   return (
     <Accordion type="multiple" defaultValue={["logo", "visual-elements"]} className="w-full">
@@ -120,22 +113,6 @@ export const ReelControlsPanel = ({
         </AccordionContent>
       </AccordionItem>
 
-      {/* Sección 3: Primera Foto (Portada) */}
-      <AccordionItem value="first-photo">
-        <AccordionTrigger className="text-sm font-semibold">
-          🌟 Primera Foto (Portada)
-        </AccordionTrigger>
-        <AccordionContent className="space-y-4 pt-2">
-          <FirstPhotoControls
-            settings={firstPhotoConfig}
-            onChange={onFirstPhotoConfigChange}
-            showDuration={true}
-          />
-          <p className="text-xs text-muted-foreground mt-2">
-            Personaliza la primera foto para destacarla como portada del reel.
-          </p>
-        </AccordionContent>
-      </AccordionItem>
       
       {/* Sección 4: Efectos de Sombreado */}
       <AccordionItem value="gradients">

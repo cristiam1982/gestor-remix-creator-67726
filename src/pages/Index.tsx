@@ -1028,8 +1028,6 @@ const Index = () => {
                     onGradientDirectionChange={setPostGradientDirection}
                     gradientIntensity={postGradientIntensity}
                     onGradientIntensityChange={setPostGradientIntensity}
-                    firstPhotoConfig={postFirstPhotoConfig}
-                    onFirstPhotoConfigChange={setPostFirstPhotoConfig}
                   />
                 </div>
 
@@ -1050,8 +1048,6 @@ const Index = () => {
                       onGradientDirectionChange={setPostGradientDirection}
                       gradientIntensity={postGradientIntensity}
                       onGradientIntensityChange={setPostGradientIntensity}
-                      firstPhotoConfig={postFirstPhotoConfig}
-                      onFirstPhotoConfigChange={setPostFirstPhotoConfig}
                     />
                     </div>
                   </ScrollArea>
