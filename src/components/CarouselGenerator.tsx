@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { PropertyData, AliadoConfig } from "@/types/property";
-import { exportCarouselSlides } from "@/utils/carouselExporter";
+import { captureCurrentSlide, exportCaption } from "@/utils/unifiedCarouselExporter";
 import { useToast } from "@/hooks/use-toast";
+import { CanvasPreview } from "@/components/CanvasPreview";
 
 interface CarouselGeneratorProps {
   propertyData: PropertyData;
@@ -17,6 +18,8 @@ export const CarouselGenerator = ({ propertyData, aliadoConfig, caption }: Carou
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLastSlide, setIsLastSlide] = useState(false);
   
   const totalSlides = propertyData.fotos.length + 1; // fotos + slide final CTA
 
@@ -39,15 +42,30 @@ export const CarouselGenerator = ({ propertyData, aliadoConfig, caption }: Carou
         description: `Creando ${totalSlides} slides profesionales`,
       });
 
-      await exportCarouselSlides(
-        propertyData,
-        aliadoConfig,
-        caption,
-        (current, total) => {
-          const percent = Math.round((current / total) * 100);
-          setProgress(percent);
-        }
-      );
+      // Generar cada slide secuencialmente
+      for (let i = 0; i < totalSlides; i++) {
+        const slideNumber = i + 1;
+        const isFinalSlide = slideNumber === totalSlides;
+        
+        // Actualizar estado para que CanvasPreview renderice el slide correcto
+        setCurrentSlide(i);
+        setIsLastSlide(isFinalSlide);
+        
+        // Esperar a que React actualice el DOM
+        await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
+        await new Promise(resolve => setTimeout(resolve, 400));
+        
+        // Capturar el slide actual
+        const filename = `slide-${String(slideNumber).padStart(2, '0')}.png`;
+        await captureCurrentSlide(filename);
+        
+        // Actualizar progreso
+        const percent = Math.round((slideNumber / totalSlides) * 100);
+        setProgress(percent);
+      }
+      
+      // Exportar caption
+      exportCaption(caption);
 
       toast({
         title: "✅ Carrusel generado",
@@ -67,7 +85,23 @@ export const CarouselGenerator = ({ propertyData, aliadoConfig, caption }: Carou
   };
 
   return (
-    <Card className="p-6 space-y-4">
+    <>
+      {/* Preview oculto del slide actual para captura */}
+      <div className="hidden">
+        <CanvasPreview
+          propertyData={propertyData}
+          aliadoConfig={aliadoConfig}
+          contentType="post"
+          carouselMode={{
+            isLastSlide: isLastSlide,
+            slideNumber: currentSlide + 1,
+            totalSlides: totalSlides
+          }}
+          currentPhotoIndexOverride={currentSlide}
+        />
+      </div>
+      
+      <Card className="p-6 space-y-4">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold text-foreground">
           📸 Carrusel de {totalSlides} Slides
@@ -115,5 +149,6 @@ export const CarouselGenerator = ({ propertyData, aliadoConfig, caption }: Carou
         </ol>
       </div>
     </Card>
+    </>
   );
 };
