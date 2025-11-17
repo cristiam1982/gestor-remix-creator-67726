@@ -91,7 +91,9 @@ const Index = () => {
   const [postGradientDirection, setPostGradientDirection] = useState<'top' | 'bottom' | 'both' | 'none'>('both');
   const [postGradientIntensity, setPostGradientIntensity] = useState(60);
   const [postFirstPhotoConfig, setPostFirstPhotoConfig] = useState<FirstPhotoConfig>({
-    overlayStyle: 'full',
+    showPrice: true,
+    showTitle: true,
+    showIcons: true,
     textScaleOverride: 0,
     showAllyLogo: true,
   });

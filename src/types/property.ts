@@ -64,8 +64,10 @@ export interface VisualLayers {
 // First Photo Configuration (Portada especial)
 export interface FirstPhotoConfig {
   duration?: number; // 1000-5000ms (solo Reel)
-  overlayStyle: 'full' | 'simple' | 'clean'; // full: precio+título+iconos, simple: precio+título, clean: sin overlays
-  textScaleOverride?: number; // -40 a +40 (porcentaje)
+  showPrice: boolean; // Mostrar precio en primera foto
+  showTitle: boolean; // Mostrar título/ubicación en primera foto
+  showIcons: boolean; // Mostrar iconos de características en primera foto
+  textScaleOverride?: number; // -50 a +60 (porcentaje)
   showAllyLogo?: boolean; // Mostrar/ocultar logo del aliado en primera foto
 }
 
