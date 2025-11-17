@@ -39,7 +39,7 @@ export interface LogoSettings {
   position: 'top-left' | 'top-right';
   opacity: number; // 30-100
   background: 'none' | 'frosted' | 'glow' | 'elevated';
-  size: 'small' | 'medium' | 'large'; // 80px, 90px, 100px
+  size: 'small' | 'medium' | 'large' | 'xlarge'; // 60px, 70px, 80px, 90px
   shape?: 'square' | 'rounded' | 'circle' | 'squircle'; // Default: 'rounded'
 }
 

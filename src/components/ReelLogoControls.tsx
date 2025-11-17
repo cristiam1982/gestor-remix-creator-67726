@@ -22,9 +22,10 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
   ];
 
   const sizes: Array<{ value: LogoSettings['size']; px: number; label: string }> = [
-    { value: 'small', px: 70, label: 'Pequeño' },
-    { value: 'medium', px: 80, label: 'Mediano' },
-    { value: 'large', px: 90, label: 'Grande' },
+    { value: 'small', px: 60, label: 'Pequeño' },
+    { value: 'medium', px: 70, label: 'Mediano' },
+    { value: 'large', px: 80, label: 'Grande' },
+    { value: 'xlarge', px: 90, label: 'Extra Grande' },
   ];
 
   const shapes: Array<{ value: NonNullable<LogoSettings['shape']>; icon: string; label: string }> = [
