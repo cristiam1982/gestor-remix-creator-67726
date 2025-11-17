@@ -13,7 +13,7 @@ import { VideoReelRecorder } from "@/components/VideoReelRecorder";
 import { MultiVideoManager } from "@/components/MultiVideoManager";
 import { MultiVideoProcessingModal } from "@/components/MultiVideoProcessingModal";
 import { MetricsPanel } from "@/components/MetricsPanel";
-import { ExportOptions } from "@/components/ExportOptions";
+
 import { LoadingState } from "@/components/LoadingState";
 import { CarouselGenerator } from "@/components/CarouselGenerator";
 import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
@@ -23,7 +23,7 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { generateCaption, regenerateCaption, generateArrendadoCaption } from "@/utils/captionGenerator";
-import { exportToImage, exportVideo, ExportOptions as ExportOptionsType } from "@/utils/imageExporter";
+import { exportToImage, exportVideo } from "@/utils/imageExporter";
 import { validatePropertyData, validateArrendadoData } from "@/utils/formValidation";
 import { savePublicationMetric, clearMetrics } from "@/utils/metricsManager";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -54,10 +54,6 @@ const Index = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [generatedCaption, setGeneratedCaption] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [exportOptions, setExportOptions] = useState<ExportOptionsType>({ 
-    format: "png", 
-    quality: 0.95 
-  });
   const [isDownloading, setIsDownloading] = useState(false);
   const [multiVideos, setMultiVideos] = useState<VideoInfo[]>([]);
   const [isProcessingMultiVideo, setIsProcessingMultiVideo] = useState(false);
@@ -299,8 +295,8 @@ const Index = () => {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const tipo = isArrendadoType ? arrendadoData.tipo : propertyData.tipo;
-      const filename = `publicacion-${tipo}-${Date.now()}.${exportOptions.format}`;
-      await exportToImage("canvas-preview", filename, exportOptions);
+      const filename = `publicacion-${tipo}-${Date.now()}.png`;
+      await exportToImage("canvas-preview", filename, { format: "png", quality: 0.95 });
       toast({
         title: "✅ Descarga lista",
         description: "Tu publicación se ha guardado correctamente.",
@@ -339,7 +335,7 @@ const Index = () => {
       await exportAllPhotos(
         propertyData as PropertyData,
         aliadoConfig!,
-        exportOptions,
+        { format: "png", quality: 0.95 },
         selectedContentType!,
         setCurrentPhotoIndexOverride,
         (current, total) => setExportProgress({ current, total })
@@ -693,14 +689,6 @@ const Index = () => {
 
         {currentStep === 3 && (
           <div className="space-y-6 animate-fade-in">
-            {/* Export Options - Solo para imágenes estáticas */}
-            {(selectedContentType === "post" || selectedContentType === "historia") && aliadoConfig && (
-              <ExportOptions
-                onOptionsChange={setExportOptions}
-                aliadoNombre={aliadoConfig.nombre}
-              />
-            )}
-
             {/* Vista previa según tipo de contenido */}
             {isArrendadoType && aliadoConfig ? (
               // Vista previa para Arrendado/Vendido según formato
@@ -732,7 +720,7 @@ const Index = () => {
                       ) : (
                         <>
                           <Download className="w-5 h-5 mr-2" />
-                          Descargar Imagen ({exportOptions.format.toUpperCase()})
+                          Descargar Imagen
                         </>
                       )}
                     </Button>
