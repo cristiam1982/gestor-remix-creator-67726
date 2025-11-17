@@ -1048,10 +1048,10 @@ const Index = () => {
 
                   {/* COLUMNA DERECHA: Preview FIJO (sin scroll, siempre visible) */}
                   <div className="h-full flex flex-col">
-                    <Card className="p-6 flex-1 flex flex-col">
-                      <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
+                    <Card className="p-6 flex-1 flex flex-col overflow-hidden">
+                      <h3 className="text-xl font-semibold mb-4 text-primary flex-shrink-0">Vista Previa</h3>
                       
-                      <div className="flex-1 flex items-center justify-center mb-6">
+                      <div className="flex-1 flex items-center justify-center mb-6 min-h-0">
                         {aliadoConfig && (
                           <CanvasPreview
                             propertyData={propertyData as PropertyData}
@@ -1068,7 +1068,7 @@ const Index = () => {
                         )}
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-3 flex-shrink-0">
                         <Button 
                           onClick={handleDownloadImage} 
                           variant="hero" 
