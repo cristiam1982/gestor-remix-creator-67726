@@ -77,24 +77,42 @@ export const FirstPhotoControls = ({ settings, onChange, showDuration = false }:
             </Label>
           </div>
 
-          {/* Iconos */}
-          <div className="flex items-center gap-2.5 py-1.5">
-            <Checkbox
-              id="first-photo-icons"
-              checked={settings.showIcons}
-              onCheckedChange={(checked) => 
-                onChange({ ...settings, showIcons: checked as boolean })
-              }
-            />
-            <Label 
-              htmlFor="first-photo-icons" 
-              className="text-sm font-medium cursor-pointer flex items-center gap-2 flex-1"
-            >
-              <span className="text-base">🛏️</span>
-              <span>Iconos de Características</span>
-            </Label>
-          </div>
-        </div>
+    {/* Iconos */}
+    <div className="flex items-center gap-2.5 py-1.5">
+      <Checkbox
+        id="first-photo-icons"
+        checked={settings.showIcons}
+        onCheckedChange={(checked) => 
+          onChange({ ...settings, showIcons: checked as boolean })
+        }
+      />
+      <Label 
+        htmlFor="first-photo-icons" 
+        className="text-sm font-medium cursor-pointer flex items-center gap-2 flex-1"
+      >
+        <span className="text-base">🛏️</span>
+        <span>Iconos de Características</span>
+      </Label>
+    </div>
+
+    {/* Call to Action */}
+    <div className="flex items-center gap-2.5 py-1.5">
+      <Checkbox
+        id="first-photo-cta"
+        checked={settings.showCTA !== false}
+        onCheckedChange={(checked) => 
+          onChange({ ...settings, showCTA: checked as boolean })
+        }
+      />
+      <Label 
+        htmlFor="first-photo-cta" 
+        className="text-sm font-medium cursor-pointer flex items-center gap-2 flex-1"
+      >
+        <span className="text-base">📢</span>
+        <span>Call to Action</span>
+      </Label>
+    </div>
+  </div>
 
         <div className="bg-accent/30 p-2 rounded-lg border border-border/50">
           <p className="text-[10px] text-muted-foreground">

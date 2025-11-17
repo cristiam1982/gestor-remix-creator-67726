@@ -40,17 +40,17 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
       {/* Posición */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Posición del Logo</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1.5">
           {positions.map((pos) => (
             <Button
               key={pos.value}
               variant={settings.position === pos.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, position: pos.value })}
-              className="flex flex-col h-12 gap-0.5"
+              className="flex flex-col h-14 gap-0.5"
             >
-              <span className="text-lg">{pos.icon}</span>
-              <span className="text-[10px] leading-tight">{pos.label}</span>
+              <span className="text-xl">{pos.icon}</span>
+              <span className="text-[11px] leading-tight font-medium">{pos.label}</span>
             </Button>
           ))}
         </div>
@@ -81,17 +81,17 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
       {/* Efecto de Fondo */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Efecto de Fondo</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-4 gap-1.5">
           {backgrounds.map((bg) => (
             <Button
               key={bg.value}
               variant={settings.background === bg.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, background: bg.value })}
-              className="flex flex-col h-12 gap-0.5"
+              className="flex flex-col h-14 gap-0.5 px-1"
             >
-              <span className="text-lg">{bg.icon}</span>
-              <span className="text-[10px] leading-tight">{bg.label}</span>
+              <span className="text-xl">{bg.icon}</span>
+              <span className="text-[11px] leading-tight font-medium">{bg.label}</span>
             </Button>
           ))}
         </div>
@@ -100,17 +100,17 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
       {/* Tamaño */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Tamaño del Logo</Label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-1.5">
           {sizes.map((size) => (
             <Button
               key={size.value}
               variant={settings.size === size.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, size: size.value })}
-              className="flex flex-col h-12 gap-0.5"
+              className="flex flex-col h-14 gap-0.5 px-1"
             >
-              <span className="text-base font-bold">{size.px}px</span>
-              <span className="text-[10px]">{size.label}</span>
+              <span className="text-lg font-bold">{size.px}px</span>
+              <span className="text-[11px] font-medium">{size.label}</span>
             </Button>
           ))}
         </div>
@@ -119,17 +119,17 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
       {/* Forma del Logo */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Forma del Logo</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-4 gap-1.5">
           {shapes.map((shape) => (
             <Button
               key={shape.value}
               variant={(settings.shape || 'rounded') === shape.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, shape: shape.value })}
-              className="flex flex-col h-12 gap-0.5"
+              className="flex flex-col h-14 gap-0.5 px-1"
             >
-              <span className="text-lg">{shape.icon}</span>
-              <span className="text-[10px]">{shape.label}</span>
+              <span className="text-xl">{shape.icon}</span>
+              <span className="text-[11px] font-medium leading-tight">{shape.label}</span>
             </Button>
           ))}
         </div>

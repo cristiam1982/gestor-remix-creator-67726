@@ -94,6 +94,7 @@ const Index = () => {
     showPrice: true,
     showTitle: true,
     showIcons: true,
+    showCTA: true,
     textScaleOverride: 0,
     showAllyLogo: true,
   });

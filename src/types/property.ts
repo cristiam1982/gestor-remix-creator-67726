@@ -67,6 +67,7 @@ export interface FirstPhotoConfig {
   showPrice: boolean; // Mostrar precio en primera foto
   showTitle: boolean; // Mostrar título/ubicación en primera foto
   showIcons: boolean; // Mostrar iconos de características en primera foto
+  showCTA?: boolean; // Mostrar Call to Action en primera foto
   textScaleOverride?: number; // -50 a +60 (porcentaje)
   showAllyLogo?: boolean; // Mostrar/ocultar logo del aliado en primera foto
 }
