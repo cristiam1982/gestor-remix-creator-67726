@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Square, Smartphone, Image as ImageIcon, Video, Film, Download, RefreshCw, CheckCircle, DollarSign } from "lucide-react";
+import { Square, Smartphone, Image as ImageIcon, Video, Film, Download, RefreshCw, CheckCircle, DollarSign, Images } from "lucide-react";
 import { ContentTypeCard } from "@/components/ContentTypeCard";
 import { BrandedHeroSection } from "@/components/BrandedHeroSection";
 import { PropertyForm } from "@/components/PropertyForm";
@@ -30,6 +30,7 @@ import { useAutoSave } from "@/hooks/useAutoSave";
 import { useToast } from "@/hooks/use-toast";
 import { ALIADO_CONFIG } from "@/config/aliadoConfig";
 import { generateMultiVideoReel } from "@/utils/multiVideoGenerator";
+import { exportAllPhotos } from "@/utils/postMultiExporter";
 
 interface VideoInfo {
   id: string;
@@ -63,6 +64,9 @@ const Index = () => {
   const [multiVideoProgress, setMultiVideoProgress] = useState(0);
   const [multiVideoStage, setMultiVideoStage] = useState("");
   const [generatedMultiVideoBlob, setGeneratedMultiVideoBlob] = useState<Blob | null>(null);
+  const [currentPhotoIndexOverride, setCurrentPhotoIndexOverride] = useState<number | undefined>(undefined);
+  const [isExportingAllPhotos, setIsExportingAllPhotos] = useState(false);
+  const [exportProgress, setExportProgress] = useState({ current: 0, total: 0 });
   
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
@@ -310,6 +314,52 @@ const Index = () => {
       });
     } finally {
       setIsDownloading(false);
+    }
+  };
+
+  const handleExportAllPhotos = async () => {
+    if (!propertyData.fotos || propertyData.fotos.length <= 1) {
+      toast({
+        title: "⚠️ No hay múltiples fotos",
+        description: "Necesitas al menos 2 fotos para usar esta función.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsExportingAllPhotos(true);
+    setExportProgress({ current: 0, total: propertyData.fotos.length });
+
+    toast({
+      title: "📸 Exportando todas las fotos...",
+      description: `Se exportarán ${propertyData.fotos.length} imágenes`,
+    });
+
+    try {
+      await exportAllPhotos(
+        propertyData as PropertyData,
+        aliadoConfig!,
+        exportOptions,
+        selectedContentType!,
+        setCurrentPhotoIndexOverride,
+        (current, total) => setExportProgress({ current, total })
+      );
+
+      toast({
+        title: "✅ Exportación completada",
+        description: `Se descargaron ${propertyData.fotos.length} fotos exitosamente`,
+      });
+    } catch (error) {
+      console.error("Error exportando fotos:", error);
+      toast({
+        title: "❌ Error en exportación",
+        description: "Algunas fotos no se pudieron exportar. Revisa la consola.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExportingAllPhotos(false);
+      setCurrentPhotoIndexOverride(undefined);
+      setExportProgress({ current: 0, total: 0 });
     }
   };
 
@@ -889,28 +939,53 @@ const Index = () => {
                       aliadoConfig={aliadoConfig}
                       contentType={selectedContentType!}
                       template="residencial"
+                      currentPhotoIndexOverride={currentPhotoIndexOverride}
                     />
                   )}
                 </div>
-                <Button 
-                  onClick={handleDownloadImage} 
-                  variant="hero" 
-                  size="lg"
-                  className="w-full"
-                  disabled={isDownloading}
-                >
-                  {isDownloading ? (
-                    <>
-                      <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                      Descargando...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="w-5 h-5 mr-2" />
-                      Descargar Imagen ({exportOptions.format.toUpperCase()})
-                    </>
+                <div className="space-y-3">
+                  <Button 
+                    onClick={handleDownloadImage} 
+                    variant="hero" 
+                    size="lg"
+                    className="w-full"
+                    disabled={isDownloading || isExportingAllPhotos}
+                  >
+                    {isDownloading ? (
+                      <>
+                        <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                        Descargando...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-5 h-5 mr-2" />
+                        Descargar Foto Actual
+                      </>
+                    )}
+                  </Button>
+
+                  {propertyData.fotos && propertyData.fotos.length > 1 && (
+                    <Button 
+                      onClick={handleExportAllPhotos} 
+                      variant="outline" 
+                      size="lg"
+                      className="w-full"
+                      disabled={isDownloading || isExportingAllPhotos}
+                    >
+                      {isExportingAllPhotos ? (
+                        <>
+                          <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                          Exportando {exportProgress.current}/{exportProgress.total}
+                        </>
+                      ) : (
+                        <>
+                          <Images className="w-5 h-5 mr-2" />
+                          Exportar Todas las Fotos ({propertyData.fotos.length})
+                        </>
+                      )}
+                    </Button>
                   )}
-                </Button>
+                </div>
               </Card>
             )}
 
