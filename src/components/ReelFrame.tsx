@@ -148,8 +148,8 @@ export const ReelFrame = ({
 
   // Text styling con escalado para captura
   const textStyle = useMemo(() => {
-    const baseScale = 1 + (textComposition.typographyScale / 100);
-    const baseBadgeScale = 1 + (textComposition.badgeScale / 100);
+    const baseScale = 1 + (effectiveTextComposition.typographyScale / 100);
+    const baseBadgeScale = 1 + (effectiveTextComposition.badgeScale / 100);
     
     // Aplicar multiplicadores para modo capture
     const scale = mode === 'capture' ? baseScale * 1.5 : baseScale;
@@ -171,11 +171,11 @@ export const ReelFrame = ({
     return {
       scale,
       badgeScale,
-      badgeClass: badgeClasses[textComposition.badgeStyle],
+      badgeClass: badgeClasses[effectiveTextComposition.badgeStyle],
       alignmentClass: 'items-start text-left',
-      spacingClass: spacingValues[textComposition.verticalSpacing]
+      spacingClass: spacingValues[effectiveTextComposition.verticalSpacing]
     };
-  }, [textComposition, mode, captureScale]);
+  }, [effectiveTextComposition, mode, captureScale]);
 
   // Renderizar slide de resumen
   if (showSummarySlide) {
@@ -234,7 +234,7 @@ export const ReelFrame = ({
           }}
         >
           <div
-            className={`${logoStyle.shapeClass} ${logoStyle.backgroundClass} p-2.5 flex items-center justify-center`}
+            className={`${logoStyle.shapeClass} ${logoStyle.backgroundClass} ${logoSettings.background === 'none' ? 'p-0' : 'p-2.5'} flex items-center justify-center`}
             style={{
               ...(mode === 'capture' && logoSettings.background === 'frosted' && {
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -251,6 +251,9 @@ export const ReelFrame = ({
                 height: `${logoFinalSize}px`,
                 maxWidth: `${logoFinalSize}px`,
                 maxHeight: `${logoFinalSize}px`,
+                ...(logoSettings.background === 'none' && {
+                  filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))'
+                })
               }}
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
