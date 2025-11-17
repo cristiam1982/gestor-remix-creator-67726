@@ -184,9 +184,8 @@ export const ReelFrame = ({
           }}
         >
           <div
-            className={`${logoStyle.shapeClass} ${logoStyle.backgroundClass} p-3 flex items-center justify-center`}
+            className={`${logoStyle.shapeClass} ${logoStyle.backgroundClass} p-2.5 flex items-center justify-center`}
             style={{
-              borderBottom: `3px solid ${aliadoConfig.colorPrimario}`,
               ...(mode === 'capture' && logoSettings.background === 'frosted' && {
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.8)',
@@ -200,8 +199,8 @@ export const ReelFrame = ({
               style={{ 
                 width: logoStyle.size, 
                 height: logoStyle.size,
-                maxWidth: mode === 'capture' ? '240px' : '120px',
-                maxHeight: mode === 'capture' ? '240px' : '120px',
+                maxWidth: mode === 'capture' ? '200px' : '100px',
+                maxHeight: mode === 'capture' ? '200px' : '100px',
               }}
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
