@@ -100,29 +100,58 @@ export const ReelSummarySlide = ({
           <>
             <img 
               src={photos[photos.length - 1]} 
-              className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-30"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                filter: 'blur(48px)',
+                opacity: 0.3
+              }}
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20" />
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.2))'
+            }} />
           </>
         ) : null;
         
       case 'mosaic':
         return photos.length > 0 ? (
           <>
-            <div className="absolute inset-0 grid grid-cols-2 gap-1 p-2">
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '4px',
+              padding: '8px'
+            }}>
               {photos.slice(0, 4).map((photo, idx) => (
                 <img 
                   key={idx}
                   src={photo} 
-                  className="w-full h-full object-cover opacity-20 blur-sm"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    opacity: 0.2,
+                    filter: 'blur(4px)'
+                  }}
                   crossOrigin="anonymous"
                   referrerPolicy="no-referrer"
                 />
               ))}
             </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20" />
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.2))'
+            }} />
           </>
         ) : null;
         
@@ -134,8 +163,14 @@ export const ReelSummarySlide = ({
 
   return (
     <div 
-      className="absolute inset-0 flex flex-col items-center justify-center text-center"
       style={{
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
         padding: `${32 * captureScale}px`,
         ...(backgroundStyle === 'solid' ? {
           backgroundColor: solidColor || hexToRgba(brand, 0.12),
@@ -147,8 +182,9 @@ export const ReelSummarySlide = ({
       {renderBackground()}
       
       <div 
-        className="relative z-10"
         style={{
+          position: 'relative',
+          zIndex: 10,
           display: 'flex',
           flexDirection: 'column',
           gap: `${16 * captureScale}px`,
@@ -159,8 +195,12 @@ export const ReelSummarySlide = ({
         <img
           src={logoRubyMorales}
           alt={aliadoConfig.nombre}
-          className="mx-auto rounded-xl object-contain bg-white"
           style={{
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            borderRadius: '12px',
+            objectFit: 'contain',
+            backgroundColor: '#FFFFFF',
             width: `${140 * captureScale}px`,
             height: `${140 * captureScale}px`,
             padding: `${10 * captureScale}px`
@@ -173,9 +213,11 @@ export const ReelSummarySlide = ({
         <div style={{ display: 'flex', flexDirection: 'column', gap: `${8 * captureScale}px`, marginBottom: `${16 * captureScale}px` }}>
           {/* Tipo de inmueble */}
           <h2 
-            className="font-bold text-white"
             style={{ 
-              fontSize: `${20 * captureScale}px`
+              fontSize: `${20 * captureScale}px`,
+              fontWeight: 700,
+              color: '#FFFFFF',
+              textShadow: '0 2px 8px rgba(0,0,0,0.3)'
             }}
           >
             {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
@@ -184,9 +226,11 @@ export const ReelSummarySlide = ({
           {/* Ubicación */}
           {propertyData.ubicacion && (
             <p 
-              className="font-semibold text-white"
               style={{ 
-                fontSize: `${16 * captureScale}px`
+                fontSize: `${16 * captureScale}px`,
+                fontWeight: 600,
+                color: '#FFFFFF',
+                textShadow: '0 2px 8px rgba(0,0,0,0.3)'
               }}
             >
               📍 {propertyData.ubicacion}
@@ -205,10 +249,11 @@ export const ReelSummarySlide = ({
               }}
             >
               <p 
-                className="font-black"
                 style={{ 
                   fontSize: `${20 * captureScale}px`,
-                  color: backgroundStyle === 'solid' ? textColor : '#FFFFFF'
+                  fontWeight: 900,
+                  color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
+                  textShadow: '0 2px 8px rgba(0,0,0,0.3)'
                 }}
               >
                 💰 {formatPrecioColombia(precio)}{esVenta ? "" : "/mes"}
@@ -220,20 +265,25 @@ export const ReelSummarySlide = ({
         {/* Características clave */}
         {caracteristicas.length > 0 && (
           <div 
-            className="flex flex-wrap justify-center"
-            style={{ gap: `${8 * captureScale}px` }}
+            style={{ 
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: `${8 * captureScale}px` 
+            }}
           >
             {caracteristicas.map((car, idx) => (
               <span
                 key={idx}
-                className="font-semibold"
                 style={{
                   padding: `${8 * captureScale}px ${16 * captureScale}px`,
                   borderRadius: `${12 * captureScale}px`,
                   fontSize: `${16 * captureScale}px`,
+                  fontWeight: 600,
                   backgroundColor: hexToRgba(brand, 0.88),
                   border: `${1.5 * captureScale}px solid rgba(255,255,255,0.2)`,
-                  color: backgroundStyle === 'solid' ? textColor : '#FFFFFF'
+                  color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
+                  textShadow: '0 2px 8px rgba(0,0,0,0.3)'
                 }}
               >
                 {car.icon} {car.text}
@@ -252,11 +302,12 @@ export const ReelSummarySlide = ({
           }}
         >
           <p 
-            className="font-bold"
             style={{ 
               fontSize: `${16 * captureScale}px`,
+              fontWeight: 700,
               marginBottom: `${4 * captureScale}px`,
-              color: backgroundStyle === 'solid' ? textColor : '#FFFFFF'
+              color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
+              textShadow: '0 2px 8px rgba(0,0,0,0.3)'
             }}
           >
             📱 Agenda tu visita
@@ -264,7 +315,9 @@ export const ReelSummarySlide = ({
           <p 
             style={{ 
               fontSize: `${16 * captureScale}px`,
-              color: backgroundStyle === 'solid' ? textColor : '#FFFFFF'
+              fontWeight: 400,
+              color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
+              textShadow: '0 2px 8px rgba(0,0,0,0.3)'
             }}
           >
             {customPhone || aliadoConfig.whatsapp}
@@ -273,11 +326,12 @@ export const ReelSummarySlide = ({
 
         {/* Hashtag personalizado */}
         <p 
-          className="font-medium"
           style={{ 
             fontSize: `${14 * captureScale}px`,
+            fontWeight: 500,
             marginTop: `${16 * captureScale}px`,
-            color: backgroundStyle === 'solid' ? textColor : '#FFFFFF'
+            color: backgroundStyle === 'solid' ? textColor : '#FFFFFF',
+            textShadow: '0 2px 8px rgba(0,0,0,0.3)'
           }}
         >
           {customHashtag || `#TuNuevoHogarEn${aliadoConfig.ciudad.charAt(0).toUpperCase() + aliadoConfig.ciudad.slice(1)}`} 🏡
@@ -288,8 +342,10 @@ export const ReelSummarySlide = ({
           src={elGestorLogo}
           alt="El Gestor"
           data-eg-logo="true"
-          className="mx-auto object-contain"
           style={{
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            objectFit: 'contain',
             height: `${35 * captureScale}px`,
             marginTop: `${56 * captureScale}px`
           }}
