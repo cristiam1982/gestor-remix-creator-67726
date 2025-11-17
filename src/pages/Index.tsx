@@ -944,88 +944,178 @@ const Index = () => {
                 }}
               />
             ) : (
-              // Post/Historia: Layout de dos columnas con controles y preview
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                {/* COLUMNA IZQUIERDA: Panel de Controles */}
-                <PostControlsPanel
-                  logoSettings={postLogoSettings}
-                  onLogoSettingsChange={setPostLogoSettings}
-                  textComposition={postTextComposition}
-                  onTextCompositionChange={setPostTextComposition}
-                  visualLayers={postVisualLayers}
-                  onVisualLayersChange={setPostVisualLayers}
-                  gradientDirection={postGradientDirection}
-                  onGradientDirectionChange={setPostGradientDirection}
-                  gradientIntensity={postGradientIntensity}
-                  onGradientIntensityChange={setPostGradientIntensity}
-                />
-                
-                {/* COLUMNA DERECHA: Preview + Botones */}
-                <Card className="p-6 space-y-6">
-                  <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
-                  <div className="flex justify-center mb-6">
-                    {aliadoConfig && (
-                      <CanvasPreview
-                        propertyData={propertyData as PropertyData}
-                        aliadoConfig={aliadoConfig}
-                        contentType={selectedContentType!}
-                        template="residencial"
-                        currentPhotoIndexOverride={currentPhotoIndexOverride}
-                        logoSettings={postLogoSettings}
-                        textComposition={postTextComposition}
-                        visualLayers={postVisualLayers}
-                        gradientDirection={postGradientDirection}
-                        gradientIntensity={postGradientIntensity}
-                      />
-                    )}
-                  </div>
-                  <div className="space-y-3">
-                    <Button 
-                      onClick={handleDownloadImage} 
-                      variant="hero" 
-                      size="lg"
-                      className="w-full"
-                      disabled={isDownloading || isExportingAllPhotos}
-                    >
-                      {isDownloading ? (
-                        <>
-                          <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                          Descargando...
-                        </>
-                      ) : (
-                        <>
-                          <Download className="w-5 h-5 mr-2" />
-                          Descargar Foto Actual
-                        </>
+              // Post/Historia: Layout responsive con preview fijo
+              <>
+                {/* MÓVIL: Layout simple vertical */}
+                <div className="lg:hidden space-y-6">
+                  <Card className="p-6 space-y-6">
+                    <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
+                    <div className="flex justify-center mb-6">
+                      {aliadoConfig && (
+                        <CanvasPreview
+                          propertyData={propertyData as PropertyData}
+                          aliadoConfig={aliadoConfig}
+                          contentType={selectedContentType!}
+                          template="residencial"
+                          currentPhotoIndexOverride={currentPhotoIndexOverride}
+                          logoSettings={postLogoSettings}
+                          textComposition={postTextComposition}
+                          visualLayers={postVisualLayers}
+                          gradientDirection={postGradientDirection}
+                          gradientIntensity={postGradientIntensity}
+                        />
                       )}
-                    </Button>
-
-                    {propertyData.fotos && propertyData.fotos.length > 1 && (
+                    </div>
+                    <div className="space-y-3">
                       <Button 
-                        onClick={handleExportAllPhotos} 
-                        variant="outline" 
+                        onClick={handleDownloadImage} 
+                        variant="hero" 
                         size="lg"
                         className="w-full"
                         disabled={isDownloading || isExportingAllPhotos}
                       >
-                        {isExportingAllPhotos ? (
+                        {isDownloading ? (
                           <>
                             <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                            Exportando {exportProgress.current}/{exportProgress.total}
+                            Descargando...
                           </>
                         ) : (
                           <>
-                            <Images className="w-5 h-5 mr-2" />
-                            Exportar Todas las Fotos ({propertyData.fotos.length})
+                            <Download className="w-5 h-5 mr-2" />
+                            Descargar Foto Actual
                           </>
                         )}
                       </Button>
-                    )}
+
+                      {propertyData.fotos && propertyData.fotos.length > 1 && (
+                        <Button 
+                          onClick={handleExportAllPhotos} 
+                          variant="outline" 
+                          size="lg"
+                          className="w-full"
+                          disabled={isDownloading || isExportingAllPhotos}
+                        >
+                          {isExportingAllPhotos ? (
+                            <>
+                              <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                              Exportando {exportProgress.current}/{exportProgress.total}
+                            </>
+                          ) : (
+                            <>
+                              <Images className="w-5 h-5 mr-2" />
+                              Exportar Todas las Fotos ({propertyData.fotos.length})
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+
+                  <PostControlsPanel
+                    logoSettings={postLogoSettings}
+                    onLogoSettingsChange={setPostLogoSettings}
+                    textComposition={postTextComposition}
+                    onTextCompositionChange={setPostTextComposition}
+                    visualLayers={postVisualLayers}
+                    onVisualLayersChange={setPostVisualLayers}
+                    gradientDirection={postGradientDirection}
+                    onGradientDirectionChange={setPostGradientDirection}
+                    gradientIntensity={postGradientIntensity}
+                    onGradientIntensityChange={setPostGradientIntensity}
+                  />
+                </div>
+
+                {/* DESKTOP: Grid con ScrollArea en controles + preview fijo */}
+                <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-[calc(100vh-180px)]">
+                  
+                  {/* COLUMNA IZQUIERDA: Controles con scroll independiente */}
+                  <ScrollArea className="h-full pr-4">
+                    <div className="space-y-4 pb-6">
+                      <PostControlsPanel
+                        logoSettings={postLogoSettings}
+                        onLogoSettingsChange={setPostLogoSettings}
+                        textComposition={postTextComposition}
+                        onTextCompositionChange={setPostTextComposition}
+                        visualLayers={postVisualLayers}
+                        onVisualLayersChange={setPostVisualLayers}
+                        gradientDirection={postGradientDirection}
+                        onGradientDirectionChange={setPostGradientDirection}
+                        gradientIntensity={postGradientIntensity}
+                        onGradientIntensityChange={setPostGradientIntensity}
+                      />
+                    </div>
+                  </ScrollArea>
+
+                  {/* COLUMNA DERECHA: Preview FIJO (sin scroll, siempre visible) */}
+                  <div className="h-full flex flex-col">
+                    <Card className="p-6 flex-1 flex flex-col">
+                      <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
+                      
+                      <div className="flex-1 flex items-center justify-center mb-6">
+                        {aliadoConfig && (
+                          <CanvasPreview
+                            propertyData={propertyData as PropertyData}
+                            aliadoConfig={aliadoConfig}
+                            contentType={selectedContentType!}
+                            template="residencial"
+                            currentPhotoIndexOverride={currentPhotoIndexOverride}
+                            logoSettings={postLogoSettings}
+                            textComposition={postTextComposition}
+                            visualLayers={postVisualLayers}
+                            gradientDirection={postGradientDirection}
+                            gradientIntensity={postGradientIntensity}
+                          />
+                        )}
+                      </div>
+
+                      <div className="space-y-3">
+                        <Button 
+                          onClick={handleDownloadImage} 
+                          variant="hero" 
+                          size="lg"
+                          className="w-full"
+                          disabled={isDownloading || isExportingAllPhotos}
+                        >
+                          {isDownloading ? (
+                            <>
+                              <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                              Descargando...
+                            </>
+                          ) : (
+                            <>
+                              <Download className="w-5 h-5 mr-2" />
+                              Descargar Foto Actual
+                            </>
+                          )}
+                        </Button>
+
+                        {propertyData.fotos && propertyData.fotos.length > 1 && (
+                          <Button 
+                            onClick={handleExportAllPhotos} 
+                            variant="outline" 
+                            size="lg"
+                            className="w-full"
+                            disabled={isDownloading || isExportingAllPhotos}
+                          >
+                            {isExportingAllPhotos ? (
+                              <>
+                                <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                                Exportando {exportProgress.current}/{exportProgress.total}
+                              </>
+                            ) : (
+                              <>
+                                <Images className="w-5 h-5 mr-2" />
+                                Exportar Todas las Fotos ({propertyData.fotos.length})
+                              </>
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                    </Card>
                   </div>
-                </Card>
-                
-              </div>
+
+                </div>
+              </>
             )}
 
             {selectedContentType !== "reel-fotos" && (
