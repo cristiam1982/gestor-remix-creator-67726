@@ -310,8 +310,8 @@ const drawLogoWithBackground = async (
   height: number,
   elapsedTime?: number // Tiempo transcurrido para animación
 ) => {
-  const sizes = { small: 50, medium: 60, large: 70 };
-  const logoSize = sizes[settings.size];
+  const sizes = { small: 60, medium: 70, large: 80, xlarge: 90 };
+  const logoSize = sizes[settings.size as keyof typeof sizes] || sizes.medium;
   const margin = 20;
   
   // Calcular transformación de entrada automática (0.5s fade-in)

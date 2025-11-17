@@ -277,14 +277,26 @@ export const CanvasPreview = ({
           {/* Título y ubicación */}
           <div>
             <h2 
-              className="text-2xl font-bold mb-1 drop-shadow-lg text-white"
+              className="font-bold mb-1 text-white"
+              style={{ 
+                fontSize: `${24 * textStyle.scale}px`,
+                textShadow: '0 2px 8px rgba(0,0,0,0.5)'
+              }}
             >
               {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
             </h2>
             {propertyData.ubicacion && (
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-white drop-shadow-lg" />
-                <span className="text-base font-semibold text-white drop-shadow-lg">{propertyData.ubicacion}</span>
+                <span 
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${16 * textStyle.scale}px`,
+                    textShadow: '0 2px 8px rgba(0,0,0,0.5)'
+                  }}
+                >
+                  {propertyData.ubicacion}
+                </span>
               </div>
             )}
           </div>
@@ -301,7 +313,13 @@ export const CanvasPreview = ({
               <p className="text-[10px] text-white font-semibold mb-0.5 uppercase tracking-wide relative z-[70]">
                 {isVenta ? "Precio de Venta" : "Canon Mensual"}
               </p>
-              <p className="text-2xl font-extrabold text-white leading-tight relative z-[70]">
+              <p 
+                className="font-extrabold text-white leading-tight relative z-[70]"
+                style={{ 
+                  fontSize: `${24 * textStyle.scale}px`,
+                  textShadow: '0 2px 8px rgba(0,0,0,0.5)'
+                }}
+              >
                 {priceText}
               </p>
             </div>
@@ -320,8 +338,11 @@ export const CanvasPreview = ({
               >
                 <Bed className="w-5 h-5 text-white drop-shadow-lg" />
                 <span 
-                  className="text-sm font-semibold text-white"
-                  style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${14 * textStyle.badgeScale}px`,
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
+                  }}
                 >
                   {propertyData.habitaciones}
                 </span>
@@ -338,8 +359,11 @@ export const CanvasPreview = ({
               >
                 <Bath className="w-5 h-5 text-white drop-shadow-lg" />
                 <span 
-                  className="text-sm font-semibold text-white"
-                  style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${14 * textStyle.badgeScale}px`,
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
+                  }}
                 >
                   {propertyData.banos}
                 </span>
@@ -356,8 +380,11 @@ export const CanvasPreview = ({
               >
                 <Car className="w-5 h-5 text-white drop-shadow-lg" />
                 <span 
-                  className="text-sm font-semibold text-white"
-                  style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${14 * textStyle.badgeScale}px`,
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
+                  }}
                 >
                   {propertyData.parqueaderos}
                 </span>
@@ -374,8 +401,11 @@ export const CanvasPreview = ({
               >
                 <Square className="w-5 h-5 text-white drop-shadow-lg" />
                 <span 
-                  className="text-sm font-semibold text-white"
-                  style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.6)' }}
+                  className="font-semibold text-white"
+                  style={{ 
+                    fontSize: `${14 * textStyle.badgeScale}px`,
+                    textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
+                  }}
                 >
                   {propertyData.area}m²
                 </span>
