@@ -3,8 +3,9 @@
  * Usado como fallback cuando FFmpeg no está disponible
  */
 
-import { PropertyData, AliadoConfig, LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
+import { PropertyData, AliadoConfig } from "@/types/property";
 import { MultiVideoVisualSettings } from "@/types/multiVideo";
+import { drawOverlays } from "./multiVideoOverlays";
 import { preloadImage } from "./imageUtils";
 import elGestorLogoSrc from "@/assets/el-gestor-logo.png";
 
@@ -323,8 +324,18 @@ export async function generateSimpleMultiVideoReel(
               // Dibujar video centrado
               ctx.drawImage(video, x, y, scaledWidth, scaledHeight);
               
-              // Dibujar overlays (logos, subtítulo, footer)
-              drawOverlays(currentSubtitle);
+              // Aplicar overlays usando función unificada
+              drawOverlays(
+                ctx,
+                canvas.width,
+                canvas.height,
+                propertyData,
+                aliadoConfig,
+                visualSettings,
+                currentSubtitle,
+                aliadoLogo,
+                elGestorLogo
+              );
               
               if (supportsRVFC) {
                 (video as any).requestVideoFrameCallback(drawFrame);

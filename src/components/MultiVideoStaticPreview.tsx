@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { PropertyData, AliadoConfig } from "@/types/property";
 import { MultiVideoVisualSettings } from "@/types/multiVideo";
 import { Skeleton } from "@/components/ui/skeleton";
+import { drawOverlays } from "@/utils/multiVideoOverlays";
+import elGestorLogoSrc from '@/assets/el-gestor-logo.png';
 
 interface MultiVideoStaticPreviewProps {
   videoFile: File;
@@ -59,7 +61,7 @@ export const MultiVideoStaticPreview = ({
         // Cargar logos
         const [aliadoLogo, elGestorLogo] = await Promise.all([
           loadImage(aliadoConfig.logo),
-          loadImage('/src/assets/el-gestor-logo.png')
+          loadImage(elGestorLogoSrc)
         ]);
 
         if (!mounted) return;
@@ -67,15 +69,17 @@ export const MultiVideoStaticPreview = ({
         aliadoLogoRef.current = aliadoLogo;
         elGestorLogoRef.current = elGestorLogo;
 
-        // Aplicar overlays
-        drawOverlays(
+        // Aplicar overlays usando función unificada
+        await drawOverlays(
           ctx,
-          aliadoLogo,
-          elGestorLogo,
-          subtitle,
+          canvas.width,
+          canvas.height,
           propertyData,
           aliadoConfig,
-          visualSettings
+          visualSettings,
+          subtitle,
+          aliadoLogo,
+          elGestorLogo
         );
 
         setIsLoading(false);
@@ -106,15 +110,17 @@ export const MultiVideoStaticPreview = ({
     // Re-dibujar frame del video
     ctx.drawImage(videoRef.current, 0, 0, 1080, 1920);
 
-    // Re-aplicar overlays con nuevos settings
+    // Re-aplicar overlays con nuevos settings usando función unificada
     drawOverlays(
       ctx,
-      aliadoLogoRef.current,
-      elGestorLogoRef.current,
-      subtitle,
+      canvas.width,
+      canvas.height,
       propertyData,
       aliadoConfig,
-      visualSettings
+      visualSettings,
+      subtitle,
+      aliadoLogoRef.current,
+      elGestorLogoRef.current
     );
   }, [visualSettings, subtitle, propertyData, aliadoConfig, isLoading]);
 
@@ -145,160 +151,4 @@ function loadImage(src: string): Promise<HTMLImageElement> {
     img.onerror = reject;
     img.src = src;
   });
-}
-
-// Función de dibujo de overlays (simplificada para preview)
-function drawOverlays(
-  ctx: CanvasRenderingContext2D,
-  aliadoLogo: HTMLImageElement,
-  elGestorLogo: HTMLImageElement,
-  subtitle: string,
-  propertyData: PropertyData,
-  aliadoConfig: AliadoConfig,
-  visualSettings: MultiVideoVisualSettings
-) {
-  const { logoSettings, textComposition, visualLayers, gradientDirection, gradientIntensity } = visualSettings;
-
-  // Aplicar gradiente de fondo
-  if (gradientDirection !== 'none') {
-    const intensity = gradientIntensity / 100;
-    const gradientAlpha = 0.7 * intensity;
-    
-    if (gradientDirection === 'top' || gradientDirection === 'both') {
-      const gradient = ctx.createLinearGradient(0, 0, 0, 800);
-      gradient.addColorStop(0, `rgba(0, 0, 0, ${gradientAlpha})`);
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 1080, 800);
-    }
-    
-    if (gradientDirection === 'bottom' || gradientDirection === 'both') {
-      const gradient = ctx.createLinearGradient(0, 1920 - 800, 0, 1920);
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      gradient.addColorStop(1, `rgba(0, 0, 0, ${gradientAlpha})`);
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 1920 - 800, 1080, 800);
-    }
-  }
-
-  // Logo del aliado
-  if (visualLayers.showAllyLogo) {
-    const logoSizes: Record<string, number> = { small: 150, medium: 180, large: 210 };
-    const logoHeight = logoSizes[logoSettings.size] || 180;
-    const logoWidth = Math.min((aliadoLogo.width / aliadoLogo.height) * logoHeight, 900);
-    
-    ctx.globalAlpha = logoSettings.opacity / 100;
-    
-    const xPos = logoSettings.position === 'top-left' ? 30 : 1080 - logoWidth - 30;
-    const yPos = 128;
-    
-    // Fondo del logo
-    if (logoSettings.background !== 'none') {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      const padding = 12;
-      
-      ctx.beginPath();
-      if (logoSettings.shape === 'circle') {
-        const radius = Math.max(logoWidth, logoHeight) / 2 + padding;
-        ctx.arc(xPos + logoWidth/2, yPos + logoHeight/2, radius, 0, Math.PI * 2);
-      } else {
-        const borderRadius = logoSettings.shape === 'squircle' ? 24 : 
-                             logoSettings.shape === 'rounded' ? 16 : 0;
-        ctx.beginPath();
-        ctx.roundRect(xPos - padding, yPos - padding, logoWidth + padding*2, logoHeight + padding*2, borderRadius);
-      }
-      ctx.fill();
-    }
-    
-    ctx.drawImage(aliadoLogo, xPos, yPos, logoWidth, logoHeight);
-    ctx.globalAlpha = 1.0;
-  }
-
-  // Subtítulo
-  if (subtitle && visualLayers.showBadge) {
-    const baseSize = 56;
-    const scaleFactor = 1 + (textComposition.badgeScale / 100);
-    const fontSize = baseSize * scaleFactor;
-    
-    ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
-    ctx.fillStyle = '#FFFFFF';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    
-    const maxWidth = ctx.measureText(subtitle).width;
-    const padding = 40;
-    const bgWidth = maxWidth + padding * 2;
-    const bgHeight = fontSize + padding;
-    const x = (1080 - bgWidth) / 2;
-    const y = 1920 * 0.68;
-    
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-    ctx.beginPath();
-    ctx.roundRect(x, y, bgWidth, bgHeight, 20);
-    ctx.fill();
-    
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillText(subtitle, 1080 / 2, y + bgHeight/2);
-  }
-
-  // Footer con información de propiedad (CONDICIONAL)
-  const showAnyFooterElement = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
-  
-  if (showAnyFooterElement) {
-    const footerY = 1920 - 310;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-    ctx.fillRect(0, footerY, 1080, 310);
-    
-    ctx.fillStyle = '#1F2937';
-    ctx.textAlign = 'left';
-    
-    let currentY = footerY + 55;
-    
-    // Precio
-    if (visualLayers.showPrice) {
-      ctx.font = 'bold 32px Poppins, sans-serif';
-      const modalidadTexto = propertyData.modalidad === 'arriendo' ? 'ARRIENDO' : 'VENTA';
-      ctx.fillText(modalidadTexto, 40, currentY);
-      currentY += 55;
-      
-      ctx.font = 'bold 48px Poppins, sans-serif';
-      const canonValue = propertyData.canon?.replace(/[^\d]/g, '') || '0';
-      const ventaValue = propertyData.valorVenta?.replace(/[^\d]/g, '') || '0';
-      const precioTexto = propertyData.modalidad === 'arriendo'
-        ? `$${parseInt(canonValue).toLocaleString()}/mes`
-        : `$${parseInt(ventaValue).toLocaleString()}`;
-      ctx.fillText(precioTexto, 40, currentY);
-      currentY += 45;
-    }
-    
-    // Ubicación y tipo (badge)
-    if (visualLayers.showBadge) {
-      ctx.font = '28px Poppins, sans-serif';
-      ctx.fillText(propertyData.ubicacion || 'Ubicación', 40, currentY);
-      currentY += 50;
-      
-      ctx.font = 'bold 32px Poppins, sans-serif';
-      const tipoTexto = propertyData.tipo?.toUpperCase() || 'INMUEBLE';
-      ctx.fillText(tipoTexto, 40, currentY);
-      currentY += 55;
-    }
-    
-    // Atributos (iconos)
-    if (visualLayers.showIcons) {
-      ctx.font = '26px Poppins, sans-serif';
-      let atributos = '';
-      if (propertyData.habitaciones) atributos += `🛏 ${propertyData.habitaciones} Hab  `;
-      if (propertyData.banos) atributos += `🚿 ${propertyData.banos} Baños  `;
-      if (propertyData.parqueaderos) atributos += `🚗 ${propertyData.parqueaderos} Parq  `;
-      if (propertyData.area) atributos += `📐 ${propertyData.area}m²`;
-      ctx.fillText(atributos, 40, currentY);
-    }
-  }
-
-  // Logo El Gestor (siempre visible, abajo derecha)
-  if (visualLayers.showCTA) {
-    const egLogoWidth = 200;
-    const egLogoHeight = (elGestorLogo.height / elGestorLogo.width) * egLogoWidth;
-    ctx.drawImage(elGestorLogo, 1080 - egLogoWidth - 30, 1920 - egLogoHeight - 30, egLogoWidth, egLogoHeight);
-  }
 }
