@@ -35,7 +35,7 @@ export const PhotoManager = ({
   const isVideoContent = contentType === "reel-video";
   const maxFiles = isVideoContent ? 1 : 
     contentType === "reel-fotos" ? 10 : 
-    contentType === "carrusel" ? 10 : 3;
+    contentType === "carrusel" ? 10 : 10;
   
   const getHelpText = () => {
     const isArrendado = context === "arrendado";
@@ -44,8 +44,8 @@ export const PhotoManager = ({
       case "post":
       case "historia":
         return isArrendado 
-          ? "Sube 1-3 fotos del inmueble arrendado (máx. 5MB cada una)"
-          : "Sube 1-3 fotos del inmueble (máx. 5MB cada una)";
+          ? "Sube 1-10 fotos del inmueble arrendado (máx. 5MB cada una)"
+          : "Sube 1-10 fotos del inmueble (máx. 5MB cada una)";
       case "carrusel":
         return "Sube 3-10 fotos para el carrusel (se generará 1 slide por foto + 1 final con CTA)";
       case "reel-fotos":
