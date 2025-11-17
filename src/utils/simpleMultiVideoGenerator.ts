@@ -181,70 +181,82 @@ export async function generateSimpleMultiVideoReel(
       });
     }
     
-  // Footer con información de propiedad
-  const footerY = 1920 - 310;
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-  ctx.fillRect(0, footerY, 1080, 310);
+    // Footer con información de propiedad (CONDICIONAL según visualLayers)
+    const showAnyFooterElement = visualSettings.visualLayers.showPrice || 
+                                  visualSettings.visualLayers.showBadge || 
+                                  visualSettings.visualLayers.showIcons;
     
-  // Formatear precio con separador de miles
-  const formatPrice = (price: string) => {
-    const cleanPrice = price.replace(/[^\d]/g, '');
-    return '$' + cleanPrice.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  };
-  
-  // Modalidad (En Arriendo / En Venta) - ARRIBA del precio
-  ctx.font = '36px Poppins, sans-serif';
-  ctx.fillStyle = '#666666';
-  ctx.textAlign = 'left';
-  const modalidadTexto = propertyData.modalidad === 'venta' ? 'En Venta' : 'En Arriendo';
-  ctx.fillText(modalidadTexto, 40, footerY + 55);
-  
-  // Canon/Precio - ABAJO de la modalidad
-  ctx.font = 'bold 61px Poppins, sans-serif';
-  ctx.fillStyle = aliadoConfig.colorPrimario;
-  const precioTexto = formatPrice(propertyData.canon || propertyData.valorVenta || '$0');
-  ctx.fillText(precioTexto, 40, footerY + 110);
-    
-  // Ubicación
-  ctx.font = '42px Poppins, sans-serif';
-  ctx.fillStyle = '#333333';
-  ctx.fillText(
-    propertyData.ubicacion || 'Ubicación',
-    40,
-    footerY + 155
-  );
-    
-  // Tipo de inmueble
-  ctx.font = '36px Poppins, sans-serif';
-  ctx.fillStyle = '#666666';
-  const tipoTexto = propertyData.tipo?.charAt(0).toUpperCase() + propertyData.tipo?.slice(1);
-  ctx.fillText(tipoTexto || '', 40, footerY + 205);
-    
-  // Atributos con iconos Unicode
-  ctx.font = '40px Poppins, sans-serif';
-  ctx.fillStyle = aliadoConfig.colorSecundario || '#333333';
+    if (showAnyFooterElement) {
+      const footerY = 1920 - 310;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.fillRect(0, footerY, 1080, 310);
+      
+      // Formatear precio con separador de miles
+      const formatPrice = (price: string) => {
+        const cleanPrice = price.replace(/[^\d]/g, '');
+        return '$' + cleanPrice.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      };
+      
+      let currentY = footerY + 55;
+      
+      // Modalidad y Precio (condicional)
+      if (visualSettings.visualLayers.showPrice) {
+        ctx.font = '36px Poppins, sans-serif';
+        ctx.fillStyle = '#666666';
+        ctx.textAlign = 'left';
+        const modalidadTexto = propertyData.modalidad === 'venta' ? 'En Venta' : 'En Arriendo';
+        ctx.fillText(modalidadTexto, 40, currentY);
+        currentY += 55;
+        
+        ctx.font = 'bold 61px Poppins, sans-serif';
+        ctx.fillStyle = aliadoConfig.colorPrimario;
+        const precioTexto = formatPrice(propertyData.canon || propertyData.valorVenta || '$0');
+        ctx.fillText(precioTexto, 40, currentY);
+        currentY += 45;
+      }
+      
+      // Ubicación y Tipo (badge - condicional)
+      if (visualSettings.visualLayers.showBadge) {
+        ctx.font = '42px Poppins, sans-serif';
+        ctx.fillStyle = '#333333';
+        ctx.fillText(propertyData.ubicacion || 'Ubicación', 40, currentY);
+        currentY += 50;
+        
+        ctx.font = '36px Poppins, sans-serif';
+        ctx.fillStyle = '#666666';
+        const tipoTexto = propertyData.tipo?.charAt(0).toUpperCase() + propertyData.tipo?.slice(1);
+        ctx.fillText(tipoTexto || '', 40, currentY);
+        currentY += 55;
+      }
+      
+      // Atributos (iconos - condicional)
+      if (visualSettings.visualLayers.showIcons) {
+        ctx.font = '40px Poppins, sans-serif';
+        ctx.fillStyle = aliadoConfig.colorSecundario || '#333333';
 
-  let atributos = '';
-  if (propertyData.habitaciones) atributos += `🛏 ${propertyData.habitaciones} Hab  `;
-  if (propertyData.banos) atributos += `🚿 ${propertyData.banos} Baños  `;
-  if (propertyData.parqueaderos) atributos += `🚗 ${propertyData.parqueaderos} Parq  `;
-  if (propertyData.area) atributos += `📐 ${propertyData.area}m²`;
+        let atributos = '';
+        if (propertyData.habitaciones) atributos += `🛏 ${propertyData.habitaciones} Hab  `;
+        if (propertyData.banos) atributos += `🚿 ${propertyData.banos} Baños  `;
+        if (propertyData.parqueaderos) atributos += `🚗 ${propertyData.parqueaderos} Parq  `;
+        if (propertyData.area) atributos += `📐 ${propertyData.area}m²`;
 
-  ctx.fillText(atributos, 40, footerY + 260);
+        ctx.fillText(atributos, 40, currentY);
+      }
+    }
   
-  // Logo de El Gestor (esquina inferior derecha, sobre el footer - MÁS ARRIBA)
-  if (elGestorLogo) {
-    const logoHeight = 90;
-    const logoWidth = Math.min(
-      (elGestorLogo.width / elGestorLogo.height) * logoHeight,
-      350
-    );
-    
-    const x = 1080 - logoWidth - 30;
-    const y = 1920 - logoHeight - 90;  // Subido 60px más arriba
-    
-    ctx.drawImage(elGestorLogo, x, y, logoWidth, logoHeight);
-  }
+    // Logo de El Gestor (esquina inferior derecha - condicional)
+    if (elGestorLogo && visualSettings.visualLayers.showCTA) {
+      const logoHeight = 90;
+      const logoWidth = Math.min(
+        (elGestorLogo.width / elGestorLogo.height) * logoHeight,
+        350
+      );
+      
+      const x = 1080 - logoWidth - 30;
+      const y = 1920 - logoHeight - 90;
+      
+      ctx.drawImage(elGestorLogo, x, y, logoWidth, logoHeight);
+    }
   };
 
   // Procesar cada video secuencialmente
