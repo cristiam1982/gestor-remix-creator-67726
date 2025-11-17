@@ -253,8 +253,8 @@ export const CanvasPreview = ({
       <div 
         className={`absolute ${logoStyle.positionClass} z-20`}
         style={{ 
-          width: `${logoStyle.size}px`, 
-          height: `${logoStyle.size}px`,
+          width: logoStyle.size, 
+          height: logoStyle.size,
           opacity: logoStyle.opacity 
         }}
       >
