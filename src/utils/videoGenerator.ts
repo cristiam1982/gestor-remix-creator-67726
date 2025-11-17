@@ -1624,8 +1624,8 @@ export const generateReelVideoFromCanvas = async (
         message: `Capturando foto ${i + 1}/${photos.length}...`
       });
 
-      // Calcular tiempo transcurrido para esta foto (inicio del slide)
-      const elapsedTime = (i * slideDuration) / 1000; // Convertir ms a segundos
+      // Logo siempre visible sin animaciones (elapsedTime alto = animación ya terminada)
+      const elapsedTime = 10; // Valor fijo: logo siempre en estado final visible
 
       await drawSlide(ctx, {
         photoUrl: photos[i],
@@ -1668,7 +1668,8 @@ export const generateReelVideoFromCanvas = async (
         logoSettings,
         textComposition,
         backgroundStyle: summaryBackgroundStyle,
-        photos
+        photos,
+        elapsedTime: 10 // Logo siempre visible sin animaciones
       });
 
       const blob = await new Promise<Blob>((resolve) => {
