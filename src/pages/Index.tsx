@@ -69,7 +69,7 @@ const Index = () => {
   // Estados para personalización del post cuadrado
   const [postLogoSettings, setPostLogoSettings] = useState<LogoSettings>({
     position: 'top-right',
-    size: 'medium',
+    size: 'small',
     opacity: 90,
     background: 'elevated',
     shape: 'rounded',
