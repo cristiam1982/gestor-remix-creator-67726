@@ -16,7 +16,7 @@ export const ReelTextCompositionControls = ({ settings, onChange }: ReelTextComp
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Tamaño de Texto Principal */}
       <div className="space-y-3">
         <div className="flex justify-between items-center">

@@ -53,10 +53,10 @@ export const PostControlsPanel = ({
         </p>
       </div>
 
-      <Accordion type="multiple" className="w-full" defaultValue={["logo", "text"]}>
+      <Accordion type="multiple" className="w-full" defaultValue={["logo", "visual-elements"]}>
         {/* Logo del Aliado */}
         <AccordionItem value="logo">
-          <AccordionTrigger className="text-base font-semibold hover:no-underline">
+          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
             🎨 Logo del Aliado
           </AccordionTrigger>
           <AccordionContent className="pt-4">
@@ -67,36 +67,47 @@ export const PostControlsPanel = ({
           </AccordionContent>
         </AccordionItem>
 
-        {/* Composición de Texto */}
-        <AccordionItem value="text">
-          <AccordionTrigger className="text-base font-semibold hover:no-underline">
-            📝 Composición de Texto
+        {/* Elementos Visuales (FUSIÓN de Texto + Capas) */}
+        <AccordionItem value="visual-elements">
+          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+            📊 Elementos Visuales
           </AccordionTrigger>
           <AccordionContent className="pt-4">
-            <ReelTextCompositionControls
-              settings={textComposition}
-              onChange={onTextCompositionChange}
-            />
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Capas Visuales */}
-        <AccordionItem value="layers">
-          <AccordionTrigger className="text-base font-semibold hover:no-underline">
-            🎭 Capas Visuales
-          </AccordionTrigger>
-          <AccordionContent className="pt-4">
-            <ReelLayersPanel
-              layers={visualLayers}
-              onChange={onVisualLayersChange}
-              hiddenLayers={['showCTA', 'showBadge']}
-            />
+            {/* Composición de Texto */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Tamaños de Texto
+              </h4>
+              <ReelTextCompositionControls
+                settings={textComposition}
+                onChange={onTextCompositionChange}
+              />
+            </div>
+            
+            {/* Separador */}
+            <div className="border-t my-4" />
+            
+            {/* Capas Visuales */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Visibilidad de Capas
+              </h4>
+              <ReelLayersPanel
+                layers={visualLayers}
+                onChange={onVisualLayersChange}
+                hiddenLayers={['showCTA', 'showBadge']}
+              />
+            </div>
+            
+            <p className="text-xs text-muted-foreground mt-2">
+              Controla el tamaño de los textos y la visibilidad de cada elemento del post.
+            </p>
           </AccordionContent>
         </AccordionItem>
 
         {/* Primera Foto (Portada) */}
         <AccordionItem value="first-photo">
-          <AccordionTrigger className="text-base font-semibold hover:no-underline">
+          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
             🌟 Primera Foto (Portada)
           </AccordionTrigger>
           <AccordionContent className="pt-4">
@@ -110,7 +121,7 @@ export const PostControlsPanel = ({
 
         {/* Efectos de Sombreado */}
         <AccordionItem value="gradient">
-          <AccordionTrigger className="text-base font-semibold hover:no-underline">
+          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
             🌈 Efectos de Sombreado
           </AccordionTrigger>
           <AccordionContent className="pt-4 space-y-6">

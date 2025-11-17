@@ -36,7 +36,7 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Posición */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold">Posición del Logo</Label>
@@ -47,9 +47,9 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
               variant={settings.position === pos.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, position: pos.value })}
-              className="flex flex-col h-20 gap-2"
+              className="flex flex-col h-16 gap-1.5"
             >
-              <span className="text-2xl">{pos.icon}</span>
+              <span className="text-xl">{pos.icon}</span>
               <span className="text-xs leading-tight">{pos.label}</span>
             </Button>
           ))}
@@ -88,9 +88,9 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
               variant={settings.background === bg.value ? "default" : "outline"}
               size="sm"
               onClick={() => onChange({ ...settings, background: bg.value })}
-              className="flex flex-col h-20 gap-2"
+              className="flex flex-col h-16 gap-1.5"
             >
-              <span className="text-2xl">{bg.icon}</span>
+              <span className="text-xl">{bg.icon}</span>
               <span className="text-xs leading-tight">{bg.label}</span>
             </Button>
           ))}
