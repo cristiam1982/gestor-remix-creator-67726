@@ -250,10 +250,7 @@ export const ReelFrame = ({
                 width: `${logoFinalSize}px`,
                 height: `${logoFinalSize}px`,
                 maxWidth: `${logoFinalSize}px`,
-                maxHeight: `${logoFinalSize}px`,
-                ...(logoSettings.background === 'none' && {
-                  filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.25))'
-                })
+                maxHeight: `${logoFinalSize}px`
               }}
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
