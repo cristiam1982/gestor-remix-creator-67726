@@ -88,8 +88,8 @@ export const FirstPhotoControls = ({ settings, onChange, showDuration = false }:
           <Slider
             value={[settings.textScaleOverride || 0]}
             onValueChange={(value) => onChange({ ...settings, textScaleOverride: value[0] })}
-            min={-40}
-            max={40}
+            min={-50}
+            max={60}
             step={10}
             className="py-2"
           />

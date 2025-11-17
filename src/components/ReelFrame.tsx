@@ -417,13 +417,13 @@ export const ReelFrame = ({
                 style={{ 
                   transform: `scale(${textStyle.scale})`,
                   transformOrigin: 'left center',
-                  gap: mode === 'capture' ? '11px' : '4px',
-                  padding: mode === 'capture' ? '16.5px 33px' : '6px 12px',
+                  gap: mode === 'capture' ? '8px' : '3px',
+                  padding: mode === 'capture' ? '16.5px 22px' : '6px 8px',
                   borderRadius: '9999px'
                 }}
               >
                 <span style={{ fontSize: mode === 'capture' ? '32px' : '16px' }}>🛏️</span>
-                <span style={{ fontSize: mode === 'capture' ? '28px' : '14px', fontWeight: 700, color: '#1f2937' }}>
+                <span style={{ fontSize: mode === 'capture' ? '36px' : '18px', fontWeight: 700, color: '#1f2937' }}>
                   {propertyData.habitaciones}
                 </span>
               </div>
@@ -434,13 +434,13 @@ export const ReelFrame = ({
                 style={{ 
                   transform: `scale(${textStyle.scale})`,
                   transformOrigin: 'left center',
-                  gap: mode === 'capture' ? '11px' : '4px',
-                  padding: mode === 'capture' ? '16.5px 33px' : '6px 12px',
+                  gap: mode === 'capture' ? '8px' : '3px',
+                  padding: mode === 'capture' ? '16.5px 22px' : '6px 8px',
                   borderRadius: '9999px'
                 }}
               >
                 <span style={{ fontSize: mode === 'capture' ? '32px' : '16px' }}>🚿</span>
-                <span style={{ fontSize: mode === 'capture' ? '28px' : '14px', fontWeight: 700, color: '#1f2937' }}>
+                <span style={{ fontSize: mode === 'capture' ? '36px' : '18px', fontWeight: 700, color: '#1f2937' }}>
                   {propertyData.banos}
                 </span>
               </div>
@@ -451,13 +451,13 @@ export const ReelFrame = ({
                 style={{ 
                   transform: `scale(${textStyle.scale})`,
                   transformOrigin: 'left center',
-                  gap: mode === 'capture' ? '11px' : '4px',
-                  padding: mode === 'capture' ? '16.5px 33px' : '6px 12px',
+                  gap: mode === 'capture' ? '8px' : '3px',
+                  padding: mode === 'capture' ? '16.5px 22px' : '6px 8px',
                   borderRadius: '9999px'
                 }}
               >
                 <span style={{ fontSize: mode === 'capture' ? '32px' : '16px' }}>🚗</span>
-                <span style={{ fontSize: mode === 'capture' ? '28px' : '14px', fontWeight: 700, color: '#1f2937' }}>
+                <span style={{ fontSize: mode === 'capture' ? '36px' : '18px', fontWeight: 700, color: '#1f2937' }}>
                   {propertyData.parqueaderos}
                 </span>
               </div>
@@ -468,13 +468,13 @@ export const ReelFrame = ({
                 style={{ 
                   transform: `scale(${textStyle.scale})`,
                   transformOrigin: 'left center',
-                  gap: mode === 'capture' ? '11px' : '4px',
-                  padding: mode === 'capture' ? '16.5px 33px' : '6px 12px',
+                  gap: mode === 'capture' ? '8px' : '3px',
+                  padding: mode === 'capture' ? '16.5px 22px' : '6px 8px',
                   borderRadius: '9999px'
                 }}
               >
                 <span style={{ fontSize: mode === 'capture' ? '32px' : '16px' }}>📐</span>
-                <span style={{ fontSize: mode === 'capture' ? '28px' : '14px', fontWeight: 700, color: '#1f2937' }}>
+                <span style={{ fontSize: mode === 'capture' ? '36px' : '18px', fontWeight: 700, color: '#1f2937' }}>
                   {propertyData.area}m²
                 </span>
               </div>
