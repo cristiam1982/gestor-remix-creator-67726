@@ -310,7 +310,7 @@ const drawLogoWithBackground = async (
   height: number,
   elapsedTime?: number // Tiempo transcurrido para animación
 ) => {
-  const sizes = { small: 80, medium: 90, large: 100 };
+  const sizes = { small: 50, medium: 60, large: 70 };
   const logoSize = sizes[settings.size];
   const margin = 20;
   
