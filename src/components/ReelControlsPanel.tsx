@@ -5,7 +5,8 @@ import { SummaryBackgroundSelector } from "./SummaryBackgroundSelector";
 import { ReelLogoControls } from "./ReelLogoControls";
 import { ReelTextCompositionControls } from "./ReelTextCompositionControls";
 import { ReelLayersPanel } from "./ReelLayersPanel";
-import { LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
+import { FirstPhotoControls } from "./FirstPhotoControls";
+import { LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
 
 interface ReelControlsPanelProps {
   // Gradient
@@ -35,6 +36,10 @@ interface ReelControlsPanelProps {
   // Visual layers (Fase 6)
   visualLayers: VisualLayers;
   onVisualLayersChange: (layers: VisualLayers) => void;
+
+  // First photo config
+  firstPhotoConfig: FirstPhotoConfig;
+  onFirstPhotoConfigChange: (config: FirstPhotoConfig) => void;
 }
 
 export const ReelControlsPanel = ({
@@ -55,10 +60,29 @@ export const ReelControlsPanel = ({
   textComposition,
   onTextCompositionChange,
   visualLayers,
-  onVisualLayersChange
+  onVisualLayersChange,
+  firstPhotoConfig,
+  onFirstPhotoConfigChange
 }: ReelControlsPanelProps) => {
   return (
-    <Accordion type="multiple" defaultValue={["logo", "visual-elements"]} className="w-full">
+    <Accordion type="multiple" defaultValue={["first-photo", "logo", "visual-elements"]} className="w-full">
+      
+      {/* Primera Foto (Portada) */}
+      <AccordionItem value="first-photo">
+        <AccordionTrigger className="text-sm font-semibold">
+          🎬 Primera Foto (Portada)
+        </AccordionTrigger>
+        <AccordionContent className="space-y-4 pt-2">
+          <FirstPhotoControls
+            settings={firstPhotoConfig}
+            onChange={onFirstPhotoConfigChange}
+            showDuration={true}
+          />
+          <p className="text-xs text-muted-foreground mt-2">
+            Personaliza cómo se muestra la primera foto del reel
+          </p>
+        </AccordionContent>
+      </AccordionItem>
       
       {/* Sección 1: Logo del Aliado */}
       <AccordionItem value="logo">

@@ -794,6 +794,8 @@ export const ReelSlideshow = ({
                       onTextCompositionChange={setTextComposition}
                       visualLayers={visualLayers}
                       onVisualLayersChange={setVisualLayers}
+                      firstPhotoConfig={firstPhotoConfig}
+                      onFirstPhotoConfigChange={setFirstPhotoConfig}
                     />
                   </AccordionContent>
                 </AccordionItem>
@@ -1219,6 +1221,8 @@ export const ReelSlideshow = ({
                     onTextCompositionChange={setTextComposition}
                     visualLayers={visualLayers}
                     onVisualLayersChange={setVisualLayers}
+                    firstPhotoConfig={firstPhotoConfig}
+                    onFirstPhotoConfigChange={setFirstPhotoConfig}
                   />
                 </AccordionContent>
               </AccordionItem>
