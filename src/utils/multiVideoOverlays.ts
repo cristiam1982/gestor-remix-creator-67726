@@ -41,8 +41,8 @@ export async function drawOverlays(
 
   // 2. Dibujar logo del aliado si está habilitado
   if (visualLayers.showAllyLogo && allyLogo && allyLogo.complete) {
-    // Convertir size de string a número
-    const logoSizeMap = { small: 50, medium: 60, large: 70, xlarge: 80 };
+    // Convertir size de string a número (unificado con Reel)
+    const logoSizeMap = { small: 60, medium: 70, large: 80, xlarge: 90 };
     const logoSize = typeof logoSettings.size === 'number' 
       ? logoSettings.size 
       : logoSizeMap[logoSettings.size as keyof typeof logoSizeMap] || 70;
@@ -105,9 +105,10 @@ export async function drawOverlays(
 
   // 3. Dibujar subtítulo si está presente y habilitado
   if (subtitle && visualLayers.showBadge) {
+    const badgeScale = 1.0 + (textComposition.badgeScale / 100);
     const subtitleY = videoHeight * 0.15;
     const maxWidth = videoWidth * 0.85;
-    const fontSize = 36;
+    const fontSize = 36 * badgeScale;
     
     ctx.font = `700 ${fontSize}px Inter, sans-serif`;
     ctx.textAlign = 'center';
@@ -115,11 +116,11 @@ export async function drawOverlays(
 
     const lines = splitTextIntoLines(ctx, subtitle, maxWidth);
     const lineHeight = fontSize * 1.3;
-    const totalHeight = lines.length * lineHeight + 32;
+    const totalHeight = lines.length * lineHeight + 32 * badgeScale;
     
     const badgeX = videoWidth / 2;
     const badgeY = subtitleY;
-    const badgePadding = 44;
+    const badgePadding = 44 * badgeScale;
     const badgeWidth = Math.min(maxWidth, Math.max(...lines.map(line => ctx.measureText(line).width)) + badgePadding * 2);
     const badgeHeight = totalHeight;
 
@@ -129,7 +130,7 @@ export async function drawOverlays(
     ctx.shadowBlur = 20;
     ctx.shadowOffsetY = 4;
     
-    const radius = 16;
+    const radius = 16 * badgeScale;
     const x = badgeX - badgeWidth / 2;
     const y = badgeY - badgeHeight / 2;
     
@@ -159,27 +160,24 @@ export async function drawOverlays(
     });
   }
 
-  // 4. Footer con información de propiedad (CONDICIONAL)
+  // 4. Footer con información de propiedad (rediseñado con badges modernos)
+  const scaleMultiplier = 1.0 + (textComposition.typographyScale / 100);
+  const badgeScaleMultiplier = 1.0 + (textComposition.badgeScale / 100);
+  const baseSpacing = 16;
+  const spacingMap = { compact: -10, normal: 0, spacious: 15 };
+  const dynamicSpacing = baseSpacing + (spacingMap[textComposition.verticalSpacing] || 0);
+  
   const hasAnyFooterLayer = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
   
   if (hasAnyFooterLayer) {
-    const footerY = videoHeight - 310;
+    let currentY = videoHeight - 200;
     
-    // Fondo blanco del footer
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-    ctx.fillRect(0, footerY, videoWidth, 310);
-
-    ctx.textAlign = 'left';
-
-    // Precio (condicional)
+    // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
-      // Modalidad
-      const modalidadTexto = propertyData.modalidad === 'arriendo' ? '💰 Arriendo Mensual' : '💵 Venta';
-      ctx.font = '600 32px Inter, sans-serif';
-      ctx.fillStyle = '#6B7280';
-      ctx.fillText(modalidadTexto, 40, footerY + 55);
-
-      // Canon/Precio formateado correctamente
+      const priceY = currentY;
+      const priceFontSize = 48 * badgeScaleMultiplier;
+      const pricePadding = 20 * badgeScaleMultiplier;
+      
       const precioNumero = typeof propertyData.canon === 'string' 
         ? parseFloat(propertyData.canon.replace(/[^\d]/g, '')) 
         : propertyData.canon;
@@ -187,43 +185,115 @@ export async function drawOverlays(
         ? `$${precioNumero.toLocaleString('es-CO')}`
         : `$${propertyData.canon}`;
       
-      ctx.font = 'bold 48px Inter, sans-serif';
-      ctx.fillStyle = '#111827';
-      ctx.fillText(precioFormateado, 40, footerY + 110);
+      // Medir texto para dimensionar badge
+      ctx.font = `900 ${priceFontSize}px Inter, sans-serif`;
+      const priceMetrics = ctx.measureText(precioFormateado);
+      const priceWidth = priceMetrics.width + pricePadding * 2;
+      const priceHeight = priceFontSize + pricePadding * 1.2;
+      const priceX = 40;
+      
+      // Fondo del badge con color del aliado
+      ctx.fillStyle = aliadoConfig.colorPrimario;
+      ctx.beginPath();
+      ctx.roundRect(priceX, priceY, priceWidth, priceHeight, 12 * badgeScaleMultiplier);
+      ctx.fill();
+      
+      // Border blanco semitransparente
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      // Texto del precio
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(precioFormateado, priceX + pricePadding, priceY + pricePadding * 0.6);
+      
+      currentY += priceHeight + dynamicSpacing;
     }
-
-    // Ubicación y tipo (condicional - showBadge)
-    if (visualLayers.showBadge) {
-      // Ubicación
-      ctx.font = '600 32px Inter, sans-serif';
-      ctx.fillStyle = '#6B7280';
-      ctx.fillText(propertyData.ubicacion || 'Ubicación', 40, footerY + 155);
-
-      // Tipo de inmueble
-      const tipoTexto = propertyData.tipo === 'apartamento' ? '🏢 Apartamento'
-        : propertyData.tipo === 'casa' ? '🏠 Casa'
-        : propertyData.tipo === 'local' ? '🏪 Local Comercial'
-        : propertyData.tipo === 'oficina' ? '🏢 Oficina'
-        : propertyData.tipo === 'bodega' ? '🏭 Bodega'
-        : propertyData.tipo === 'lote' ? '🌳 Lote'
+    
+    // Título y ubicación (sin badge, solo texto con sombra)
+    if (visualLayers.showBadge && propertyData.ubicacion) {
+      const titleFontSize = 42 * scaleMultiplier;
+      const locationFontSize = 24 * scaleMultiplier;
+      
+      ctx.font = `700 ${titleFontSize}px Inter, sans-serif`;
+      ctx.fillStyle = '#1F2937';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetY = 2;
+      
+      const tipoTexto = propertyData.tipo === 'apartamento' ? 'Apartamento'
+        : propertyData.tipo === 'casa' ? 'Casa'
+        : propertyData.tipo === 'local' ? 'Local Comercial'
+        : propertyData.tipo === 'oficina' ? 'Oficina'
+        : propertyData.tipo === 'bodega' ? 'Bodega'
+        : propertyData.tipo === 'lote' ? 'Lote'
         : '';
       
-      ctx.font = '600 32px Inter, sans-serif';
-      ctx.fillStyle = '#111827';
-      ctx.fillText(tipoTexto || '', 40, footerY + 205);
-    }
-
-    // Atributos (condicional)
-    if (visualLayers.showIcons) {
-      let atributos = '';
-      if (propertyData.habitaciones) atributos += `🛏 ${propertyData.habitaciones} Hab  `;
-      if (propertyData.banos) atributos += `🚿 ${propertyData.banos} Baños  `;
-      if (propertyData.parqueaderos) atributos += `🚗 ${propertyData.parqueaderos} Parq  `;
-      if (propertyData.area) atributos += `📐 ${propertyData.area}m²`;
+      ctx.fillText(tipoTexto, 40, currentY);
+      currentY += titleFontSize + dynamicSpacing * 0.5;
       
-      ctx.font = '600 30px Inter, sans-serif';
+      ctx.font = `600 ${locationFontSize}px Inter, sans-serif`;
       ctx.fillStyle = '#6B7280';
-      ctx.fillText(atributos, 40, footerY + 260);
+      ctx.fillText(`📍 ${propertyData.ubicacion}`, 40, currentY);
+      
+      // Resetear sombra
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      
+      currentY += locationFontSize + dynamicSpacing;
+    }
+    
+    // Características con badges blancos circulares individuales
+    if (visualLayers.showIcons) {
+      let iconX = 40;
+      const iconBaseSize = 80 * badgeScaleMultiplier;
+      const iconGap = 16;
+      const iconY = currentY;
+      
+      const features = [];
+      if (propertyData.habitaciones) features.push({ emoji: '🛏️', value: propertyData.habitaciones });
+      if (propertyData.banos) features.push({ emoji: '🚿', value: propertyData.banos });
+      if (propertyData.parqueaderos) features.push({ emoji: '🚗', value: propertyData.parqueaderos });
+      if (propertyData.area) features.push({ emoji: '📐', value: `${propertyData.area}m²` });
+      
+      features.forEach((feature) => {
+        const iconSize = iconBaseSize;
+        
+        // Badge circular blanco
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetY = 2;
+        
+        ctx.beginPath();
+        ctx.arc(iconX + iconSize / 2, iconY + iconSize / 2, iconSize / 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Resetear sombra
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+        
+        // Emoji y número
+        const emojiFontSize = 32 * badgeScaleMultiplier;
+        const numberFontSize = 36 * badgeScaleMultiplier;
+        
+        ctx.font = `${emojiFontSize}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(feature.emoji, iconX + iconSize * 0.35, iconY + iconSize / 2);
+        
+        ctx.font = `700 ${numberFontSize}px Inter, sans-serif`;
+        ctx.fillStyle = '#1F2937';
+        ctx.fillText(feature.value.toString(), iconX + iconSize * 0.7, iconY + iconSize / 2);
+        
+        iconX += iconSize + iconGap;
+      });
     }
   }
 
