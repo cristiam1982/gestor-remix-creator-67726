@@ -122,7 +122,17 @@ export const MultiVideoStaticPreview = ({
       allyLogo: aliadoLogoRef.current,
       elGestorLogo: elGestorLogoRef.current
     });
-  }, [visualSettings, subtitle, propertyData, aliadoConfig, isLoading]);
+  }, [
+    visualSettings.logoSettings,
+    visualSettings.textComposition, 
+    visualSettings.visualLayers,
+    visualSettings.gradientDirection,
+    visualSettings.gradientIntensity,
+    subtitle,
+    propertyData,
+    aliadoConfig,
+    isLoading
+  ]);
 
   return (
     <div className="relative w-full max-w-[300px] mx-auto">
