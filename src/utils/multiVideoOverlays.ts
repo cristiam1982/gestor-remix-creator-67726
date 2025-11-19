@@ -5,17 +5,27 @@ import { MultiVideoVisualSettings } from "@/types/multiVideo";
  * Función unificada para dibujar overlays en videos multi-video
  * Usada tanto en el preview estático como en la generación final del video
  */
-export async function drawOverlays(
-  ctx: CanvasRenderingContext2D,
-  videoWidth: number,
-  videoHeight: number,
-  propertyData: PropertyData,
-  aliadoConfig: AliadoConfig,
-  visualSettings: MultiVideoVisualSettings,
-  subtitle?: string,
-  allyLogo?: HTMLImageElement,
-  elGestorLogo?: HTMLImageElement
-) {
+export async function drawOverlays({
+  ctx,
+  videoWidth,
+  videoHeight,
+  propertyData,
+  aliadoConfig,
+  visualSettings,
+  subtitle,
+  allyLogo,
+  elGestorLogo
+}: {
+  ctx: CanvasRenderingContext2D;
+  videoWidth: number;
+  videoHeight: number;
+  propertyData: PropertyData;
+  aliadoConfig: AliadoConfig;
+  visualSettings: MultiVideoVisualSettings;
+  subtitle?: string;
+  allyLogo?: HTMLImageElement;
+  elGestorLogo?: HTMLImageElement;
+}) {
   const { gradientDirection, gradientIntensity, logoSettings, textComposition, visualLayers } = visualSettings;
 
   // 1. Aplicar gradientes según dirección e intensidad

@@ -132,17 +132,17 @@ export async function generateSimpleMultiVideoReel(
               ctx.drawImage(video, x, y, scaledWidth, scaledHeight);
               
               // Aplicar overlays usando función unificada
-              drawOverlays(
+              drawOverlays({
                 ctx,
-                canvas.width,
-                canvas.height,
+                videoWidth: canvas.width,
+                videoHeight: canvas.height,
                 propertyData,
                 aliadoConfig,
                 visualSettings,
-                currentSubtitle,
-                aliadoLogo,
+                subtitle: currentSubtitle,
+                allyLogo: aliadoLogo,
                 elGestorLogo
-              );
+              });
               
               if (supportsRVFC) {
                 (video as any).requestVideoFrameCallback(drawFrame);
