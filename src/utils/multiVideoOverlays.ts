@@ -173,8 +173,8 @@ export async function drawOverlays({
   // 4. Footer con información de propiedad (rediseñado con badges modernos)
   const scaleMultiplier = 1.0 + (textComposition.typographyScale / 100);
   const badgeScaleMultiplier = 1.0 + (textComposition.badgeScale / 100);
-  const baseSpacing = 16;
-  const spacingMap = { compact: -10, normal: 0, spacious: 15 };
+  const baseSpacing = 20;
+  const spacingMap = { compact: -8, normal: 0, spacious: 20 };
   const dynamicSpacing = baseSpacing + (spacingMap[textComposition.verticalSpacing] || 0);
   
   const hasAnyFooterLayer = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
@@ -185,8 +185,8 @@ export async function drawOverlays({
     // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
       const priceY = currentY;
-      const priceFontSize = 48 * badgeScaleMultiplier;
-      const pricePadding = 20 * badgeScaleMultiplier;
+      const priceFontSize = 52 * badgeScaleMultiplier;
+      const pricePadding = 24 * badgeScaleMultiplier;
       
       const precioNumero = typeof propertyData.canon === 'string' 
         ? parseFloat(propertyData.canon.replace(/[^\d]/g, '')) 
@@ -224,8 +224,8 @@ export async function drawOverlays({
     
     // Título y ubicación (sin badge, solo texto con sombra)
     if (visualLayers.showBadge && propertyData.ubicacion) {
-      const titleFontSize = 42 * scaleMultiplier;
-      const locationFontSize = 24 * scaleMultiplier;
+      const titleFontSize = 46 * scaleMultiplier;
+      const locationFontSize = 28 * scaleMultiplier;
       
       ctx.font = `700 ${titleFontSize}px Inter, sans-serif`;
       ctx.fillStyle = '#1F2937';
@@ -261,8 +261,8 @@ export async function drawOverlays({
     // Características con badges blancos circulares individuales
     if (visualLayers.showIcons) {
       let iconX = 40;
-      const iconBaseSize = 80 * badgeScaleMultiplier;
-      const iconGap = 16;
+      const iconBaseSize = 90 * badgeScaleMultiplier;
+      const iconGap = 20 * badgeScaleMultiplier;
       const iconY = currentY;
       
       const features = [];
@@ -290,8 +290,8 @@ export async function drawOverlays({
         ctx.shadowOffsetY = 0;
         
         // Emoji y número
-        const emojiFontSize = 32 * badgeScaleMultiplier;
-        const numberFontSize = 36 * badgeScaleMultiplier;
+        const emojiFontSize = 34 * badgeScaleMultiplier;
+        const numberFontSize = 40 * badgeScaleMultiplier;
         
         ctx.font = `${emojiFontSize}px Arial`;
         ctx.textAlign = 'center';
