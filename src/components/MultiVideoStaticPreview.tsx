@@ -70,17 +70,17 @@ export const MultiVideoStaticPreview = ({
         elGestorLogoRef.current = elGestorLogo;
 
         // Aplicar overlays usando función unificada
-        await drawOverlays(
+        await drawOverlays({
           ctx,
-          canvas.width,
-          canvas.height,
+          videoWidth: canvas.width,
+          videoHeight: canvas.height,
           propertyData,
           aliadoConfig,
           visualSettings,
           subtitle,
-          aliadoLogo,
+          allyLogo: aliadoLogo,
           elGestorLogo
-        );
+        });
 
         setIsLoading(false);
       } catch (error) {
@@ -111,17 +111,17 @@ export const MultiVideoStaticPreview = ({
     ctx.drawImage(videoRef.current, 0, 0, 1080, 1920);
 
     // Re-aplicar overlays con nuevos settings usando función unificada
-    drawOverlays(
+    drawOverlays({
       ctx,
-      canvas.width,
-      canvas.height,
+      videoWidth: canvas.width,
+      videoHeight: canvas.height,
       propertyData,
       aliadoConfig,
       visualSettings,
       subtitle,
-      aliadoLogoRef.current,
-      elGestorLogoRef.current
-    );
+      allyLogo: aliadoLogoRef.current,
+      elGestorLogo: elGestorLogoRef.current
+    });
   }, [visualSettings, subtitle, propertyData, aliadoConfig, isLoading]);
 
   return (
