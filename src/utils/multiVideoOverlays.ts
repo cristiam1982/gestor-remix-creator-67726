@@ -50,7 +50,7 @@ export async function drawOverlays({
   }
 
   // 2. Dibujar logo del aliado si está habilitado
-  if (visualLayers.showAllyLogo && allyLogo && allyLogo.complete) {
+  if (visualLayers.showAllyLogo && allyLogo && allyLogo.complete && allyLogo.naturalWidth) {
     // Convertir size de string a número (unificado con Reel)
     const logoSizeMap = { small: 60, medium: 70, large: 80, xlarge: 90 };
     const logoSize = typeof logoSettings.size === 'number' 
@@ -115,10 +115,10 @@ export async function drawOverlays({
 
   // 3. Dibujar subtítulo si está presente y habilitado
   if (subtitle && visualLayers.showBadge) {
-    const badgeScale = 1.0 + (textComposition.badgeScale / 100);
+    const scaleMultiplierSubtitle = 1.0 + (textComposition.typographyScale / 100);
     const subtitleY = videoHeight * 0.15;
     const maxWidth = videoWidth * 0.85;
-    const fontSize = 36 * badgeScale;
+    const fontSize = 36 * scaleMultiplierSubtitle;
     
     ctx.font = `700 ${fontSize}px Inter, sans-serif`;
     ctx.textAlign = 'center';
@@ -126,11 +126,11 @@ export async function drawOverlays({
 
     const lines = splitTextIntoLines(ctx, subtitle, maxWidth);
     const lineHeight = fontSize * 1.3;
-    const totalHeight = lines.length * lineHeight + 32 * badgeScale;
+    const totalHeight = lines.length * lineHeight + 32 * scaleMultiplierSubtitle;
     
     const badgeX = videoWidth / 2;
     const badgeY = subtitleY;
-    const badgePadding = 44 * badgeScale;
+    const badgePadding = 44 * scaleMultiplierSubtitle;
     const badgeWidth = Math.min(maxWidth, Math.max(...lines.map(line => ctx.measureText(line).width)) + badgePadding * 2);
     const badgeHeight = totalHeight;
 
@@ -140,7 +140,7 @@ export async function drawOverlays({
     ctx.shadowBlur = 20;
     ctx.shadowOffsetY = 4;
     
-    const radius = 16 * badgeScale;
+    const radius = 16 * scaleMultiplierSubtitle;
     const x = badgeX - badgeWidth / 2;
     const y = badgeY - badgeHeight / 2;
     
@@ -173,8 +173,8 @@ export async function drawOverlays({
   // 4. Footer con información de propiedad (rediseñado con badges modernos)
   const scaleMultiplier = 1.0 + (textComposition.typographyScale / 100);
   const badgeScaleMultiplier = 1.0 + (textComposition.badgeScale / 100);
-  const baseSpacing = 20;
-  const spacingMap = { compact: -8, normal: 0, spacious: 20 };
+  const baseSpacing = 24;
+  const spacingMap = { compact: -12, normal: 0, spacious: 24 };
   const dynamicSpacing = baseSpacing + (spacingMap[textComposition.verticalSpacing] || 0);
   
   const hasAnyFooterLayer = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
@@ -185,8 +185,8 @@ export async function drawOverlays({
     // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
       const priceY = currentY;
-      const priceFontSize = 52 * badgeScaleMultiplier;
-      const pricePadding = 24 * badgeScaleMultiplier;
+      const priceFontSize = 42 * badgeScaleMultiplier;
+      const pricePadding = 16 * badgeScaleMultiplier;
       
       const precioNumero = typeof propertyData.canon === 'string' 
         ? parseFloat(propertyData.canon.replace(/[^\d]/g, '')) 
@@ -199,7 +199,7 @@ export async function drawOverlays({
       ctx.font = `900 ${priceFontSize}px Inter, sans-serif`;
       const priceMetrics = ctx.measureText(precioFormateado);
       const priceWidth = priceMetrics.width + pricePadding * 2;
-      const priceHeight = priceFontSize + pricePadding * 1.2;
+      const priceHeight = priceFontSize + pricePadding * 1.0;
       const priceX = 40;
       
       // Fondo del badge con color del aliado
@@ -222,18 +222,11 @@ export async function drawOverlays({
       currentY += priceHeight + dynamicSpacing;
     }
     
-    // Título y ubicación (sin badge, solo texto con sombra)
+    // Título y ubicación con badges blancos
     if (visualLayers.showBadge && propertyData.ubicacion) {
       const titleFontSize = 46 * scaleMultiplier;
       const locationFontSize = 28 * scaleMultiplier;
-      
-      ctx.font = `700 ${titleFontSize}px Inter, sans-serif`;
-      ctx.fillStyle = '#1F2937';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'top';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetY = 2;
+      const badgePadding = 16;
       
       const tipoTexto = propertyData.tipo === 'apartamento' ? 'Apartamento'
         : propertyData.tipo === 'casa' ? 'Casa'
@@ -243,26 +236,65 @@ export async function drawOverlays({
         : propertyData.tipo === 'lote' ? 'Lote'
         : '';
       
-      ctx.fillText(tipoTexto, 40, currentY);
-      currentY += titleFontSize + dynamicSpacing * 0.5;
+      // Badge blanco para título
+      ctx.font = `700 ${titleFontSize}px Inter, sans-serif`;
+      const titleWidth = ctx.measureText(tipoTexto).width;
+      const titleBgWidth = titleWidth + badgePadding * 2;
+      const titleBgHeight = titleFontSize + badgePadding * 1.5;
       
-      ctx.font = `600 ${locationFontSize}px Inter, sans-serif`;
-      ctx.fillStyle = '#6B7280';
-      ctx.fillText(`📍 ${propertyData.ubicacion}`, 40, currentY);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 2;
+      ctx.beginPath();
+      ctx.roundRect(40, currentY, titleBgWidth, titleBgHeight, 12);
+      ctx.fill();
       
-      // Resetear sombra
+      // Reset shadow
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
       ctx.shadowOffsetY = 0;
       
-      currentY += locationFontSize + dynamicSpacing;
+      // Texto del título
+      ctx.fillStyle = '#1F2937';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(tipoTexto, 40 + badgePadding, currentY + badgePadding * 0.75);
+      
+      currentY += titleBgHeight + dynamicSpacing * 0.5;
+      
+      // Badge blanco para ubicación
+      const locationText = `📍 ${propertyData.ubicacion}`;
+      ctx.font = `600 ${locationFontSize}px Inter, sans-serif`;
+      const locationWidth = ctx.measureText(locationText).width;
+      const locationBgWidth = locationWidth + badgePadding * 2;
+      const locationBgHeight = locationFontSize + badgePadding * 1.5;
+      
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 2;
+      ctx.beginPath();
+      ctx.roundRect(40, currentY, locationBgWidth, locationBgHeight, 12);
+      ctx.fill();
+      
+      // Reset shadow
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      
+      // Texto de ubicación
+      ctx.fillStyle = '#6B7280';
+      ctx.fillText(locationText, 40 + badgePadding, currentY + badgePadding * 0.75);
+      
+      currentY += locationBgHeight + dynamicSpacing;
     }
     
     // Características con badges blancos circulares individuales
     if (visualLayers.showIcons) {
       let iconX = 40;
-      const iconBaseSize = 90 * badgeScaleMultiplier;
-      const iconGap = 20 * badgeScaleMultiplier;
+      const iconBaseSize = 70 * badgeScaleMultiplier;
+      const iconGap = 16 * badgeScaleMultiplier;
       const iconY = currentY;
       
       const features = [];
@@ -290,8 +322,8 @@ export async function drawOverlays({
         ctx.shadowOffsetY = 0;
         
         // Emoji y número
-        const emojiFontSize = 34 * badgeScaleMultiplier;
-        const numberFontSize = 40 * badgeScaleMultiplier;
+        const emojiFontSize = 28 * badgeScaleMultiplier;
+        const numberFontSize = 32 * badgeScaleMultiplier;
         
         ctx.font = `${emojiFontSize}px Arial`;
         ctx.textAlign = 'center';
@@ -308,7 +340,7 @@ export async function drawOverlays({
   }
 
   // 5. Logo "El Gestor" (condicional según showCTA)
-  if (visualLayers.showCTA && elGestorLogo && elGestorLogo.complete) {
+  if (visualLayers.showCTA && elGestorLogo && elGestorLogo.complete && elGestorLogo.naturalWidth) {
     const elGestorSize = 80;
     const elGestorX = videoWidth - elGestorSize - 40;
     const elGestorY = videoHeight - elGestorSize - 48;
