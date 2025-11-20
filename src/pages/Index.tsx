@@ -18,6 +18,7 @@ import { BrandedHeroSection } from "@/components/BrandedHeroSection";
 import { PropertyForm } from "@/components/PropertyForm";
 import { ArrendadoForm } from "@/components/ArrendadoForm";
 import { PhotoManager } from "@/components/PhotoManager";
+import { FooterCustomization } from "@/components/MultiVideoFooterControls";
 import { CanvasPreview } from "@/components/CanvasPreview";
 import { ArrendadoPreview } from "@/components/ArrendadoPreview";
 import { ReelSlideshow } from "@/components/ReelSlideshow";
@@ -145,6 +146,13 @@ const Index = () => {
   });
   const [multiVideoGradientDirection, setMultiVideoGradientDirection] = useState<'none' | 'top' | 'bottom' | 'both'>('bottom');
   const [multiVideoGradientIntensity, setMultiVideoGradientIntensity] = useState(60);
+  const [multiVideoFooterCustomization, setMultiVideoFooterCustomization] = useState<FooterCustomization>({
+    showElGestorLogo: true,
+    customPhone: '',
+    customHashtag: '',
+    customTypeText: '',
+    customLocationText: ''
+  });
 
   const { loadAutoSavedData, clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
 
@@ -848,6 +856,8 @@ const Index = () => {
                       onTextCompositionChange={setMultiVideoTextComposition}
                       visualLayers={multiVideoVisualLayers}
                       onVisualLayersChange={setMultiVideoVisualLayers}
+                      footerCustomization={multiVideoFooterCustomization}
+                      onFooterCustomizationChange={setMultiVideoFooterCustomization}
                     />
                   </Card>
                   
@@ -871,7 +881,8 @@ const Index = () => {
                             textComposition: multiVideoTextComposition,
                             visualLayers: multiVideoVisualLayers,
                             gradientDirection: multiVideoGradientDirection,
-                            gradientIntensity: multiVideoGradientIntensity
+                            gradientIntensity: multiVideoGradientIntensity,
+                            footerCustomization: multiVideoFooterCustomization
                           }}
                           subtitle={multiVideos[0].subtitle}
                         />
@@ -1020,7 +1031,7 @@ const Index = () => {
                 </div>
 
                 {/* Layout desktop: grid 2 columnas */}
-                <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-[calc(100vh-180px)]">
+                <div className="hidden lg:grid lg:grid-cols-[1fr_480px] gap-6 h-[calc(100vh-180px)]">
                   <ScrollArea className="h-full pr-4">
                     <div className="space-y-4">
                       {/* Info resumida de videos */}
@@ -1056,6 +1067,8 @@ const Index = () => {
                           onTextCompositionChange={setMultiVideoTextComposition}
                           visualLayers={multiVideoVisualLayers}
                           onVisualLayersChange={setMultiVideoVisualLayers}
+                          footerCustomization={multiVideoFooterCustomization}
+                          onFooterCustomizationChange={setMultiVideoFooterCustomization}
                         />
                       </Card>
                     </div>
