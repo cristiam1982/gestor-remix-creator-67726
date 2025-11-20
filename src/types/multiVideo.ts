@@ -7,6 +7,13 @@ export interface MultiVideoVisualSettings {
   visualLayers: VisualLayers;
   gradientDirection: 'none' | 'top' | 'bottom' | 'both';
   gradientIntensity: number;
+  footerCustomization?: {
+    customPhone?: string;
+    customHashtag?: string;
+    showElGestorLogo: boolean;
+    customTypeText?: string;
+    customLocationText?: string;
+  };
 }
 
 export interface MultiVideoConfig {

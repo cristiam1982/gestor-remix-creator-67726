@@ -4,6 +4,7 @@ import { GradientIntensitySlider } from "./GradientIntensitySlider";
 import { ReelLogoControls } from "./ReelLogoControls";
 import { ReelTextCompositionControls } from "./ReelTextCompositionControls";
 import { ReelLayersPanel } from "./ReelLayersPanel";
+import { MultiVideoFooterControls, FooterCustomization } from "./MultiVideoFooterControls";
 import { LogoSettings, TextCompositionSettings, VisualLayers } from "@/types/property";
 
 interface MultiVideoControlsPanelProps {
@@ -24,6 +25,10 @@ interface MultiVideoControlsPanelProps {
   // Visual layers
   visualLayers: VisualLayers;
   onVisualLayersChange: (layers: VisualLayers) => void;
+
+  // Footer customization
+  footerCustomization: FooterCustomization;
+  onFooterCustomizationChange: (customization: FooterCustomization) => void;
 }
 
 export const MultiVideoControlsPanel = ({
@@ -36,7 +41,9 @@ export const MultiVideoControlsPanel = ({
   textComposition,
   onTextCompositionChange,
   visualLayers,
-  onVisualLayersChange
+  onVisualLayersChange,
+  footerCustomization,
+  onFooterCustomizationChange
 }: MultiVideoControlsPanelProps) => {
   return (
     <Accordion type="multiple" defaultValue={["logo", "visual-elements"]} className="w-full">
@@ -91,6 +98,19 @@ export const MultiVideoControlsPanel = ({
           <GradientIntensitySlider
             intensity={gradientIntensity}
             onChange={onGradientIntensityChange}
+          />
+        </AccordionContent>
+      </AccordionItem>
+
+      {/* Personalización de Textos */}
+      <AccordionItem value="footer">
+        <AccordionTrigger className="text-sm font-semibold">
+          📝 Personalización de Textos
+        </AccordionTrigger>
+        <AccordionContent className="space-y-4 pt-2">
+          <MultiVideoFooterControls
+            customization={footerCustomization}
+            onChange={onFooterCustomizationChange}
           />
         </AccordionContent>
       </AccordionItem>

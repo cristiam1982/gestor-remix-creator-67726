@@ -52,7 +52,7 @@ export async function drawOverlays({
   // 2. Dibujar logo del aliado si está habilitado
   if (visualLayers.showAllyLogo && allyLogo && allyLogo.complete && allyLogo.naturalWidth) {
     // Convertir size de string a número (unificado con Reel)
-    const logoSizeMap = { small: 60, medium: 70, large: 80, xlarge: 90 };
+    const logoSizeMap = { small: 50, medium: 60, large: 70, xlarge: 80 };
     const logoSize = typeof logoSettings.size === 'number' 
       ? logoSettings.size 
       : logoSizeMap[logoSettings.size as keyof typeof logoSizeMap] || 70;
@@ -180,7 +180,7 @@ export async function drawOverlays({
   const hasAnyFooterLayer = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
   
   if (hasAnyFooterLayer) {
-    let currentY = videoHeight - 280;
+    let currentY = videoHeight - 200;
     
     // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
@@ -223,18 +223,19 @@ export async function drawOverlays({
     }
     
     // Título y ubicación con badges blancos
-    if (visualLayers.showBadge && propertyData.ubicacion) {
+    if (visualLayers.showCTA && propertyData.ubicacion) {
       const titleFontSize = 50 * scaleMultiplier;
       const locationFontSize = 32 * scaleMultiplier;
       const badgePadding = 16;
       
-      const tipoTexto = propertyData.tipo === 'apartamento' ? 'Apartamento'
+      const tipoTexto = visualSettings.footerCustomization?.customTypeText || 
+        (propertyData.tipo === 'apartamento' ? 'Apartamento'
         : propertyData.tipo === 'casa' ? 'Casa'
         : propertyData.tipo === 'local' ? 'Local Comercial'
         : propertyData.tipo === 'oficina' ? 'Oficina'
         : propertyData.tipo === 'bodega' ? 'Bodega'
         : propertyData.tipo === 'lote' ? 'Lote'
-        : '';
+        : '');
       
       // Badge blanco para título
       ctx.font = `700 ${titleFontSize}px Inter, sans-serif`;
@@ -264,7 +265,9 @@ export async function drawOverlays({
       currentY += titleBgHeight + dynamicSpacing * 0.5;
       
       // Badge blanco para ubicación
-      const locationText = `📍 ${propertyData.ubicacion}`;
+      const locationText = visualSettings.footerCustomization?.customLocationText 
+        ? `📍 ${visualSettings.footerCustomization.customLocationText}`
+        : `📍 ${propertyData.ubicacion}`;
       ctx.font = `600 ${locationFontSize}px Inter, sans-serif`;
       const locationWidth = ctx.measureText(locationText).width;
       const locationBgWidth = locationWidth + badgePadding * 2;
@@ -339,17 +342,18 @@ export async function drawOverlays({
     }
   }
 
-  // 5. Logo "El Gestor" (condicional según showCTA)
-  if (visualLayers.showCTA && elGestorLogo && elGestorLogo.complete && elGestorLogo.naturalWidth) {
-    const elGestorSize = 80;
-    const elGestorX = videoWidth - elGestorSize - 40;
-    const elGestorY = videoHeight - elGestorSize - 48;
+  // 5. Logo de "El Gestor" (branding) - solo si está habilitado
+  if (visualSettings.footerCustomization?.showElGestorLogo !== false && elGestorLogo && elGestorLogo.complete && elGestorLogo.naturalWidth) {
+    const logoWidth = elGestorLogo.width * 0.25;
+    const logoHeight = elGestorLogo.height * 0.25;
+    const elGestorX = videoWidth - logoWidth - 40;
+    const elGestorY = videoHeight - logoHeight - 48;
 
     ctx.save();
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 6;
     ctx.shadowOffsetY = 2;
-    ctx.drawImage(elGestorLogo, elGestorX, elGestorY, elGestorSize, elGestorSize);
+    ctx.drawImage(elGestorLogo, elGestorX, elGestorY, logoWidth, logoHeight);
     ctx.restore();
   }
 }

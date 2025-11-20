@@ -14,7 +14,7 @@ export const ReelLayersPanel = ({ layers, onChange, hiddenLayers = [] }: ReelLay
     { key: 'showPrice', icon: '💰', label: 'Precio' },
     { key: 'showIcons', icon: '🛏️', label: 'Iconografía' },
     { key: 'showAllyLogo', icon: '🎨', label: 'Logo del Aliado' },
-    { key: 'showCTA', icon: '📣', label: 'Call to Action' },
+    { key: 'showCTA', icon: '📍', label: 'Tipo y Ubicación' },
     { key: 'showBadge', icon: '🏷️', label: 'Badge Subtítulo' },
   ];
 
