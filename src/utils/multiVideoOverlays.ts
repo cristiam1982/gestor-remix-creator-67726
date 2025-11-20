@@ -51,12 +51,12 @@ export async function drawOverlays({
 
   // 2. Dibujar logo del aliado si está habilitado
   if (visualLayers.showAllyLogo && allyLogo && allyLogo.complete && allyLogo.naturalWidth) {
-    // Convertir size de string a número (unificado con Reel)
-    const logoSizeMap = { small: 60, medium: 70, large: 80, xlarge: 90 };
-    const logoSizeBase = typeof logoSettings.size === 'number' 
+    // Tamaños reales optimizados para canvas 1080x1920
+    // small: 140px (~13% ancho), medium: 180px (~17%), large: 220px (~20%), xlarge: 260px (~24%)
+    const logoSizeMap = { small: 140, medium: 180, large: 220, xlarge: 260 };
+    const logoSize = typeof logoSettings.size === 'number' 
       ? logoSettings.size 
-      : logoSizeMap[logoSettings.size as keyof typeof logoSizeMap] || 70;
-    const logoSize = logoSizeBase * 1.2;
+      : logoSizeMap[logoSettings.size as keyof typeof logoSizeMap] || 180;
     const logoOpacity = (logoSettings.opacity ?? 100) / 100;
     
     ctx.save();
