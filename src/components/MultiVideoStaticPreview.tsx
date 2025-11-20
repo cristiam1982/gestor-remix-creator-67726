@@ -144,7 +144,7 @@ export const MultiVideoStaticPreview = ({
   ]);
 
   return (
-    <div className="relative w-full max-w-[360px] mx-auto">
+    <div className="relative w-full max-w-[420px] mx-auto">
       {isLoading && (
         <Skeleton className="w-full aspect-[9/16] rounded-xl" />
       )}
@@ -154,7 +154,7 @@ export const MultiVideoStaticPreview = ({
         height={1920}
         className={`w-full h-auto rounded-xl shadow-2xl border border-border ${isLoading ? 'hidden' : ''}`}
       />
-      <p className="text-xs text-muted-foreground text-center mt-2">
+      <p className="text-[11px] text-muted-foreground text-center mt-2.5">
         Vista previa con personalizaciones
       </p>
     </div>

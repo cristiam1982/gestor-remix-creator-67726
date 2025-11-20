@@ -1020,7 +1020,7 @@ const Index = () => {
                 </div>
 
                 {/* Layout desktop: grid 2 columnas */}
-                <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-full">
+                <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-[calc(100vh-180px)]">
                   <ScrollArea className="h-full pr-4">
                     <div className="space-y-4">
                       {/* Info resumida de videos */}
@@ -1063,10 +1063,10 @@ const Index = () => {
 
                   {/* Columna derecha: preview/generación fijo */}
                   <Card className="p-4 h-full flex flex-col">
-                    <h3 className="text-lg font-semibold mb-3 text-primary">🎬 Reel Multi-Video</h3>
+                    <h3 className="text-lg font-semibold mb-3 text-primary flex-shrink-0">🎬 Reel Multi-Video</h3>
                     
-                    <div className="flex-1 overflow-auto">
-                      <div className="space-y-3">
+                    <div className="flex-1 flex flex-col justify-center">
+                      <div className="space-y-3 flex-shrink-0">
                         {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && (
                           <MultiVideoStaticPreview
                             key={`preview-desktop-${JSON.stringify({
