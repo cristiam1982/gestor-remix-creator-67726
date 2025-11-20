@@ -857,6 +857,12 @@ const Index = () => {
                     <div className="space-y-3">
                       {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && (
                         <MultiVideoStaticPreview
+                          key={`preview-mobile-${JSON.stringify({
+                            pos: multiVideoLogoSettings.position,
+                            size: multiVideoLogoSettings.size,
+                            grad: multiVideoGradientDirection,
+                            scale: multiVideoTextComposition.typographyScale
+                          })}`}
                           videoFile={multiVideos[0].file!}
                           propertyData={propertyData as PropertyData}
                           aliadoConfig={aliadoConfig}
@@ -1063,6 +1069,12 @@ const Index = () => {
                       <div className="space-y-3">
                         {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && (
                           <MultiVideoStaticPreview
+                            key={`preview-desktop-${JSON.stringify({
+                              pos: multiVideoLogoSettings.position,
+                              size: multiVideoLogoSettings.size,
+                              grad: multiVideoGradientDirection,
+                              scale: multiVideoTextComposition.typographyScale
+                            })}`}
                             videoFile={multiVideos[0].file!}
                             propertyData={propertyData as PropertyData}
                             aliadoConfig={aliadoConfig}
