@@ -53,9 +53,10 @@ export async function drawOverlays({
   if (visualLayers.showAllyLogo && allyLogo && allyLogo.complete && allyLogo.naturalWidth) {
     // Convertir size de string a número (unificado con Reel)
     const logoSizeMap = { small: 60, medium: 70, large: 80, xlarge: 90 };
-    const logoSize = typeof logoSettings.size === 'number' 
+    const logoSizeBase = typeof logoSettings.size === 'number' 
       ? logoSettings.size 
       : logoSizeMap[logoSettings.size as keyof typeof logoSizeMap] || 70;
+    const logoSize = logoSizeBase * 1.2;
     const logoOpacity = (logoSettings.opacity ?? 100) / 100;
     
     ctx.save();
@@ -180,7 +181,7 @@ export async function drawOverlays({
   const hasAnyFooterLayer = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
   
   if (hasAnyFooterLayer) {
-    let currentY = videoHeight - 200;
+    let currentY = videoHeight - 220;
     
     // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
@@ -344,8 +345,8 @@ export async function drawOverlays({
 
   // 5. Logo de "El Gestor" (branding) - solo si está habilitado
   if (visualSettings.footerCustomization?.showElGestorLogo !== false && elGestorLogo && elGestorLogo.complete && elGestorLogo.naturalWidth) {
-    const logoWidth = elGestorLogo.width * 0.18;
-    const logoHeight = elGestorLogo.height * 0.18;
+    const logoWidth = elGestorLogo.width * 0.23;
+    const logoHeight = elGestorLogo.height * 0.23;
     const elGestorX = videoWidth - logoWidth - 40;
     const elGestorY = videoHeight - logoHeight - 48;
 
