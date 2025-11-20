@@ -52,7 +52,7 @@ export async function drawOverlays({
   // 2. Dibujar logo del aliado si está habilitado
   if (visualLayers.showAllyLogo && allyLogo && allyLogo.complete && allyLogo.naturalWidth) {
     // Convertir size de string a número (unificado con Reel)
-    const logoSizeMap = { small: 50, medium: 60, large: 70, xlarge: 80 };
+    const logoSizeMap = { small: 55, medium: 65, large: 75, xlarge: 85 };
     const logoSize = typeof logoSettings.size === 'number' 
       ? logoSettings.size 
       : logoSizeMap[logoSettings.size as keyof typeof logoSizeMap] || 70;
@@ -344,8 +344,8 @@ export async function drawOverlays({
 
   // 5. Logo de "El Gestor" (branding) - solo si está habilitado
   if (visualSettings.footerCustomization?.showElGestorLogo !== false && elGestorLogo && elGestorLogo.complete && elGestorLogo.naturalWidth) {
-    const logoWidth = elGestorLogo.width * 0.25;
-    const logoHeight = elGestorLogo.height * 0.25;
+    const logoWidth = elGestorLogo.width * 0.18;
+    const logoHeight = elGestorLogo.height * 0.18;
     const elGestorX = videoWidth - logoWidth - 40;
     const elGestorY = videoHeight - logoHeight - 48;
 
