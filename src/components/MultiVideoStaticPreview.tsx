@@ -101,7 +101,20 @@ export const MultiVideoStaticPreview = ({
 
   // Re-dibujar overlays cuando cambian los settings (sin recargar video)
   useEffect(() => {
-    if (!canvasRef.current || isLoading || !videoRef.current || !aliadoLogoRef.current || !elGestorLogoRef.current) return;
+    console.log('🎨 [MultiVideoStaticPreview] useEffect disparado:', {
+      hasCanvas: !!canvasRef.current,
+      isLoading,
+      hasVideo: !!videoRef.current,
+      hasLogos: !!(aliadoLogoRef.current && elGestorLogoRef.current),
+      visualSettings
+    });
+
+    if (!canvasRef.current || isLoading || !videoRef.current || !aliadoLogoRef.current || !elGestorLogoRef.current) {
+      console.log('⚠️ [MultiVideoStaticPreview] Early return - falta algún recurso');
+      return;
+    }
+
+    console.log('✅ [MultiVideoStaticPreview] Re-dibujando canvas con nuevos settings');
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -123,11 +136,7 @@ export const MultiVideoStaticPreview = ({
       elGestorLogo: elGestorLogoRef.current
     });
   }, [
-    visualSettings.logoSettings,
-    visualSettings.textComposition, 
-    visualSettings.visualLayers,
-    visualSettings.gradientDirection,
-    visualSettings.gradientIntensity,
+    visualSettings,  // ✅ Objeto completo - React detecta cualquier cambio interno
     subtitle,
     propertyData,
     aliadoConfig,
