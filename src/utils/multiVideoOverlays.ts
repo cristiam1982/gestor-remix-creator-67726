@@ -293,7 +293,7 @@ export async function drawOverlays({
     // Características con badges blancos circulares individuales
     if (visualLayers.showIcons) {
       let iconX = 40;
-      const iconBaseSize = 70 * badgeScaleMultiplier;
+      const iconBaseSize = 58 * badgeScaleMultiplier;  // Optimizado para mejor proporción visual
       const iconGap = 16 * badgeScaleMultiplier;
       const iconY = currentY;
       
@@ -322,8 +322,8 @@ export async function drawOverlays({
         ctx.shadowOffsetY = 0;
         
         // Emoji y número
-        const emojiFontSize = 28 * badgeScaleMultiplier;
-        const numberFontSize = 32 * badgeScaleMultiplier;
+        const emojiFontSize = 24 * badgeScaleMultiplier;  // Reducido para mejor proporción
+        const numberFontSize = 28 * badgeScaleMultiplier;  // Reducido para mejor proporción
         
         ctx.font = `${emojiFontSize}px Arial`;
         ctx.textAlign = 'center';
