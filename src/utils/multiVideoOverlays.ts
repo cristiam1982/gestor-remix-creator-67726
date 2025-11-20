@@ -180,12 +180,12 @@ export async function drawOverlays({
   const hasAnyFooterLayer = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
   
   if (hasAnyFooterLayer) {
-    let currentY = videoHeight - 200;
+    let currentY = videoHeight - 280;
     
     // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
       const priceY = currentY;
-      const priceFontSize = 42 * badgeScaleMultiplier;
+      const priceFontSize = 46 * badgeScaleMultiplier;
       const pricePadding = 16 * badgeScaleMultiplier;
       
       const precioNumero = typeof propertyData.canon === 'string' 
@@ -224,8 +224,8 @@ export async function drawOverlays({
     
     // Título y ubicación con badges blancos
     if (visualLayers.showBadge && propertyData.ubicacion) {
-      const titleFontSize = 46 * scaleMultiplier;
-      const locationFontSize = 28 * scaleMultiplier;
+      const titleFontSize = 50 * scaleMultiplier;
+      const locationFontSize = 32 * scaleMultiplier;
       const badgePadding = 16;
       
       const tipoTexto = propertyData.tipo === 'apartamento' ? 'Apartamento'
@@ -243,11 +243,11 @@ export async function drawOverlays({
       const titleBgHeight = titleFontSize + badgePadding * 1.5;
       
       ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
-      ctx.shadowBlur = 8;
-      ctx.shadowOffsetY = 2;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 3;
       ctx.beginPath();
-      ctx.roundRect(40, currentY, titleBgWidth, titleBgHeight, 12);
+      ctx.roundRect(40, currentY, titleBgWidth, titleBgHeight, 14);
       ctx.fill();
       
       // Reset shadow
@@ -271,11 +271,11 @@ export async function drawOverlays({
       const locationBgHeight = locationFontSize + badgePadding * 1.5;
       
       ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
-      ctx.shadowBlur = 8;
-      ctx.shadowOffsetY = 2;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 3;
       ctx.beginPath();
-      ctx.roundRect(40, currentY, locationBgWidth, locationBgHeight, 12);
+      ctx.roundRect(40, currentY, locationBgWidth, locationBgHeight, 14);
       ctx.fill();
       
       // Reset shadow
