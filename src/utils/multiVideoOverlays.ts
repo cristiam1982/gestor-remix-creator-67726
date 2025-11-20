@@ -52,7 +52,7 @@ export async function drawOverlays({
   // 2. Dibujar logo del aliado si está habilitado
   if (visualLayers.showAllyLogo && allyLogo && allyLogo.complete && allyLogo.naturalWidth) {
     // Convertir size de string a número (unificado con Reel)
-    const logoSizeMap = { small: 55, medium: 65, large: 75, xlarge: 85 };
+    const logoSizeMap = { small: 60, medium: 70, large: 80, xlarge: 90 };
     const logoSize = typeof logoSettings.size === 'number' 
       ? logoSettings.size 
       : logoSizeMap[logoSettings.size as keyof typeof logoSizeMap] || 70;
