@@ -144,7 +144,7 @@ export const MultiVideoStaticPreview = ({
   ]);
 
   return (
-    <div className="relative w-full max-w-[450px] mx-auto">
+    <div className="relative w-full max-w-[480px] mx-auto">
       {isLoading && (
         <Skeleton className="w-full aspect-[9/16] rounded-xl" />
       )}

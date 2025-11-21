@@ -852,7 +852,7 @@ const Index = () => {
                 </div>
 
                 {/* Layout desktop: grid 2 columnas */}
-                <div className="hidden lg:grid lg:grid-cols-[1fr_480px] gap-6 h-[calc(100vh-180px)]">
+                <div className="hidden lg:grid lg:grid-cols-[1fr_520px] gap-6 h-[calc(100vh-180px)]">
                   <ScrollArea className="h-full pr-4">
                     <div className="space-y-4">
                       {/* Info resumida de videos */}
@@ -902,7 +902,7 @@ const Index = () => {
 
                           {isProcessingMultiVideo && <MultiVideoProcessingModal isOpen={isProcessingMultiVideo} progress={multiVideoProgress} stage={multiVideoStage} isComplete={false} />}
 
-                          {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-[450px] rounded-lg shadow-lg" style={{
+                          {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-[480px] rounded-lg shadow-lg" style={{
                       aspectRatio: "9/16"
                     }} />}
                         </div>
