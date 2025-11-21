@@ -295,13 +295,13 @@ export async function drawOverlays({
   const hasAnyFooterLayer = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
   
   if (hasAnyFooterLayer) {
-    let currentY = videoHeight - 220; // Footer compacto optimizado
+    let currentY = videoHeight - 150; // Footer ultra-compacto
     
     // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
       const priceY = currentY;
-      const priceFontSize = 46 * badgeScaleMultiplier * scaleMultiplier; // Amarrado a texto principal
-      const pricePadding = 16 * badgeScaleMultiplier;
+      const priceFontSize = 38 * badgeScaleMultiplier * scaleMultiplier; // Amarrado a texto principal
+      const pricePadding = 12 * badgeScaleMultiplier;
       
       const precioNumero = typeof propertyData.canon === 'string' 
         ? parseFloat(propertyData.canon.replace(/[^\d]/g, '')) 
@@ -334,14 +334,14 @@ export async function drawOverlays({
       ctx.textBaseline = 'top';
       ctx.fillText(precioFormateado, priceX + pricePadding, priceY + pricePadding * 0.6);
       
-      currentY += priceHeight + (dynamicSpacing * 0.3); // Espaciado compacto
+      currentY += priceHeight + (dynamicSpacing * 0.2); // Espaciado mínimo
     }
     
     // Título y ubicación con badges blancos
     if (visualLayers.showCTA && propertyData.ubicacion) {
-      const titleFontSize = 50 * scaleMultiplier;
-      const locationFontSize = 32 * scaleMultiplier;
-      const badgePadding = 16;
+      const titleFontSize = 42 * scaleMultiplier;
+      const locationFontSize = 28 * scaleMultiplier;
+      const badgePadding = 12;
       
       const tipoTexto = visualSettings.footerCustomization?.customTypeText || 
         (propertyData.tipo === 'apartamento' ? 'Apartamento'
@@ -377,7 +377,7 @@ export async function drawOverlays({
       ctx.textBaseline = 'top';
       ctx.fillText(tipoTexto, 40 + badgePadding, currentY + badgePadding * 0.75);
       
-      currentY += titleBgHeight + (dynamicSpacing * 0.2); // Espaciado mínimo
+      currentY += titleBgHeight + (dynamicSpacing * 0.15); // Espaciado ultra-compacto
       
       // Badge blanco para ubicación
       const locationText = visualSettings.footerCustomization?.customLocationText 
@@ -405,14 +405,14 @@ export async function drawOverlays({
       ctx.fillStyle = '#6B7280';
       ctx.fillText(locationText, 40 + badgePadding, currentY + badgePadding * 0.75);
       
-      currentY += locationBgHeight + (dynamicSpacing * 0.4); // Espaciado reducido
+      currentY += locationBgHeight + (dynamicSpacing * 0.3); // Espaciado reducido
     }
     
     // Características con badges blancos circulares individuales
     if (visualLayers.showIcons) {
       let iconX = 40;
-      const iconBaseSize = 58 * badgeScaleMultiplier;  // Optimizado para mejor proporción visual
-      const iconGap = 16 * badgeScaleMultiplier;
+      const iconBaseSize = 48 * badgeScaleMultiplier;  // Optimizado para footer compacto
+      const iconGap = 12 * badgeScaleMultiplier;
       const iconY = currentY;
       
       const features = [];
