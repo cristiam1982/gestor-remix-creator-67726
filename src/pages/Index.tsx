@@ -886,137 +886,194 @@ const Index = () => {
                     </div>
                   </ScrollArea>
 
-                  {/* COLUMNA DERECHA: Preview con scroll de sección */}
-                  <ScrollArea className="h-full min-h-0">
-                    <Card className="p-6 flex flex-col">
-                      <h3 className="text-xl font-semibold mb-4 text-primary">🎬 Reel Multi-Video</h3>
-                      
-                      <div className="space-y-4 pb-6">
-                        {/* Preview */}
-                        <div className="flex items-center justify-center">
-                          {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && <MultiVideoStaticPreview key={`preview-desktop-${JSON.stringify({
-                        pos: multiVideoLogoSettings.position,
-                        size: multiVideoLogoSettings.size,
-                        grad: multiVideoGradientDirection,
-                        scale: multiVideoTextComposition.typographyScale
-                      })}`} videoFile={multiVideos[0].file!} propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} visualSettings={{
-                        logoSettings: multiVideoLogoSettings,
-                        textComposition: multiVideoTextComposition,
-                        visualLayers: multiVideoVisualLayers,
-                        gradientDirection: multiVideoGradientDirection,
-                        gradientIntensity: multiVideoGradientIntensity,
-                        footerCustomization: multiVideoFooterCustomization
-                      }} subtitle={multiVideos[0].subtitle} />}
+                  {/* COLUMNA DERECHA: Preview con scroll de sección (patrón igual a ArrendadoReelSlideshow) */}
+                  <div className="h-full min-h-0 flex flex-col">
+                    <Card className="flex-1 flex flex-col overflow-y-hidden p-6">
+                      <h3 className="text-xl font-semibold mb-4 text-primary flex-shrink-0">🎬 Reel Multi-Video</h3>
 
-                          {isProcessingMultiVideo && <MultiVideoProcessingModal isOpen={isProcessingMultiVideo} progress={multiVideoProgress} stage={multiVideoStage} isComplete={false} />}
+                      {/* Preview con scroll independiente (3er scroll) */}
+                      <ScrollArea className="flex-1 min-h-0">
+                        <div className="space-y-4 pb-6">
+                          {/* Preview */}
+                          <div className="flex items-center justify-center">
+                            {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && (
+                              <MultiVideoStaticPreview
+                                key={`preview-desktop-${JSON.stringify({
+                                  pos: multiVideoLogoSettings.position,
+                                  size: multiVideoLogoSettings.size,
+                                  grad: multiVideoGradientDirection,
+                                  scale: multiVideoTextComposition.typographyScale,
+                                })}`}
+                                videoFile={multiVideos[0].file!}
+                                propertyData={propertyData as PropertyData}
+                                aliadoConfig={aliadoConfig}
+                                visualSettings={{
+                                  logoSettings: multiVideoLogoSettings,
+                                  textComposition: multiVideoTextComposition,
+                                  visualLayers: multiVideoVisualLayers,
+                                  gradientDirection: multiVideoGradientDirection,
+                                  gradientIntensity: multiVideoGradientIntensity,
+                                  footerCustomization: multiVideoFooterCustomization,
+                                }}
+                                subtitle={multiVideos[0].subtitle}
+                              />
+                            )}
 
-                          {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-[360px] rounded-lg shadow-lg" style={{
-                        aspectRatio: "9/16"
-                      }} />}
-                        </div>
-                        
-                        {/* Botón de generación/descarga */}
-                        <div>
-                          {!generatedMultiVideoBlob ? <Button onClick={async () => {
-                      setIsProcessingMultiVideo(true);
-                      setMultiVideoProgress(0);
-                      setMultiVideoStage("Iniciando...");
-                      try {
-                        const videoBlobs = await Promise.all(multiVideos.map(v => fetch(v.url).then(r => r.blob())));
-                        const subtitles = multiVideos.map(v => v.subtitle || "");
-                        const resultBlob = await generateMultiVideoReel({
-                          videoBlobs,
-                          subtitles,
-                          propertyData: propertyData as PropertyData,
-                          aliadoConfig,
-                          visualSettings: {
-                            logoSettings: multiVideoLogoSettings,
-                            textComposition: multiVideoTextComposition,
-                            visualLayers: multiVideoVisualLayers,
-                            gradientDirection: multiVideoGradientDirection,
-                            gradientIntensity: multiVideoGradientIntensity,
-                            footerCustomization: multiVideoFooterCustomization
-                          },
-                          onProgress: (progress, stage) => {
-                            setMultiVideoProgress(progress);
-                            setMultiVideoStage(stage);
-                          }
-                        });
-                        setGeneratedMultiVideoBlob(resultBlob);
-                        setIsProcessingMultiVideo(false);
-                        toast({
-                          title: "✅ Reel multi-video generado",
-                          description: `Tu video está listo. Tamaño: ${(resultBlob.size / (1024 * 1024)).toFixed(1)} MB`
-                        });
-                      } catch (error) {
-                        console.error("Error generando multi-video:", error);
-                        setIsProcessingMultiVideo(false);
-                        toast({
-                          title: "❌ Error al generar video",
-                          description: "Intenta nuevamente o reduce la cantidad/duración de videos.",
-                          variant: "destructive"
-                        });
-                      }
-                    }} variant="hero" size="lg" className="w-full" disabled={isProcessingMultiVideo || multiVideos.length === 0 || !propertyData}>
-                              {isProcessingMultiVideo ? <>
-                                  <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
-                                  Procesando...
-                                </> : <>
-                                  <Video className="h-5 w-5 mr-2" />
-                                  Generar Reel Multi-Video
-                                </>}
-                            </Button> : <Button onClick={() => {
-                      const url = URL.createObjectURL(generatedMultiVideoBlob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      const tipo = propertyData.tipo || "inmueble";
+                            {isProcessingMultiVideo && (
+                              <MultiVideoProcessingModal
+                                isOpen={isProcessingMultiVideo}
+                                progress={multiVideoProgress}
+                                stage={multiVideoStage}
+                                isComplete={false}
+                              />
+                            )}
 
-                      // Detectar formato del blob y usar extensión correcta
-                      const ext = generatedMultiVideoBlob.type.includes("webm") ? "webm" : "mp4";
-                      a.download = `reel-multi-video-${tipo}-${Date.now()}.${ext}`;
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
-                      URL.revokeObjectURL(url);
-                      const formatNote = ext === "webm" ? " (Formato WebM, compatible con Chrome/Android)" : "";
-                      toast({
-                        title: "✅ Descarga completada",
-                        description: `Tu reel multi-video se ha descargado correctamente.${formatNote}`
-                      });
-                    }} variant="hero" size="lg" className="w-full">
-                              <Download className="h-5 w-5 mr-2" />
-                              Descargar Video
-                            </Button>}
-                        </div>
-
-                        {/* Caption con borde superior */}
-                        {(generatedMultiVideoBlob || generatedCaption) && (
-                          <div className="border-t border-border pt-4 space-y-3">
-                            {generatedMultiVideoBlob && <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                                <p className="text-green-800 font-medium text-xs">✨ Tu reel multi-video está listo para descargar</p>
-                              </div>}
-                            
-                            {generatedCaption && <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                  <Label className="text-sm font-semibold text-foreground">📝 Caption</Label>
-                                  <div className="flex gap-2">
-                                    <Button onClick={handleCopyCaption} variant="outline" size="sm">
-                                      <Copy className="h-3 w-3" />
-                                      Copiar
-                                    </Button>
-                                    <Button onClick={handleRegenerateCaption} variant="outline" size="sm">
-                                      <RefreshCw className="h-3 w-3" />
-                                      Regenerar
-                                    </Button>
-                                  </div>
-                                </div>
-                                <Textarea value={generatedCaption} onChange={e => setGeneratedCaption(e.target.value)} className="min-h-[120px] text-sm resize-none" placeholder="El caption se generará automáticamente..." />
-                              </div>}
+                            {generatedMultiVideoBlob && (
+                              <video
+                                src={URL.createObjectURL(generatedMultiVideoBlob)}
+                                controls
+                                className="w-full max-w-[360px] rounded-lg shadow-lg"
+                                style={{ aspectRatio: "9/16" }}
+                              />
+                            )}
                           </div>
-                        )}
-                      </div>
+
+                          {/* Botón de generación/descarga */}
+                          <div>
+                            {!generatedMultiVideoBlob ? (
+                              <Button
+                                onClick={async () => {
+                                  setIsProcessingMultiVideo(true);
+                                  setMultiVideoProgress(0);
+                                  setMultiVideoStage("Iniciando...");
+                                  try {
+                                    const videoBlobs = await Promise.all(
+                                      multiVideos.map((v) => fetch(v.url).then((r) => r.blob())),
+                                    );
+                                    const subtitles = multiVideos.map((v) => v.subtitle || "");
+                                    const resultBlob = await generateMultiVideoReel({
+                                      videoBlobs,
+                                      subtitles,
+                                      propertyData: propertyData as PropertyData,
+                                      aliadoConfig,
+                                      visualSettings: {
+                                        logoSettings: multiVideoLogoSettings,
+                                        textComposition: multiVideoTextComposition,
+                                        visualLayers: multiVideoVisualLayers,
+                                        gradientDirection: multiVideoGradientDirection,
+                                        gradientIntensity: multiVideoGradientIntensity,
+                                        footerCustomization: multiVideoFooterCustomization,
+                                      },
+                                      onProgress: (progress, stage) => {
+                                        setMultiVideoProgress(progress);
+                                        setMultiVideoStage(stage);
+                                      },
+                                    });
+                                    setGeneratedMultiVideoBlob(resultBlob);
+                                    setIsProcessingMultiVideo(false);
+                                    toast({
+                                      title: "✅ Reel multi-video generado",
+                                      description: `Tu video está listo. Tamaño: ${(resultBlob.size / (1024 * 1024)).toFixed(1)} MB`,
+                                    });
+                                  } catch (error) {
+                                    console.error("Error generando multi-video:", error);
+                                    setIsProcessingMultiVideo(false);
+                                    toast({
+                                      title: "❌ Error al generar video",
+                                      description: "Intenta nuevamente o reduce la cantidad/duración de videos.",
+                                      variant: "destructive",
+                                    });
+                                  }
+                                }}
+                                variant="hero"
+                                size="lg"
+                                className="w-full"
+                                disabled={isProcessingMultiVideo || multiVideos.length === 0 || !propertyData}
+                              >
+                                {isProcessingMultiVideo ? (
+                                  <>
+                                    <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                                    Procesando...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Video className="h-5 w-5 mr-2" />
+                                    Generar Reel Multi-Video
+                                  </>
+                                )}
+                              </Button>
+                            ) : (
+                              <Button
+                                onClick={() => {
+                                  const url = URL.createObjectURL(generatedMultiVideoBlob);
+                                  const a = document.createElement("a");
+                                  a.href = url;
+                                  const tipo = propertyData.tipo || "inmueble";
+
+                                  // Detectar formato del blob y usar extensión correcta
+                                  const ext = generatedMultiVideoBlob.type.includes("webm") ? "webm" : "mp4";
+                                  a.download = `reel-multi-video-${tipo}-${Date.now()}.${ext}`;
+                                  document.body.appendChild(a);
+                                  a.click();
+                                  document.body.removeChild(a);
+                                  URL.revokeObjectURL(url);
+                                  const formatNote =
+                                    ext === "webm" ? " (Formato WebM, compatible con Chrome/Android)" : "";
+                                  toast({
+                                    title: "✅ Descarga completada",
+                                    description: `Tu reel multi-video se ha descargado correctamente.${formatNote}`,
+                                  });
+                                }}
+                                variant="hero"
+                                size="lg"
+                                className="w-full"
+                              >
+                                <Download className="h-5 w-5 mr-2" />
+                                Descargar Video
+                              </Button>
+                            )}
+                          </div>
+
+                          {/* Caption con borde superior */}
+                          {(generatedMultiVideoBlob || generatedCaption) && (
+                            <div className="border-t border-border pt-4 space-y-3">
+                              {generatedMultiVideoBlob && (
+                                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                  <p className="text-green-800 font-medium text-xs">
+                                    ✨ Tu reel multi-video está listo para descargar
+                                  </p>
+                                </div>
+                              )}
+
+                              {generatedCaption && (
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <Label className="text-sm font-semibold text-foreground">📝 Caption</Label>
+                                    <div className="flex gap-2">
+                                      <Button onClick={handleCopyCaption} variant="outline" size="sm">
+                                        <Copy className="h-3 w-3" />
+                                        Copiar
+                                      </Button>
+                                      <Button onClick={handleRegenerateCaption} variant="outline" size="sm">
+                                        <RefreshCw className="h-3 w-3" />
+                                        Regenerar
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  <Textarea
+                                    value={generatedCaption}
+                                    onChange={(e) => setGeneratedCaption(e.target.value)}
+                                    className="min-h-[120px] text-sm resize-none"
+                                    placeholder="El caption se generará automáticamente..."
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </ScrollArea>
                     </Card>
-                  </ScrollArea>
+                  </div>
                 </div>
               </> : selectedContentType === "reel-fotos" && aliadoConfig ? <ReelSlideshow propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} caption={generatedCaption} onCaptionChange={v => setGeneratedCaption(v)} onCopyCaption={handleCopyCaption} onRegenerateCaption={handleRegenerateCaption} /> : selectedContentType === "reel-video" && aliadoConfig && propertyData.fotos?.[0] ? <VideoReelRecorder videoUrl={propertyData.fotos[0]} propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} onComplete={(blob, duration) => {
           toast({
