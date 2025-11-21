@@ -821,8 +821,8 @@ const Index = () => {
                   <Card className="p-4 h-full flex flex-col">
                     <h3 className="text-lg font-semibold mb-3 text-primary flex-shrink-0">🎬 Reel Multi-Video</h3>
                     
-                    <div className="flex-1 flex flex-col justify-center overflow-y-auto pb-6">
-                      <div className="space-y-3 flex-shrink-0">
+                    <ScrollArea className="flex-1">
+                      <div className="space-y-3 pr-4 pb-6">
                         {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && <MultiVideoStaticPreview key={`preview-desktop-${JSON.stringify({
                     pos: multiVideoLogoSettings.position,
                     size: multiVideoLogoSettings.size,
@@ -868,7 +868,7 @@ const Index = () => {
                             </div>
                           </>}
                       </div>
-                    </div>
+                    </ScrollArea>
                     
                     <div className="flex-shrink-0 space-y-3 mt-4">
                       {!generatedMultiVideoBlob ? <>
