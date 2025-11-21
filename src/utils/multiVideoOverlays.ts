@@ -295,7 +295,7 @@ export async function drawOverlays({
   const hasAnyFooterLayer = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
   
   if (hasAnyFooterLayer) {
-    let currentY = videoHeight - 200; // Footer compacto con iconos visibles
+    let currentY = videoHeight - 230; // Footer un poco más alto para iconos visibles
     
     // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
