@@ -859,9 +859,9 @@ const Index = () => {
                 </div>
 
                 {/* Layout desktop: grid 2 columnas */}
-                <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6">
+                <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-[calc(100vh-180px)]">
                   {/* COLUMNA IZQUIERDA: Controles con scroll independiente */}
-                  <ScrollArea className="max-h-[calc(100vh-200px)] pr-4">
+                  <ScrollArea className="h-full pr-4">
                     <div className="space-y-4 pb-6">
                       {/* Info resumida de videos */}
                       <Card className="p-4">
@@ -1009,14 +1009,14 @@ const Index = () => {
                     </div>
                   </ScrollArea>
 
-              {/* COLUMNA DERECHA: Preview con scroll independiente */}
+              {/* COLUMNA DERECHA: Preview fijo con scroll interno */}
               {(() => {
                 const totalDuration = multiVideos.reduce((sum, v) => sum + v.duration, 0);
                 return (
-              <div className="flex flex-col">
-                <Card className="p-6">
+              <div className="h-full min-h-0 flex flex-col">
+                <Card className="flex-1 flex flex-col overflow-y-hidden p-6">
                   {/* TÍTULO FIJO ARRIBA */}
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-4 flex-shrink-0">
                     <div>
                       <h3 className="text-xl font-semibold text-primary">
                         🎬 Reel Multi-Video
@@ -1028,7 +1028,7 @@ const Index = () => {
                   </div>
 
                   {/* PREVIEW CON SCROLL INDEPENDIENTE */}
-                  <ScrollArea className="max-h-[calc(100vh-320px)]">
+                  <ScrollArea className="flex-1 min-h-0 mb-4">
                     <div className="pb-6">
                       <div className="flex items-center justify-center">
                         {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && (
