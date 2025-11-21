@@ -899,7 +899,7 @@ const Index = () => {
 
                         {isProcessingMultiVideo && <MultiVideoProcessingModal isOpen={isProcessingMultiVideo} progress={multiVideoProgress} stage={multiVideoStage} isComplete={false} />}
 
-                        {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-full rounded-lg shadow-lg" style={{
+                        {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-[420px] rounded-lg shadow-lg" style={{
                       aspectRatio: "9/16"
                     }} />}
                       </div>

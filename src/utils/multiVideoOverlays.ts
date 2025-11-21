@@ -295,7 +295,7 @@ export async function drawOverlays({
   const hasAnyFooterLayer = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
   
   if (hasAnyFooterLayer) {
-    let currentY = videoHeight - 320; // Subido para dar espacio a iconos
+    let currentY = videoHeight - 220; // Footer compacto optimizado
     
     // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
@@ -334,7 +334,7 @@ export async function drawOverlays({
       ctx.textBaseline = 'top';
       ctx.fillText(precioFormateado, priceX + pricePadding, priceY + pricePadding * 0.6);
       
-      currentY += priceHeight + (dynamicSpacing * 0.5); // Reducido a la mitad
+      currentY += priceHeight + (dynamicSpacing * 0.3); // Espaciado compacto
     }
     
     // Título y ubicación con badges blancos
@@ -377,7 +377,7 @@ export async function drawOverlays({
       ctx.textBaseline = 'top';
       ctx.fillText(tipoTexto, 40 + badgePadding, currentY + badgePadding * 0.75);
       
-      currentY += titleBgHeight + (dynamicSpacing * 0.3); // Optimizado
+      currentY += titleBgHeight + (dynamicSpacing * 0.2); // Espaciado mínimo
       
       // Badge blanco para ubicación
       const locationText = visualSettings.footerCustomization?.customLocationText 
@@ -405,7 +405,7 @@ export async function drawOverlays({
       ctx.fillStyle = '#6B7280';
       ctx.fillText(locationText, 40 + badgePadding, currentY + badgePadding * 0.75);
       
-      currentY += locationBgHeight + (dynamicSpacing * 0.6); // Optimizado
+      currentY += locationBgHeight + (dynamicSpacing * 0.4); // Espaciado reducido
     }
     
     // Características con badges blancos circulares individuales
