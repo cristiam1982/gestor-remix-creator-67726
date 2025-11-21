@@ -295,7 +295,11 @@ export async function drawOverlays({
   const hasAnyFooterLayer = visualLayers.showPrice || visualLayers.showBadge || visualLayers.showIcons;
   
   if (hasAnyFooterLayer) {
-    let currentY = videoHeight - 230; // Footer un poco más alto para iconos visibles
+    // Ajuste dinámico: footer más alto cuando texto es más grande
+    const footerHeightBase = 230;
+    const scaleAdjustment = Math.max(0, (scaleMultiplier - 1) * 80); // +80px por cada 1.0 de escala extra
+    const dynamicFooterHeight = footerHeightBase + scaleAdjustment;
+    let currentY = videoHeight - dynamicFooterHeight;
     
     // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
@@ -405,13 +409,16 @@ export async function drawOverlays({
       ctx.fillStyle = '#6B7280';
       ctx.fillText(locationText, 40 + badgePadding, currentY + badgePadding * 0.75);
       
-      currentY += locationBgHeight + (dynamicSpacing * 0.3); // Espaciado reducido
+      // Espaciado inversamente proporcional a la escala
+      const compactSpacing = Math.max(0.15, 0.25 / scaleMultiplier);
+      currentY += locationBgHeight + (dynamicSpacing * compactSpacing);
     }
     
     // Características con badges blancos circulares individuales
     if (visualLayers.showIcons) {
       let iconX = 40;
-      const iconBaseSize = 48 * badgeScaleMultiplier;  // Optimizado para footer compacto
+      // Iconos ligeramente más pequeños cuando texto es grande
+      const iconBaseSize = 48 * badgeScaleMultiplier * Math.min(1, 1.2 / scaleMultiplier);
       const iconGap = 12 * badgeScaleMultiplier;
       const iconY = currentY;
       
