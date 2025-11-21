@@ -152,7 +152,7 @@ export const MultiVideoStaticPreview = ({
         ref={canvasRef}
         width={1080}
         height={1920}
-        className={`w-full h-auto rounded-xl shadow-2xl border border-border max-w-[420px] ${isLoading ? 'hidden' : ''}`}
+        className={`w-full h-auto rounded-xl shadow-2xl border border-border max-w-[360px] ${isLoading ? 'hidden' : ''}`}
       />
       <p className="text-[11px] text-muted-foreground text-center mt-2.5">
         Vista previa con personalizaciones
