@@ -880,7 +880,7 @@ const Index = () => {
 
                 {/* COLUMNA DERECHA: Preview con scroll + caption/botones fijos */}
                 <div className="h-full min-h-0 flex flex-col">
-                  <Card className="p-2 flex-1 flex flex-col overflow-y-hidden">
+                  <Card className="p-2 flex-1 flex flex-col overflow-hidden">
                       <h3 className="text-lg font-semibold mb-3 text-primary flex-shrink-0">🎬 Reel Multi-Video</h3>
                       
                       {/* Preview con scroll independiente (3er scroll) */}
