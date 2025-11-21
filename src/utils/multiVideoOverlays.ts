@@ -423,7 +423,8 @@ export async function drawOverlays({
       
       features.forEach((feature) => {
         const iconHeight = iconBaseSize;
-        const iconWidth = iconBaseSize * 2.2; // Iconos más anchos (píldora alargada)
+        // Metros cuadrados más ancho (tiene más caracteres), otros iconos ancho estándar
+        const iconWidth = feature.emoji === '📐' ? iconBaseSize * 2.8 : iconBaseSize * 2.2;
         
         // Badge píldora blanco (más ancho horizontalmente)
         ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
