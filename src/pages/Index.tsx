@@ -584,21 +584,82 @@ const Index = () => {
             {isArrendadoType && aliadoConfig ?
         // Vista previa para Arrendado/Vendido según formato
         <>
-                {arrendadoFormat === "historia" && <Card className="p-6">
-                    <h3 className="text-xl font-semibold mb-4 text-primary">🎉 Vista Previa Celebratoria</h3>
-                    <div className="flex justify-center mb-6">
-                      <ArrendadoPreview data={arrendadoData as ArrendadoData} aliadoConfig={aliadoConfig} tipo={selectedContentType as ArrendadoType} />
+                {arrendadoFormat === "historia" && <>
+                  {/* Layout móvil: vertical simple */}
+                  <div className="lg:hidden space-y-6">
+                    <Card className="p-6">
+                      <h3 className="text-xl font-semibold mb-4 text-primary">🎉 Vista Previa Celebratoria</h3>
+                      <ScrollArea className="max-h-[60vh]">
+                        <div className="flex justify-center">
+                          <ArrendadoPreview data={arrendadoData as ArrendadoData} aliadoConfig={aliadoConfig} tipo={selectedContentType as ArrendadoType} />
+                        </div>
+                      </ScrollArea>
+                    </Card>
+
+                    <Card className="p-6">
+                      <Button onClick={handleDownloadImage} variant="hero" size="lg" className="w-full" disabled={isDownloading}>
+                        {isDownloading ? <>
+                            <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                            Descargando...
+                          </> : <>
+                            <Download className="w-5 h-5 mr-2" />
+                            Descargar Imagen
+                          </>}
+                      </Button>
+                    </Card>
+                  </div>
+
+                  {/* Layout desktop: Grid con 3 scrolls independientes */}
+                  <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-[calc(100vh-180px)]">
+                    {/* COLUMNA IZQUIERDA: Información/controles con scroll */}
+                    <ScrollArea className="h-full pr-4">
+                      <Card className="p-6 space-y-4">
+                        <h3 className="text-lg font-semibold text-primary">ℹ️ Información del Contenido</h3>
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                            <span className="text-muted-foreground">Tipo:</span>
+                            <span className="font-semibold">{selectedContentType === "arrendado" ? "Arrendado" : "Vendido"}</span>
+                          </div>
+                          <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                            <span className="text-muted-foreground">Formato:</span>
+                            <span className="font-semibold">Historia (9:16)</span>
+                          </div>
+                          <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                            <span className="text-muted-foreground">Días en mercado:</span>
+                            <span className="font-semibold">{arrendadoData.diasEnMercado} días</span>
+                          </div>
+                        </div>
+                      </Card>
+                    </ScrollArea>
+
+                    {/* COLUMNA DERECHA: Preview con scroll + botón fijo */}
+                    <div className="h-full flex flex-col">
+                      <Card className="flex-1 flex flex-col overflow-hidden p-6">
+                        <h3 className="text-xl font-semibold mb-4 text-primary flex-shrink-0">🎉 Vista Previa</h3>
+                        
+                        {/* Preview con scroll independiente */}
+                        <ScrollArea className="flex-1 min-h-0">
+                          <div className="flex justify-center pb-6">
+                            <ArrendadoPreview data={arrendadoData as ArrendadoData} aliadoConfig={aliadoConfig} tipo={selectedContentType as ArrendadoType} />
+                          </div>
+                        </ScrollArea>
+
+                        {/* Botón fijo */}
+                        <div className="flex-shrink-0 pt-4 border-t">
+                          <Button onClick={handleDownloadImage} variant="hero" size="lg" className="w-full" disabled={isDownloading}>
+                            {isDownloading ? <>
+                                <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                                Descargando...
+                              </> : <>
+                                <Download className="w-5 h-5 mr-2" />
+                                Descargar Imagen
+                              </>}
+                          </Button>
+                        </div>
+                      </Card>
                     </div>
-                    <Button onClick={handleDownloadImage} variant="hero" size="lg" className="w-full" disabled={isDownloading}>
-                      {isDownloading ? <>
-                          <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                          Descargando...
-                        </> : <>
-                          <Download className="w-5 h-5 mr-2" />
-                          Descargar Imagen
-                        </>}
-                    </Button>
-                  </Card>}
+                  </div>
+                </>}
 
                 {arrendadoFormat === "reel-fotos" && <ArrendadoReelSlideshow data={arrendadoData as ArrendadoData} aliadoConfig={aliadoConfig} tipo={selectedContentType as ArrendadoType} onDownload={handleDownloadImage} />}
 
@@ -1027,11 +1088,10 @@ const Index = () => {
               </div>
             </Card>
           </div>
-               </>}
-
-            {selectedContentType !== "reel-fotos"}
-          </div>}
-      </div>
-    </div>;
+        </div>
+        </>}
+      </div>}
+    </div>
+  </div>;
 };
 export default Index;
