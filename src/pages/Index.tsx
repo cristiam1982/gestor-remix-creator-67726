@@ -451,7 +451,7 @@ const Index = () => {
         </div>
       </div>;
   }
-  return <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background py-4 md:py-6 px-2 md:px-4">
       {isDownloading && <LoadingState message="Generando tu publicación..." />}
       <MultiVideoProcessingModal isOpen={isProcessingMultiVideo} progress={multiVideoProgress} stage={multiVideoStage} isComplete={generatedMultiVideoBlob !== null} />
 
@@ -1092,11 +1092,12 @@ const Index = () => {
                                 Exportar Todas las Fotos ({propertyData.fotos.length})
                               </>}
                            </Button>}
-              </div>
+               </div>
             </Card>
           </div>
         </div>
         </>}
+          </div>}
       </div>
     </div>;
 };
