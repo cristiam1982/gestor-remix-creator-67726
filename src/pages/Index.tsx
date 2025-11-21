@@ -632,20 +632,18 @@ const Index = () => {
                       </Card>
                     </ScrollArea>
 
-                  {/* COLUMNA DERECHA: Preview con scroll + botón fijo */}
-                  <div className="h-full min-h-0 flex flex-col">
-                    <Card className="flex-1 flex flex-col overflow-y-hidden p-6">
-                        <h3 className="text-xl font-semibold mb-4 text-primary flex-shrink-0">🎉 Vista Previa</h3>
+                  {/* COLUMNA DERECHA: Preview section completa con scroll */}
+                  <ScrollArea className="h-full min-h-0">
+                    <Card className="p-6 flex flex-col">
+                        <h3 className="text-xl font-semibold mb-4 text-primary">🎉 Vista Previa</h3>
                         
-                        {/* Preview con scroll independiente */}
-                        <ScrollArea className="flex-1 min-h-0">
-                          <div className="flex justify-center pb-6">
-                            <ArrendadoPreview data={arrendadoData as ArrendadoData} aliadoConfig={aliadoConfig} tipo={selectedContentType as ArrendadoType} />
-                          </div>
-                        </ScrollArea>
+                        {/* Preview sin ScrollArea interno */}
+                        <div className="flex justify-center mb-6">
+                          <ArrendadoPreview data={arrendadoData as ArrendadoData} aliadoConfig={aliadoConfig} tipo={selectedContentType as ArrendadoType} />
+                        </div>
 
-                        {/* Botón fijo */}
-                        <div className="flex-shrink-0 pt-4 border-t">
+                        {/* Botón: parte del mismo scroll */}
+                        <div className="pt-4 border-t">
                           <Button onClick={handleDownloadImage} variant="hero" size="lg" className="w-full" disabled={isDownloading}>
                             {isDownloading ? <>
                                 <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
@@ -657,7 +655,7 @@ const Index = () => {
                           </Button>
                         </div>
                       </Card>
-                    </div>
+                    </ScrollArea>
                   </div>
                 </>}
 
@@ -878,15 +876,14 @@ const Index = () => {
                     </div>
                   </ScrollArea>
 
-                {/* COLUMNA DERECHA: Preview con scroll + caption/botones fijos */}
-                <div className="h-full min-h-0 flex flex-col">
-                  <Card className="p-2 flex-1 flex flex-col overflow-hidden">
-                      <h3 className="text-lg font-semibold mb-3 text-primary flex-shrink-0">🎬 Reel Multi-Video</h3>
+                {/* COLUMNA DERECHA: Preview section completa con scroll */}
+                <ScrollArea className="h-full min-h-0">
+                  <Card className="p-2 flex flex-col">
+                      <h3 className="text-lg font-semibold mb-3 text-primary">🎬 Reel Multi-Video</h3>
                       
-                      {/* Preview con scroll independiente (3er scroll) */}
-                      <ScrollArea className="flex-1 min-h-0 mb-2">
-                        <div className="flex items-start justify-center pb-6">
-                          {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && <MultiVideoStaticPreview key={`preview-desktop-${JSON.stringify({
+                      {/* Preview sin ScrollArea interno */}
+                      <div className="w-full flex justify-center mb-4">
+                        {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && <MultiVideoStaticPreview key={`preview-desktop-${JSON.stringify({
                       pos: multiVideoLogoSettings.position,
                       size: multiVideoLogoSettings.size,
                       grad: multiVideoGradientDirection,
@@ -900,16 +897,15 @@ const Index = () => {
                       footerCustomization: multiVideoFooterCustomization
                     }} subtitle={multiVideos[0].subtitle} />}
 
-                          {isProcessingMultiVideo && <MultiVideoProcessingModal isOpen={isProcessingMultiVideo} progress={multiVideoProgress} stage={multiVideoStage} isComplete={false} />}
+                        {isProcessingMultiVideo && <MultiVideoProcessingModal isOpen={isProcessingMultiVideo} progress={multiVideoProgress} stage={multiVideoStage} isComplete={false} />}
 
-                          {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-full rounded-lg shadow-lg" style={{
+                        {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-full rounded-lg shadow-lg" style={{
                       aspectRatio: "9/16"
                     }} />}
-                        </div>
-                      </ScrollArea>
+                      </div>
                       
-                      {/* Caption + Botones: flex-shrink-0 */}
-                      <div className="flex-shrink-0 space-y-3">
+                      {/* Caption + Botones: parte del mismo scroll */}
+                      <div className="space-y-3">
                         {generatedMultiVideoBlob && <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                             <p className="text-green-800 font-medium text-xs">✨ Tu reel multi-video está listo para descargar</p>
                           </div>}
@@ -1006,7 +1002,7 @@ const Index = () => {
                           </Button>}
                       </div>
                     </Card>
-                  </div>
+                  </ScrollArea>
                 </div>
               </> : selectedContentType === "reel-fotos" && aliadoConfig ? <ReelSlideshow propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} caption={generatedCaption} onCaptionChange={v => setGeneratedCaption(v)} onCopyCaption={handleCopyCaption} onRegenerateCaption={handleRegenerateCaption} /> : selectedContentType === "reel-video" && aliadoConfig && propertyData.fotos?.[0] ? <VideoReelRecorder videoUrl={propertyData.fotos[0]} propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} onComplete={(blob, duration) => {
           toast({
