@@ -632,9 +632,9 @@ const Index = () => {
                       </Card>
                     </ScrollArea>
 
-                    {/* COLUMNA DERECHA: Preview con scroll + botón fijo */}
-                    <div className="h-full flex flex-col">
-                      <Card className="flex-1 flex flex-col overflow-hidden p-6">
+                  {/* COLUMNA DERECHA: Preview con scroll + botón fijo */}
+                  <div className="h-full min-h-0 flex flex-col">
+                    <Card className="flex-1 flex flex-col overflow-y-hidden p-6">
                         <h3 className="text-xl font-semibold mb-4 text-primary flex-shrink-0">🎉 Vista Previa</h3>
                         
                         {/* Preview con scroll independiente */}
@@ -878,9 +878,9 @@ const Index = () => {
                     </div>
                   </ScrollArea>
 
-                  {/* COLUMNA DERECHA: Preview con scroll + caption/botones fijos */}
-                  <div className="h-full flex flex-col">
-                    <Card className="p-4 flex-1 flex flex-col overflow-hidden">
+                {/* COLUMNA DERECHA: Preview con scroll + caption/botones fijos */}
+                <div className="h-full min-h-0 flex flex-col">
+                  <Card className="p-4 flex-1 flex flex-col overflow-y-hidden">
                       <h3 className="text-lg font-semibold mb-3 text-primary flex-shrink-0">🎬 Reel Multi-Video</h3>
                       
                       {/* Preview con scroll independiente (3er scroll) */}
