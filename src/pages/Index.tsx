@@ -216,6 +216,7 @@ const Index = () => {
         return;
       }
 
+      // Validación estricta de campos obligatorios
       if (!propertyData.tipo) {
         toast({
           title: "⚠️ Completa el formulario",
@@ -223,6 +224,47 @@ const Index = () => {
           variant: "destructive",
         });
         return;
+      }
+
+      if (!propertyData.modalidad) {
+        toast({
+          title: "⚠️ Completa el formulario",
+          description: "Selecciona la modalidad (arriendo o venta) antes de continuar.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const precioField = propertyData.modalidad === "arriendo" ? propertyData.canon : propertyData.valorVenta;
+      if (!precioField) {
+        toast({
+          title: "⚠️ Completa el formulario",
+          description: "Ingresa el precio del inmueble antes de continuar.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!propertyData.ubicacion) {
+        toast({
+          title: "⚠️ Completa el formulario",
+          description: "Ingresa la ubicación del inmueble antes de continuar.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validación específica para tipos residenciales
+      const isResidencial = propertyData.tipo === "apartamento" || propertyData.tipo === "casa";
+      if (isResidencial) {
+        if (!propertyData.habitaciones || !propertyData.banos) {
+          toast({
+            title: "⚠️ Completa el formulario",
+            description: "Ingresa habitaciones y baños para inmuebles residenciales.",
+            variant: "destructive",
+          });
+          return;
+        }
       }
 
       // Generar caption automáticamente al avanzar al Step 3
