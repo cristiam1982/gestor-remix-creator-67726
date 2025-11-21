@@ -78,7 +78,43 @@ export async function drawOverlays({
       const bgX = logoX - padding;
       const bgY = logoY - padding;
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      // Aplicar estilo de fondo según el efecto seleccionado
+      ctx.save();
+      
+      switch (logoSettings.background) {
+        case 'elevated':
+          // Fondo blanco sólido con gradiente sutil y sombra pronunciada
+          const gradientElevated = ctx.createLinearGradient(bgX, bgY, bgX, bgY + bgSize);
+          gradientElevated.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
+          gradientElevated.addColorStop(1, 'rgba(250, 250, 250, 0.95)');
+          ctx.fillStyle = gradientElevated;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+          ctx.shadowBlur = 20;
+          ctx.shadowOffsetY = 8;
+          break;
+          
+        case 'frosted':
+          // Fondo semi-transparente tipo glassmorphism
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetY = 2;
+          break;
+          
+        case 'glow':
+          // Fondo blanco brillante con resplandor
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+          ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
+          ctx.shadowBlur = 25;
+          ctx.shadowOffsetY = 0;
+          break;
+          
+        default:
+          // Fondo estándar blanco
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+          break;
+      }
+
       ctx.beginPath();
 
       switch (logoSettings.shape) {
@@ -126,6 +162,12 @@ export async function drawOverlays({
 
       ctx.closePath();
       ctx.fill();
+      
+      // Reset shadow
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.restore();
     }
 
     // Dibujar logo con forma usando clip paths
@@ -258,7 +300,7 @@ export async function drawOverlays({
     // Badge de Precio con color del aliado
     if (visualLayers.showPrice) {
       const priceY = currentY;
-      const priceFontSize = 46 * badgeScaleMultiplier;
+      const priceFontSize = 46 * badgeScaleMultiplier * scaleMultiplier; // Amarrado a texto principal
       const pricePadding = 16 * badgeScaleMultiplier;
       
       const precioNumero = typeof propertyData.canon === 'string' 
@@ -381,7 +423,7 @@ export async function drawOverlays({
       
       features.forEach((feature) => {
         const iconHeight = iconBaseSize;
-        const iconWidth = iconBaseSize * 1.4; // 40% más ancho (píldora horizontal)
+        const iconWidth = iconBaseSize * 1.7; // 70% más ancho (píldora más alargada)
         
         // Badge píldora blanco (más ancho horizontalmente)
         ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
