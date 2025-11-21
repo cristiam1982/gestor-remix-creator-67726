@@ -620,7 +620,7 @@ const Index = () => {
           }} />}
               </> : selectedContentType === "reel-multi-video" && aliadoConfig ?
         // Multi-video Reel - Paso 3: Preview y Generación
-        <div className="h-[calc(100vh-180px)]">
+        <>
                 {/* Layout móvil: vertical simple */}
                 <div className="lg:hidden space-y-4">
                   {/* Info resumida de videos */}
@@ -945,7 +945,7 @@ const Index = () => {
                     </Card>
                   </div>
                 </div>
-              </div> : selectedContentType === "reel-fotos" && aliadoConfig ? <ReelSlideshow propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} caption={generatedCaption} onCaptionChange={v => setGeneratedCaption(v)} onCopyCaption={handleCopyCaption} onRegenerateCaption={handleRegenerateCaption} /> : selectedContentType === "reel-video" && aliadoConfig && propertyData.fotos?.[0] ? <VideoReelRecorder videoUrl={propertyData.fotos[0]} propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} onComplete={(blob, duration) => {
+              </> : selectedContentType === "reel-fotos" && aliadoConfig ? <ReelSlideshow propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} caption={generatedCaption} onCaptionChange={v => setGeneratedCaption(v)} onCopyCaption={handleCopyCaption} onRegenerateCaption={handleRegenerateCaption} /> : selectedContentType === "reel-video" && aliadoConfig && propertyData.fotos?.[0] ? <VideoReelRecorder videoUrl={propertyData.fotos[0]} propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} onComplete={(blob, duration) => {
           toast({
             title: "✨ Video procesado en tiempo real",
             description: `${(blob.size / (1024 * 1024)).toFixed(1)} MB - Procesado en ${Math.round(duration)}s`
@@ -1023,12 +1023,11 @@ const Index = () => {
                                 <Images className="w-5 h-5 mr-2" />
                                 Exportar Todas las Fotos ({propertyData.fotos.length})
                               </>}
-                          </Button>}
-                      </div>
-                    </Card>
-                  </div>
-                </div>
-              </>}
+                           </Button>}
+              </div>
+            </Card>
+          </div>
+               </>}
 
             {selectedContentType !== "reel-fotos"}
           </div>}
