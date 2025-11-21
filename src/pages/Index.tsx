@@ -821,7 +821,7 @@ const Index = () => {
                   <Card className="p-4 h-full flex flex-col">
                     <h3 className="text-lg font-semibold mb-3 text-primary flex-shrink-0">🎬 Reel Multi-Video</h3>
                     
-                    <div className="flex-1 flex flex-col justify-center">
+                    <div className="flex-1 flex flex-col justify-center overflow-y-auto">
                       <div className="space-y-3 flex-shrink-0">
                         {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && <MultiVideoStaticPreview key={`preview-desktop-${JSON.stringify({
                     pos: multiVideoLogoSettings.position,
