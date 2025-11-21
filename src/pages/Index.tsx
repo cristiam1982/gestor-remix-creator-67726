@@ -1051,43 +1051,7 @@ const Index = () => {
                 </div>
               </>}
 
-            {selectedContentType !== "reel-fotos" && <Card className="p-6">
-                <h3 className="text-xl font-semibold mb-4 text-primary">Caption Generado</h3>
-                <div className="space-y-2 mb-4">
-                  <Textarea value={generatedCaption} onChange={e => setGeneratedCaption(e.target.value)} className="min-h-[150px] font-mono text-sm" placeholder="Tu caption aparecerá aquí..." />
-                  <p className="text-xs text-muted-foreground">{generatedCaption.length} caracteres</p>
-                </div>
-                <div className="flex gap-3">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button onClick={handleCopyCaption} variant="secondary" className="flex-1">
-                          📋 Copiar Caption
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Copia el texto para pegar en Instagram o Facebook</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button onClick={handleRegenerateCaption} variant="outline">
-                          <RefreshCw className="w-4 h-4 mr-2" />
-                          Regenerar
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Genera una versión alternativa del caption</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-
-                  
-                </div>
-              </Card>}
+            {selectedContentType !== "reel-fotos"}
           </div>}
       </div>
     </div>;
