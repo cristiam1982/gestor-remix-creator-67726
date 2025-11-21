@@ -451,21 +451,23 @@ const Index = () => {
         </div>
       </div>;
   }
-  return <div className="min-h-screen bg-background py-4 md:py-6 px-2 md:px-4">
+  return <div className="min-h-screen bg-background">
       {isDownloading && <LoadingState message="Generando tu publicación..." />}
       <MultiVideoProcessingModal isOpen={isProcessingMultiVideo} progress={multiVideoProgress} stage={multiVideoStage} isComplete={generatedMultiVideoBlob !== null} />
 
-      <div className="w-full max-w-[1600px] 2xl:max-w-[1920px] mx-auto px-2 lg:px-4">
-        <div className="mb-6 flex items-center justify-between">
-          <Button variant="outline" onClick={handleBackToHub}>
-            ← Volver al inicio
-          </Button>
-          <div className="flex gap-2">
-            {[1, 2, 3].map(step => <div key={step} className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${currentStep >= step ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"}`}>
-                {step}
-              </div>)}
-          </div>
-        </div>
+      <div className="w-full max-w-[1600px] 2xl:max-w-[1920px] mx-auto">
+        <ScrollArea className="h-screen">
+          <div className="py-4 md:py-6 px-2 md:px-4">
+            <div className="mb-6 flex items-center justify-between px-2 lg:px-4">
+              <Button variant="outline" onClick={handleBackToHub}>
+                ← Volver al inicio
+              </Button>
+              <div className="flex gap-2">
+                {[1, 2, 3].map(step => <div key={step} className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${currentStep >= step ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"}`}>
+                    {step}
+                  </div>)}
+              </div>
+            </div>
 
         {currentStep === 2 && <div className="space-y-6 animate-fade-in">
             {isArrendadoType ? <>
@@ -1087,9 +1089,11 @@ const Index = () => {
             </Card>
           </div>
         </div>
-        </>}
+         </>}
       </div>}
-    </div>
-  </div>;
+          </div>
+        </ScrollArea>
+      </div>
+    </div>;
 };
 export default Index;
