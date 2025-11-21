@@ -883,6 +883,33 @@ const Index = () => {
                         <h3 className="text-lg font-semibold mb-3 text-primary">🎨 Personalización</h3>
                         <MultiVideoControlsPanel gradientDirection={multiVideoGradientDirection} onGradientDirectionChange={setMultiVideoGradientDirection} gradientIntensity={multiVideoGradientIntensity} onGradientIntensityChange={setMultiVideoGradientIntensity} logoSettings={multiVideoLogoSettings} onLogoSettingsChange={setMultiVideoLogoSettings} textComposition={multiVideoTextComposition} onTextCompositionChange={setMultiVideoTextComposition} visualLayers={multiVideoVisualLayers} onVisualLayersChange={setMultiVideoVisualLayers} footerCustomization={multiVideoFooterCustomization} onFooterCustomizationChange={setMultiVideoFooterCustomization} />
                       </Card>
+
+                      {/* Caption */}
+                      {generatedCaption && (
+                        <Card className="p-4">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-sm font-semibold text-foreground">📝 Caption</Label>
+                              <div className="flex gap-2">
+                                <Button onClick={handleCopyCaption} variant="outline" size="sm">
+                                  <Copy className="h-3 w-3" />
+                                  Copiar
+                                </Button>
+                                <Button onClick={handleRegenerateCaption} variant="outline" size="sm">
+                                  <RefreshCw className="h-3 w-3" />
+                                  Regenerar
+                                </Button>
+                              </div>
+                            </div>
+                            <Textarea
+                              value={generatedCaption}
+                              onChange={(e) => setGeneratedCaption(e.target.value)}
+                              className="min-h-[120px] text-sm resize-none"
+                              placeholder="El caption se generará automáticamente..."
+                            />
+                          </div>
+                        </Card>
+                      )}
                     </div>
                   </ScrollArea>
 
@@ -1049,39 +1076,13 @@ const Index = () => {
                     )}
 
                     {/* Caption con borde superior */}
-                    {(generatedMultiVideoBlob || generatedCaption) && (
-                      <div className="border-t border-border pt-4 space-y-3">
-                        {generatedMultiVideoBlob && (
-                          <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                            <p className="text-green-800 font-medium text-xs">
-                              ✨ Tu reel multi-video está listo para descargar
-                            </p>
-                          </div>
-                        )}
-
-                        {generatedCaption && (
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                              <Label className="text-sm font-semibold text-foreground">📝 Caption</Label>
-                              <div className="flex gap-2">
-                                <Button onClick={handleCopyCaption} variant="outline" size="sm">
-                                  <Copy className="h-3 w-3" />
-                                  Copiar
-                                </Button>
-                                <Button onClick={handleRegenerateCaption} variant="outline" size="sm">
-                                  <RefreshCw className="h-3 w-3" />
-                                  Regenerar
-                                </Button>
-                              </div>
-                            </div>
-                            <Textarea
-                              value={generatedCaption}
-                              onChange={(e) => setGeneratedCaption(e.target.value)}
-                              className="min-h-[120px] text-sm resize-none"
-                              placeholder="El caption se generará automáticamente..."
-                            />
-                          </div>
-                        )}
+                    {generatedMultiVideoBlob && (
+                      <div className="border-t border-border pt-4">
+                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                          <p className="text-green-800 font-medium text-xs">
+                            ✨ Tu reel multi-video está listo para descargar
+                          </p>
+                        </div>
                       </div>
                     )}
                   </div>
