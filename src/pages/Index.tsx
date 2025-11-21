@@ -859,9 +859,10 @@ const Index = () => {
                 </div>
 
                 {/* Layout desktop: grid 2 columnas */}
-                <div className="hidden lg:grid lg:grid-cols-[1fr_560px] gap-6 h-[calc(100vh-180px)]">
+                <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-[calc(100vh-180px)]">
+                  {/* COLUMNA IZQUIERDA: Controles con scroll independiente */}
                   <ScrollArea className="h-full pr-4">
-                    <div className="space-y-4">
+                    <div className="space-y-4 pb-6">
                       {/* Info resumida de videos */}
                       <Card className="p-4">
                         <div className="flex items-center justify-between">
@@ -885,13 +886,12 @@ const Index = () => {
                     </div>
                   </ScrollArea>
 
-                {/* COLUMNA DERECHA: Preview section completa con scroll */}
-                <ScrollArea className="h-full min-h-0">
-                  <Card className="p-2 flex flex-col">
-                      <h3 className="text-lg font-semibold mb-3 text-primary">🎬 Reel Multi-Video</h3>
+                  {/* COLUMNA DERECHA: Preview FIJO (sin scroll, siempre visible) */}
+                  <div className="h-full flex flex-col">
+                    <Card className="p-6 flex-1 flex flex-col overflow-hidden">
+                      <h3 className="text-xl font-semibold mb-4 text-primary flex-shrink-0">🎬 Reel Multi-Video</h3>
                       
-                      {/* Preview sin ScrollArea interno */}
-                      <div className="w-full flex justify-center mb-4">
+                      <div className="flex-1 flex items-center justify-center mb-6 min-h-0">
                         {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && <MultiVideoStaticPreview key={`preview-desktop-${JSON.stringify({
                       pos: multiVideoLogoSettings.position,
                       size: multiVideoLogoSettings.size,
@@ -913,8 +913,7 @@ const Index = () => {
                     }} />}
                       </div>
                       
-                      {/* Caption + Botones: parte del mismo scroll */}
-                      <div className="space-y-3">
+                      <div className="space-y-3 flex-shrink-0">
                         {generatedMultiVideoBlob && <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                             <p className="text-green-800 font-medium text-xs">✨ Tu reel multi-video está listo para descargar</p>
                           </div>}
@@ -1011,7 +1010,7 @@ const Index = () => {
                           </Button>}
                       </div>
                     </Card>
-                  </ScrollArea>
+                  </div>
                 </div>
               </> : selectedContentType === "reel-fotos" && aliadoConfig ? <ReelSlideshow propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} caption={generatedCaption} onCaptionChange={v => setGeneratedCaption(v)} onCopyCaption={handleCopyCaption} onRegenerateCaption={handleRegenerateCaption} /> : selectedContentType === "reel-video" && aliadoConfig && propertyData.fotos?.[0] ? <VideoReelRecorder videoUrl={propertyData.fotos[0]} propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} onComplete={(blob, duration) => {
           toast({
