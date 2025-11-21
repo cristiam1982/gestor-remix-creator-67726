@@ -913,77 +913,54 @@ const Index = () => {
                     }} />}
                       </div>
                       
-                      <div className="space-y-3 flex-shrink-0">
-                        {generatedMultiVideoBlob && <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                            <p className="text-green-800 font-medium text-xs">✨ Tu reel multi-video está listo para descargar</p>
-                          </div>}
-
-                        {/* Caption generado - visible cuando existe */}
-                        {generatedCaption && <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <Label className="font-semibold">📝 Caption para tu publicación</Label>
-                              <div className="flex gap-2">
-                                <Button onClick={handleCopyCaption} variant="outline" size="sm" disabled={!generatedCaption}>
-                                  <Copy className="w-4 h-4 mr-2" />
-                                  Copiar
-                                </Button>
-                                <Button onClick={handleRegenerateCaption} variant="outline" size="sm" disabled={!propertyData.tipo}>
-                                  <RefreshCw className="w-4 h-4 mr-2" />
-                                  Regenerar
-                                </Button>
-                              </div>
-                            </div>
-                            <Textarea value={generatedCaption} onChange={e => setGeneratedCaption(e.target.value)} className="min-h-[140px] font-sans text-sm" placeholder="El caption se generará automáticamente cuando completes los datos de la propiedad..." />
-                            <p className="text-xs text-muted-foreground">
-                              ℹ️ Caption optimizado para redes sociales con hashtags locales
-                            </p>
-                          </div>}
-                        
+                      {/* BLOQUE 1: Botón de generación/descarga - ARRIBA */}
+                      <div className="flex-shrink-0">
                         {!generatedMultiVideoBlob ? <Button onClick={async () => {
-                      setIsProcessingMultiVideo(true);
-                      setMultiVideoProgress(0);
-                      setMultiVideoStage("Iniciando...");
-                      try {
-                        const videoBlobs = await Promise.all(multiVideos.map(v => fetch(v.url).then(r => r.blob())));
-                        const subtitles = multiVideos.map(v => v.subtitle || "");
-                        const resultBlob = await generateMultiVideoReel({
-                          videoBlobs,
-                          subtitles,
-                          propertyData: propertyData as PropertyData,
-                          aliadoConfig,
-                          visualSettings: {
-                            logoSettings: multiVideoLogoSettings,
-                            textComposition: multiVideoTextComposition,
-                            visualLayers: multiVideoVisualLayers,
-                            gradientDirection: multiVideoGradientDirection,
-                            gradientIntensity: multiVideoGradientIntensity
-                          },
-                          onProgress: (progress, stage) => {
-                            setMultiVideoProgress(progress);
-                            setMultiVideoStage(stage);
-                          }
-                        });
-                        setGeneratedMultiVideoBlob(resultBlob);
-                        setIsProcessingMultiVideo(false);
-                        toast({
-                          title: "✅ Reel multi-video generado",
-                          description: `Tu video está listo. Tamaño: ${(resultBlob.size / (1024 * 1024)).toFixed(1)} MB`
-                        });
-                      } catch (error) {
-                        console.error("Error generando multi-video:", error);
-                        setIsProcessingMultiVideo(false);
-                        toast({
-                          title: "❌ Error al generar video",
-                          description: "Intenta nuevamente o reduce la cantidad/duración de videos.",
-                          variant: "destructive"
-                        });
-                      }
-                    }} variant="hero" size="lg" className="w-full" disabled={isProcessingMultiVideo}>
+                    setIsProcessingMultiVideo(true);
+                    setMultiVideoProgress(0);
+                    setMultiVideoStage("Iniciando...");
+                    try {
+                      const videoBlobs = await Promise.all(multiVideos.map(v => fetch(v.url).then(r => r.blob())));
+                      const subtitles = multiVideos.map(v => v.subtitle || "");
+                      const resultBlob = await generateMultiVideoReel({
+                        videoBlobs,
+                        subtitles,
+                        propertyData: propertyData as PropertyData,
+                        aliadoConfig,
+                        visualSettings: {
+                          logoSettings: multiVideoLogoSettings,
+                          textComposition: multiVideoTextComposition,
+                          visualLayers: multiVideoVisualLayers,
+                          gradientDirection: multiVideoGradientDirection,
+                          gradientIntensity: multiVideoGradientIntensity,
+                          footerCustomization: multiVideoFooterCustomization
+                        },
+                        onProgress: (progress, stage) => {
+                          setMultiVideoProgress(progress);
+                          setMultiVideoStage(stage);
+                        }
+                      });
+                      setGeneratedMultiVideoBlob(resultBlob);
+                      setIsProcessingMultiVideo(false);
+                      toast({
+                        title: "✅ Reel multi-video generado",
+                        description: `Tu video está listo. Tamaño: ${(resultBlob.size / (1024 * 1024)).toFixed(1)} MB`
+                      });
+                    } catch (error) {
+                      console.error("Error generando multi-video:", error);
+                      setIsProcessingMultiVideo(false);
+                      toast({
+                        title: "❌ Error al generar video",
+                        description: "Intenta nuevamente o reduce la cantidad/duración de videos.",
+                        variant: "destructive"
+                      });
+                    }
+                  }} variant="hero" size="lg" className="w-full" disabled={isProcessingMultiVideo || multiVideos.length === 0 || !propertyData}>
                             {isProcessingMultiVideo ? <>
-                                <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                                <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
                                 Procesando...
                               </> : <>
-                                <Video className="w-5 h-5 mr-2" />
+                                <Video className="h-5 w-5 mr-2" />
                                 Generar Reel Multi-Video
                               </>}
                           </Button> : <Button onClick={() => {
@@ -1005,9 +982,33 @@ const Index = () => {
                       description: `Tu reel multi-video se ha descargado correctamente.${formatNote}`
                     });
                   }} variant="hero" size="lg" className="w-full">
-                            <Download className="w-5 h-5 mr-2" />
+                            <Download className="h-5 w-5 mr-2" />
                             Descargar Video
                           </Button>}
+                      </div>
+
+                      {/* BLOQUE 2: Caption separado - ABAJO con borde superior */}
+                      <div className="flex-shrink-0 border-t border-border pt-4 mt-4 space-y-3">
+                        {generatedMultiVideoBlob && <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <p className="text-green-800 font-medium text-xs">✨ Tu reel multi-video está listo para descargar</p>
+                          </div>}
+                        
+                        {generatedCaption && <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-sm font-semibold text-foreground">📝 Caption</Label>
+                              <div className="flex gap-2">
+                                <Button onClick={handleCopyCaption} variant="outline" size="sm">
+                                  <Copy className="h-3 w-3" />
+                                  Copiar
+                                </Button>
+                                <Button onClick={handleRegenerateCaption} variant="outline" size="sm">
+                                  <RefreshCw className="h-3 w-3" />
+                                  Regenerar
+                                </Button>
+                              </div>
+                            </div>
+                            <Textarea value={generatedCaption} onChange={e => setGeneratedCaption(e.target.value)} className="min-h-[120px] text-sm resize-none" placeholder="El caption se generará automáticamente..." />
+                          </div>}
                       </div>
                     </Card>
                   </div>
