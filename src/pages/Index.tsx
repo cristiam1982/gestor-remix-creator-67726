@@ -1075,16 +1075,6 @@ const Index = () => {
                     </div>
                   </ScrollArea>
 
-                  {/* MENSAJE DE ÉXITO FIJO ABAJO */}
-                  {generatedMultiVideoBlob && (
-                    <div className="flex-shrink-0 border-t border-border pt-4">
-                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-green-800 font-medium text-xs">
-                          ✨ Tu reel multi-video está listo para descargar
-                        </p>
-                      </div>
-                    </div>
-                  )}
                 </Card>
               </div>
               );
