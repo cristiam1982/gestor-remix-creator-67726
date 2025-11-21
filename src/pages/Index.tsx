@@ -852,7 +852,7 @@ const Index = () => {
                 </div>
 
                 {/* Layout desktop: grid 2 columnas */}
-                <div className="hidden lg:grid lg:grid-cols-[1fr_520px] gap-6 h-[calc(100vh-180px)]">
+                <div className="hidden lg:grid lg:grid-cols-[1fr_560px] gap-6 h-[calc(100vh-180px)]">
                   <ScrollArea className="h-full pr-4">
                     <div className="space-y-4">
                       {/* Info resumida de videos */}
@@ -880,7 +880,7 @@ const Index = () => {
 
                 {/* COLUMNA DERECHA: Preview con scroll + caption/botones fijos */}
                 <div className="h-full min-h-0 flex flex-col">
-                  <Card className="p-4 flex-1 flex flex-col overflow-y-hidden">
+                  <Card className="p-2 flex-1 flex flex-col overflow-y-hidden">
                       <h3 className="text-lg font-semibold mb-3 text-primary flex-shrink-0">🎬 Reel Multi-Video</h3>
                       
                       {/* Preview con scroll independiente (3er scroll) */}
@@ -902,7 +902,7 @@ const Index = () => {
 
                           {isProcessingMultiVideo && <MultiVideoProcessingModal isOpen={isProcessingMultiVideo} progress={multiVideoProgress} stage={multiVideoStage} isComplete={false} />}
 
-                          {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-[500px] rounded-lg shadow-lg" style={{
+                          {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-full rounded-lg shadow-lg" style={{
                       aspectRatio: "9/16"
                     }} />}
                         </div>
