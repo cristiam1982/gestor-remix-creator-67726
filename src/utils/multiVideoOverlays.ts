@@ -79,26 +79,53 @@ export async function drawOverlays({
       const bgY = logoY - padding;
 
       ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-      
-      if (logoSettings.shape === 'circle') {
-        ctx.beginPath();
-        ctx.arc(bgX + bgSize / 2, bgY + bgSize / 2, bgSize / 2, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        const radius = 12;
-        ctx.beginPath();
-        ctx.moveTo(bgX + radius, bgY);
-        ctx.lineTo(bgX + bgSize - radius, bgY);
-        ctx.quadraticCurveTo(bgX + bgSize, bgY, bgX + bgSize, bgY + radius);
-        ctx.lineTo(bgX + bgSize, bgY + bgSize - radius);
-        ctx.quadraticCurveTo(bgX + bgSize, bgY + bgSize, bgX + bgSize - radius, bgY + bgSize);
-        ctx.lineTo(bgX + radius, bgY + bgSize);
-        ctx.quadraticCurveTo(bgX, bgY + bgSize, bgX, bgY + bgSize - radius);
-        ctx.lineTo(bgX, bgY + radius);
-        ctx.quadraticCurveTo(bgX, bgY, bgX + radius, bgY);
-        ctx.closePath();
-        ctx.fill();
+      ctx.beginPath();
+
+      switch (logoSettings.shape) {
+        case 'circle':
+          // Fondo circular perfecto
+          ctx.arc(bgX + bgSize / 2, bgY + bgSize / 2, bgSize / 2, 0, Math.PI * 2);
+          break;
+
+        case 'rounded': {
+          // Rectángulo con esquinas suaves (radio pequeño 12px)
+          const r = 12;
+          ctx.moveTo(bgX + r, bgY);
+          ctx.lineTo(bgX + bgSize - r, bgY);
+          ctx.quadraticCurveTo(bgX + bgSize, bgY, bgX + bgSize, bgY + r);
+          ctx.lineTo(bgX + bgSize, bgY + bgSize - r);
+          ctx.quadraticCurveTo(bgX + bgSize, bgY + bgSize, bgX + bgSize - r, bgY + bgSize);
+          ctx.lineTo(bgX + r, bgY + bgSize);
+          ctx.quadraticCurveTo(bgX, bgY + bgSize, bgX, bgY + bgSize - r);
+          ctx.lineTo(bgX, bgY + r);
+          ctx.quadraticCurveTo(bgX, bgY, bgX + r, bgY);
+          break;
+        }
+
+        case 'squircle': {
+          // Squircle con esquinas grandes (22% del tamaño, estilo iOS)
+          const r = bgSize * 0.22;
+          ctx.moveTo(bgX + r, bgY);
+          ctx.lineTo(bgX + bgSize - r, bgY);
+          ctx.quadraticCurveTo(bgX + bgSize, bgY, bgX + bgSize, bgY + r);
+          ctx.lineTo(bgX + bgSize, bgY + bgSize - r);
+          ctx.quadraticCurveTo(bgX + bgSize, bgY + bgSize, bgX + bgSize - r, bgY + bgSize);
+          ctx.lineTo(bgX + r, bgY + bgSize);
+          ctx.quadraticCurveTo(bgX, bgY + bgSize, bgX, bgY + bgSize - r);
+          ctx.lineTo(bgX, bgY + r);
+          ctx.quadraticCurveTo(bgX, bgY, bgX + r, bgY);
+          break;
+        }
+
+        case 'square':
+        default:
+          // Cuadrado perfecto sin bordes redondeados
+          ctx.rect(bgX, bgY, bgSize, bgSize);
+          break;
       }
+
+      ctx.closePath();
+      ctx.fill();
     }
 
     // Dibujar logo con forma usando clip paths
