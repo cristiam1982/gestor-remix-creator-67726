@@ -878,14 +878,15 @@ const Index = () => {
                     </div>
                   </ScrollArea>
 
-                  {/* COLUMNA DERECHA: Preview fijo (sin scroll) */}
+                  {/* COLUMNA DERECHA: Preview con scroll + caption/botones fijos */}
                   <div className="h-full flex flex-col">
                     <Card className="p-4 flex-1 flex flex-col overflow-hidden">
                       <h3 className="text-lg font-semibold mb-3 text-primary flex-shrink-0">🎬 Reel Multi-Video</h3>
                       
-                      {/* Contenedor preview fijo, sin scroll, centrado */}
-                      <div className="flex-1 flex items-center justify-center min-h-0 mb-4">
-                        {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && <MultiVideoStaticPreview key={`preview-desktop-${JSON.stringify({
+                      {/* Preview con scroll independiente (3er scroll) */}
+                      <ScrollArea className="flex-1 min-h-0 mb-4">
+                        <div className="flex items-center justify-center pb-6">
+                          {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && <MultiVideoStaticPreview key={`preview-desktop-${JSON.stringify({
                       pos: multiVideoLogoSettings.position,
                       size: multiVideoLogoSettings.size,
                       grad: multiVideoGradientDirection,
@@ -899,12 +900,13 @@ const Index = () => {
                       footerCustomization: multiVideoFooterCustomization
                     }} subtitle={multiVideos[0].subtitle} />}
 
-                        {isProcessingMultiVideo && <MultiVideoProcessingModal isOpen={isProcessingMultiVideo} progress={multiVideoProgress} stage={multiVideoStage} isComplete={false} />}
+                          {isProcessingMultiVideo && <MultiVideoProcessingModal isOpen={isProcessingMultiVideo} progress={multiVideoProgress} stage={multiVideoStage} isComplete={false} />}
 
-                        {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-[380px] rounded-lg shadow-lg" style={{
+                          {generatedMultiVideoBlob && <video src={URL.createObjectURL(generatedMultiVideoBlob)} controls className="w-full max-w-[380px] rounded-lg shadow-lg" style={{
                       aspectRatio: "9/16"
                     }} />}
-                      </div>
+                        </div>
+                      </ScrollArea>
                       
                       {/* Caption + Botones: flex-shrink-0 */}
                       <div className="flex-shrink-0 space-y-3">

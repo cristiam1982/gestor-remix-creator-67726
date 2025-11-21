@@ -3,6 +3,7 @@ import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
 import { AliadoConfig, LogoSettings } from "@/types/property";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Play, Pause, Download, GripVertical } from "lucide-react";
 import { ReelLogoControls } from "./ReelLogoControls";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
@@ -287,37 +288,39 @@ export const ArrendadoReelSlideshow = ({
   }
 
   return (
-    <div className="space-y-4">
+    <>
       {generationProgress && <VideoGenerationProgressModal progress={generationProgress} />}
       
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-xl font-semibold" style={{ color: mainColor }}>
-              Reel {tipo === "arrendado" ? "Arrendado" : "Vendido"}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {photos.length} fotos · {(photos.length * 2.0).toFixed(1)}s total
-            </p>
+      {/* Layout móvil: vertical simple */}
+      <div className="lg:hidden space-y-4">
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-xl font-semibold" style={{ color: mainColor }}>
+                Reel {tipo === "arrendado" ? "Arrendado" : "Vendido"}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {photos.length} fotos · {(photos.length * 2.0).toFixed(1)}s total
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="icon" onClick={handlePlayPause}>
+                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              </Button>
+              <Button variant="hero" size="icon" onClick={handleDownloadVideo}>
+                <Download className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="icon" onClick={handlePlayPause}>
-              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-            </Button>
-            <Button variant="hero" size="icon" onClick={handleDownloadVideo}>
-              <Download className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
 
-        {/* Vista previa */}
-        <div 
-          className="relative aspect-story mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4"
-          style={{
-            maxWidth: '420px',
-            height: 'auto'
-          }}
-        >
+          {/* Vista previa */}
+          <div 
+            className="relative aspect-story mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4"
+            style={{
+              maxWidth: '420px',
+              height: 'auto'
+            }}
+          >
           {/* Barras de progreso */}
           <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
             {photos.map((_, idx) => (
@@ -535,37 +538,227 @@ export const ArrendadoReelSlideshow = ({
           </div>
         </div>
 
-        {/* Miniaturas ordenables */}
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-2">
-              Arrastra para reordenar las fotos
-            </p>
-            <SortableContext items={photos} strategy={horizontalListSortingStrategy}>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {photos.map((photo, idx) => (
-                  <SortablePhoto
-                    key={photo}
-                    photo={photo}
-                    index={idx}
-                    isActive={idx === currentPhotoIndex}
-                    onClick={() => handlePhotoClick(idx)}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </div>
-        </DndContext>
-      </Card>
+          {/* Miniaturas ordenables */}
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <div className="mt-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                Arrastra para reordenar las fotos
+              </p>
+              <SortableContext items={photos} strategy={horizontalListSortingStrategy}>
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {photos.map((photo, idx) => (
+                    <SortablePhoto
+                      key={photo}
+                      photo={photo}
+                      index={idx}
+                      isActive={idx === currentPhotoIndex}
+                      onClick={() => handlePhotoClick(idx)}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </div>
+          </DndContext>
+        </Card>
 
-      {/* Controles del Logo */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">🎨 Personalización del Logo</h3>
-        <ReelLogoControls
-          settings={logoSettings}
-          onChange={setLogoSettings}
-        />
-      </Card>
-    </div>
+        {/* Controles del Logo */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">🎨 Personalización del Logo</h3>
+          <ReelLogoControls
+            settings={logoSettings}
+            onChange={setLogoSettings}
+          />
+        </Card>
+      </div>
+
+      {/* Layout desktop: Grid con 3 scrolls (página, controles, preview) */}
+      <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-[calc(100vh-180px)]">
+        {/* COLUMNA IZQUIERDA: Controles con scroll independiente */}
+        <ScrollArea className="h-full pr-4">
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">🎨 Personalización del Logo</h3>
+            <ReelLogoControls
+              settings={logoSettings}
+              onChange={setLogoSettings}
+            />
+          </Card>
+        </ScrollArea>
+
+        {/* COLUMNA DERECHA: Preview con scroll + botones fijos */}
+        <div className="h-full flex flex-col">
+          <Card className="flex-1 flex flex-col overflow-hidden p-6">
+            <div className="flex items-center justify-between mb-4 flex-shrink-0">
+              <div>
+                <h3 className="text-xl font-semibold" style={{ color: mainColor }}>
+                  Reel {tipo === "arrendado" ? "Arrendado" : "Vendido"}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {photos.length} fotos · {(photos.length * 2.0).toFixed(1)}s total
+                </p>
+              </div>
+            </div>
+
+            {/* Preview con scroll independiente (3er scroll) */}
+            <ScrollArea className="flex-1 min-h-0 mb-4">
+              <div className="pb-6">
+                <div 
+                  className="relative aspect-story mx-auto bg-black rounded-xl overflow-hidden shadow-2xl mb-4"
+                  style={{
+                    maxWidth: '420px',
+                    height: 'auto'
+                  }}
+                >
+                  {/* Barras de progreso */}
+                  <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2">
+                    {photos.map((_, idx) => (
+                      <div key={idx} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-white rounded-full transition-all"
+                          style={{
+                            width: idx < currentPhotoIndex ? "100%" : 
+                                   idx === currentPhotoIndex ? `${progress}%` : "0%"
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Foto actual */}
+                  <div className="absolute inset-0">
+                    <img
+                      src={photos[currentPhotoIndex]}
+                      alt={`Foto ${currentPhotoIndex + 1}`}
+                      className="w-full h-full object-cover"
+                      crossOrigin="anonymous"
+                    />
+                  </div>
+
+                  {/* Contenido superpuesto - preview */}
+                  <div className="absolute inset-0 flex flex-col p-6 text-white z-10">
+                    <div className="flex justify-center items-center pt-10">
+                      <div 
+                        className={`px-8 py-4 rounded-3xl font-black text-3xl text-center ${ARR_THEME.badge.shadowClass} ${ARR_THEME.badge.ringClass}`}
+                        style={{ backgroundColor: badgeColor, color: "#fff" }}
+                      >
+                        {badgeText}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-4 my-auto">
+                      <div className="text-center">
+                        <p className="text-[2.75rem] font-black drop-shadow-2xl leading-none">
+                          {formatPrecioColombia(data.precio)}
+                        </p>
+                        {tipo === "arrendado" && (
+                          <p className="text-base font-semibold opacity-90 mt-1">/mes</p>
+                        )}
+                      </div>
+
+                      <div className="w-24 h-0.5 bg-white/50 rounded-full" />
+
+                      <div className="bg-white/20 px-6 py-3 rounded-xl">
+                        <p className="text-xl font-black drop-shadow-lg">
+                          {getVelocidadText()}
+                        </p>
+                      </div>
+
+                      <div className="text-center space-y-1">
+                        <p className="text-xl font-black drop-shadow-lg">
+                          {tipoLabel}
+                        </p>
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="text-lg">📍</span>
+                          <p className="text-lg font-bold drop-shadow-lg">
+                            {data.ubicacion}
+                          </p>
+                        </div>
+                      </div>
+
+                      {aliadoConfig.logo && (
+                        <div 
+                          className={`absolute ${logoStyle.positionClass} z-20`}
+                          style={{ opacity: logoStyle.opacity }}
+                        >
+                          <img
+                            src={getLogoUrl()}
+                            alt={aliadoConfig.nombre}
+                            className={`${logoStyle.shapeClass} object-contain p-2.5 ${logoStyle.backgroundClass} transition-all duration-300`}
+                            style={{ width: logoStyle.size, height: logoStyle.size }}
+                            crossOrigin="anonymous"
+                          />
+                        </div>
+                      )}
+
+                      <div className="text-center px-6 mt-6">
+                        <p className="text-[1.575rem] font-black drop-shadow-lg leading-tight">
+                          {data.ctaCustom || 
+                           (tipo === "arrendado" ? aliadoConfig.ctaArrendado : aliadoConfig.ctaVendido) ||
+                           `💪 ¿Quieres ${tipo === "arrendado" ? "arrendar" : "vender"} tu inmueble rápido?`}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pb-6 flex justify-center mt-auto">
+                      <img 
+                        src={elGestorLogo}
+                        alt="El Gestor"
+                        data-eg-logo="true"
+                        className="h-8 object-contain opacity-90"
+                        crossOrigin="anonymous"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Play overlay */}
+                  {!isPlaying && (
+                    <div className="absolute inset-0 flex items-center justify-center z-30">
+                      <button
+                        onClick={() => setIsPlaying(true)}
+                        className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-all"
+                      >
+                        <Play className="w-10 h-10 text-white ml-1" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Miniaturas ordenables */}
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Arrastra para reordenar las fotos
+                    </p>
+                    <SortableContext items={photos} strategy={horizontalListSortingStrategy}>
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {photos.map((photo, idx) => (
+                          <SortablePhoto
+                            key={photo}
+                            photo={photo}
+                            index={idx}
+                            isActive={idx === currentPhotoIndex}
+                            onClick={() => handlePhotoClick(idx)}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </div>
+                </DndContext>
+              </div>
+            </ScrollArea>
+
+            {/* Botones fijos abajo (flex-shrink-0) */}
+            <div className="flex-shrink-0 flex gap-2 pt-4 border-t">
+              <Button variant="outline" onClick={handlePlayPause} className="flex-1">
+                {isPlaying ? <><Pause className="w-5 h-5 mr-2" />Pausar</> : <><Play className="w-5 h-5 mr-2" />Reproducir</>}
+              </Button>
+              <Button variant="hero" onClick={handleDownloadVideo} className="flex-1">
+                <Download className="w-5 h-5 mr-2" />
+                Descargar Reel
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </>
   );
 };
