@@ -101,12 +101,57 @@ export async function drawOverlays({
       }
     }
 
-    // Dibujar logo con forma
+    // Dibujar logo con forma usando clip paths
     ctx.save();
-    if (logoSettings.shape === 'circle') {
-      ctx.beginPath();
-      ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
-      ctx.clip();
+    
+    // Aplicar clip path según la forma seleccionada
+    switch (logoSettings.shape) {
+      case 'circle':
+        // Circular clip path
+        ctx.beginPath();
+        ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+        ctx.clip();
+        break;
+        
+      case 'rounded':
+        // Redondeado moderado (12px radius)
+        ctx.beginPath();
+        const radiusRounded = 12;
+        ctx.moveTo(logoX + radiusRounded, logoY);
+        ctx.lineTo(logoX + logoSize - radiusRounded, logoY);
+        ctx.quadraticCurveTo(logoX + logoSize, logoY, logoX + logoSize, logoY + radiusRounded);
+        ctx.lineTo(logoX + logoSize, logoY + logoSize - radiusRounded);
+        ctx.quadraticCurveTo(logoX + logoSize, logoY + logoSize, logoX + logoSize - radiusRounded, logoY + logoSize);
+        ctx.lineTo(logoX + radiusRounded, logoY + logoSize);
+        ctx.quadraticCurveTo(logoX, logoY + logoSize, logoX, logoY + logoSize - radiusRounded);
+        ctx.lineTo(logoX, logoY + radiusRounded);
+        ctx.quadraticCurveTo(logoX, logoY, logoX + radiusRounded, logoY);
+        ctx.closePath();
+        ctx.clip();
+        break;
+        
+      case 'squircle':
+        // Squircle (22% del tamaño como radius)
+        ctx.beginPath();
+        const radiusSquircle = logoSize * 0.22;
+        ctx.moveTo(logoX + radiusSquircle, logoY);
+        ctx.lineTo(logoX + logoSize - radiusSquircle, logoY);
+        ctx.quadraticCurveTo(logoX + logoSize, logoY, logoX + logoSize, logoY + radiusSquircle);
+        ctx.lineTo(logoX + logoSize, logoY + logoSize - radiusSquircle);
+        ctx.quadraticCurveTo(logoX + logoSize, logoY + logoSize, logoX + logoSize - radiusSquircle, logoY + logoSize);
+        ctx.lineTo(logoX + radiusSquircle, logoY + logoSize);
+        ctx.quadraticCurveTo(logoX, logoY + logoSize, logoX, logoY + logoSize - radiusSquircle);
+        ctx.lineTo(logoX, logoY + radiusSquircle);
+        ctx.quadraticCurveTo(logoX, logoY, logoX + radiusSquircle, logoY);
+        ctx.closePath();
+        ctx.clip();
+        break;
+        
+      case 'square':
+      default:
+        // Sin clip path (cuadrado completo sin bordes redondeados)
+        // No aplicamos clip, el drawImage dibujará el cuadrado completo
+        break;
     }
 
     ctx.drawImage(allyLogo, logoX, logoY, logoSize, logoSize);
@@ -308,16 +353,28 @@ export async function drawOverlays({
       if (propertyData.area) features.push({ emoji: '📐', value: `${propertyData.area}m²` });
       
       features.forEach((feature) => {
-        const iconSize = iconBaseSize;
+        const iconHeight = iconBaseSize;
+        const iconWidth = iconBaseSize * 1.4; // 40% más ancho (píldora horizontal)
         
-        // Badge circular blanco
+        // Badge píldora blanco (más ancho horizontalmente)
         ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
         ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
         ctx.shadowBlur = 8;
         ctx.shadowOffsetY = 2;
         
+        // Rounded rectangle (píldora)
+        const radius = iconHeight / 2; // Radio = mitad de la altura para puntas redondeadas
         ctx.beginPath();
-        ctx.arc(iconX + iconSize / 2, iconY + iconSize / 2, iconSize / 2, 0, Math.PI * 2);
+        ctx.moveTo(iconX + radius, iconY);
+        ctx.lineTo(iconX + iconWidth - radius, iconY);
+        ctx.quadraticCurveTo(iconX + iconWidth, iconY, iconX + iconWidth, iconY + radius);
+        ctx.lineTo(iconX + iconWidth, iconY + iconHeight - radius);
+        ctx.quadraticCurveTo(iconX + iconWidth, iconY + iconHeight, iconX + iconWidth - radius, iconY + iconHeight);
+        ctx.lineTo(iconX + radius, iconY + iconHeight);
+        ctx.quadraticCurveTo(iconX, iconY + iconHeight, iconX, iconY + iconHeight - radius);
+        ctx.lineTo(iconX, iconY + radius);
+        ctx.quadraticCurveTo(iconX, iconY, iconX + radius, iconY);
+        ctx.closePath();
         ctx.fill();
         
         // Resetear sombra
@@ -325,20 +382,20 @@ export async function drawOverlays({
         ctx.shadowBlur = 0;
         ctx.shadowOffsetY = 0;
         
-        // Emoji y número
-        const emojiFontSize = 24 * badgeScaleMultiplier;  // Reducido para mejor proporción
-        const numberFontSize = 28 * badgeScaleMultiplier;  // Reducido para mejor proporción
+        // Emoji y número (ajustados al nuevo ancho)
+        const emojiFontSize = 24 * badgeScaleMultiplier;
+        const numberFontSize = 28 * badgeScaleMultiplier;
         
         ctx.font = `${emojiFontSize}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(feature.emoji, iconX + iconSize * 0.35, iconY + iconSize / 2);
+        ctx.fillText(feature.emoji, iconX + iconWidth * 0.35, iconY + iconHeight / 2);
         
         ctx.font = `700 ${numberFontSize}px Inter, sans-serif`;
         ctx.fillStyle = '#1F2937';
-        ctx.fillText(feature.value.toString(), iconX + iconSize * 0.7, iconY + iconSize / 2);
+        ctx.fillText(feature.value.toString(), iconX + iconWidth * 0.68, iconY + iconHeight / 2);
         
-        iconX += iconSize + iconGap;
+        iconX += iconWidth + iconGap; // Avanzar según el nuevo ancho
       });
     }
   }
