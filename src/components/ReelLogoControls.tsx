@@ -29,10 +29,10 @@ export const ReelLogoControls = ({ settings, onChange }: ReelLogoControlsProps) 
   ];
 
   const shapes: Array<{ value: NonNullable<LogoSettings['shape']>; icon: string; label: string }> = [
-    { value: 'square', icon: '⬜', label: 'Cuadrado' },
-    { value: 'rounded', icon: '▢', label: 'Redondeado' },
-    { value: 'circle', icon: '⚪', label: 'Círculo' },
-    { value: 'squircle', icon: '◉', label: 'Squircle' },
+    { value: 'square', icon: '⬛', label: 'Cuadrado' },
+    { value: 'rounded', icon: '⬜', label: 'Redondeado' },
+    { value: 'circle', icon: '⚫', label: 'Círculo' },
+    { value: 'squircle', icon: '🔘', label: 'Squircle' },
   ];
 
   return (

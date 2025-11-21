@@ -12,6 +12,7 @@ import {
   Images,
   ChevronLeft,
   Info,
+  Copy,
 } from "lucide-react";
 import { ContentTypeCard } from "@/components/ContentTypeCard";
 import { BrandedHeroSection } from "@/components/BrandedHeroSection";
@@ -47,6 +48,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { generateCaption, regenerateCaption, generateArrendadoCaption } from "@/utils/captionGenerator";
 import { exportToImage, exportVideo } from "@/utils/imageExporter";
@@ -1018,12 +1020,43 @@ const Index = () => {
                             Descargar Video
                           </Button>
 
-                          {generatedCaption && (
-                            <div className="p-3 bg-muted rounded-lg">
-                              <p className="text-xs font-semibold mb-1.5">📝 Caption generado:</p>
-                              <p className="text-[10px] whitespace-pre-wrap">{generatedCaption}</p>
+                          {/* Caption generado */}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label className="font-semibold text-xs">📝 Caption para tu publicación</Label>
+                              <div className="flex gap-2">
+                                <Button
+                                  onClick={handleCopyCaption}
+                                  variant="outline"
+                                  size="sm"
+                                  disabled={!generatedCaption}
+                                  className="text-xs h-8"
+                                >
+                                  <Copy className="w-3 h-3 mr-1" />
+                                  Copiar
+                                </Button>
+                                <Button
+                                  onClick={handleRegenerateCaption}
+                                  variant="outline"
+                                  size="sm"
+                                  disabled={!propertyData.tipo}
+                                  className="text-xs h-8"
+                                >
+                                  <RefreshCw className="w-3 h-3 mr-1" />
+                                  Regenerar
+                                </Button>
+                              </div>
                             </div>
-                          )}
+                            <Textarea
+                              value={generatedCaption}
+                              onChange={(e) => setGeneratedCaption(e.target.value)}
+                              className="min-h-[160px] font-sans text-xs"
+                              placeholder="El caption se generará automáticamente cuando completes los datos de la propiedad..."
+                            />
+                            <p className="text-[10px] text-muted-foreground">
+                              ℹ️ Caption optimizado para redes sociales con hashtags locales
+                            </p>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1123,12 +1156,41 @@ const Index = () => {
                               className="w-full rounded-lg"
                             />
 
-                            {generatedCaption && (
-                              <div className="p-3 bg-muted rounded-lg">
-                                <p className="text-xs font-semibold mb-1.5">📝 Caption generado:</p>
-                                <p className="text-[10px] whitespace-pre-wrap">{generatedCaption}</p>
+                            {/* Caption generado */}
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <Label className="font-semibold">📝 Caption para tu publicación</Label>
+                                <div className="flex gap-2">
+                                  <Button
+                                    onClick={handleCopyCaption}
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={!generatedCaption}
+                                  >
+                                    <Copy className="w-4 h-4 mr-2" />
+                                    Copiar
+                                  </Button>
+                                  <Button
+                                    onClick={handleRegenerateCaption}
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={!propertyData.tipo}
+                                  >
+                                    <RefreshCw className="w-4 h-4 mr-2" />
+                                    Regenerar
+                                  </Button>
+                                </div>
                               </div>
-                            )}
+                              <Textarea
+                                value={generatedCaption}
+                                onChange={(e) => setGeneratedCaption(e.target.value)}
+                                className="min-h-[200px] font-sans text-sm"
+                                placeholder="El caption se generará automáticamente cuando completes los datos de la propiedad..."
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                ℹ️ Caption optimizado para redes sociales con hashtags locales
+                              </p>
+                            </div>
                           </>
                         )}
                       </div>
