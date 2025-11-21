@@ -585,8 +585,8 @@ export const ArrendadoReelSlideshow = ({
         </ScrollArea>
 
         {/* COLUMNA DERECHA: Preview con scroll + botones fijos */}
-        <div className="h-full flex flex-col">
-          <Card className="flex-1 flex flex-col overflow-hidden p-6">
+        <div className="h-full min-h-0 flex flex-col">
+          <Card className="flex-1 flex flex-col overflow-y-hidden p-6">
             <div className="flex items-center justify-between mb-4 flex-shrink-0">
               <div>
                 <h3 className="text-xl font-semibold" style={{ color: mainColor }}>
