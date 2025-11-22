@@ -1,6 +1,35 @@
 import html2canvas from "html2canvas";
 import { saveAs } from "file-saver";
 import { addOpacityToHex } from "./colorUtils";
+import { urlToDataURL } from "./imageUtils";
+
+/**
+ * Sanitiza todas las imágenes remotas en un clon del DOM convirtiéndolas a dataURL
+ * para evitar que html2canvas genere canvas tainted (blob nulo)
+ */
+const sanitizeCloneImagesForHtml2Canvas = async (clonedRoot: HTMLElement): Promise<void> => {
+  const images = clonedRoot.querySelectorAll('img');
+  const conversions: Promise<void>[] = [];
+  
+  images.forEach((img) => {
+    const src = img.src;
+    // Si es URL remota (http/https) y no es del mismo origen
+    if (src.startsWith('http') && !src.startsWith(window.location.origin)) {
+      const conversion = urlToDataURL(src)
+        .then((dataURL) => {
+          img.src = dataURL;
+        })
+        .catch((error) => {
+          console.warn('[imageExporter] No se pudo convertir imagen remota a dataURL:', src, error);
+          // No lanzar error, continuar con otras imágenes
+        });
+      conversions.push(conversion);
+    }
+  });
+  
+  // Esperar a que todas las conversiones terminen
+  await Promise.all(conversions);
+};
 
 export interface ExportOptions {
   format: "png" | "jpg";
@@ -28,16 +57,21 @@ export const exportToImage = async (
     // Small delay to ensure all styles are applied
     await new Promise(resolve => setTimeout(resolve, 300));
     
+    console.log('[exportToImage] Iniciando captura de', elementId);
+    
     const canvas = await html2canvas(element, {
       scale: 3,
       useCORS: true,
       allowTaint: false,
       backgroundColor: null,
       logging: false,
-      onclone: (clonedDoc) => {
+      onclone: async (clonedDoc) => {
         const clonedElement = clonedDoc.getElementById(elementId);
         if (clonedElement) {
-          // Remove backdrop-blur (not supported by html2canvas)
+          // PASO 1: Sanitizar imágenes remotas a dataURL
+          await sanitizeCloneImagesForHtml2Canvas(clonedElement);
+          
+          // PASO 2: Remove backdrop-blur (not supported by html2canvas)
           const blurElements = clonedElement.querySelectorAll('[class*="backdrop-blur"]');
           blurElements.forEach((el) => {
             (el as HTMLElement).style.backdropFilter = 'none';
@@ -48,17 +82,19 @@ export const exportToImage = async (
             }
           });
 
-          // Quitar gradientes complejos que rompen html2canvas
+          // PASO 3: Quitar gradientes complejos que rompen html2canvas
           const gradientElements = clonedElement.querySelectorAll<HTMLElement>('[style*="linear-gradient"], [class*="bg-gradient"]');
           gradientElements.forEach((el) => {
             (el as HTMLElement).style.backgroundImage = 'none';
           });
           
-          // Ensure font is loaded in clone
+          // PASO 4: Ensure font is loaded in clone
           (clonedElement as HTMLElement).style.fontFamily = 'Poppins, sans-serif';
         }
       }
     });
+    
+    console.log('[exportToImage] Canvas generado:', canvas.width, 'x', canvas.height);
 
     // Add watermark if requested
     if (options.addWatermark && options.watermarkText) {
@@ -76,9 +112,11 @@ export const exportToImage = async (
       canvas.toBlob(
         (result) => {
           if (result) {
+            console.log('[exportToImage] Blob generado correctamente, tamaño:', (result.size / 1024).toFixed(2), 'KB');
             resolve(result);
           } else {
-            reject(new Error("No se pudo generar la imagen para descargar (blob nulo)."));
+            console.error('[exportToImage] ERROR: canvas.toBlob devolvió null');
+            reject(new Error("No se pudo generar la imagen para descargar (blob nulo). Canvas posiblemente tainted."));
           }
         },
         options.format === "jpg" ? "image/jpeg" : "image/png",
@@ -86,6 +124,7 @@ export const exportToImage = async (
       );
     });
 
+    console.log('[exportToImage] Descargando archivo:', filename);
     saveAs(blob, filename);
   } catch (error) {
     console.error("Error al exportar imagen:", error);
