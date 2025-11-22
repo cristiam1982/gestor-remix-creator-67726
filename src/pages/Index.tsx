@@ -346,8 +346,8 @@ const Index = () => {
       const tipo = isArrendadoType ? arrendadoData.tipo : propertyData.tipo;
       const filename = `publicacion-${tipo}-${Date.now()}.png`;
       
-      // Capturar desde el contenedor fijo offscreen en lugar del preview responsive
-      await exportToImage("canvas-export", filename, {
+      // Capturar directamente el preview visible
+      await exportToImage("canvas-preview", filename, {
         format: "png",
         quality: 0.95
       });
