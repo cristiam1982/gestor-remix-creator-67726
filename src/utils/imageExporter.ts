@@ -54,15 +54,15 @@ export const exportToImage = async (
     // Wait for fonts to load
     await document.fonts.ready;
     
-    // DELAY EXTENDIDO: Dar tiempo al navegador para renderizar completamente el contenedor offscreen
-    await new Promise(resolve => setTimeout(resolve, 800));
+    // Pequeño delay para asegurar estilos aplicados
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     // VALIDACIÓN CRÍTICA: Verificar que el elemento tiene tamaño antes de capturar
     const rect = element.getBoundingClientRect();
     console.log('[exportToImage] Element rect', rect.width, 'x', rect.height);
     
     if (rect.width === 0 || rect.height === 0) {
-      throw new Error('El área de exportación tiene tamaño 0. Revisa el contenedor #canvas-export.');
+      throw new Error('El área de exportación tiene tamaño 0. Revisa el contenedor #canvas-preview.');
     }
     
     console.log('[exportToImage] Iniciando captura de', elementId);
