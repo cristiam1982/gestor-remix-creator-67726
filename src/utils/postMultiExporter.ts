@@ -39,8 +39,8 @@ const sanitizeCloneImagesForHtml2Canvas = async (clonedRoot: HTMLElement): Promi
 const captureCurrentSlide = async (filename: string): Promise<void> => {
   console.log('[captureCurrentSlide] Capturando', filename);
   
-  // Esperar pequeño delay para garantizar que el DOM se ha actualizado con la foto actual
-  await new Promise(resolve => setTimeout(resolve, 500));
+  // DELAY EXTENDIDO: Dar tiempo al navegador para renderizar completamente el contenedor offscreen con la foto actual
+  await new Promise(resolve => setTimeout(resolve, 800));
   
   // Capturar desde el contenedor fijo offscreen en lugar del preview responsive
   const previewElement = document.getElementById('canvas-export');

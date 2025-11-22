@@ -54,8 +54,8 @@ export const exportToImage = async (
     // Wait for fonts to load
     await document.fonts.ready;
     
-    // Small delay to ensure all styles are applied
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // DELAY EXTENDIDO: Dar tiempo al navegador para renderizar completamente el contenedor offscreen
+    await new Promise(resolve => setTimeout(resolve, 800));
     
     // VALIDACIÓN CRÍTICA: Verificar que el elemento tiene tamaño antes de capturar
     const rect = element.getBoundingClientRect();

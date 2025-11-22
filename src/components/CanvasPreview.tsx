@@ -21,6 +21,7 @@ interface CanvasPreviewProps {
   gradientDirection?: 'none' | 'top' | 'bottom' | 'both';
   gradientIntensity?: number;
   firstPhotoConfig?: FirstPhotoConfig; // Configuración especial primera foto
+  mode?: 'preview' | 'capture'; // Modo de renderizado
 }
 
 export const CanvasPreview = ({ 
@@ -53,7 +54,8 @@ export const CanvasPreview = ({
   },
   gradientDirection = 'both',
   gradientIntensity = 60,
-  firstPhotoConfig // Configuración especial primera foto
+  firstPhotoConfig, // Configuración especial primera foto
+  mode = 'preview' // Modo de renderizado
 }: CanvasPreviewProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const templateConfig = TEMPLATE_THEMES[template];
@@ -164,7 +166,22 @@ export const CanvasPreview = ({
   }, [onReady]);
 
   const isStory = contentType === "historia";
-  const dimensions = isStory ? "aspect-story" : "aspect-square";
+  
+  // Estilos dinámicos según modo
+  const containerStyle = mode === 'capture' 
+    ? {
+        width: '1080px',
+        height: isStory ? '1920px' : '1080px',
+        backgroundColor: '#000',
+        position: 'relative' as const,
+        overflow: 'hidden' as const,
+        borderRadius: '0px'
+      }
+    : {};
+  
+  const containerClasses = mode === 'capture'
+    ? 'relative'
+    : `relative ${isStory ? "aspect-story" : "aspect-square"} w-full max-w-[540px] mx-auto overflow-hidden rounded-2xl shadow-2xl`;
 
   const handlePrevPhoto = () => {
     if (propertyData.fotos && currentPhotoIndex > 0) {
@@ -181,9 +198,9 @@ export const CanvasPreview = ({
   return (
     <div 
       ref={canvasRef}
-      id="canvas-preview"
-      className={`relative ${dimensions} w-full max-w-[540px] mx-auto overflow-hidden rounded-2xl shadow-2xl`}
-      style={{ backgroundColor: "#000" }}
+      id={mode === 'capture' ? undefined : "canvas-preview"}
+      className={containerClasses}
+      style={mode === 'capture' ? containerStyle : { backgroundColor: "#000" }}
     >
       {/* Foto principal con navegación */}
       {propertyData.fotos && propertyData.fotos.length > 0 && (
