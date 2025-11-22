@@ -346,8 +346,8 @@ const Index = () => {
       const tipo = isArrendadoType ? arrendadoData.tipo : propertyData.tipo;
       const filename = `publicacion-${tipo}-${Date.now()}.png`;
       
-      // Capturar directamente el preview visible
-      await exportToImage("canvas-preview", filename, {
+      // Capturar desde el contenedor fijo offscreen con tamaño estable
+      await exportToImage("canvas-export", filename, {
         format: "png",
         quality: 0.95
       });
@@ -1163,19 +1163,20 @@ const Index = () => {
 
         {/* CONTENEDOR OFFSCREEN PARA CAPTURA FIJA (1080x1080 o 1080x1920) */}
         {aliadoConfig && propertyData && (selectedContentType === "post" || selectedContentType === "historia") && (
-          <div
-            id="canvas-export"
-            style={{
-              position: 'absolute',
-              top: '0',
-              left: '-10000px',
-              width: '1080px',
-              height: selectedContentType === 'post' ? '1080px' : '1920px',
-              visibility: 'hidden',
-              pointerEvents: 'none',
-              zIndex: -1
-            }}
-          >
+        <div
+          id="canvas-export"
+          style={{
+            position: 'absolute',
+            top: '0',
+            left: '-10000px',
+            width: '1080px',
+            height: selectedContentType === 'post' ? '1080px' : '1920px',
+            opacity: 0,
+            pointerEvents: 'none',
+            zIndex: -1,
+            backgroundColor: '#000'
+          }}
+        >
             <CanvasPreview 
               propertyData={propertyData as PropertyData} 
               aliadoConfig={aliadoConfig} 
