@@ -31,7 +31,7 @@ export const exportToImage = async (
     const canvas = await html2canvas(element, {
       scale: 3,
       useCORS: true,
-      allowTaint: true,
+      allowTaint: false,
       backgroundColor: null,
       logging: false,
       onclone: (clonedDoc) => {
