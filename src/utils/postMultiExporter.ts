@@ -17,7 +17,7 @@ const captureCurrentSlide = async (filename: string): Promise<void> => {
   const canvas = await html2canvas(previewElement as HTMLElement, {
     scale: 3,
     useCORS: true,
-    allowTaint: true,
+    allowTaint: false,
     backgroundColor: null,
     logging: false,
     onclone: (clonedDoc) => {
