@@ -39,13 +39,13 @@ const sanitizeCloneImagesForHtml2Canvas = async (clonedRoot: HTMLElement): Promi
 const captureCurrentSlide = async (filename: string): Promise<void> => {
   console.log('[captureCurrentSlide] Capturando', filename);
   
-  // Esperar pequeño delay para garantizar que el DOM se ha actualizado con la foto actual
-  await new Promise(resolve => setTimeout(resolve, 500));
+  // Delay extendido para garantizar renderizado completo del contenedor offscreen con foto actual
+  await new Promise(resolve => setTimeout(resolve, 800));
   
-  // Capturar directamente desde el preview visible
-  const previewElement = document.getElementById('canvas-preview');
+  // Capturar desde el contenedor fijo offscreen con tamaño estable
+  const previewElement = document.getElementById('canvas-export');
   if (!previewElement) {
-    throw new Error('No se encontró el elemento #canvas-preview para capturar');
+    throw new Error('No se encontró el contenedor #canvas-export para capturar');
   }
   
   // VALIDACIÓN CRÍTICA: Verificar que el elemento tiene tamaño antes de capturar
@@ -53,7 +53,7 @@ const captureCurrentSlide = async (filename: string): Promise<void> => {
   console.log('[captureCurrentSlide] Element rect', rect.width, 'x', rect.height);
   
   if (rect.width === 0 || rect.height === 0) {
-    throw new Error('El área de exportación tiene tamaño 0. Revisa el contenedor #canvas-preview.');
+    throw new Error('El área de exportación tiene tamaño 0. Revisa el contenedor #canvas-export.');
   }
 
   const canvas = await html2canvas(previewElement, {
@@ -63,7 +63,7 @@ const captureCurrentSlide = async (filename: string): Promise<void> => {
     backgroundColor: null,
     logging: false,
     onclone: async (clonedDoc) => {
-      const clonedPreview = clonedDoc.getElementById('canvas-preview') as HTMLElement | null;
+      const clonedPreview = clonedDoc.getElementById('canvas-export') as HTMLElement | null;
       if (clonedPreview) {
         // PASO 1: Sanitizar imágenes remotas a dataURL
         await sanitizeCloneImagesForHtml2Canvas(clonedPreview);
