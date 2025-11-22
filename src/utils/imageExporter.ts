@@ -47,6 +47,12 @@ export const exportToImage = async (
               (el as HTMLElement).style.backgroundColor = currentBg.replace(/[\d.]+\)$/g, '0.95)');
             }
           });
+
+          // Quitar gradientes complejos que rompen html2canvas
+          const gradientElements = clonedElement.querySelectorAll<HTMLElement>('[style*="linear-gradient"], [class*="bg-gradient"]');
+          gradientElements.forEach((el) => {
+            (el as HTMLElement).style.backgroundImage = 'none';
+          });
           
           // Ensure font is loaded in clone
           (clonedElement as HTMLElement).style.fontFamily = 'Poppins, sans-serif';
