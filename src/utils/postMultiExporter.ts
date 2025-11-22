@@ -2,6 +2,35 @@ import { PropertyData, AliadoConfig, ContentType } from "@/types/property";
 import { ExportOptions } from "@/utils/imageExporter";
 import html2canvas from "html2canvas";
 import { saveAs } from "file-saver";
+import { urlToDataURL } from "./imageUtils";
+
+/**
+ * Sanitiza todas las imágenes remotas en un clon del DOM convirtiéndolas a dataURL
+ * para evitar que html2canvas genere canvas tainted (blob nulo)
+ */
+const sanitizeCloneImagesForHtml2Canvas = async (clonedRoot: HTMLElement): Promise<void> => {
+  const images = clonedRoot.querySelectorAll('img');
+  const conversions: Promise<void>[] = [];
+  
+  images.forEach((img) => {
+    const src = img.src;
+    // Si es URL remota (http/https) y no es del mismo origen
+    if (src.startsWith('http') && !src.startsWith(window.location.origin)) {
+      const conversion = urlToDataURL(src)
+        .then((dataURL) => {
+          img.src = dataURL;
+        })
+        .catch((error) => {
+          console.warn('[postMultiExporter] No se pudo convertir imagen remota a dataURL:', src, error);
+          // No lanzar error, continuar con otras imágenes
+        });
+      conversions.push(conversion);
+    }
+  });
+  
+  // Esperar a que todas las conversiones terminen
+  await Promise.all(conversions);
+};
 
 /**
  * Captura el slide actual del preview y lo descarga usando html2canvas directamente
@@ -14,32 +43,45 @@ const captureCurrentSlide = async (filename: string): Promise<void> => {
     throw new Error('No se encontró el elemento del preview');
   }
 
+  console.log('[captureCurrentSlide] Iniciando captura de', filename);
+
   const canvas = await html2canvas(previewElement as HTMLElement, {
     scale: 3,
     useCORS: true,
     allowTaint: false,
     backgroundColor: null,
     logging: false,
-    onclone: (clonedDoc) => {
+    onclone: async (clonedDoc) => {
       const clonedPreview = clonedDoc.querySelector('[data-canvas-preview]') as HTMLElement | null;
       if (clonedPreview) {
-        // Quitar gradientes complejos que rompen html2canvas
+        // PASO 1: Sanitizar imágenes remotas a dataURL
+        await sanitizeCloneImagesForHtml2Canvas(clonedPreview);
+        
+        // PASO 2: Quitar gradientes complejos que rompen html2canvas
         const gradientElements = clonedPreview.querySelectorAll<HTMLElement>('[style*="linear-gradient"], [class*="bg-gradient"]');
         gradientElements.forEach((el) => {
           el.style.backgroundImage = 'none';
         });
+        
+        // PASO 3: Ensure font is loaded in clone
+        clonedPreview.style.fontFamily = 'Poppins, sans-serif';
       }
     }
   });
+  
+  console.log('[captureCurrentSlide] Canvas generado:', canvas.width, 'x', canvas.height);
 
   await new Promise<void>((resolve, reject) => {
     canvas.toBlob(
       (blob) => {
         if (blob) {
+          console.log('[captureCurrentSlide] Blob generado correctamente, tamaño:', (blob.size / 1024).toFixed(2), 'KB');
+          console.log('[captureCurrentSlide] Descargando archivo:', filename);
           saveAs(blob, filename);
           resolve();
         } else {
-          reject(new Error('No se pudo generar la imagen (blob nulo).'));
+          console.error('[captureCurrentSlide] ERROR: canvas.toBlob devolvió null');
+          reject(new Error('No se pudo generar la imagen (blob nulo). Canvas posiblemente tainted.'));
         }
       },
       'image/png',
@@ -67,6 +109,8 @@ export const exportAllPhotos = async (
 
   const errors: string[] = [];
 
+  console.log('[exportAllPhotos] Iniciando exportación de', totalFotos, 'fotos');
+  
   for (let i = 0; i < totalFotos; i++) {
     try {
       // Actualizar el override para mostrar la foto[i]
@@ -80,13 +124,14 @@ export const exportAllPhotos = async (
       });
 
       const filename = `foto-${String(i + 1).padStart(2, '0')}.png`;
+      console.log(`[exportAllPhotos] Exportando ${i + 1}/${totalFotos}:`, filename);
       await captureCurrentSlide(filename);
 
       // Reportar progreso
       onProgress(i + 1, totalFotos);
       
     } catch (error) {
-      console.error(`Error exportando foto ${i + 1}:`, error);
+      console.error(`[exportAllPhotos] Error exportando foto ${i + 1}:`, error);
       errors.push(`Foto ${i + 1}: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   }
