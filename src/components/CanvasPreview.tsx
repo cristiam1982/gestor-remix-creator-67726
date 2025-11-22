@@ -115,7 +115,12 @@ export const CanvasPreview = ({
   const gradientOverlayStyle = useMemo(() => {
     if (gradientDirection === 'none') return {};
     
-    const intensity = Math.max(0, Math.min(100, gradientIntensity));
+    // Validar que gradientIntensity sea un número válido
+    const safeIntensity = typeof gradientIntensity === 'number' && !isNaN(gradientIntensity) 
+      ? gradientIntensity 
+      : 60; // valor por defecto
+    
+    const intensity = Math.max(0, Math.min(100, safeIntensity));
     const alpha = (intensity / 100) * 0.7;
     const rgba = (a: number) => `rgba(0,0,0,${a.toFixed(3)})`;
     
@@ -177,6 +182,7 @@ export const CanvasPreview = ({
     <div 
       ref={canvasRef}
       id="canvas-preview"
+      data-canvas-preview="true"
       className={`relative ${dimensions} w-full max-w-[540px] mx-auto overflow-hidden rounded-2xl shadow-2xl`}
       style={{ backgroundColor: "#000" }}
     >
