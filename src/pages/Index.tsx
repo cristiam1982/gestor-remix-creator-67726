@@ -858,10 +858,10 @@ const Index = () => {
                   </Card>
                 </div>
 
-                {/* Layout desktop: grid 2 columnas */}
-                <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6">
-                  {/* COLUMNA IZQUIERDA: Controles con scroll independiente */}
-                  <ScrollArea className="max-h-[calc(100vh-220px)] pr-4">
+          {/* Layout desktop: grid 2 columnas */}
+          <div className="hidden lg:grid lg:grid-cols-[1fr_540px] gap-6 h-[calc(100vh-180px)]">
+            {/* COLUMNA IZQUIERDA: Controles con scroll independiente */}
+            <ScrollArea className="h-full pr-4">
                     <div className="space-y-4 pb-6">
                       {/* Info resumida de videos */}
                       <Card className="p-4">
@@ -1009,71 +1009,69 @@ const Index = () => {
                     </div>
                   </ScrollArea>
 
-              {/* COLUMNA DERECHA: Preview con scroll independiente */}
+              {/* COLUMNA DERECHA: Preview fijo */}
               {(() => {
                 const totalDuration = multiVideos.reduce((sum, v) => sum + v.duration, 0);
                 return (
-              <div>
-                <ScrollArea className="max-h-[calc(100vh-220px)]">
-                  <Card className="p-6">
-                    {/* TÍTULO */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="text-xl font-semibold text-primary">
-                          🎬 Reel Multi-Video
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {multiVideos.length} videos · {totalDuration}s total
-                        </p>
+                  <div className="h-full flex flex-col">
+                    <Card className="p-6 flex-1 flex flex-col overflow-hidden">
+                      {/* TÍTULO */}
+                      <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                        <div>
+                          <h3 className="text-xl font-semibold text-primary">
+                            🎬 Reel Multi-Video
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {multiVideos.length} videos · {totalDuration}s total
+                          </p>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* PREVIEW */}
-                    <div className="flex items-center justify-center">
-                      {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && (
-                        <MultiVideoStaticPreview
-                          key={`preview-desktop-${JSON.stringify({
-                            pos: multiVideoLogoSettings.position,
-                            size: multiVideoLogoSettings.size,
-                            grad: multiVideoGradientDirection,
-                            scale: multiVideoTextComposition.typographyScale,
-                          })}`}
-                          videoFile={multiVideos[0].file!}
-                          propertyData={propertyData as PropertyData}
-                          aliadoConfig={aliadoConfig}
-                          visualSettings={{
-                            logoSettings: multiVideoLogoSettings,
-                            textComposition: multiVideoTextComposition,
-                            visualLayers: multiVideoVisualLayers,
-                            gradientDirection: multiVideoGradientDirection,
-                            gradientIntensity: multiVideoGradientIntensity,
-                            footerCustomization: multiVideoFooterCustomization,
-                          }}
-                          subtitle={multiVideos[0].subtitle}
-                        />
-                      )}
+                      {/* PREVIEW centrado sin scroll interno */}
+                      <div className="flex-1 flex items-center justify-center min-h-0">
+                        {multiVideos.length > 0 && propertyData && !generatedMultiVideoBlob && (
+                          <MultiVideoStaticPreview
+                            key={`preview-desktop-${JSON.stringify({
+                              pos: multiVideoLogoSettings.position,
+                              size: multiVideoLogoSettings.size,
+                              grad: multiVideoGradientDirection,
+                              scale: multiVideoTextComposition.typographyScale,
+                            })}`}
+                            videoFile={multiVideos[0].file!}
+                            propertyData={propertyData as PropertyData}
+                            aliadoConfig={aliadoConfig}
+                            visualSettings={{
+                              logoSettings: multiVideoLogoSettings,
+                              textComposition: multiVideoTextComposition,
+                              visualLayers: multiVideoVisualLayers,
+                              gradientDirection: multiVideoGradientDirection,
+                              gradientIntensity: multiVideoGradientIntensity,
+                              footerCustomization: multiVideoFooterCustomization,
+                            }}
+                            subtitle={multiVideos[0].subtitle}
+                          />
+                        )}
 
-                      {isProcessingMultiVideo && (
-                        <MultiVideoProcessingModal
-                          isOpen={isProcessingMultiVideo}
-                          progress={multiVideoProgress}
-                          stage={multiVideoStage}
-                          isComplete={false}
-                        />
-                      )}
+                        {isProcessingMultiVideo && (
+                          <MultiVideoProcessingModal
+                            isOpen={isProcessingMultiVideo}
+                            progress={multiVideoProgress}
+                            stage={multiVideoStage}
+                            isComplete={false}
+                          />
+                        )}
 
-                      {generatedMultiVideoBlob && (
-                        <video
-                          src={URL.createObjectURL(generatedMultiVideoBlob)}
-                          controls
-                          className="w-full max-w-[360px] rounded-lg shadow-lg"
-                          style={{ aspectRatio: "9/16" }}
-                        />
-                      )}
-                    </div>
-                  </Card>
-                </ScrollArea>
-              </div>
+                        {generatedMultiVideoBlob && (
+                          <video
+                            src={URL.createObjectURL(generatedMultiVideoBlob)}
+                            controls
+                            className="w-full max-w-[360px] rounded-lg shadow-lg"
+                            style={{ aspectRatio: "9/16" }}
+                          />
+                        )}
+                      </div>
+                    </Card>
+                  </div>
                 );
               })()}
                 </div>
