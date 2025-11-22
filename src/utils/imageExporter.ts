@@ -62,7 +62,7 @@ export const exportToImage = async (
     console.log('[exportToImage] Element rect', rect.width, 'x', rect.height);
     
     if (rect.width === 0 || rect.height === 0) {
-      throw new Error('El área de exportación tiene tamaño 0. Revisa el contenedor #canvas-export.');
+      throw new Error('El área de exportación tiene tamaño 0. Revisa el contenedor de preview.');
     }
     
     console.log('[exportToImage] Iniciando captura de', elementId);
