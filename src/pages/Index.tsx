@@ -1166,13 +1166,13 @@ const Index = () => {
           <div
             id="canvas-export"
             style={{
-              position: 'fixed',
-              top: '-9999px',
-              left: '-9999px',
+              position: 'absolute',
+              top: '0',
+              left: '-10000px',
               width: '1080px',
               height: selectedContentType === 'post' ? '1080px' : '1920px',
+              visibility: 'hidden',
               pointerEvents: 'none',
-              opacity: 0,
               zIndex: -1
             }}
           >
@@ -1188,6 +1188,7 @@ const Index = () => {
               gradientDirection={postGradientDirection}
               gradientIntensity={postGradientIntensity}
               firstPhotoConfig={postFirstPhotoConfig}
+              mode="capture"
             />
           </div>
         )}
