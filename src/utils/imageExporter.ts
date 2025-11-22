@@ -57,6 +57,14 @@ export const exportToImage = async (
     // Small delay to ensure all styles are applied
     await new Promise(resolve => setTimeout(resolve, 300));
     
+    // VALIDACIÓN CRÍTICA: Verificar que el elemento tiene tamaño antes de capturar
+    const rect = element.getBoundingClientRect();
+    console.log('[exportToImage] Element rect', rect.width, 'x', rect.height);
+    
+    if (rect.width === 0 || rect.height === 0) {
+      throw new Error('El área de exportación tiene tamaño 0. Revisa el contenedor #canvas-export.');
+    }
+    
     console.log('[exportToImage] Iniciando captura de', elementId);
     
     const canvas = await html2canvas(element, {

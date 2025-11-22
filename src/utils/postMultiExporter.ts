@@ -37,22 +37,33 @@ const sanitizeCloneImagesForHtml2Canvas = async (clonedRoot: HTMLElement): Promi
  * con limpieza de gradientes para evitar errores internos.
  */
 const captureCurrentSlide = async (filename: string): Promise<void> => {
-  const previewElement = document.querySelector('[data-canvas-preview]');
+  console.log('[captureCurrentSlide] Capturando', filename);
   
+  // Esperar pequeño delay para garantizar que el DOM se ha actualizado con la foto actual
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Capturar desde el contenedor fijo offscreen en lugar del preview responsive
+  const previewElement = document.getElementById('canvas-export');
   if (!previewElement) {
-    throw new Error('No se encontró el elemento del preview');
+    throw new Error('No se encontró el contenedor #canvas-export para capturar');
+  }
+  
+  // VALIDACIÓN CRÍTICA: Verificar que el elemento tiene tamaño antes de capturar
+  const rect = previewElement.getBoundingClientRect();
+  console.log('[captureCurrentSlide] Element rect', rect.width, 'x', rect.height);
+  
+  if (rect.width === 0 || rect.height === 0) {
+    throw new Error('El área de exportación tiene tamaño 0. Revisa el contenedor #canvas-export.');
   }
 
-  console.log('[captureCurrentSlide] Iniciando captura de', filename);
-
-  const canvas = await html2canvas(previewElement as HTMLElement, {
+  const canvas = await html2canvas(previewElement, {
     scale: 3,
     useCORS: true,
     allowTaint: false,
     backgroundColor: null,
     logging: false,
     onclone: async (clonedDoc) => {
-      const clonedPreview = clonedDoc.querySelector('[data-canvas-preview]') as HTMLElement | null;
+      const clonedPreview = clonedDoc.getElementById('canvas-export') as HTMLElement | null;
       if (clonedPreview) {
         // PASO 1: Sanitizar imágenes remotas a dataURL
         await sanitizeCloneImagesForHtml2Canvas(clonedPreview);

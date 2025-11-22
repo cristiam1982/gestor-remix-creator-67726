@@ -182,7 +182,6 @@ export const CanvasPreview = ({
     <div 
       ref={canvasRef}
       id="canvas-preview"
-      data-canvas-preview="true"
       className={`relative ${dimensions} w-full max-w-[540px] mx-auto overflow-hidden rounded-2xl shadow-2xl`}
       style={{ backgroundColor: "#000" }}
     >

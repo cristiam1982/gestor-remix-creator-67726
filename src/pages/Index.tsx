@@ -345,7 +345,9 @@ const Index = () => {
       await new Promise(resolve => setTimeout(resolve, 500));
       const tipo = isArrendadoType ? arrendadoData.tipo : propertyData.tipo;
       const filename = `publicacion-${tipo}-${Date.now()}.png`;
-      await exportToImage("canvas-preview", filename, {
+      
+      // Capturar desde el contenedor fijo offscreen en lugar del preview responsive
+      await exportToImage("canvas-export", filename, {
         format: "png",
         quality: 0.95
       });
@@ -1158,6 +1160,37 @@ const Index = () => {
             </Card>
           </div>
         </div>
+
+        {/* CONTENEDOR OFFSCREEN PARA CAPTURA FIJA (1080x1080 o 1080x1920) */}
+        {aliadoConfig && propertyData && (selectedContentType === "post" || selectedContentType === "historia") && (
+          <div
+            id="canvas-export"
+            style={{
+              position: 'fixed',
+              top: '-9999px',
+              left: '-9999px',
+              width: '1080px',
+              height: selectedContentType === 'post' ? '1080px' : '1920px',
+              pointerEvents: 'none',
+              opacity: 0,
+              zIndex: -1
+            }}
+          >
+            <CanvasPreview 
+              propertyData={propertyData as PropertyData} 
+              aliadoConfig={aliadoConfig} 
+              contentType={selectedContentType} 
+              template="residencial" 
+              currentPhotoIndexOverride={currentPhotoIndexOverride}
+              logoSettings={postLogoSettings}
+              textComposition={postTextComposition}
+              visualLayers={postVisualLayers}
+              gradientDirection={postGradientDirection}
+              gradientIntensity={postGradientIntensity}
+              firstPhotoConfig={postFirstPhotoConfig}
+            />
+          </div>
+        )}
         </>}
           </div>}
       </div>
