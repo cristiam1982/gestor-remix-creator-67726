@@ -1,31 +1,10 @@
 import { PropertyData, AliadoConfig, ContentType } from "@/types/property";
-import { ExportOptions } from "@/utils/imageExporter";
-import html2canvas from "html2canvas";
-import { saveAs } from "file-saver";
+import { ExportOptions, exportToImage } from "@/utils/imageExporter";
 
 /**
- * Captura el slide actual del preview y lo descarga
+ * Exporta el slide actual del preview como imagen usando el mismo pipeline
+ * de exportToImage (incluye ajustes especiales para html2canvas).
  */
-const captureCurrentSlide = async (filename: string): Promise<void> => {
-  const previewElement = document.querySelector('[data-canvas-preview]');
-  
-  if (!previewElement) {
-    throw new Error('No se encontró el elemento del preview');
-  }
-
-  const canvas = await html2canvas(previewElement as HTMLElement, {
-    scale: 2,
-    useCORS: true,
-    allowTaint: true,
-    backgroundColor: null,
-  });
-
-  canvas.toBlob((blob) => {
-    if (blob) {
-      saveAs(blob, filename);
-    }
-  }, 'image/png');
-};
 
 /**
  * Exporta todas las fotos del post cuadrado como PNGs individuales numerados
@@ -58,9 +37,8 @@ export const exportAllPhotos = async (
         });
       });
 
-      // Capturar el slide actual usando html2canvas
       const filename = `foto-${String(i + 1).padStart(2, '0')}.png`;
-      await captureCurrentSlide(filename);
+      await exportToImage("canvas-preview", filename, exportOptions);
 
       // Reportar progreso
       onProgress(i + 1, totalFotos);
