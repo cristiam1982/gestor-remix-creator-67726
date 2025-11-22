@@ -1,10 +1,52 @@
 import { PropertyData, AliadoConfig, ContentType } from "@/types/property";
-import { ExportOptions, exportToImage } from "@/utils/imageExporter";
+import { ExportOptions } from "@/utils/imageExporter";
+import html2canvas from "html2canvas";
+import { saveAs } from "file-saver";
 
 /**
- * Exporta el slide actual del preview como imagen usando el mismo pipeline
- * de exportToImage (incluye ajustes especiales para html2canvas).
+ * Captura el slide actual del preview y lo descarga usando html2canvas directamente
+ * con limpieza de gradientes para evitar errores internos.
  */
+const captureCurrentSlide = async (filename: string): Promise<void> => {
+  const previewElement = document.querySelector('[data-canvas-preview]');
+  
+  if (!previewElement) {
+    throw new Error('No se encontró el elemento del preview');
+  }
+
+  const canvas = await html2canvas(previewElement as HTMLElement, {
+    scale: 3,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: null,
+    logging: false,
+    onclone: (clonedDoc) => {
+      const clonedPreview = clonedDoc.querySelector('[data-canvas-preview]') as HTMLElement | null;
+      if (clonedPreview) {
+        // Quitar gradientes complejos que rompen html2canvas
+        const gradientElements = clonedPreview.querySelectorAll<HTMLElement>('[style*="linear-gradient"], [class*="bg-gradient"]');
+        gradientElements.forEach((el) => {
+          el.style.backgroundImage = 'none';
+        });
+      }
+    }
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          saveAs(blob, filename);
+          resolve();
+        } else {
+          reject(new Error('No se pudo generar la imagen (blob nulo).'));
+        }
+      },
+      'image/png',
+      0.95
+    );
+  });
+};
 
 /**
  * Exporta todas las fotos del post cuadrado como PNGs individuales numerados
@@ -38,7 +80,7 @@ export const exportAllPhotos = async (
       });
 
       const filename = `foto-${String(i + 1).padStart(2, '0')}.png`;
-      await exportToImage("canvas-preview", filename, exportOptions);
+      await captureCurrentSlide(filename);
 
       // Reportar progreso
       onProgress(i + 1, totalFotos);
