@@ -72,15 +72,21 @@ export const exportToImage = async (
     }
 
     // Compress and convert to blob
-    canvas.toBlob(
-      (blob) => {
-        if (blob) {
-          saveAs(blob, filename);
-        }
-      },
-      options.format === "jpg" ? "image/jpeg" : "image/png",
-      options.quality
-    );
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (result) => {
+          if (result) {
+            resolve(result);
+          } else {
+            reject(new Error("No se pudo generar la imagen para descargar (blob nulo)."));
+          }
+        },
+        options.format === "jpg" ? "image/jpeg" : "image/png",
+        options.quality
+      );
+    });
+
+    saveAs(blob, filename);
   } catch (error) {
     console.error("Error al exportar imagen:", error);
     throw error;
