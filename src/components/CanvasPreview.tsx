@@ -190,7 +190,7 @@ export const CanvasPreview = ({
   
   const containerClasses = mode === 'capture'
     ? 'relative'
-    : `relative ${isStory ? "aspect-story" : "aspect-square"} w-full max-w-[540px] mx-auto overflow-hidden rounded-2xl shadow-2xl`;
+    : `relative ${isStory ? "aspect-story" : "aspect-square"} w-full ${isStory ? "max-w-[360px]" : "max-w-[540px]"} mx-auto overflow-hidden rounded-2xl shadow-2xl`;
 
   const handlePrevPhoto = () => {
     if (propertyData.fotos && currentPhotoIndex > 0) {
