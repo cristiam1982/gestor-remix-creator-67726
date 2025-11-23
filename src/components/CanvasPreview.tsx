@@ -179,8 +179,8 @@ export const CanvasPreview = ({
   // Tamaño del logo "El Gestor" proporcional al escalado de texto
   const elGestorLogoSize = useMemo(() => {
     const baseSize = isStory ? 40 : 32; // Base: 40px historia, 32px post
-    const multiplier = mode === 'capture' ? 2.0 : 1; // Mismo multiplier que texto
-    return baseSize * multiplier; // 80px capture historia, 64px capture post
+    const multiplier = mode === 'capture' ? 1.7 : 1; // Mismo multiplier que logo aliado
+    return baseSize * multiplier; // 68px capture historia, 54.4px capture post
   }, [isStory, mode]);
   
   // Estilos dinámicos según modo
