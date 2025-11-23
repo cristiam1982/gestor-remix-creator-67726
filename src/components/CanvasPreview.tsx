@@ -175,6 +175,13 @@ export const CanvasPreview = ({
   }, [onReady]);
 
   const isStory = contentType === "historia";
+
+  // Tamaño del logo "El Gestor" proporcional al escalado de texto
+  const elGestorLogoSize = useMemo(() => {
+    const baseSize = isStory ? 40 : 32; // Base: 40px historia, 32px post
+    const multiplier = mode === 'capture' ? 1.8 : 1; // Mismo multiplier que texto
+    return baseSize * multiplier; // 72px capture historia, 57.6px capture post
+  }, [isStory, mode]);
   
   // Estilos dinámicos según modo
   const containerStyle = mode === 'capture' 
@@ -575,12 +582,21 @@ export const CanvasPreview = ({
 
       {/* Logo El Gestor - inferior derecha (marca secundaria) */}
       {(
-      <div className={`absolute ${isStory ? "bottom-24 right-6" : mode === 'capture' ? "bottom-6 right-6" : "bottom-4 right-4"} z-30`}>
+      <div 
+        className="absolute z-30"
+        style={{
+          bottom: isStory ? '96px' : (mode === 'capture' ? '24px' : '16px'),
+          right: mode === 'capture' ? '24px' : '16px'
+        }}
+      >
         <img 
           src={elGestorLogo} 
           alt="El Gestor" 
           data-eg-logo="true"
-          className={`${isStory ? "h-12" : mode === 'capture' ? "h-12" : "h-8"} object-contain drop-shadow-lg opacity-70`}
+          className="object-contain drop-shadow-lg opacity-70"
+          style={{
+            height: `${elGestorLogoSize}px`
+          }}
         />
       </div>
       )}
