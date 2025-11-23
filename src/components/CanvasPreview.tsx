@@ -104,8 +104,8 @@ export const CanvasPreview = ({
     const baseBadgeScale = 1 + (effectiveTextComposition.badgeScale / 100);
     
     // Multiplicadores para modo captura (1080x1080) vs preview (~540px)
-    const captureMultiplier = mode === 'capture' ? 1.8 : 1;
-    const captureBadgeMultiplier = mode === 'capture' ? 1.6 : 1;
+    const captureMultiplier = mode === 'capture' ? 2.0 : 1;
+    const captureBadgeMultiplier = mode === 'capture' ? 2.0 : 1;
     
     const scale = baseScale * captureMultiplier;
     const badgeScale = baseBadgeScale * captureBadgeMultiplier;
@@ -120,7 +120,7 @@ export const CanvasPreview = ({
     spacious: 16
   };
   const gapBase = spacingMap[effectiveTextComposition.verticalSpacing];
-  const verticalGap = mode === 'capture' ? gapBase * 1.6 : gapBase;
+  const verticalGap = mode === 'capture' ? gapBase * 2.0 : gapBase;
 
   // Gradiente dinámico
   const gradientOverlayStyle = useMemo(() => {
@@ -179,8 +179,8 @@ export const CanvasPreview = ({
   // Tamaño del logo "El Gestor" proporcional al escalado de texto
   const elGestorLogoSize = useMemo(() => {
     const baseSize = isStory ? 40 : 32; // Base: 40px historia, 32px post
-    const multiplier = mode === 'capture' ? 1.8 : 1; // Mismo multiplier que texto
-    return baseSize * multiplier; // 72px capture historia, 57.6px capture post
+    const multiplier = mode === 'capture' ? 2.0 : 1; // Mismo multiplier que texto
+    return baseSize * multiplier; // 80px capture historia, 64px capture post
   }, [isStory, mode]);
   
   // Estilos dinámicos según modo
@@ -278,14 +278,16 @@ export const CanvasPreview = ({
 
       {/* Header con logo del aliado - diseño reel */}
       {effectiveVisualLayers.showAllyLogo && (
-      <div 
-        className={`absolute ${logoStyle.positionClass} z-20`}
-        style={{ 
-          width: logoStyle.size, 
-          height: logoStyle.size,
-          opacity: logoStyle.opacity 
-        }}
-      >
+        <div 
+          className={`absolute ${logoStyle.positionClass} z-20`}
+          style={{ 
+            width: logoStyle.size, 
+            height: logoStyle.size,
+            opacity: logoStyle.opacity,
+            transform: mode === 'capture' ? 'scale(2.0)' : 'none',
+            transformOrigin: logoSettings.position === 'top-right' ? 'top right' : 'top left'
+          }}
+        >
         <div 
           className={`${logoStyle.backgroundClass} ${logoStyle.shapeClass} ${logoSettings.shape === 'circle' || logoSettings.background === 'none' ? 'p-0' : 'p-2.5'} w-full h-full flex items-center justify-center overflow-hidden`}
         >
