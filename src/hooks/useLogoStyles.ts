@@ -7,8 +7,8 @@ import { LogoSettings } from '@/types/property';
  */
 export const useLogoStyles = (logoSettings: LogoSettings) => {
   return useMemo(() => {
-    // Tamaños unificados
-    const sizes = { small: 60, medium: 70, large: 80, xlarge: 90 };
+    // Tamaños unificados (reducidos 15%)
+    const sizes = { small: 51, medium: 60, large: 68, xlarge: 77 };
     const size = sizes[logoSettings.size as keyof typeof sizes] || sizes.medium;
     
     // ✅ FORZAR background='none' cuando shape='circle'
