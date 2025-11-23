@@ -346,8 +346,8 @@ const Index = () => {
       const tipo = isArrendadoType ? arrendadoData.tipo : propertyData.tipo;
       const filename = `publicacion-${tipo}-${Date.now()}.png`;
       
-      // Capturar desde el contenedor fijo offscreen con tamaño estable
-      await exportToImage("canvas-export", filename, {
+      // Capturar desde el mismo elemento visible (patrón ArrendadoPreview)
+      await exportToImage("canvas-preview", filename, {
         format: "png",
         quality: 0.95
       });
@@ -1133,7 +1133,32 @@ const Index = () => {
                       <h3 className="text-xl font-semibold mb-4 text-primary flex-shrink-0">Vista Previa</h3>
 
                       <div className="flex-1 flex items-center justify-center mb-6 min-h-0">
-                        {aliadoConfig && <CanvasPreview propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} contentType={selectedContentType!} template="residencial" currentPhotoIndexOverride={currentPhotoIndexOverride} logoSettings={postLogoSettings} textComposition={postTextComposition} visualLayers={postVisualLayers} gradientDirection={postGradientDirection} gradientIntensity={postGradientIntensity} firstPhotoConfig={postFirstPhotoConfig} />}
+                        {aliadoConfig && (
+                          <div
+                            id="canvas-preview"
+                            className="relative overflow-hidden rounded-2xl"
+                            style={{
+                              width: "100%",
+                              aspectRatio: selectedContentType === "post" ? "1 / 1" : "9 / 16",
+                              maxWidth: "600px",
+                              margin: "0 auto"
+                            }}
+                          >
+                            <CanvasPreview 
+                              propertyData={propertyData as PropertyData} 
+                              aliadoConfig={aliadoConfig} 
+                              contentType={selectedContentType!} 
+                              template="residencial" 
+                              currentPhotoIndexOverride={currentPhotoIndexOverride} 
+                              logoSettings={postLogoSettings} 
+                              textComposition={postTextComposition} 
+                              visualLayers={postVisualLayers} 
+                              gradientDirection={postGradientDirection} 
+                              gradientIntensity={postGradientIntensity} 
+                              firstPhotoConfig={postFirstPhotoConfig} 
+                            />
+                          </div>
+                        )}
                       </div>
 
                       <div className="space-y-3 flex-shrink-0">
@@ -1161,37 +1186,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* CONTENEDOR OFFSCREEN PARA CAPTURA FIJA (1080x1080 o 1080x1920) */}
-        {aliadoConfig && propertyData && (selectedContentType === "post" || selectedContentType === "historia") && (
-        <div
-          id="canvas-export"
-          style={{
-            position: 'absolute',
-            top: '0',
-            left: '-10000px',
-            width: '1080px',
-            height: selectedContentType === 'post' ? '1080px' : '1920px',
-            pointerEvents: 'none',
-            zIndex: -1,
-            overflow: 'hidden'
-          }}
-        >
-            <CanvasPreview 
-              propertyData={propertyData as PropertyData} 
-              aliadoConfig={aliadoConfig} 
-              contentType={selectedContentType} 
-              template="residencial" 
-              currentPhotoIndexOverride={currentPhotoIndexOverride}
-              logoSettings={postLogoSettings}
-              textComposition={postTextComposition}
-              visualLayers={postVisualLayers}
-              gradientDirection={postGradientDirection}
-              gradientIntensity={postGradientIntensity}
-              firstPhotoConfig={postFirstPhotoConfig}
-              mode="capture"
-            />
-          </div>
-        )}
         </>}
           </div>}
       </div>
