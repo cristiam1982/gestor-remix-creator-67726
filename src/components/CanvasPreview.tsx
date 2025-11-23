@@ -20,8 +20,7 @@ interface CanvasPreviewProps {
   visualLayers?: VisualLayers;
   gradientDirection?: 'none' | 'top' | 'bottom' | 'both';
   gradientIntensity?: number;
-  firstPhotoConfig?: FirstPhotoConfig; // Configuración especial primera foto
-  mode?: 'preview' | 'capture'; // Modo de renderizado
+  firstPhotoConfig?: FirstPhotoConfig;
 }
 
 export const CanvasPreview = ({ 
@@ -54,8 +53,7 @@ export const CanvasPreview = ({
   },
   gradientDirection = 'both',
   gradientIntensity = 60,
-  firstPhotoConfig, // Configuración especial primera foto
-  mode = 'preview' // Modo de renderizado
+  firstPhotoConfig
 }: CanvasPreviewProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const templateConfig = TEMPLATE_THEMES[template];
@@ -171,24 +169,8 @@ export const CanvasPreview = ({
 
   // Tamaño del logo "El Gestor" unificado
   const elGestorLogoSize = useMemo(() => {
-    return isStory ? 40 : 32; // Mismo tamaño en preview y capture
+    return isStory ? 40 : 32;
   }, [isStory]);
-  
-  // Estilos dinámicos según modo
-  const containerStyle = mode === 'capture' 
-    ? {
-        width: '1080px',
-        height: isStory ? '1920px' : '1080px',
-        backgroundColor: '#000',
-        position: 'relative' as const,
-        overflow: 'hidden' as const,
-        borderRadius: '0px'
-      }
-    : {};
-  
-  const containerClasses = mode === 'capture'
-    ? 'relative'
-    : `relative ${isStory ? "aspect-story" : "aspect-square"} w-full ${isStory ? "max-w-[360px]" : "max-w-[540px]"} mx-auto overflow-hidden rounded-2xl shadow-2xl`;
 
   const handlePrevPhoto = () => {
     if (propertyData.fotos && currentPhotoIndex > 0) {
@@ -202,15 +184,12 @@ export const CanvasPreview = ({
     }
   };
 
-  // Ocultar navegación en modo captura
-  const showNavigation = hasMultiplePhotos && mode === 'preview';
+  const showNavigation = hasMultiplePhotos;
 
   return (
     <div 
       ref={canvasRef}
-      id={mode === 'capture' ? undefined : "canvas-preview"}
-      className={containerClasses}
-      style={mode === 'capture' ? containerStyle : { backgroundColor: "#000" }}
+      className="relative w-full h-full overflow-hidden bg-black"
     >
       {/* Foto principal con navegación */}
       {propertyData.fotos && propertyData.fotos.length > 0 && (
@@ -308,7 +287,7 @@ export const CanvasPreview = ({
               </h2>
               {propertyData.ubicacion && (
                 <div className="flex items-center" style={{ gap: `${verticalGap / 2}px` }}>
-                  <MapPin className={mode === 'capture' ? "w-5 h-5" : "w-4 h-4"} style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                  <MapPin className="w-4 h-4" style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                   <span 
                     className="font-semibold text-white"
                     style={{ 
@@ -331,17 +310,17 @@ export const CanvasPreview = ({
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario,
                 marginBottom: `${verticalGap * 2}px`,
-                paddingLeft: `${mode === 'capture' ? 22 : 16}px`,
-                paddingRight: `${mode === 'capture' ? 22 : 16}px`,
-                paddingTop: `${mode === 'capture' ? 11 : 8}px`,
-                paddingBottom: `${mode === 'capture' ? 11 : 8}px`
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                paddingTop: '8px',
+                paddingBottom: '8px'
               }}
             >
               <p 
                 className="text-white font-semibold uppercase tracking-wide relative z-[70]"
                 style={{ 
-                  fontSize: `${mode === 'capture' ? 14 : 10}px`,
-                  marginBottom: `${mode === 'capture' ? 3 : 2}px`
+                  fontSize: '10px',
+                  marginBottom: '2px'
                 }}
               >
                 {isVenta ? "Precio de Venta" : "Canon Mensual"}
@@ -369,7 +348,7 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Bed className={mode === 'capture' ? "w-6 h-6" : "w-5 h-5"} style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Bed className="w-5 h-5" style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -390,7 +369,7 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Bath className={mode === 'capture' ? "w-6 h-6" : "w-5 h-5"} style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Bath className="w-5 h-5" style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -411,7 +390,7 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Car className={mode === 'capture' ? "w-6 h-6" : "w-5 h-5"} style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Car className="w-5 h-5" style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -432,7 +411,7 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Square className={mode === 'capture' ? "w-6 h-6" : "w-5 h-5"} style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Square className="w-5 h-5" style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
