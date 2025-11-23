@@ -1,12 +1,15 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { X, Upload, Image as ImageIcon } from "lucide-react";
+import { X, Upload, Image as ImageIcon, GripVertical } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ContentType } from "@/types/property";
 import { validateImageFile, validateVideoFile } from "@/utils/fileValidation";
 import { useToast } from "@/hooks/use-toast";
+import { DndContext, closestCenter, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const SUBTITLE_ICONS = {
   espacios: ["🛋️", "🍳", "🛏️", "🚿", "🌳", "🚗", "🏊", "🏋️"],
@@ -23,6 +26,116 @@ interface PhotoManagerProps {
   onSubtitulosChange?: (subtitulos: string[]) => void;
 }
 
+interface SortablePhotoItemProps {
+  id: string;
+  photo: string;
+  index: number;
+  isVideo: boolean;
+  onRemove: () => void;
+  onSubtituloChange?: (value: string) => void;
+  subtitulo?: string;
+  showSubtitulos?: boolean;
+}
+
+const SortablePhotoItem = ({ 
+  id, 
+  photo, 
+  index, 
+  isVideo, 
+  onRemove,
+  onSubtituloChange,
+  subtitulo,
+  showSubtitulos
+}: SortablePhotoItemProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="space-y-2">
+      <div className="relative group">
+        <img
+          src={photo}
+          alt={`${isVideo ? "Video" : "Foto"} ${index + 1}`}
+          className="w-full h-32 object-cover rounded-lg shadow-md"
+        />
+        
+        {/* Botón eliminar */}
+        <Button
+          variant="destructive"
+          size="icon"
+          className="absolute top-2 right-2 w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={onRemove}
+        >
+          <X className="w-4 h-4" />
+        </Button>
+        
+        {/* Handle para drag */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="absolute top-2 left-2 cursor-grab active:cursor-grabbing bg-black/60 rounded p-1 hover:bg-black/80 transition-colors"
+        >
+          <GripVertical className="w-4 h-4 text-white" />
+        </div>
+        
+        {/* Número de foto */}
+        <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-semibold">
+          {index + 1}
+        </div>
+      </div>
+      
+      {/* Subtítulos (solo para reel-fotos) */}
+      {showSubtitulos && onSubtituloChange && (
+        <div className="space-y-2">
+          <input
+            type="text"
+            placeholder="Ej: Sala principal"
+            value={subtitulo || ""}
+            onChange={(e) => onSubtituloChange(e.target.value)}
+            maxLength={30}
+            className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          
+          {/* Galería de iconos */}
+          <div className="flex flex-wrap gap-1 items-center">
+            <span className="text-xs text-muted-foreground">Iconos:</span>
+            {Object.values(SUBTITLE_ICONS).flat().map((icon, iconIdx) => (
+              <button
+                key={iconIdx}
+                type="button"
+                onClick={() => {
+                  const currentText = subtitulo || "";
+                  const emojiRegex = /^[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Emoji_Presentation}]+\s*/u;
+                  const newText = currentText.match(emojiRegex) 
+                    ? `${icon} ${currentText.replace(emojiRegex, '').trim()}`
+                    : `${icon} ${currentText}`.trim();
+                  onSubtituloChange(newText);
+                }}
+                className="text-base hover:scale-125 transition-transform p-1 rounded hover:bg-accent"
+                title="Agregar icono"
+              >
+                {icon}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const PhotoManager = ({ 
   photos, 
   onPhotosChange, 
@@ -35,6 +148,14 @@ export const PhotoManager = ({
   const isVideoContent = contentType === "reel-video";
   const maxFiles = isVideoContent ? 1 : 
     contentType === "reel-fotos" ? 10 : 10;
+  
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
   
   const getHelpText = () => {
     const isArrendado = context === "arrendado";
@@ -118,6 +239,24 @@ export const PhotoManager = ({
     }
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      const oldIndex = photos.findIndex((_, idx) => `photo-${idx}` === active.id);
+      const newIndex = photos.findIndex((_, idx) => `photo-${idx}` === over.id);
+      
+      const reorderedPhotos = arrayMove(photos, oldIndex, newIndex);
+      onPhotosChange(reorderedPhotos);
+      
+      // También reordenar subtítulos
+      if (onSubtitulosChange && subtitulos.length > 0) {
+        const reorderedSubtitulos = arrayMove(subtitulos, oldIndex, newIndex);
+        onSubtitulosChange(reorderedSubtitulos);
+      }
+    }
+  };
+
   return (
     <Card className="p-6">
       <h3 className="text-xl font-semibold mb-4 text-primary">
@@ -178,67 +317,36 @@ export const PhotoManager = ({
               </div>
             )}
             
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {photos.map((photo, idx) => (
-                <div key={idx} className="space-y-2">
-                  <div className="relative group">
-                    <img
-                      src={photo}
-                      alt={`${isVideoContent ? "Video" : "Foto"} ${idx + 1}`}
-                      className="w-full h-32 object-cover rounded-lg shadow-md"
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={photos.map((_, idx) => `photo-${idx}`)}
+                strategy={rectSortingStrategy}
+              >
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {photos.map((photo, idx) => (
+                    <SortablePhotoItem
+                      key={`photo-${idx}`}
+                      id={`photo-${idx}`}
+                      photo={photo}
+                      index={idx}
+                      isVideo={isVideoContent}
+                      onRemove={() => handleRemovePhoto(idx)}
+                      onSubtituloChange={
+                        contentType === "reel-fotos" && onSubtitulosChange
+                          ? (value) => handleSubtituloChange(idx, value)
+                          : undefined
+                      }
+                      subtitulo={subtitulos[idx]}
+                      showSubtitulos={contentType === "reel-fotos" && !!onSubtitulosChange}
                     />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-2 right-2 w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => handleRemovePhoto(idx)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                    <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-semibold">
-                      {idx + 1}
-                    </div>
-                  </div>
-                  
-                  {contentType === "reel-fotos" && onSubtitulosChange && (
-                    <div className="space-y-2">
-                      <input
-                        type="text"
-                        placeholder="Ej: Sala principal"
-                        value={subtitulos[idx] || ""}
-                        onChange={(e) => handleSubtituloChange(idx, e.target.value)}
-                        maxLength={30}
-                        className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                      />
-                      
-                      {/* Galería de iconos */}
-                      <div className="flex flex-wrap gap-1 items-center">
-                        <span className="text-xs text-muted-foreground">Iconos:</span>
-                        {Object.values(SUBTITLE_ICONS).flat().map((icon, iconIdx) => (
-                          <button
-                            key={iconIdx}
-                            type="button"
-                            onClick={() => {
-                              const currentText = subtitulos[idx] || "";
-                              // Si el texto ya empieza con emoji, reemplazarlo
-                              const emojiRegex = /^[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Emoji_Presentation}]+\s*/u;
-                              const newText = currentText.match(emojiRegex) 
-                                ? `${icon} ${currentText.replace(emojiRegex, '').trim()}`
-                                : `${icon} ${currentText}`.trim();
-                              handleSubtituloChange(idx, newText);
-                            }}
-                            className="text-base hover:scale-125 transition-transform p-1 rounded hover:bg-accent"
-                            title="Agregar icono"
-                          >
-                            {icon}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
           </div>
         )}
       </div>
