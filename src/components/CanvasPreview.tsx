@@ -281,11 +281,9 @@ export const CanvasPreview = ({
         <div 
           className={`absolute ${logoStyle.positionClass} z-20`}
           style={{ 
-            width: logoStyle.size, 
-            height: logoStyle.size,
-            opacity: logoStyle.opacity,
-            transform: mode === 'capture' ? 'scale(2.0)' : 'none',
-            transformOrigin: logoSettings.position === 'top-right' ? 'top right' : 'top left'
+            width: mode === 'capture' ? `${parseFloat(logoStyle.size) * 1.7}px` : logoStyle.size,
+            height: mode === 'capture' ? `${parseFloat(logoStyle.size) * 1.7}px` : logoStyle.size,
+            opacity: logoStyle.opacity
           }}
         >
         <div 
