@@ -1140,7 +1140,7 @@ const Index = () => {
                             style={{
                               width: "100%",
                               aspectRatio: selectedContentType === "post" ? "1 / 1" : "9 / 16",
-                              maxWidth: selectedContentType === "post" ? "550px" : "350px",
+                              maxWidth: selectedContentType === "post" ? "616px" : "392px",
                               margin: "0 auto"
                             }}
                           >
