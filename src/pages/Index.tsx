@@ -1171,10 +1171,9 @@ const Index = () => {
             left: '-10000px',
             width: '1080px',
             height: selectedContentType === 'post' ? '1080px' : '1920px',
-            opacity: 0,
             pointerEvents: 'none',
             zIndex: -1,
-            backgroundColor: '#000'
+            overflow: 'hidden'
           }}
         >
             <CanvasPreview 
