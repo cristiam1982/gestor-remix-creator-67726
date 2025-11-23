@@ -98,20 +98,13 @@ export const CanvasPreview = ({
     };
   }, [isFirstPhoto, firstPhotoConfig, textComposition]);
 
-  // Escalas de texto dinámicas con multiplicador para captura
+  // Escalas de texto unificadas (sin multiplicadores por modo)
   const textStyle = useMemo(() => {
-    const baseScale = 1 + (effectiveTextComposition.typographyScale / 100);
-    const baseBadgeScale = 1 + (effectiveTextComposition.badgeScale / 100);
-    
-    // Multiplicadores para modo captura (1080x1080) vs preview (~540px)
-    const captureMultiplier = mode === 'capture' ? 2.0 : 1;
-    const captureBadgeMultiplier = mode === 'capture' ? 2.0 : 1;
-    
-    const scale = baseScale * captureMultiplier;
-    const badgeScale = baseBadgeScale * captureBadgeMultiplier;
+    const scale = 1 + (effectiveTextComposition.typographyScale / 100);
+    const badgeScale = 1 + (effectiveTextComposition.badgeScale / 100);
     
     return { scale, badgeScale };
-  }, [effectiveTextComposition, mode]);
+  }, [effectiveTextComposition]);
 
   // Map vertical spacing to pixel values con ajuste para captura
   const spacingMap = {
@@ -120,7 +113,7 @@ export const CanvasPreview = ({
     spacious: 16
   };
   const gapBase = spacingMap[effectiveTextComposition.verticalSpacing];
-  const verticalGap = mode === 'capture' ? gapBase * 2.0 : gapBase;
+  const verticalGap = gapBase; // Mismo valor en preview y capture
 
   // Gradiente dinámico
   const gradientOverlayStyle = useMemo(() => {
@@ -176,12 +169,10 @@ export const CanvasPreview = ({
 
   const isStory = contentType === "historia";
 
-  // Tamaño del logo "El Gestor" proporcional al escalado de texto
+  // Tamaño del logo "El Gestor" unificado
   const elGestorLogoSize = useMemo(() => {
-    const baseSize = isStory ? 40 : 32; // Base: 40px historia, 32px post
-    const multiplier = mode === 'capture' ? 2.0 : 1; // ✅ Unificado a 2.0x
-    return baseSize * multiplier; // 80px capture historia, 64px capture post
-  }, [isStory, mode]);
+    return isStory ? 40 : 32; // Mismo tamaño en preview y capture
+  }, [isStory]);
   
   // Estilos dinámicos según modo
   const containerStyle = mode === 'capture' 
@@ -281,8 +272,8 @@ export const CanvasPreview = ({
         <div 
           className={`absolute ${logoStyle.positionClass} z-20`}
           style={{ 
-            width: mode === 'capture' ? `${parseFloat(logoStyle.size) * 2.0}px` : logoStyle.size,
-            height: mode === 'capture' ? `${parseFloat(logoStyle.size) * 2.0}px` : logoStyle.size,
+            width: logoStyle.size,
+            height: logoStyle.size,
             opacity: logoStyle.opacity
           }}
         >
@@ -585,10 +576,8 @@ export const CanvasPreview = ({
       <div 
         className="absolute z-30"
         style={{
-          bottom: isStory 
-            ? (mode === 'capture' ? '192px' : '96px')
-            : (mode === 'capture' ? '32px' : '16px'),
-          right: mode === 'capture' ? '32px' : '16px'
+          bottom: isStory ? '96px' : '16px',
+          right: '16px'
         }}
       >
         <img 
