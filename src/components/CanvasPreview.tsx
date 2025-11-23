@@ -329,13 +329,23 @@ export const CanvasPreview = ({
           {hasPrice && effectiveVisualLayers.showPrice && (
             <div 
               data-canon-value={priceText}
-              className="inline-block px-4 py-2 rounded-xl z-[60] ring-2 ring-white/70"
+              className="inline-block rounded-xl z-[60] ring-2 ring-white/70"
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario,
-                marginBottom: `${verticalGap * 2}px`
+                marginBottom: `${verticalGap * 2}px`,
+                paddingLeft: `${mode === 'capture' ? 22 : 16}px`,
+                paddingRight: `${mode === 'capture' ? 22 : 16}px`,
+                paddingTop: `${mode === 'capture' ? 11 : 8}px`,
+                paddingBottom: `${mode === 'capture' ? 11 : 8}px`
               }}
             >
-              <p className="text-[10px] text-white font-semibold mb-0.5 uppercase tracking-wide relative z-[70]">
+              <p 
+                className="text-white font-semibold uppercase tracking-wide relative z-[70]"
+                style={{ 
+                  fontSize: `${mode === 'capture' ? 14 : 10}px`,
+                  marginBottom: `${mode === 'capture' ? 3 : 2}px`
+                }}
+              >
                 {isVenta ? "Precio de Venta" : "Canon Mensual"}
               </p>
               <p 
@@ -565,12 +575,12 @@ export const CanvasPreview = ({
 
       {/* Logo El Gestor - inferior derecha (marca secundaria) */}
       {(
-      <div className={`absolute ${isStory ? "bottom-24 right-6" : "bottom-4 right-4"} z-30`}>
+      <div className={`absolute ${isStory ? "bottom-24 right-6" : mode === 'capture' ? "bottom-6 right-6" : "bottom-4 right-4"} z-30`}>
         <img 
           src={elGestorLogo} 
           alt="El Gestor" 
           data-eg-logo="true"
-          className={`${isStory ? "h-10" : mode === 'capture' ? "h-10" : "h-8"} object-contain drop-shadow-lg opacity-70`}
+          className={`${isStory ? "h-12" : mode === 'capture' ? "h-12" : "h-8"} object-contain drop-shadow-lg opacity-70`}
         />
       </div>
       )}
