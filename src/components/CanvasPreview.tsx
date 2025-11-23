@@ -98,20 +98,29 @@ export const CanvasPreview = ({
     };
   }, [isFirstPhoto, firstPhotoConfig, textComposition]);
 
-  // Escalas de texto dinámicas
+  // Escalas de texto dinámicas con multiplicador para captura
   const textStyle = useMemo(() => {
-    const scale = 1 + (effectiveTextComposition.typographyScale / 100);
-    const badgeScale = 1 + (effectiveTextComposition.badgeScale / 100);
+    const baseScale = 1 + (effectiveTextComposition.typographyScale / 100);
+    const baseBadgeScale = 1 + (effectiveTextComposition.badgeScale / 100);
+    
+    // Multiplicadores para modo captura (1080x1080) vs preview (~540px)
+    const captureMultiplier = mode === 'capture' ? 1.8 : 1;
+    const captureBadgeMultiplier = mode === 'capture' ? 1.6 : 1;
+    
+    const scale = baseScale * captureMultiplier;
+    const badgeScale = baseBadgeScale * captureBadgeMultiplier;
+    
     return { scale, badgeScale };
-  }, [effectiveTextComposition]);
+  }, [effectiveTextComposition, mode]);
 
-  // Map vertical spacing to pixel values
+  // Map vertical spacing to pixel values con ajuste para captura
   const spacingMap = {
     compact: 4,
     normal: 8,
     spacious: 16
   };
-  const verticalGap = spacingMap[effectiveTextComposition.verticalSpacing];
+  const gapBase = spacingMap[effectiveTextComposition.verticalSpacing];
+  const verticalGap = mode === 'capture' ? gapBase * 1.6 : gapBase;
 
   // Gradiente dinámico
   const gradientOverlayStyle = useMemo(() => {
@@ -195,6 +204,9 @@ export const CanvasPreview = ({
     }
   };
 
+  // Ocultar navegación en modo captura
+  const showNavigation = hasMultiplePhotos && mode === 'preview';
+
   return (
     <div 
       ref={canvasRef}
@@ -213,7 +225,7 @@ export const CanvasPreview = ({
           <div className="absolute inset-0" style={gradientOverlayStyle} />
           
           {/* Photo navigation */}
-          {hasMultiplePhotos && (
+          {showNavigation && (
             <>
               {/* Arrows */}
               {currentPhotoIndex > 0 && (
@@ -298,7 +310,7 @@ export const CanvasPreview = ({
               </h2>
               {propertyData.ubicacion && (
                 <div className="flex items-center" style={{ gap: `${verticalGap / 2}px` }}>
-                  <MapPin className="w-4 h-4 text-white drop-shadow-lg" />
+                  <MapPin className={mode === 'capture' ? "w-5 h-5" : "w-4 h-4"} style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                   <span 
                     className="font-semibold text-white"
                     style={{ 
@@ -349,7 +361,7 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Bed className="w-5 h-5 text-white drop-shadow-lg" />
+                <Bed className={mode === 'capture' ? "w-6 h-6" : "w-5 h-5"} style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -370,7 +382,7 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Bath className="w-5 h-5 text-white drop-shadow-lg" />
+                <Bath className={mode === 'capture' ? "w-6 h-6" : "w-5 h-5"} style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -391,7 +403,7 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Car className="w-5 h-5 text-white drop-shadow-lg" />
+                <Car className={mode === 'capture' ? "w-6 h-6" : "w-5 h-5"} style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -412,7 +424,7 @@ export const CanvasPreview = ({
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
-                <Square className="w-5 h-5 text-white drop-shadow-lg" />
+                <Square className={mode === 'capture' ? "w-6 h-6" : "w-5 h-5"} style={{ color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -558,7 +570,7 @@ export const CanvasPreview = ({
           src={elGestorLogo} 
           alt="El Gestor" 
           data-eg-logo="true"
-          className={`${isStory ? "h-12" : "h-8"} object-contain drop-shadow-lg opacity-70`}
+          className={`${isStory ? "h-12" : mode === 'capture' ? "h-14" : "h-8"} object-contain drop-shadow-lg opacity-70`}
         />
       </div>
       )}
