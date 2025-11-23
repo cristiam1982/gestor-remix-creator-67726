@@ -570,7 +570,7 @@ export const CanvasPreview = ({
           src={elGestorLogo} 
           alt="El Gestor" 
           data-eg-logo="true"
-          className={`${isStory ? "h-12" : mode === 'capture' ? "h-14" : "h-8"} object-contain drop-shadow-lg opacity-70`}
+          className={`${isStory ? "h-10" : mode === 'capture' ? "h-10" : "h-8"} object-contain drop-shadow-lg opacity-70`}
         />
       </div>
       )}
