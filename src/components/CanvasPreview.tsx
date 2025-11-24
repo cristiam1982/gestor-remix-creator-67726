@@ -22,6 +22,7 @@ interface CanvasPreviewProps {
   gradientDirection?: 'none' | 'top' | 'bottom' | 'both';
   gradientIntensity?: number;
   firstPhotoConfig?: FirstPhotoConfig;
+  exportMode?: boolean;
 }
 
 export const CanvasPreview = ({ 
@@ -54,7 +55,8 @@ export const CanvasPreview = ({
   },
   gradientDirection = 'both',
   gradientIntensity = 60,
-  firstPhotoConfig
+  firstPhotoConfig,
+  exportMode = false
 }: CanvasPreviewProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const templateConfig = TEMPLATE_THEMES[template];
@@ -199,6 +201,7 @@ export const CanvasPreview = ({
         aliadoConfig={aliadoConfig}
         activePhotoIndex={activePhotoIndex}
         logoSettings={logoSettings}
+        exportMode={exportMode}
       />
     );
   }

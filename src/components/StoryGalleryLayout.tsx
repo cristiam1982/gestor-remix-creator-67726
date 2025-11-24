@@ -9,13 +9,15 @@ interface StoryGalleryLayoutProps {
   aliadoConfig: AliadoConfig;
   activePhotoIndex: number;
   logoSettings?: LogoSettings;
+  exportMode?: boolean;
 }
 
 export const StoryGalleryLayout = ({ 
   propertyData, 
   aliadoConfig,
   activePhotoIndex,
-  logoSettings
+  logoSettings,
+  exportMode = false
 }: StoryGalleryLayoutProps) => {
   // Color de fondo personalizable (con override de sesión)
   const bgColor = propertyData.galleryBackgroundColorOverride 
@@ -49,15 +51,40 @@ export const StoryGalleryLayout = ({
     ...(propertyData.piso ? [{ icon: null as any, label: `Piso ${propertyData.piso}` }] : [])
   ];
 
+  // Tamaños condicionales según modo
+  const sizes = exportMode ? {
+    miniPhoto: { width: 90, height: 130 },
+    logoSize: logoSettings?.size === 'small' ? 60 : logoSettings?.size === 'large' ? 80 : logoSettings?.size === 'xlarge' ? 90 : 70,
+    badgeText: 'text-xs',
+    priceText: 'text-lg',
+    featureText: 'text-xs',
+    iconSize: 'w-3.5 h-3.5',
+    badgePadding: 'px-3 py-1.5',
+    locationText: 'text-sm'
+  } : {
+    miniPhoto: { width: 60, height: 90 },
+    logoSize: Math.round((logoSettings?.size === 'small' ? 60 : logoSettings?.size === 'large' ? 80 : logoSettings?.size === 'xlarge' ? 90 : 70) * 0.7),
+    badgeText: 'text-[10px]',
+    priceText: 'text-base',
+    featureText: 'text-[9px]',
+    iconSize: 'w-3 h-3',
+    badgePadding: 'px-2 py-1',
+    locationText: 'text-xs'
+  };
+
   return (
     <div 
       id="story-gallery-preview"
       className="relative overflow-hidden"
-      style={{ 
+      style={exportMode ? { 
         width: "1080px",
         height: "1920px",
         backgroundColor: bgColor,
         margin: "0 auto"
+      } : {
+        width: "100%",
+        aspectRatio: "9/16",
+        backgroundColor: bgColor
       }}
     >
       {/* Sección Superior: Foto Principal (56%) */}
@@ -71,14 +98,14 @@ export const StoryGalleryLayout = ({
         {/* Badge LIMITED OFFER - Top Right */}
         <div className="absolute top-4 right-4 z-10">
           <Badge 
-            className="px-3 py-1.5 text-xs font-bold border-2 backdrop-blur-sm"
+            className={`${sizes.badgeText} ${sizes.badgePadding} font-bold border-2 backdrop-blur-sm`}
             style={{ 
               backgroundColor: `${bgColor}CC`, // 80% opacidad del color de fondo
               borderColor: aliadoConfig.colorPrimario,
               color: aliadoConfig.colorPrimario
             }}
           >
-            <Clock className="w-3 h-3 mr-1" />
+            <Clock className={`${sizes.iconSize} mr-1`} />
             {propertyData.galleryBadgeTextOverride || aliadoConfig.galleryBadgeText || "OFERTA LIMITADA"}
           </Badge>
         </div>
@@ -94,12 +121,8 @@ export const StoryGalleryLayout = ({
             }`}
             style={{ 
               backgroundColor: 'rgba(255, 255, 255, 0.95)',
-              width: `${logoSettings?.size === 'small' ? 60 : 
-                       logoSettings?.size === 'large' ? 80 :
-                       logoSettings?.size === 'xlarge' ? 90 : 70}px`,
-              height: `${logoSettings?.size === 'small' ? 60 : 
-                        logoSettings?.size === 'large' ? 80 :
-                        logoSettings?.size === 'xlarge' ? 90 : 70}px`,
+              width: `${sizes.logoSize}px`,
+              height: `${sizes.logoSize}px`,
               opacity: (logoSettings?.opacity || 100) / 100
             }}
           >
@@ -115,11 +138,15 @@ export const StoryGalleryLayout = ({
       {/* Grid de Miniaturas - Centrado sobre la división */}
       {thumbnails.length >= 3 && (
         <div className="absolute left-1/2 transform -translate-x-1/2 z-30" style={{ top: "49%" }}>
-          <div className="flex gap-3">
+          <div className={`flex ${exportMode ? 'gap-3' : 'gap-2'}`}>
             {thumbnails.map((photo, idx) => (
               <div 
                 key={idx}
-                className="w-[90px] h-[130px] rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
+                className="rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
+                style={{
+                  width: `${sizes.miniPhoto.width}px`,
+                  height: `${sizes.miniPhoto.height}px`
+                }}
               >
                 {photo ? (
                   <img 
@@ -151,11 +178,11 @@ export const StoryGalleryLayout = ({
         {/* Header: Estado + Ubicación */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Badge className="bg-white/10 text-white text-xs px-2 py-1 font-semibold">
+            <Badge className={`bg-white/10 text-white ${sizes.badgeText} px-2 py-1 font-semibold`}>
               {modalidadText}
             </Badge>
-            <div className="flex items-center gap-1 text-white/80 text-sm">
-              <MapPin className="w-3.5 h-3.5" />
+            <div className={`flex items-center gap-1 text-white/80 ${sizes.locationText}`}>
+              <MapPin className={sizes.iconSize} />
               <span>{propertyData.ubicacion}</span>
             </div>
           </div>
@@ -165,21 +192,21 @@ export const StoryGalleryLayout = ({
             className="inline-block px-3 py-2 rounded-lg"
             style={{ backgroundColor: aliadoConfig.colorPrimario }}
           >
-            <div className="text-lg font-bold text-black">
+            <div className={`${sizes.priceText} font-bold text-black`}>
               {formatPrecioColombia(precioValue || "")}
             </div>
           </div>
         </div>
 
         {/* Características en 2 columnas */}
-        <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-4">
+        <div className={`grid grid-cols-2 ${exportMode ? 'gap-x-6' : 'gap-x-4'} gap-y-2 mt-4`}>
           {/* Columna Izquierda */}
           <div className="space-y-2">
             {leftFeatures.map((feature, idx) => {
               const Icon = feature.icon;
               return (
-                <div key={idx} className="flex items-center gap-2 text-white/90 text-xs">
-                  {Icon && <Icon className="w-3.5 h-3.5 text-white" />}
+                <div key={idx} className={`flex items-center gap-2 text-white/90 ${sizes.featureText}`}>
+                  {Icon && <Icon className={`${sizes.iconSize} text-white`} />}
                   <span>{feature.label}</span>
                 </div>
               );
@@ -191,8 +218,8 @@ export const StoryGalleryLayout = ({
             {rightFeatures.map((feature, idx) => {
               const Icon = feature.icon;
               return (
-                <div key={idx} className="flex items-center gap-2 text-white/90 text-xs">
-                  {Icon && <Icon className="w-3.5 h-3.5 text-white" />}
+                <div key={idx} className={`flex items-center gap-2 text-white/90 ${sizes.featureText}`}>
+                  {Icon && <Icon className={`${sizes.iconSize} text-white`} />}
                   <span>{feature.label}</span>
                 </div>
               );
