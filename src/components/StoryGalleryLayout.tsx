@@ -14,13 +14,16 @@ export const StoryGalleryLayout = ({
   aliadoConfig,
   activePhotoIndex 
 }: StoryGalleryLayoutProps) => {
+  // Color de fondo personalizable
+  const bgColor = aliadoConfig.galleryBackgroundColor || aliadoConfig.colorSecundario || '#000000';
+  
   // Validación defensiva: asegurar que haya fotos suficientes
-  const availablePhotos = propertyData.fotos && propertyData.fotos.length >= 3 
+  const availablePhotos = propertyData.fotos && propertyData.fotos.length >= 4 
     ? propertyData.fotos 
     : propertyData.fotos || [];
   
   const mainPhoto = availablePhotos[activePhotoIndex] || availablePhotos[0];
-  const thumbnails = availablePhotos.slice(0, 3);
+  const thumbnails = availablePhotos.slice(0, 4);
   const modalidadText = propertyData.modalidad === "arriendo" ? "EN ARRIENDO" : "EN VENTA";
   const precioValue = propertyData.modalidad === "arriendo" ? propertyData.canon : propertyData.valorVenta;
 
@@ -65,7 +68,7 @@ export const StoryGalleryLayout = ({
             }}
           >
             <Clock className="w-3 h-3 mr-1" />
-            OFERTA LIMITADA
+            {aliadoConfig.galleryBadgeText || "OFERTA LIMITADA"}
           </Badge>
         </div>
 
@@ -85,13 +88,13 @@ export const StoryGalleryLayout = ({
       </div>
 
       {/* Grid de Miniaturas - Centrado sobre la división */}
-      {thumbnails.length >= 3 && (
+      {thumbnails.length >= 4 && (
         <div className="absolute left-1/2 transform -translate-x-1/2" style={{ top: "48%" }}>
-          <div className="flex gap-3">
+          <div className="flex gap-2.5">
             {thumbnails.map((photo, idx) => (
               <div 
                 key={idx}
-                className="w-20 h-20 rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
+                className="w-24 h-24 rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
               >
                 {photo ? (
                   <img 
@@ -114,8 +117,8 @@ export const StoryGalleryLayout = ({
       <div 
         className="absolute bottom-0 w-full h-[48%] px-6 py-8 flex flex-col justify-between"
         style={{ 
-          background: 'linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.95))',
-          paddingTop: thumbnails.length >= 3 ? "4.5rem" : "2.5rem" 
+          background: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1), ${bgColor}F0)`,
+          paddingTop: thumbnails.length >= 4 ? "5rem" : "2.5rem" 
         }}
       >
         {/* Header: Estado + Ubicación */}

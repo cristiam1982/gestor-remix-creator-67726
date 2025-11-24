@@ -22,8 +22,8 @@ const layoutOptions = [
     id: "gallery" as StoryLayout,
     icon: Grid3X3,
     name: "Gallery",
-    description: "Grid + info",
-    requirements: "Mínimo 3 fotos"
+    description: "Grid de 4 fotos + info",
+    requirements: "Mínimo 4 fotos"
   },
   {
     id: "showcase" as StoryLayout,

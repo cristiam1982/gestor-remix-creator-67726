@@ -15,5 +15,7 @@ export const ALIADO_CONFIG: AliadoConfig = {
   whatsapp: "+573126041877",
   ciudad: "Cali",
   ctaArrendado: "💪 ¿Quieres arrendar tu inmueble rápido?",
-  ctaVendido: "💪 ¿Quieres vender tu inmueble rápido?"
+  ctaVendido: "💪 ¿Quieres vender tu inmueble rápido?",
+  galleryBadgeText: "OFERTA LIMITADA",
+  galleryBackgroundColor: "#2B3FD6"
 };
