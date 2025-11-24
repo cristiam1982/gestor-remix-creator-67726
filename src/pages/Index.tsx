@@ -1179,6 +1179,14 @@ const Index = () => {
                           galleryBackgroundColorOverride: color
                         });
                       }}
+                      galleryBadgeText={propertyData.galleryBadgeTextOverride || aliadoConfig.galleryBadgeText}
+                      onGalleryBadgeTextChange={(text) => {
+                        setPropertyData({
+                          ...propertyData,
+                          galleryBadgeTextOverride: text
+                        });
+                      }}
+                      defaultBadgeText={aliadoConfig.galleryBadgeText}
                       primaryColor={aliadoConfig.colorPrimario}
                       secondaryColor={aliadoConfig.colorSecundario}
                     />
@@ -1214,6 +1222,14 @@ const Index = () => {
                               galleryBackgroundColorOverride: color
                             });
                           }}
+                          galleryBadgeText={propertyData.galleryBadgeTextOverride || aliadoConfig.galleryBadgeText}
+                          onGalleryBadgeTextChange={(text) => {
+                            setPropertyData({
+                              ...propertyData,
+                              galleryBadgeTextOverride: text
+                            });
+                          }}
+                          defaultBadgeText={aliadoConfig.galleryBadgeText}
                           primaryColor={aliadoConfig.colorPrimario}
                           secondaryColor={aliadoConfig.colorSecundario}
                         />

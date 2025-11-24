@@ -78,7 +78,7 @@ export const StoryGalleryLayout = ({
             }}
           >
             <Clock className="w-3 h-3 mr-1" />
-            {aliadoConfig.galleryBadgeText || "OFERTA LIMITADA"}
+            {propertyData.galleryBadgeTextOverride || aliadoConfig.galleryBadgeText || "OFERTA LIMITADA"}
           </Badge>
         </div>
 
@@ -203,32 +203,29 @@ export const StoryGalleryLayout = ({
           </div>
         </div>
 
-        {/* CTA "AGENDA TU VISITA" */}
-        <div className="relative">
-          <div 
-            className="text-center py-3 rounded-lg border-2 border-white font-bold text-sm text-white"
-            style={{ 
-              backgroundColor: aliadoConfig.colorSecundario,
-            }}
-          >
-            <Phone className="inline-block w-4 h-4 mr-2 mb-0.5" />
-            AGENDA TU VISITA
-            <Phone className="inline-block w-4 h-4 ml-2 mb-0.5" />
-          </div>
+        {/* Footer: Solo contacto */}
+        <div className="flex items-center gap-2 text-white/80 text-sm mt-2 pt-2 border-t border-white/10">
+          <Phone className="w-4 h-4" />
+          <span className="font-semibold">{aliadoConfig.whatsapp}</span>
         </div>
+      </div>
 
-        {/* Footer: Contacto + Logo El Gestor */}
-        <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
-          <div className="flex items-center gap-2 text-white/80 text-xs">
-            <Phone className="w-3 h-3" />
-            <span>{aliadoConfig.whatsapp}</span>
-          </div>
-          <img 
-            src={elGestorLogo} 
-            alt="El Gestor"
-            className="h-7 object-contain opacity-80"
-          />
-        </div>
+      {/* Logo El Gestor - Esquina inferior derecha (igual que otras secciones) */}
+      <div 
+        className="absolute z-30"
+        style={{
+          bottom: '16px',
+          right: '16px'
+        }}
+      >
+        <img 
+          src={elGestorLogo} 
+          alt="El Gestor" 
+          className="object-contain drop-shadow-lg opacity-70"
+          style={{
+            height: '32px'
+          }}
+        />
       </div>
     </div>
   );

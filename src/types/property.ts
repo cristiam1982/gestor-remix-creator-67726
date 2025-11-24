@@ -113,4 +113,5 @@ export interface PropertyData {
   
   // Gallery Story - Override temporal del color de fondo
   galleryBackgroundColorOverride?: string;
+  galleryBadgeTextOverride?: string; // Override del texto del badge
 }
