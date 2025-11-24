@@ -40,13 +40,13 @@ export const StoryGalleryLayout = ({
   const leftFeatures = [
     { icon: Bed, label: `${propertyData.habitaciones || 0} Habitaciones` },
     { icon: Bath, label: `${propertyData.banos || 0} Baños` },
-    ...(propertyData.piso ? [{ icon: null as any, label: `Piso ${propertyData.piso}` }] : [])
+    ...(propertyData.estrato ? [{ icon: null as any, label: `Estrato ${propertyData.estrato}` }] : [])
   ];
 
   const rightFeatures = [
     { icon: Maximize, label: `${propertyData.area || 0}m²` },
     { icon: Car, label: `${propertyData.parqueaderos || 0} Parqueaderos` },
-    ...(propertyData.estrato ? [{ icon: null as any, label: `Estrato ${propertyData.estrato}` }] : [])
+    ...(propertyData.piso ? [{ icon: null as any, label: `Piso ${propertyData.piso}` }] : [])
   ];
 
   return (
@@ -113,12 +113,12 @@ export const StoryGalleryLayout = ({
 
       {/* Grid de Miniaturas - Centrado sobre la división */}
       {thumbnails.length >= 3 && (
-        <div className="absolute left-1/2 transform -translate-x-1/2" style={{ top: "48%" }}>
-          <div className="flex gap-2">
+        <div className="absolute left-1/2 transform -translate-x-1/2 z-30" style={{ top: "46%" }}>
+          <div className="flex gap-3">
             {thumbnails.map((photo, idx) => (
               <div 
                 key={idx}
-                className="w-[107px] h-[107px] rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
+                className="w-[120px] h-[95px] rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
               >
                 {photo ? (
                   <img 
@@ -163,7 +163,7 @@ export const StoryGalleryLayout = ({
             className="inline-block px-4 py-2.5 rounded-lg"
             style={{ backgroundColor: aliadoConfig.colorPrimario }}
           >
-            <div className="text-2xl font-bold text-black">
+            <div className="text-xl font-bold text-black">
               {formatPrecioColombia(precioValue || "")}
             </div>
           </div>
