@@ -118,7 +118,7 @@ export const StoryGalleryLayout = ({
             {thumbnails.map((photo, idx) => (
               <div 
                 key={idx}
-                className="w-[120px] h-[95px] rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
+                className="w-[90px] h-[130px] rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
               >
                 {photo ? (
                   <img 
