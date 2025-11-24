@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { PropertyData, AliadoConfig, ContentType, LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
+import { StoryGalleryLayout } from "@/components/StoryGalleryLayout";
 import { TemplateTheme, TEMPLATE_THEMES } from "@/types/templates";
 import { Bed, Bath, Car, MapPin, Square, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -166,6 +167,10 @@ export const CanvasPreview = ({
   }, [onReady]);
 
   const isStory = contentType === "historia";
+  
+  // Detectar si se debe usar layout Gallery
+  const storyLayout = propertyData.storyLayout || "overlay";
+  const useGalleryLayout = isStory && storyLayout === "gallery";
 
   // Tamaño del logo "El Gestor" unificado (reducido 10%)
   const elGestorLogoSize = useMemo(() => {
@@ -186,6 +191,18 @@ export const CanvasPreview = ({
 
   const showNavigation = hasMultiplePhotos;
 
+  // Si es historia con layout Gallery, renderizar el componente Gallery
+  if (useGalleryLayout && propertyData.fotos && propertyData.fotos.length >= 3) {
+    return (
+      <StoryGalleryLayout 
+        propertyData={propertyData}
+        aliadoConfig={aliadoConfig}
+        activePhotoIndex={activePhotoIndex}
+      />
+    );
+  }
+
+  // Layout overlay original (default)
   return (
     <div 
       ref={canvasRef}
