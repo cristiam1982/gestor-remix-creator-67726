@@ -96,8 +96,14 @@ export const exportToImage = async (
           });
 
           // PASO 3: Quitar gradientes complejos que rompen html2canvas
+          // EXCEPCIÓN: No tocar los gradientes del Gallery layout
           const gradientElements = clonedElement.querySelectorAll<HTMLElement>('[style*="linear-gradient"], [class*="bg-gradient"]');
           gradientElements.forEach((el) => {
+            // Si pertenece al layout de historia Gallery, NO tocar el gradient
+            const isGalleryElement = !!el.closest('#story-gallery-preview');
+            if (isGalleryElement) {
+              return;
+            }
             (el as HTMLElement).style.backgroundImage = 'none';
           });
           
