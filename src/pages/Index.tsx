@@ -1131,32 +1131,25 @@ const Index = () => {
                     <div className="flex justify-center mb-6 overflow-hidden">
                       {aliadoConfig && (
                         <div style={{
-                          width: selectedContentType === "post" ? "360px" : "270px",
-                          height: selectedContentType === "post" ? "360px" : "480px",
+                          width: selectedContentType === "post" ? "360px" : "360px",
+                          height: selectedContentType === "post" ? "360px" : "640px",
                           overflow: "hidden",
-                          borderRadius: "1rem",
-                          position: "relative"
+                          borderRadius: "1rem"
                         }}>
-                          <div style={{
-                            transform: selectedContentType === "post" ? "scale(0.333)" : "scale(0.25)",
-                            transformOrigin: "top left",
-                            width: "1080px",
-                            height: selectedContentType === "post" ? "1080px" : "1920px"
-                          }}>
-                            <CanvasPreview 
-                              propertyData={propertyData as PropertyData} 
-                              aliadoConfig={aliadoConfig} 
-                              contentType={selectedContentType!} 
-                              template="residencial" 
-                              currentPhotoIndexOverride={currentPhotoIndexOverride} 
-                              logoSettings={postLogoSettings} 
-                              textComposition={postTextComposition} 
-                              visualLayers={postVisualLayers} 
-                              gradientDirection={postGradientDirection} 
-                              gradientIntensity={postGradientIntensity} 
-                              firstPhotoConfig={postFirstPhotoConfig} 
-                            />
-                          </div>
+                          <CanvasPreview 
+                            propertyData={propertyData as PropertyData} 
+                            aliadoConfig={aliadoConfig} 
+                            contentType={selectedContentType!} 
+                            template="residencial" 
+                            currentPhotoIndexOverride={currentPhotoIndexOverride} 
+                            logoSettings={postLogoSettings} 
+                            textComposition={postTextComposition} 
+                            visualLayers={postVisualLayers} 
+                            gradientDirection={postGradientDirection} 
+                            gradientIntensity={postGradientIntensity} 
+                            firstPhotoConfig={postFirstPhotoConfig} 
+                            exportMode={false}
+                          />
                         </div>
                       )}
                     </div>
@@ -1276,33 +1269,26 @@ const Index = () => {
                       <div className="flex-1 flex items-center justify-center mb-6 min-h-0">
                         {aliadoConfig && (
                           <div style={{
-                            width: selectedContentType === "post" ? "360px" : "270px",
-                            height: selectedContentType === "post" ? "360px" : "480px",
+                            width: selectedContentType === "post" ? "360px" : "360px",
+                            height: selectedContentType === "post" ? "360px" : "640px",
                             overflow: "hidden",
                             borderRadius: "1rem",
-                            position: "relative",
                             margin: "0 auto"
                           }}>
-                            <div style={{
-                              transform: selectedContentType === "post" ? "scale(0.333)" : "scale(0.25)",
-                              transformOrigin: "top left",
-                              width: "1080px",
-                              height: selectedContentType === "post" ? "1080px" : "1920px"
-                            }}>
-                              <CanvasPreview 
-                                propertyData={propertyData as PropertyData} 
-                                aliadoConfig={aliadoConfig} 
-                                contentType={selectedContentType!} 
-                                template="residencial" 
-                                currentPhotoIndexOverride={currentPhotoIndexOverride} 
-                                logoSettings={postLogoSettings} 
-                                textComposition={postTextComposition} 
-                                visualLayers={postVisualLayers} 
-                                gradientDirection={postGradientDirection} 
-                                gradientIntensity={postGradientIntensity} 
-                                firstPhotoConfig={postFirstPhotoConfig} 
-                              />
-                            </div>
+                            <CanvasPreview 
+                              propertyData={propertyData as PropertyData} 
+                              aliadoConfig={aliadoConfig} 
+                              contentType={selectedContentType!} 
+                              template="residencial" 
+                              currentPhotoIndexOverride={currentPhotoIndexOverride} 
+                              logoSettings={postLogoSettings} 
+                              textComposition={postTextComposition} 
+                              visualLayers={postVisualLayers} 
+                              gradientDirection={postGradientDirection} 
+                              gradientIntensity={postGradientIntensity} 
+                              firstPhotoConfig={postFirstPhotoConfig} 
+                              exportMode={false}
+                            />
                           </div>
                         )}
                       </div>
@@ -1362,6 +1348,7 @@ const Index = () => {
                 gradientDirection={postGradientDirection} 
                 gradientIntensity={postGradientIntensity} 
                 firstPhotoConfig={postFirstPhotoConfig} 
+                exportMode={true}
               />
             </div>
           </div>
