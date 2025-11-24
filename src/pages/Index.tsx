@@ -976,22 +976,32 @@ const Index = () => {
                           width: selectedContentType === "post" ? "360px" : "360px",
                           height: selectedContentType === "post" ? "360px" : "640px",
                           overflow: "hidden",
-                          borderRadius: "1rem"
+                          borderRadius: "1rem",
+                          position: "relative"
                         }}>
-                          <CanvasPreview 
-                            propertyData={propertyData as PropertyData} 
-                            aliadoConfig={aliadoConfig} 
-                            contentType={selectedContentType!} 
-                            template="residencial" 
-                            currentPhotoIndexOverride={currentPhotoIndexOverride} 
-                            logoSettings={postLogoSettings} 
-                            textComposition={postTextComposition} 
-                            visualLayers={postVisualLayers} 
-                            gradientDirection={postGradientDirection} 
-                            gradientIntensity={postGradientIntensity} 
-                            firstPhotoConfig={postFirstPhotoConfig} 
-                            exportMode={false}
-                          />
+                          <div style={{
+                            width: selectedContentType === "post" ? "1080px" : "1080px",
+                            height: selectedContentType === "post" ? "1080px" : "1920px",
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%) scale(0.333)"
+                          }}>
+                            <CanvasPreview 
+                              propertyData={propertyData as PropertyData} 
+                              aliadoConfig={aliadoConfig} 
+                              contentType={selectedContentType!} 
+                              template="residencial" 
+                              currentPhotoIndexOverride={currentPhotoIndexOverride} 
+                              logoSettings={postLogoSettings} 
+                              textComposition={postTextComposition} 
+                              visualLayers={postVisualLayers} 
+                              gradientDirection={postGradientDirection} 
+                              gradientIntensity={postGradientIntensity} 
+                              firstPhotoConfig={postFirstPhotoConfig} 
+                              exportMode={false}
+                            />
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1143,20 +1153,29 @@ const Index = () => {
                                 />
                               </div>
                             ) : (
-                              <CanvasPreview 
-                                propertyData={propertyData as PropertyData} 
-                                aliadoConfig={aliadoConfig} 
-                                contentType={selectedContentType!} 
-                                template="residencial" 
-                                currentPhotoIndexOverride={currentPhotoIndexOverride} 
-                                logoSettings={postLogoSettings} 
-                                textComposition={postTextComposition} 
-                                visualLayers={postVisualLayers} 
-                                gradientDirection={postGradientDirection} 
-                                gradientIntensity={postGradientIntensity} 
-                                firstPhotoConfig={postFirstPhotoConfig} 
-                                exportMode={false}
-                              />
+                              <div style={{
+                                width: "1080px",
+                                height: "1080px",
+                                position: "absolute",
+                                top: "50%",
+                                left: "50%",
+                                transform: "translate(-50%, -50%) scale(0.333)"
+                              }}>
+                                <CanvasPreview 
+                                  propertyData={propertyData as PropertyData} 
+                                  aliadoConfig={aliadoConfig} 
+                                  contentType={selectedContentType!} 
+                                  template="residencial" 
+                                  currentPhotoIndexOverride={currentPhotoIndexOverride} 
+                                  logoSettings={postLogoSettings} 
+                                  textComposition={postTextComposition} 
+                                  visualLayers={postVisualLayers} 
+                                  gradientDirection={postGradientDirection} 
+                                  gradientIntensity={postGradientIntensity} 
+                                  firstPhotoConfig={postFirstPhotoConfig} 
+                                  exportMode={false}
+                                />
+                              </div>
                             )}
                           </div>
                         )}
