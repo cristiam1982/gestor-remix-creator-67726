@@ -1280,12 +1280,10 @@ const Index = () => {
                               <div style={{
                                 width: "1080px",
                                 height: "1920px",
-                                transform: "scale(0.333)",
-                                transformOrigin: "top center",
                                 position: "absolute",
-                                top: 0,
+                                top: "50%",
                                 left: "50%",
-                                marginLeft: "-540px"
+                                transform: "translate(-50%, -50%) scale(0.333)"
                               }}>
                                 <CanvasPreview 
                                   propertyData={propertyData as PropertyData} 

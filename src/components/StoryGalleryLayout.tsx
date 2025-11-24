@@ -132,7 +132,10 @@ export const StoryGalleryLayout = ({
 
       {/* Grid de Miniaturas - Centrado sobre la división */}
       {thumbnails.length >= 3 && (
-        <div className="absolute left-1/2 transform -translate-x-1/2 z-30" style={{ top: "49%" }}>
+        <div className="absolute left-1/2 z-30" style={{ 
+          top: "49%",
+          transform: "translate(-50%, -50%)"
+        }}>
           <div className={`flex ${exportMode ? 'gap-3' : 'gap-2'}`}>
             {thumbnails.map((photo, idx) => (
               <div 
