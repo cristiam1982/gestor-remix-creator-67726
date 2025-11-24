@@ -110,4 +110,7 @@ export interface PropertyData {
   textComposition?: TextCompositionSettings;
   visualLayers?: VisualLayers;
   firstPhotoConfig?: FirstPhotoConfig; // Configuración especial para primera foto
+  
+  // Gallery Story - Override temporal del color de fondo
+  galleryBackgroundColorOverride?: string;
 }

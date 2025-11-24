@@ -14,8 +14,11 @@ export const StoryGalleryLayout = ({
   aliadoConfig,
   activePhotoIndex 
 }: StoryGalleryLayoutProps) => {
-  // Color de fondo personalizable
-  const bgColor = aliadoConfig.galleryBackgroundColor || aliadoConfig.colorSecundario || '#000000';
+  // Color de fondo personalizable (con override de sesión)
+  const bgColor = propertyData.galleryBackgroundColorOverride 
+    || aliadoConfig.galleryBackgroundColor 
+    || aliadoConfig.colorSecundario 
+    || '#000000';
   
   // Validación defensiva: asegurar que haya fotos suficientes
   const availablePhotos = propertyData.fotos && propertyData.fotos.length >= 4 
@@ -23,7 +26,10 @@ export const StoryGalleryLayout = ({
     : propertyData.fotos || [];
   
   const mainPhoto = availablePhotos[activePhotoIndex] || availablePhotos[0];
-  const thumbnails = availablePhotos.slice(0, 4);
+  // Excluir la foto principal y tomar las siguientes 3
+  const thumbnails = availablePhotos
+    .filter((_, idx) => idx !== activePhotoIndex)
+    .slice(0, 3);
   const modalidadText = propertyData.modalidad === "arriendo" ? "EN ARRIENDO" : "EN VENTA";
   const precioValue = propertyData.modalidad === "arriendo" ? propertyData.canon : propertyData.valorVenta;
 
@@ -61,8 +67,9 @@ export const StoryGalleryLayout = ({
         {/* Badge LIMITED OFFER - Top Right */}
         <div className="absolute top-4 right-4 z-10">
           <Badge 
-            className="px-3 py-1.5 text-xs font-bold border-2 bg-black/80 backdrop-blur-sm"
+            className="px-3 py-1.5 text-xs font-bold border-2 backdrop-blur-sm"
             style={{ 
+              backgroundColor: `${bgColor}CC`, // 80% opacidad del color de fondo
               borderColor: aliadoConfig.colorPrimario,
               color: aliadoConfig.colorPrimario
             }}
@@ -88,13 +95,13 @@ export const StoryGalleryLayout = ({
       </div>
 
       {/* Grid de Miniaturas - Centrado sobre la división */}
-      {thumbnails.length >= 4 && (
+      {thumbnails.length >= 3 && (
         <div className="absolute left-1/2 transform -translate-x-1/2" style={{ top: "48%" }}>
-          <div className="flex gap-2.5">
+          <div className="flex gap-2">
             {thumbnails.map((photo, idx) => (
               <div 
                 key={idx}
-                className="w-24 h-24 rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
+                className="w-[107px] h-[107px] rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
               >
                 {photo ? (
                   <img 
@@ -118,7 +125,7 @@ export const StoryGalleryLayout = ({
         className="absolute bottom-0 w-full h-[48%] px-6 py-8 flex flex-col justify-between"
         style={{ 
           background: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1), ${bgColor}F0)`,
-          paddingTop: thumbnails.length >= 4 ? "5rem" : "2.5rem" 
+          paddingTop: thumbnails.length >= 3 ? "5rem" : "2.5rem" 
         }}
       >
         {/* Header: Estado + Ubicación */}
@@ -205,7 +212,7 @@ export const StoryGalleryLayout = ({
           <img 
             src={elGestorLogo} 
             alt="El Gestor"
-            className="h-6 object-contain opacity-80"
+            className="h-7 object-contain opacity-80"
           />
         </div>
       </div>
