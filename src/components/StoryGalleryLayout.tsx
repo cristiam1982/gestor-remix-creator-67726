@@ -76,14 +76,9 @@ export const StoryGalleryLayout = ({
     <div 
       id="story-gallery-preview"
       className="relative overflow-hidden"
-      style={exportMode ? { 
+      style={{ 
         width: "1080px",
         height: "1920px",
-        backgroundColor: bgColor,
-        margin: "0 auto"
-      } : {
-        width: "100%",
-        aspectRatio: "9/16",
         backgroundColor: bgColor
       }}
     >
