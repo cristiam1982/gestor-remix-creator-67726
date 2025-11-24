@@ -1275,20 +1275,44 @@ const Index = () => {
                             borderRadius: "1rem",
                             margin: "0 auto"
                           }}>
-                            <CanvasPreview 
-                              propertyData={propertyData as PropertyData} 
-                              aliadoConfig={aliadoConfig} 
-                              contentType={selectedContentType!} 
-                              template="residencial" 
-                              currentPhotoIndexOverride={currentPhotoIndexOverride} 
-                              logoSettings={postLogoSettings} 
-                              textComposition={postTextComposition} 
-                              visualLayers={postVisualLayers} 
-                              gradientDirection={postGradientDirection} 
-                              gradientIntensity={postGradientIntensity} 
-                              firstPhotoConfig={postFirstPhotoConfig} 
-                              exportMode={false}
-                            />
+                            {selectedContentType === "historia" ? (
+                              <div style={{
+                                width: "1080px",
+                                height: "1920px",
+                                transform: "scale(0.333)",
+                                transformOrigin: "top left"
+                              }}>
+                                <CanvasPreview 
+                                  propertyData={propertyData as PropertyData} 
+                                  aliadoConfig={aliadoConfig} 
+                                  contentType={selectedContentType!} 
+                                  template="residencial" 
+                                  currentPhotoIndexOverride={currentPhotoIndexOverride} 
+                                  logoSettings={postLogoSettings} 
+                                  textComposition={postTextComposition} 
+                                  visualLayers={postVisualLayers} 
+                                  gradientDirection={postGradientDirection} 
+                                  gradientIntensity={postGradientIntensity} 
+                                  firstPhotoConfig={postFirstPhotoConfig} 
+                                  exportMode={false}
+                                />
+                              </div>
+                            ) : (
+                              <CanvasPreview 
+                                propertyData={propertyData as PropertyData} 
+                                aliadoConfig={aliadoConfig} 
+                                contentType={selectedContentType!} 
+                                template="residencial" 
+                                currentPhotoIndexOverride={currentPhotoIndexOverride} 
+                                logoSettings={postLogoSettings} 
+                                textComposition={postTextComposition} 
+                                visualLayers={postVisualLayers} 
+                                gradientDirection={postGradientDirection} 
+                                gradientIntensity={postGradientIntensity} 
+                                firstPhotoConfig={postFirstPhotoConfig} 
+                                exportMode={false}
+                              />
+                            )}
                           </div>
                         )}
                       </div>
