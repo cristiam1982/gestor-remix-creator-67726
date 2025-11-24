@@ -79,14 +79,19 @@ export const exportToImage = async (
           // PASO 1: Sanitizar imágenes remotas a dataURL
           await sanitizeCloneImagesForHtml2Canvas(clonedElement);
           
-          // PASO 2: Remove backdrop-blur (not supported by html2canvas)
+          // PASO 2: Mejorar efectos de logo para html2canvas
           const blurElements = clonedElement.querySelectorAll('[class*="backdrop-blur"]');
           blurElements.forEach((el) => {
             (el as HTMLElement).style.backdropFilter = 'none';
-            // Increase background opacity to compensate
+            // ✅ Compensar backdrop-blur con opacidad mejorada
             const currentBg = window.getComputedStyle(el as HTMLElement).backgroundColor;
             if (currentBg.includes('rgba')) {
-              (el as HTMLElement).style.backgroundColor = currentBg.replace(/[\d.]+\)$/g, '0.95)');
+              // Aumentar opacidad de 0.5 a 0.7 para simular efecto frosted
+              const newBg = currentBg.replace(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d.]+\)/, 'rgba($1, $2, $3, 0.70)');
+              (el as HTMLElement).style.backgroundColor = newBg;
+              
+              // Agregar borde sutil
+              (el as HTMLElement).style.border = '1px solid rgba(255, 255, 255, 0.2)';
             }
           });
 
