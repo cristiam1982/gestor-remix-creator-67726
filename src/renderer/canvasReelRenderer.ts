@@ -647,8 +647,8 @@ export const drawSlide = async (
   try {
     const elGestorImg = await loadImage(elGestorLogo);
     
-    // h-10 = 40px, calcular ancho proporcional
-    const gestorHeight = 40;
+    // h-10 = 40px reducido 10% = 36px, calcular ancho proporcional
+    const gestorHeight = 36;
     const gestorWidth = (elGestorImg.width / elGestorImg.height) * gestorHeight;
     
     // right-4 = 16px, bottom-12 = 48px
