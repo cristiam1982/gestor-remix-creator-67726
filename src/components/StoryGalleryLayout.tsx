@@ -177,10 +177,9 @@ export const StoryGalleryLayout = ({
               return (
                 <div key={idx} className="flex items-center gap-2 text-white/90 text-xs">
                   <div 
-                    className="w-1.5 h-1.5 rounded-full"
-                    style={{ backgroundColor: aliadoConfig.colorSecundario }}
+                    className="w-1.5 h-1.5 rounded-full bg-white"
                   />
-                  {Icon && <Icon className="w-3 h-3" style={{ color: aliadoConfig.colorSecundario }} />}
+                  {Icon && <Icon className="w-3 h-3 text-white" />}
                   <span>{feature.label}</span>
                 </div>
               );
@@ -194,10 +193,9 @@ export const StoryGalleryLayout = ({
               return (
                 <div key={idx} className="flex items-center gap-2 text-white/90 text-xs">
                   <div 
-                    className="w-1.5 h-1.5 rounded-full"
-                    style={{ backgroundColor: aliadoConfig.colorSecundario }}
+                    className="w-1.5 h-1.5 rounded-full bg-white"
                   />
-                  {Icon && <Icon className="w-3 h-3" style={{ color: aliadoConfig.colorSecundario }} />}
+                  {Icon && <Icon className="w-3 h-3 text-white" />}
                   <span>{feature.label}</span>
                 </div>
               );
