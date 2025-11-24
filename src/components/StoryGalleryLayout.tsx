@@ -52,7 +52,7 @@ export const StoryGalleryLayout = ({
   return (
     <div 
       id="story-gallery-preview"
-      className="relative w-full bg-black overflow-hidden"
+      className="relative w-full h-full bg-black overflow-hidden"
       style={{ 
         aspectRatio: "9/16",
         maxWidth: "450px",
