@@ -320,7 +320,7 @@ export const CanvasPreview = ({
         left: `${16 * CANVAS_SCALE}px`,
         right: `${16 * CANVAS_SCALE}px`,
         paddingRight: `${96 * CANVAS_SCALE}px`,
-        paddingBottom: `${80 * CANVAS_SCALE}px`
+        paddingBottom: `${16 * CANVAS_SCALE}px`
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: `${8 * CANVAS_SCALE}px` }}>
           {/* Título y ubicación - condicionado a firstPhotoConfig */}
