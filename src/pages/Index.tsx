@@ -1158,26 +1158,30 @@ const Index = () => {
                   </Card>
 
                   {selectedContentType === "historia" && propertyData.storyLayout === "gallery" ? (
-                    <Card className="p-6 space-y-6">
-                      <div className="space-y-2">
-                        <h2 className="text-2xl font-bold">⚙️ Personalización Gallery</h2>
-                        <p className="text-sm text-muted-foreground">
-                          Ajusta el color de fondo de tu historia
-                        </p>
-                      </div>
-
-                      <GalleryBackgroundSelector
-                        currentColor={propertyData.galleryBackgroundColorOverride || aliadoConfig.galleryBackgroundColor || aliadoConfig.colorSecundario}
-                        primaryColor={aliadoConfig.colorPrimario}
-                        secondaryColor={aliadoConfig.colorSecundario}
-                        onChange={(color) => {
-                          setPropertyData({
-                            ...propertyData,
-                            galleryBackgroundColorOverride: color
-                          });
-                        }}
-                      />
-                    </Card>
+                    <PostControlsPanel
+                      logoSettings={postLogoSettings}
+                      onLogoSettingsChange={setPostLogoSettings}
+                      textComposition={postTextComposition}
+                      onTextCompositionChange={setPostTextComposition}
+                      visualLayers={postVisualLayers}
+                      onVisualLayersChange={setPostVisualLayers}
+                      gradientDirection={postGradientDirection}
+                      onGradientDirectionChange={setPostGradientDirection}
+                      gradientIntensity={postGradientIntensity}
+                      onGradientIntensityChange={setPostGradientIntensity}
+                      firstPhotoConfig={postFirstPhotoConfig}
+                      onFirstPhotoConfigChange={setPostFirstPhotoConfig}
+                      isGalleryMode={true}
+                      galleryBackgroundColor={propertyData.galleryBackgroundColorOverride || aliadoConfig.galleryBackgroundColor}
+                      onGalleryBackgroundColorChange={(color) => {
+                        setPropertyData({
+                          ...propertyData,
+                          galleryBackgroundColorOverride: color
+                        });
+                      }}
+                      primaryColor={aliadoConfig.colorPrimario}
+                      secondaryColor={aliadoConfig.colorSecundario}
+                    />
                   ) : (
                     <PostControlsPanel logoSettings={postLogoSettings} onLogoSettingsChange={setPostLogoSettings} textComposition={postTextComposition} onTextCompositionChange={setPostTextComposition} visualLayers={postVisualLayers} onVisualLayersChange={setPostVisualLayers} gradientDirection={postGradientDirection} onGradientDirectionChange={setPostGradientDirection} gradientIntensity={postGradientIntensity} onGradientIntensityChange={setPostGradientIntensity} firstPhotoConfig={postFirstPhotoConfig} onFirstPhotoConfigChange={setPostFirstPhotoConfig} />
                   )}
@@ -1189,26 +1193,30 @@ const Index = () => {
                   <ScrollArea className="h-full pr-4">
                     <div className="space-y-4 pb-6">
                       {selectedContentType === "historia" && propertyData.storyLayout === "gallery" ? (
-                        <Card className="p-6 space-y-6">
-                          <div className="space-y-2">
-                            <h2 className="text-2xl font-bold">⚙️ Personalización Gallery</h2>
-                            <p className="text-sm text-muted-foreground">
-                              Ajusta el color de fondo de tu historia
-                            </p>
-                          </div>
-
-                          <GalleryBackgroundSelector
-                            currentColor={propertyData.galleryBackgroundColorOverride || aliadoConfig.galleryBackgroundColor || aliadoConfig.colorSecundario}
-                            primaryColor={aliadoConfig.colorPrimario}
-                            secondaryColor={aliadoConfig.colorSecundario}
-                            onChange={(color) => {
-                              setPropertyData({
-                                ...propertyData,
-                                galleryBackgroundColorOverride: color
-                              });
-                            }}
-                          />
-                        </Card>
+                        <PostControlsPanel
+                          logoSettings={postLogoSettings}
+                          onLogoSettingsChange={setPostLogoSettings}
+                          textComposition={postTextComposition}
+                          onTextCompositionChange={setPostTextComposition}
+                          visualLayers={postVisualLayers}
+                          onVisualLayersChange={setPostVisualLayers}
+                          gradientDirection={postGradientDirection}
+                          onGradientDirectionChange={setPostGradientDirection}
+                          gradientIntensity={postGradientIntensity}
+                          onGradientIntensityChange={setPostGradientIntensity}
+                          firstPhotoConfig={postFirstPhotoConfig}
+                          onFirstPhotoConfigChange={setPostFirstPhotoConfig}
+                          isGalleryMode={true}
+                          galleryBackgroundColor={propertyData.galleryBackgroundColorOverride || aliadoConfig.galleryBackgroundColor}
+                          onGalleryBackgroundColorChange={(color) => {
+                            setPropertyData({
+                              ...propertyData,
+                              galleryBackgroundColorOverride: color
+                            });
+                          }}
+                          primaryColor={aliadoConfig.colorPrimario}
+                          secondaryColor={aliadoConfig.colorSecundario}
+                        />
                       ) : (
                         <PostControlsPanel logoSettings={postLogoSettings} onLogoSettingsChange={setPostLogoSettings} textComposition={postTextComposition} onTextCompositionChange={setPostTextComposition} visualLayers={postVisualLayers} onVisualLayersChange={setPostVisualLayers} gradientDirection={postGradientDirection} onGradientDirectionChange={setPostGradientDirection} gradientIntensity={postGradientIntensity} onGradientIntensityChange={setPostGradientIntensity} firstPhotoConfig={postFirstPhotoConfig} onFirstPhotoConfigChange={setPostFirstPhotoConfig} />
                       )}

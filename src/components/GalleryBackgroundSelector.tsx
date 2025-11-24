@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { Check } from "lucide-react";
+import { Check, Palette } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface GalleryBackgroundSelectorProps {
   currentColor: string;
@@ -23,10 +24,27 @@ export const GalleryBackgroundSelector = ({
   secondaryColor, 
   onChange 
 }: GalleryBackgroundSelectorProps) => {
+  const [customColor, setCustomColor] = useState(currentColor);
+  
+  // Sincronizar customColor cuando cambia externamente
+  useEffect(() => {
+    setCustomColor(currentColor);
+  }, [currentColor]);
+
   const getPresetColor = (preset: typeof BACKGROUND_PRESETS[0]) => {
     if (preset.id === 'secondary') return secondaryColor;
     if (preset.id === 'primary') return primaryColor;
     return preset.color || '#000000';
+  };
+
+  // Verificar si el color actual es un preset o personalizado
+  const isCustomColorSelected = !BACKGROUND_PRESETS.some(preset => 
+    getPresetColor(preset) === currentColor
+  );
+
+  const handleCustomColorChange = (newColor: string) => {
+    setCustomColor(newColor);
+    onChange(newColor);
   };
 
   return (
@@ -39,6 +57,7 @@ export const GalleryBackgroundSelector = ({
       </p>
       
       <div className="grid grid-cols-3 gap-3">
+        {/* Presets existentes */}
         {BACKGROUND_PRESETS.map((preset) => {
           const presetColor = getPresetColor(preset);
           const isSelected = currentColor === presetColor;
@@ -76,6 +95,50 @@ export const GalleryBackgroundSelector = ({
             </Card>
           );
         })}
+
+        {/* Selector de color personalizado */}
+        <Card
+          className={`
+            relative p-3 cursor-pointer transition-all duration-200
+            hover:scale-105 hover:shadow-lg
+            ${isCustomColorSelected 
+              ? 'ring-2 ring-primary shadow-lg' 
+              : 'hover:ring-1 hover:ring-muted-foreground/30'
+            }
+          `}
+        >
+          {isCustomColorSelected && (
+            <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full p-1">
+              <Check className="w-3 h-3" />
+            </div>
+          )}
+          
+          <label htmlFor="custom-color-picker" className="text-center space-y-1.5 block cursor-pointer">
+            <div className="text-2xl">
+              <Palette className="w-6 h-6 mx-auto" />
+            </div>
+            <div className="font-bold text-xs">Personalizado</div>
+            <div className="relative">
+              <input
+                id="custom-color-picker"
+                type="color"
+                value={customColor}
+                onChange={(e) => handleCustomColorChange(e.target.value)}
+                className="w-full h-6 rounded border border-white/20 cursor-pointer"
+                style={{ colorScheme: 'dark' }}
+              />
+            </div>
+            <div className="text-[10px] text-muted-foreground leading-tight">
+              Elige cualquier color
+            </div>
+          </label>
+        </Card>
+      </div>
+
+      {/* Mostrar el valor HEX actual */}
+      <div className="flex items-center justify-between text-xs text-muted-foreground bg-muted/30 rounded px-3 py-2">
+        <span>Color actual:</span>
+        <span className="font-mono font-semibold">{currentColor.toUpperCase()}</span>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { ReelLayersPanel } from "@/components/ReelLayersPanel";
 import { GradientSelector } from "@/components/GradientSelector";
 import { GradientIntensitySlider } from "@/components/GradientIntensitySlider";
 import { FirstPhotoControls } from "@/components/FirstPhotoControls";
+import { GalleryBackgroundSelector } from "@/components/GalleryBackgroundSelector";
 import {
   Accordion,
   AccordionContent,
@@ -28,6 +29,11 @@ interface PostControlsPanelProps {
   onGradientIntensityChange: (intensity: number) => void;
   firstPhotoConfig: FirstPhotoConfig;
   onFirstPhotoConfigChange: (config: FirstPhotoConfig) => void;
+  isGalleryMode?: boolean;
+  galleryBackgroundColor?: string;
+  onGalleryBackgroundColorChange?: (color: string) => void;
+  primaryColor?: string;
+  secondaryColor?: string;
 }
 
 export const PostControlsPanel = ({
@@ -43,6 +49,11 @@ export const PostControlsPanel = ({
   onGradientIntensityChange,
   firstPhotoConfig,
   onFirstPhotoConfigChange,
+  isGalleryMode = false,
+  galleryBackgroundColor,
+  onGalleryBackgroundColorChange,
+  primaryColor,
+  secondaryColor,
 }: PostControlsPanelProps) => {
   return (
     <Card className="p-6 space-y-6">
@@ -122,24 +133,42 @@ export const PostControlsPanel = ({
           </AccordionContent>
         </AccordionItem>
 
+        {/* Color de Fondo (solo para Gallery) */}
+        {isGalleryMode && (
+          <AccordionItem value="gallery-background">
+            <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+              🎨 Color de Fondo
+            </AccordionTrigger>
+            <AccordionContent className="pt-4">
+              <GalleryBackgroundSelector
+                currentColor={galleryBackgroundColor || secondaryColor || '#000000'}
+                primaryColor={primaryColor || '#000000'}
+                secondaryColor={secondaryColor || '#000000'}
+                onChange={onGalleryBackgroundColorChange || (() => {})}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        )}
 
-        {/* Efectos de Sombreado */}
-        <AccordionItem value="gradient">
-          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-            🌈 Efectos de Sombreado
-          </AccordionTrigger>
-          <AccordionContent className="pt-4 space-y-6">
-            <GradientSelector
-              direction={gradientDirection}
-              onChange={onGradientDirectionChange}
-            />
-            <GradientIntensitySlider
-              intensity={gradientIntensity}
-              onChange={onGradientIntensityChange}
-              disabled={gradientDirection === 'none'}
-            />
-          </AccordionContent>
-        </AccordionItem>
+        {/* Efectos de Sombreado (ocultar en Gallery) */}
+        {!isGalleryMode && (
+          <AccordionItem value="gradient">
+            <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+              🌈 Efectos de Sombreado
+            </AccordionTrigger>
+            <AccordionContent className="pt-4 space-y-6">
+              <GradientSelector
+                direction={gradientDirection}
+                onChange={onGradientDirectionChange}
+              />
+              <GradientIntensitySlider
+                intensity={gradientIntensity}
+                onChange={onGradientIntensityChange}
+                disabled={gradientDirection === 'none'}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        )}
       </Accordion>
     </Card>
   );
