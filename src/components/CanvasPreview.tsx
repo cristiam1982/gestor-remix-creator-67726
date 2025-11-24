@@ -270,7 +270,7 @@ export const CanvasPreview = ({
 
       {/* Información inferior - diseño reel minimalista */}
       {(
-      <div className="absolute bottom-4 left-4 right-4 pr-20 pb-8 z-30">
+      <div className="absolute bottom-4 left-4 right-4 pr-24 pb-20 z-30">
         <div className="space-y-2">
           {/* Título y ubicación - condicionado a firstPhotoConfig */}
           {(!isFirstPhoto || !firstPhotoConfig || firstPhotoConfig.showTitle) && (
