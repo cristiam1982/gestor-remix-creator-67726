@@ -186,10 +186,10 @@ const Index = () => {
     // Validación específica para Historia con layout Gallery
     if (selectedContentType === "historia" && 
         propertyData.storyLayout === "gallery" && 
-        (!propertyData.fotos || propertyData.fotos.length < 3)) {
+        (!propertyData.fotos || propertyData.fotos.length < 4)) {
       toast({
         title: "⚠️ Faltan fotos para Gallery",
-        description: "El layout Gallery requiere mínimo 3 fotos. Sube más fotos o cambia a layout Overlay.",
+        description: "El layout Gallery requiere mínimo 4 fotos. Sube más fotos o cambia a layout Overlay.",
         variant: "destructive",
       });
       return;

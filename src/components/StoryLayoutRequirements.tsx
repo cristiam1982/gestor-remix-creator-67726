@@ -18,7 +18,7 @@ export const StoryLayoutRequirements = () => {
         <div className="flex items-start gap-2">
           <CheckCircle className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />
           <div>
-            <span className="font-semibold">Gallery:</span> Mínimo 3 fotos · Grid + sección info · Ideal para mostrar múltiples ángulos del inmueble
+            <span className="font-semibold">Gallery:</span> Mínimo 4 fotos · Grid de fotos + info · Ideal para mostrar múltiples ángulos del inmueble
           </div>
         </div>
       </div>

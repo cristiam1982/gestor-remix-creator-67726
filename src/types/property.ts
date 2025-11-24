@@ -37,6 +37,8 @@ export interface AliadoConfig {
   ciudad: string;
   ctaArrendado?: string;
   ctaVendido?: string;
+  galleryBadgeText?: string;        // Texto del badge en Gallery (default: "OFERTA LIMITADA")
+  galleryBackgroundColor?: string;  // Color de fondo de sección inferior en Gallery
 }
 
 // Fase 6: Logo settings
