@@ -1,5 +1,6 @@
 import { LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
 import { ReelLogoControls } from "@/components/ReelLogoControls";
+import { FirstPhotoControls } from "@/components/FirstPhotoControls";
 import { GalleryLogoControls } from "@/components/GalleryLogoControls";
 import { GalleryBadgeControls } from "@/components/GalleryBadgeControls";
 import { ReelTextCompositionControls } from "@/components/ReelTextCompositionControls";
@@ -71,7 +72,7 @@ export const PostControlsPanel = ({
         </p>
       </div>
 
-      <Accordion type="multiple" className="w-full" defaultValue={["logo"]}>
+      <Accordion type="multiple" className="w-full" defaultValue={["first-photo", "logo"]}>
         {/* Logo del Aliado */}
         <AccordionItem value="logo">
           <AccordionTrigger className="text-sm font-semibold hover:no-underline">
@@ -91,6 +92,25 @@ export const PostControlsPanel = ({
             )}
           </AccordionContent>
         </AccordionItem>
+
+        {/* Primera Foto (solo cuando NO es Gallery) */}
+        {!isGalleryMode && (
+          <AccordionItem value="first-photo">
+            <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+              🎬 Primera Foto (Portada)
+            </AccordionTrigger>
+            <AccordionContent className="pt-4">
+              <FirstPhotoControls
+                settings={firstPhotoConfig}
+                onChange={onFirstPhotoConfigChange}
+                showDuration={false}
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                Personaliza cómo se muestra la primera foto del post
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        )}
 
         {/* Elementos Visuales (ocultar en Gallery) */}
         {!isGalleryMode && (
