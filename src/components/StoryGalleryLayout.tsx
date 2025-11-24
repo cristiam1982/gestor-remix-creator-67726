@@ -52,9 +52,11 @@ export const StoryGalleryLayout = ({
   return (
     <div 
       id="story-gallery-preview"
-      className="relative w-full h-full bg-black overflow-hidden"
+      className="relative overflow-hidden"
       style={{ 
-        aspectRatio: "9/16",
+        width: "1080px",
+        height: "1920px",
+        backgroundColor: bgColor,
         margin: "0 auto"
       }}
     >
@@ -142,7 +144,7 @@ export const StoryGalleryLayout = ({
         style={{ 
           backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.05), ${bgColor})`,
           backgroundColor: bgColor,
-          paddingTop: thumbnails.length >= 3 ? "6rem" : "2rem",
+          paddingTop: thumbnails.length >= 3 ? "4.5rem" : "2rem",
           paddingBottom: "2.5rem"
         }}
       >
