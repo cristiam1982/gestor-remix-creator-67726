@@ -1,5 +1,6 @@
 import { LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
 import { ReelLogoControls } from "@/components/ReelLogoControls";
+import { GalleryLogoControls } from "@/components/GalleryLogoControls";
 import { ReelTextCompositionControls } from "@/components/ReelTextCompositionControls";
 import { ReelLayersPanel } from "@/components/ReelLayersPanel";
 import { GradientSelector } from "@/components/GradientSelector";
@@ -85,13 +86,20 @@ export const PostControlsPanel = ({
         {/* Logo del Aliado */}
         <AccordionItem value="logo">
           <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-            🎨 Logo del Aliado
+            🏷️ Logo del Aliado
           </AccordionTrigger>
           <AccordionContent className="pt-4">
-            <ReelLogoControls
-              settings={logoSettings}
-              onChange={onLogoSettingsChange}
-            />
+            {isGalleryMode ? (
+              <GalleryLogoControls
+                settings={logoSettings}
+                onChange={onLogoSettingsChange}
+              />
+            ) : (
+              <ReelLogoControls
+                settings={logoSettings}
+                onChange={onLogoSettingsChange}
+              />
+            )}
           </AccordionContent>
         </AccordionItem>
 

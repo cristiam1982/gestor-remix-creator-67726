@@ -1,18 +1,21 @@
-import { PropertyData, AliadoConfig } from "@/types/property";
+import { PropertyData, AliadoConfig, LogoSettings } from "@/types/property";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Bed, Bath, Car, Maximize, MapPin, Phone, Image as ImageIcon } from "lucide-react";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
+import { formatPrecioColombia } from "@/utils/formatters";
 
 interface StoryGalleryLayoutProps {
   propertyData: PropertyData;
   aliadoConfig: AliadoConfig;
   activePhotoIndex: number;
+  logoSettings?: LogoSettings;
 }
 
 export const StoryGalleryLayout = ({ 
   propertyData, 
   aliadoConfig,
-  activePhotoIndex 
+  activePhotoIndex,
+  logoSettings
 }: StoryGalleryLayoutProps) => {
   // Color de fondo personalizable (con override de sesión)
   const bgColor = propertyData.galleryBackgroundColorOverride 
@@ -82,8 +85,22 @@ export const StoryGalleryLayout = ({
         {/* Logo del Aliado - Top Left */}
         <div className="absolute top-4 left-4 z-10">
           <div 
-            className="w-16 h-16 rounded-lg overflow-hidden shadow-xl border-2 border-white/20"
-            style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
+            className={`overflow-hidden shadow-xl border-2 border-white/20 ${
+              logoSettings?.shape === 'circle' ? 'rounded-full' :
+              logoSettings?.shape === 'square' ? 'rounded-none' :
+              logoSettings?.shape === 'squircle' ? 'rounded-3xl' :
+              'rounded-lg'
+            }`}
+            style={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              width: `${logoSettings?.size === 'small' ? 60 : 
+                       logoSettings?.size === 'large' ? 80 :
+                       logoSettings?.size === 'xlarge' ? 90 : 70}px`,
+              height: `${logoSettings?.size === 'small' ? 60 : 
+                        logoSettings?.size === 'large' ? 80 :
+                        logoSettings?.size === 'xlarge' ? 90 : 70}px`,
+              opacity: (logoSettings?.opacity || 100) / 100
+            }}
           >
             <img 
               src={aliadoConfig.logo} 
@@ -146,7 +163,7 @@ export const StoryGalleryLayout = ({
             style={{ backgroundColor: aliadoConfig.colorPrimario }}
           >
             <div className="text-2xl font-bold text-black">
-              {precioValue}
+              {formatPrecioColombia(precioValue || "")}
             </div>
           </div>
         </div>
@@ -191,15 +208,14 @@ export const StoryGalleryLayout = ({
         {/* CTA "AGENDA TU VISITA" */}
         <div className="relative">
           <div 
-            className="text-center py-3 rounded-lg border-2 font-bold text-sm"
+            className="text-center py-3 rounded-lg border-2 border-white font-bold text-sm text-white"
             style={{ 
-              borderColor: '#EF4444',
-              color: '#EF4444'
+              backgroundColor: aliadoConfig.colorSecundario,
             }}
           >
-            <span className="text-green-500 mr-2">&gt;&gt;&gt;</span>
+            <Phone className="inline-block w-4 h-4 mr-2 mb-0.5" />
             AGENDA TU VISITA
-            <span className="text-green-500 ml-2">&lt;&lt;&lt;</span>
+            <Phone className="inline-block w-4 h-4 ml-2 mb-0.5" />
           </div>
         </div>
 

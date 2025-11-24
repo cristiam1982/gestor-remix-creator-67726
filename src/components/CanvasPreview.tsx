@@ -198,6 +198,7 @@ export const CanvasPreview = ({
         propertyData={propertyData}
         aliadoConfig={aliadoConfig}
         activePhotoIndex={activePhotoIndex}
+        logoSettings={logoSettings}
       />
     );
   }
