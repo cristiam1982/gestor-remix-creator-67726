@@ -15,19 +15,22 @@ const layoutOptions = [
     id: "overlay" as StoryLayout,
     icon: Layers,
     name: "Overlay",
-    description: "Info sobre foto"
+    description: "Info sobre foto",
+    requirements: "Mínimo 1 foto"
   },
   {
     id: "gallery" as StoryLayout,
     icon: Grid3X3,
     name: "Gallery",
-    description: "Grid + info"
+    description: "Grid + info",
+    requirements: "Mínimo 3 fotos"
   },
   {
     id: "showcase" as StoryLayout,
     icon: Split,
     name: "Showcase",
     description: "Split vertical (próximamente)",
+    requirements: "Mínimo 2 fotos",
     disabled: true
   }
 ];
@@ -78,6 +81,11 @@ export const StoryLayoutSelector = ({
                   <div className="text-xs text-muted-foreground mt-0.5">
                     {option.description}
                   </div>
+                  {option.requirements && (
+                    <div className="text-[10px] text-muted-foreground mt-1 opacity-70">
+                      📸 {option.requirements}
+                    </div>
+                  )}
                 </div>
               </div>
             </Card>

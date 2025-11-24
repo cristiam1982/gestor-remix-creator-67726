@@ -6,6 +6,7 @@ import { PropertyForm } from "@/components/PropertyForm";
 import { ArrendadoForm } from "@/components/ArrendadoForm";
 import { PhotoManager } from "@/components/PhotoManager";
 import { StoryLayoutSelector } from "@/components/StoryLayoutSelector";
+import { StoryLayoutRequirements } from "@/components/StoryLayoutRequirements";
 import { FooterCustomization } from "@/components/MultiVideoFooterControls";
 import { CanvasPreview } from "@/components/CanvasPreview";
 import { ArrendadoPreview } from "@/components/ArrendadoPreview";
@@ -182,6 +183,18 @@ const Index = () => {
     clearAutoSavedData();
   };
   const handleGeneratePreview = () => {
+    // Validación específica para Historia con layout Gallery
+    if (selectedContentType === "historia" && 
+        propertyData.storyLayout === "gallery" && 
+        (!propertyData.fotos || propertyData.fotos.length < 3)) {
+      toast({
+        title: "⚠️ Faltan fotos para Gallery",
+        description: "El layout Gallery requiere mínimo 3 fotos. Sube más fotos o cambia a layout Overlay.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Flujo para multi-video
     if (selectedContentType === "reel-multi-video") {
       if (multiVideos.length < 2) {
@@ -348,8 +361,13 @@ const Index = () => {
       const tipo = isArrendadoType ? arrendadoData.tipo : propertyData.tipo;
       const filename = `publicacion-${tipo}-${Date.now()}.png`;
       
-      // Capturar desde el mismo elemento visible (patrón ArrendadoPreview)
-      await exportToImage("canvas-preview", filename, {
+      // Detectar el ID correcto según layout de historia
+      const elementId = selectedContentType === "historia" && 
+                        propertyData.storyLayout === "gallery" 
+                        ? "story-gallery-preview" 
+                        : "canvas-preview";
+
+      await exportToImage(elementId, filename, {
         format: "png",
         quality: 0.95
       });
@@ -571,21 +589,25 @@ const Index = () => {
 
                 {/* Selector de Plantilla - Solo para Historia */}
                 {selectedContentType === "historia" && (
-                  <Card className="p-6">
-                    <StoryLayoutSelector 
-                      selectedLayout={propertyData.storyLayout || "overlay"}
-                      onLayoutChange={(layout) => setPropertyData({ ...propertyData, storyLayout: layout })}
-                      primaryColor={aliadoConfig.colorPrimario}
-                      secondaryColor={aliadoConfig.colorSecundario}
-                    />
-                    {propertyData.storyLayout === "gallery" && propertyData.fotos && propertyData.fotos.length < 3 && (
-                      <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <p className="text-sm text-yellow-800">
-                          ⚠️ El layout Gallery requiere al menos 3 fotos para funcionar correctamente.
-                        </p>
-                      </div>
-                    )}
-                  </Card>
+                  <>
+                    <Card className="p-6">
+                      <StoryLayoutSelector 
+                        selectedLayout={propertyData.storyLayout || "overlay"}
+                        onLayoutChange={(layout) => setPropertyData({ ...propertyData, storyLayout: layout })}
+                        primaryColor={aliadoConfig.colorPrimario}
+                        secondaryColor={aliadoConfig.colorSecundario}
+                      />
+                      {propertyData.storyLayout === "gallery" && propertyData.fotos && propertyData.fotos.length < 3 && (
+                        <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                          <p className="text-sm text-orange-800">
+                            ⚠️ El layout <strong>Gallery</strong> requiere <strong>mínimo 3 fotos</strong> para el grid. 
+                            Actualmente tienes {propertyData.fotos.length} foto{propertyData.fotos.length !== 1 ? 's' : ''}.
+                          </p>
+                        </div>
+                      )}
+                    </Card>
+                    <StoryLayoutRequirements />
+                  </>
                 )}
 
                 <PhotoManager photos={propertyData.fotos || []} onPhotosChange={photos => setPropertyData({
