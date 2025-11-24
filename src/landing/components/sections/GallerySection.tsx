@@ -1,18 +1,20 @@
 import { PropertyData } from "../../types/landing";
+import { LandingTheme } from "../../templates/landingTemplates";
 
 type GallerySectionProps = {
   property: PropertyData;
+  theme: LandingTheme;
 };
 
-export const GallerySection = ({ property }: GallerySectionProps) => {
+export const GallerySection = ({ property, theme }: GallerySectionProps) => {
   if (!property.photos || property.photos.length === 0) {
     return null;
   }
 
   return (
-    <section className="py-12 lg:py-16 bg-background">
+    <section className={`${theme.sectionSpacing} ${theme.background}`}>
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl lg:text-4xl font-bold mb-8 text-foreground">
+        <h2 className={`text-3xl lg:text-4xl ${theme.headingFontClass} mb-8 text-foreground`}>
           Galería de Fotos
         </h2>
 
@@ -21,7 +23,7 @@ export const GallerySection = ({ property }: GallerySectionProps) => {
           {property.photos.slice(0, 8).map((photo, index) => (
             <div
               key={index}
-              className={`relative rounded-2xl overflow-hidden ${
+              className={`relative ${theme.borderRadius} overflow-hidden ${theme.shadow} ${
                 index === 0 ? "lg:col-span-2 lg:row-span-2 h-[500px]" : "h-[240px]"
               }`}
             >
@@ -40,7 +42,7 @@ export const GallerySection = ({ property }: GallerySectionProps) => {
             {property.photos.map((photo, index) => (
               <div
                 key={index}
-                className="flex-none w-[85vw] h-[60vh] rounded-2xl overflow-hidden snap-start"
+                className={`flex-none w-[85vw] h-[60vh] ${theme.borderRadius} overflow-hidden snap-start ${theme.shadow}`}
               >
                 <img
                   src={photo}

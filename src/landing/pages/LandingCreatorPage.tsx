@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useLandingState } from "../hooks/useLandingState";
 import { LandingPreviewContainer } from "../components/LandingPreviewContainer";
+import { LandingTemplateSelector } from "../components/LandingTemplateSelector";
+import { LandingTemplateId } from "../templates/landingTemplates";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const LandingCreatorPage = () => {
   const { ally, property, updateAlly, updateProperty } = useLandingState();
   const [showPreview, setShowPreview] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<LandingTemplateId>("moderna");
 
   return (
     <div className="min-h-screen bg-background">
@@ -27,9 +30,10 @@ export const LandingCreatorPage = () => {
             </div>
 
             <Tabs defaultValue="ally" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
                 <TabsTrigger value="ally">Datos del Aliado</TabsTrigger>
                 <TabsTrigger value="property">Datos del Inmueble</TabsTrigger>
+                <TabsTrigger value="template">Plantilla</TabsTrigger>
               </TabsList>
 
               <TabsContent value="ally">
@@ -159,6 +163,15 @@ export const LandingCreatorPage = () => {
                   </div>
                 </Card>
               </TabsContent>
+
+              <TabsContent value="template">
+                <Card className="p-6">
+                  <LandingTemplateSelector
+                    selectedTemplate={selectedTemplate}
+                    onChange={setSelectedTemplate}
+                  />
+                </Card>
+              </TabsContent>
             </Tabs>
 
             <div className="mt-8 flex justify-center">
@@ -186,7 +199,7 @@ export const LandingCreatorPage = () => {
             </div>
             
             <div className="border-4 border-primary/20 rounded-lg overflow-hidden shadow-2xl">
-              <LandingPreviewContainer />
+              <LandingPreviewContainer selectedTemplate={selectedTemplate} />
             </div>
           </div>
         )}

@@ -1,19 +1,21 @@
 import { PropertyData } from "../../types/landing";
+import { LandingTheme } from "../../templates/landingTemplates";
 import { Card } from "@/components/ui/card";
 
 type LocationSectionProps = {
   property: PropertyData;
+  theme: LandingTheme;
 };
 
-export const LocationSection = ({ property }: LocationSectionProps) => {
+export const LocationSection = ({ property, theme }: LocationSectionProps) => {
   return (
-    <section className="py-12 lg:py-16 bg-muted/30">
+    <section className={`${theme.sectionSpacing} bg-muted/30`}>
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl lg:text-4xl font-bold mb-8 text-foreground">
+        <h2 className={`text-3xl lg:text-4xl ${theme.headingFontClass} mb-8 text-foreground`}>
           Ubicación
         </h2>
 
-        <Card className="p-8 lg:p-12 max-w-4xl mx-auto bg-card border-border">
+        <Card className={`${theme.cardPadding} lg:p-12 max-w-4xl mx-auto ${theme.cardBackground} ${theme.borderRadius} ${theme.shadow} ${theme.borderStyle}`}>
           <div className="mb-6">
             <div className="flex items-start gap-3 mb-4">
               <span className="text-3xl">📍</span>
@@ -34,7 +36,7 @@ export const LocationSection = ({ property }: LocationSectionProps) => {
           </div>
 
           {property.mapEmbedUrl && (
-            <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg">
+            <div className={`relative aspect-video ${theme.borderRadius} overflow-hidden ${theme.shadow}`}>
               <iframe
                 src={property.mapEmbedUrl}
                 width="100%"
