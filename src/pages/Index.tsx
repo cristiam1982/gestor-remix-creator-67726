@@ -361,13 +361,8 @@ const Index = () => {
       const tipo = isArrendadoType ? arrendadoData.tipo : propertyData.tipo;
       const filename = `publicacion-${tipo}-${Date.now()}.png`;
       
-      // Detectar el ID correcto según layout de historia
-      const elementId = selectedContentType === "historia" && 
-                        propertyData.storyLayout === "gallery" 
-                        ? "story-gallery-preview" 
-                        : "canvas-preview";
-
-      await exportToImage(elementId, filename, {
+      // UNIFICADO: Siempre usa canvas-export para Post/Historia
+      await exportToImage("canvas-export", filename, {
         format: "png",
         quality: 0.95
       });
@@ -1183,7 +1178,7 @@ const Index = () => {
                             style={{
                               width: "100%",
                               aspectRatio: selectedContentType === "post" ? "1 / 1" : "9 / 16",
-                              maxWidth: selectedContentType === "post" ? "616px" : "392px",
+                              maxWidth: selectedContentType === "post" ? "500px" : "360px",
                               margin: "0 auto"
                             }}
                           >
@@ -1231,6 +1226,35 @@ const Index = () => {
 
         </>}
           </div>}
+
+        {/* Contenedor offscreen para exportación - Post/Historia */}
+        {(selectedContentType === "post" || selectedContentType === "historia") && 
+         aliadoConfig && propertyData.tipo && (
+          <div className="fixed -left-[9999px] top-0 pointer-events-none">
+            <div
+              id="canvas-export"
+              style={{
+                width: "1080px",
+                height: selectedContentType === "post" ? "1080px" : "1920px",
+                backgroundColor: "#000"
+              }}
+            >
+              <CanvasPreview 
+                propertyData={propertyData as PropertyData} 
+                aliadoConfig={aliadoConfig} 
+                contentType={selectedContentType!} 
+                template="residencial" 
+                currentPhotoIndexOverride={currentPhotoIndexOverride} 
+                logoSettings={postLogoSettings} 
+                textComposition={postTextComposition} 
+                visualLayers={postVisualLayers} 
+                gradientDirection={postGradientDirection} 
+                gradientIntensity={postGradientIntensity} 
+                firstPhotoConfig={postFirstPhotoConfig} 
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>;
 };

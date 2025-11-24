@@ -47,8 +47,8 @@ export const StoryGalleryLayout = ({
         margin: "0 auto"
       }}
     >
-      {/* Sección Superior: Foto Principal (55%) */}
-      <div className="relative h-[55%] bg-gray-900">
+      {/* Sección Superior: Foto Principal (52%) */}
+      <div className="relative h-[52%] bg-gray-900">
         <img 
           src={mainPhoto} 
           alt="Foto principal"
@@ -86,7 +86,7 @@ export const StoryGalleryLayout = ({
 
       {/* Grid de Miniaturas - Centrado sobre la división */}
       {thumbnails.length >= 3 && (
-        <div className="absolute left-1/2 transform -translate-x-1/2" style={{ top: "52%" }}>
+        <div className="absolute left-1/2 transform -translate-x-1/2" style={{ top: "48%" }}>
           <div className="flex gap-3">
             {thumbnails.map((photo, idx) => (
               <div 
@@ -110,10 +110,13 @@ export const StoryGalleryLayout = ({
         </div>
       )}
 
-      {/* Sección Inferior: Información (45%) */}
+      {/* Sección Inferior: Información (48%) */}
       <div 
-        className="absolute bottom-0 w-full h-[45%] bg-black px-6 py-8 flex flex-col justify-between"
-        style={{ paddingTop: thumbnails.length >= 3 ? "3.5rem" : "2rem" }}
+        className="absolute bottom-0 w-full h-[48%] px-6 py-8 flex flex-col justify-between"
+        style={{ 
+          background: 'linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.95))',
+          paddingTop: thumbnails.length >= 3 ? "4.5rem" : "2.5rem" 
+        }}
       >
         {/* Header: Estado + Ubicación */}
         <div className="space-y-2">
