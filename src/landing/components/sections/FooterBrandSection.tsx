@@ -1,17 +1,19 @@
 import { AllyData } from "../../types/landing";
+import { LandingTheme } from "../../templates/landingTemplates";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 
 type FooterBrandSectionProps = {
   ally: AllyData;
+  theme: LandingTheme;
 };
 
-export const FooterBrandSection = ({ ally }: FooterBrandSectionProps) => {
+export const FooterBrandSection = ({ ally, theme }: FooterBrandSectionProps) => {
   return (
     <footer 
-      className="py-12 border-t"
+      className={`${theme.sectionSpacing} ${theme.borderStyle}`}
       style={{ 
         backgroundColor: `${ally.colors.background}30`,
-        borderColor: `${ally.colors.primary}20`
+        borderColor: `${theme.primary}20`
       }}
     >
       <div className="container mx-auto px-4">

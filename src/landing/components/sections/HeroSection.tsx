@@ -1,12 +1,14 @@
 import { AllyData, PropertyData } from "../../types/landing";
+import { LandingTheme } from "../../templates/landingTemplates";
 import { Button } from "@/components/ui/button";
 
 type HeroSectionProps = {
   ally: AllyData;
   property: PropertyData;
+  theme: LandingTheme;
 };
 
-export const HeroSection = ({ ally, property }: HeroSectionProps) => {
+export const HeroSection = ({ ally, property, theme }: HeroSectionProps) => {
   const heroImage = property.photos[0] || "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200";
   
   const formatPrice = (price: number | string) => {
@@ -37,7 +39,7 @@ export const HeroSection = ({ ally, property }: HeroSectionProps) => {
       {/* Ally Logo */}
       {ally.logoUrl && (
         <div className="absolute top-6 right-6 z-10">
-          <div className="bg-white/95 backdrop-blur-sm p-3 rounded-2xl shadow-lg">
+          <div className={`bg-white/95 backdrop-blur-sm p-3 ${theme.borderRadius} ${theme.shadow}`}>
             <img 
               src={ally.logoUrl} 
               alt={ally.name}
@@ -77,9 +79,9 @@ export const HeroSection = ({ ally, property }: HeroSectionProps) => {
           <Button
             onClick={handleWhatsAppClick}
             size="lg"
-            className="text-lg px-8 py-6 rounded-full shadow-2xl hover:scale-105 transition-transform"
+            className={`text-lg px-8 py-6 ${theme.borderRadius} ${theme.shadow} hover:scale-105 transition-transform`}
             style={{ 
-              backgroundColor: ally.colors.primary,
+              backgroundColor: theme.primary,
               color: "white"
             }}
           >

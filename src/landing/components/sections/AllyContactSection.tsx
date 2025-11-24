@@ -1,13 +1,15 @@
 import { AllyData, PropertyData } from "../../types/landing";
+import { LandingTheme } from "../../templates/landingTemplates";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 type AllyContactSectionProps = {
   ally: AllyData;
   property: PropertyData;
+  theme: LandingTheme;
 };
 
-export const AllyContactSection = ({ ally, property }: AllyContactSectionProps) => {
+export const AllyContactSection = ({ ally, property, theme }: AllyContactSectionProps) => {
   const handleWhatsAppClick = () => {
     const phone = ally.whatsapp || ally.phone || "";
     const message = `Hola ${ally.name}, quiero más información sobre el ${property.type} en ${property.neighborhood}`;
@@ -23,16 +25,16 @@ export const AllyContactSection = ({ ally, property }: AllyContactSectionProps) 
   };
 
   return (
-    <section className="py-12 lg:py-16 bg-background">
+    <section className={`${theme.sectionSpacing} ${theme.background}`}>
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl lg:text-4xl font-bold mb-8 text-center text-foreground">
+        <h2 className={`text-3xl lg:text-4xl ${theme.headingFontClass} mb-8 text-center text-foreground`}>
           Contacta al Asesor
         </h2>
 
         <Card 
-          className="max-w-2xl mx-auto p-8 lg:p-12 border-2"
+          className={`max-w-2xl mx-auto ${theme.cardPadding} lg:p-12 border-2 ${theme.borderRadius} ${theme.shadow}`}
           style={{ 
-            borderColor: ally.colors.primary,
+            borderColor: theme.primary,
             backgroundColor: `${ally.colors.background}15`
           }}
         >
@@ -84,9 +86,9 @@ export const AllyContactSection = ({ ally, property }: AllyContactSectionProps) 
               <Button
                 onClick={handleWhatsAppClick}
                 size="lg"
-                className="flex-1 text-lg py-6 rounded-xl shadow-lg hover:scale-105 transition-transform"
+                className={`flex-1 text-lg py-6 ${theme.borderRadius} ${theme.shadow} hover:scale-105 transition-transform`}
                 style={{ 
-                  backgroundColor: ally.colors.primary,
+                  backgroundColor: theme.primary,
                   color: "white"
                 }}
               >
@@ -98,10 +100,10 @@ export const AllyContactSection = ({ ally, property }: AllyContactSectionProps) 
                   onClick={handleEmailClick}
                   size="lg"
                   variant="outline"
-                  className="flex-1 text-lg py-6 rounded-xl shadow-lg hover:scale-105 transition-transform"
+                  className={`flex-1 text-lg py-6 ${theme.borderRadius} ${theme.shadow} hover:scale-105 transition-transform`}
                   style={{ 
-                    borderColor: ally.colors.primary,
-                    color: ally.colors.primary
+                    borderColor: theme.primary,
+                    color: theme.primary
                   }}
                 >
                   ✉️ Email

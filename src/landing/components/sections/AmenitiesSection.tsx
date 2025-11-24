@@ -1,8 +1,10 @@
 import { PropertyData } from "../../types/landing";
+import { LandingTheme } from "../../templates/landingTemplates";
 import { Card } from "@/components/ui/card";
 
 type AmenitiesSectionProps = {
   property: PropertyData;
+  theme: LandingTheme;
 };
 
 const amenityIcons: Record<string, string> = {
@@ -25,15 +27,15 @@ const getAmenityIcon = (amenity: string): string => {
   return amenityIcons[normalized] || "✨";
 };
 
-export const AmenitiesSection = ({ property }: AmenitiesSectionProps) => {
+export const AmenitiesSection = ({ property, theme }: AmenitiesSectionProps) => {
   if (!property.benefits || property.benefits.length === 0) {
     return null;
   }
 
   return (
-    <section className="py-12 lg:py-16 bg-background">
+    <section className={`${theme.sectionSpacing} ${theme.background}`}>
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl lg:text-4xl font-bold mb-8 text-foreground">
+        <h2 className={`text-3xl lg:text-4xl ${theme.headingFontClass} mb-8 text-foreground`}>
           Amenidades y Beneficios
         </h2>
 
@@ -41,7 +43,7 @@ export const AmenitiesSection = ({ property }: AmenitiesSectionProps) => {
           {property.benefits.map((amenity, index) => (
             <Card
               key={index}
-              className="p-4 hover:shadow-lg transition-shadow bg-card border-border"
+              className={`p-4 hover:shadow-lg transition-shadow ${theme.cardBackground} ${theme.borderRadius} ${theme.shadow} ${theme.borderStyle}`}
             >
               <div className="flex items-center gap-3">
                 <span className="text-3xl">{getAmenityIcon(amenity)}</span>

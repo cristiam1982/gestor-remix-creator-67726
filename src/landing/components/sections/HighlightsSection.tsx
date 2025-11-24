@@ -1,11 +1,13 @@
 import { PropertyData } from "../../types/landing";
+import { LandingTheme } from "../../templates/landingTemplates";
 import { Card } from "@/components/ui/card";
 
 type HighlightsSectionProps = {
   property: PropertyData;
+  theme: LandingTheme;
 };
 
-export const HighlightsSection = ({ property }: HighlightsSectionProps) => {
+export const HighlightsSection = ({ property, theme }: HighlightsSectionProps) => {
   const highlights = [
     {
       icon: "📐",
@@ -54,9 +56,9 @@ export const HighlightsSection = ({ property }: HighlightsSectionProps) => {
   }
 
   return (
-    <section className="py-12 lg:py-16 bg-muted/30">
+    <section className={`${theme.sectionSpacing} bg-muted/30`}>
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl lg:text-4xl font-bold mb-8 text-foreground">
+        <h2 className={`text-3xl lg:text-4xl ${theme.headingFontClass} mb-8 text-foreground`}>
           Características Principales
         </h2>
 
@@ -64,7 +66,7 @@ export const HighlightsSection = ({ property }: HighlightsSectionProps) => {
           {highlights.map((highlight, index) => (
             <Card
               key={index}
-              className="p-6 hover:shadow-lg transition-shadow bg-card border-border"
+              className={`${theme.cardPadding} hover:shadow-lg transition-shadow ${theme.cardBackground} ${theme.borderRadius} ${theme.shadow} ${theme.borderStyle}`}
             >
               <div className="text-4xl mb-3">{highlight.icon}</div>
               <div className="text-2xl font-bold text-foreground mb-1">
