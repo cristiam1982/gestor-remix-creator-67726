@@ -361,11 +361,11 @@ export const CanvasPreview = ({
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario,
                 marginBottom: `${verticalGap * 1.2 * CANVAS_SCALE}px`,
-                paddingLeft: `${6 * CONTENT_SCALE}px`,
-                paddingRight: `${6 * CONTENT_SCALE}px`,
-                paddingTop: `${4 * CONTENT_SCALE}px`,
-                paddingBottom: `${4 * CONTENT_SCALE}px`,
-                borderRadius: `${10 * CONTENT_SCALE}px`,
+                paddingLeft: `${4 * CONTENT_SCALE}px`,
+                paddingRight: `${4 * CONTENT_SCALE}px`,
+                paddingTop: `${2 * CONTENT_SCALE}px`,
+                paddingBottom: `${2 * CONTENT_SCALE}px`,
+                borderRadius: `${8 * CONTENT_SCALE}px`,
                 border: `${2 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.7)`
               }}
             >
