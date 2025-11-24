@@ -361,11 +361,11 @@ export const CanvasPreview = ({
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario,
                 marginBottom: `${verticalGap * 1.2 * CANVAS_SCALE}px`,
-                paddingLeft: `${4 * CONTENT_SCALE}px`,
-                paddingRight: `${4 * CONTENT_SCALE}px`,
-                paddingTop: `${2 * CONTENT_SCALE}px`,
-                paddingBottom: `${2 * CONTENT_SCALE}px`,
-                borderRadius: `${8 * CONTENT_SCALE}px`,
+                paddingLeft: `${12 * CONTENT_SCALE}px`,
+                paddingRight: `${12 * CONTENT_SCALE}px`,
+                paddingTop: `${8 * CONTENT_SCALE}px`,
+                paddingBottom: `${8 * CONTENT_SCALE}px`,
+                borderRadius: `${10 * CONTENT_SCALE}px`,
                 border: `${2 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.7)`
               }}
             >
@@ -395,7 +395,7 @@ export const CanvasPreview = ({
           <div className="flex flex-wrap" style={{ gap: `${(verticalGap / 2) * CANVAS_SCALE}px` }}>
             {propertyData.habitaciones && (
               <div 
-                className="flex items-center shadow-lg"
+                className="flex items-center"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
@@ -407,7 +407,7 @@ export const CanvasPreview = ({
                   gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
-                <Bed style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Bed style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -422,7 +422,7 @@ export const CanvasPreview = ({
             
             {propertyData.banos && (
               <div 
-                className="flex items-center shadow-lg"
+                className="flex items-center"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
@@ -434,7 +434,7 @@ export const CanvasPreview = ({
                   gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
-                <Bath style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Bath style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -449,7 +449,7 @@ export const CanvasPreview = ({
             
             {propertyData.parqueaderos && (
               <div 
-                className="flex items-center shadow-lg"
+                className="flex items-center"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
@@ -461,7 +461,7 @@ export const CanvasPreview = ({
                   gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
-                <Car style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Car style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -476,7 +476,7 @@ export const CanvasPreview = ({
             
             {propertyData.area && (
               <div 
-                className="flex items-center shadow-lg"
+                className="flex items-center"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
@@ -488,7 +488,7 @@ export const CanvasPreview = ({
                   gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
-                <Square style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Square style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
@@ -503,7 +503,7 @@ export const CanvasPreview = ({
             
             {propertyData.estrato && (
               <div 
-                className="flex items-center shadow-lg"
+                className="flex items-center"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
@@ -529,7 +529,7 @@ export const CanvasPreview = ({
             
             {propertyData.piso && (
               <div 
-                className="flex items-center shadow-lg"
+                className="flex items-center"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
