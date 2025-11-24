@@ -1128,8 +1128,37 @@ const Index = () => {
                 <div className="lg:hidden space-y-6">
                   <Card className="p-6 space-y-6">
                     <h3 className="text-xl font-semibold mb-4 text-primary">Vista Previa</h3>
-                    <div className="flex justify-center mb-6">
-                      {aliadoConfig && <CanvasPreview propertyData={propertyData as PropertyData} aliadoConfig={aliadoConfig} contentType={selectedContentType!} template="residencial" currentPhotoIndexOverride={currentPhotoIndexOverride} logoSettings={postLogoSettings} textComposition={postTextComposition} visualLayers={postVisualLayers} gradientDirection={postGradientDirection} gradientIntensity={postGradientIntensity} firstPhotoConfig={postFirstPhotoConfig} />}
+                    <div className="flex justify-center mb-6 overflow-hidden">
+                      {aliadoConfig && (
+                        <div style={{
+                          width: selectedContentType === "post" ? "360px" : "270px",
+                          height: selectedContentType === "post" ? "360px" : "480px",
+                          overflow: "hidden",
+                          borderRadius: "1rem",
+                          position: "relative"
+                        }}>
+                          <div style={{
+                            transform: selectedContentType === "post" ? "scale(0.333)" : "scale(0.25)",
+                            transformOrigin: "top left",
+                            width: "1080px",
+                            height: selectedContentType === "post" ? "1080px" : "1920px"
+                          }}>
+                            <CanvasPreview 
+                              propertyData={propertyData as PropertyData} 
+                              aliadoConfig={aliadoConfig} 
+                              contentType={selectedContentType!} 
+                              template="residencial" 
+                              currentPhotoIndexOverride={currentPhotoIndexOverride} 
+                              logoSettings={postLogoSettings} 
+                              textComposition={postTextComposition} 
+                              visualLayers={postVisualLayers} 
+                              gradientDirection={postGradientDirection} 
+                              gradientIntensity={postGradientIntensity} 
+                              firstPhotoConfig={postFirstPhotoConfig} 
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div className="space-y-3">
                       <Button onClick={handleDownloadImage} variant="hero" size="lg" className="w-full" disabled={isDownloading || isExportingAllPhotos}>
@@ -1246,29 +1275,34 @@ const Index = () => {
 
                       <div className="flex-1 flex items-center justify-center mb-6 min-h-0">
                         {aliadoConfig && (
-                          <div
-                            id="canvas-preview"
-                            className="relative overflow-hidden rounded-2xl"
-                            style={{
-                              width: "100%",
-                              aspectRatio: selectedContentType === "post" ? "1 / 1" : "9 / 16",
-                              maxWidth: selectedContentType === "post" ? "500px" : "360px",
-                              margin: "0 auto"
-                            }}
-                          >
-                            <CanvasPreview 
-                              propertyData={propertyData as PropertyData} 
-                              aliadoConfig={aliadoConfig} 
-                              contentType={selectedContentType!} 
-                              template="residencial" 
-                              currentPhotoIndexOverride={currentPhotoIndexOverride} 
-                              logoSettings={postLogoSettings} 
-                              textComposition={postTextComposition} 
-                              visualLayers={postVisualLayers} 
-                              gradientDirection={postGradientDirection} 
-                              gradientIntensity={postGradientIntensity} 
-                              firstPhotoConfig={postFirstPhotoConfig} 
-                            />
+                          <div style={{
+                            width: selectedContentType === "post" ? "360px" : "270px",
+                            height: selectedContentType === "post" ? "360px" : "480px",
+                            overflow: "hidden",
+                            borderRadius: "1rem",
+                            position: "relative",
+                            margin: "0 auto"
+                          }}>
+                            <div style={{
+                              transform: selectedContentType === "post" ? "scale(0.333)" : "scale(0.25)",
+                              transformOrigin: "top left",
+                              width: "1080px",
+                              height: selectedContentType === "post" ? "1080px" : "1920px"
+                            }}>
+                              <CanvasPreview 
+                                propertyData={propertyData as PropertyData} 
+                                aliadoConfig={aliadoConfig} 
+                                contentType={selectedContentType!} 
+                                template="residencial" 
+                                currentPhotoIndexOverride={currentPhotoIndexOverride} 
+                                logoSettings={postLogoSettings} 
+                                textComposition={postTextComposition} 
+                                visualLayers={postVisualLayers} 
+                                gradientDirection={postGradientDirection} 
+                                gradientIntensity={postGradientIntensity} 
+                                firstPhotoConfig={postFirstPhotoConfig} 
+                              />
+                            </div>
                           </div>
                         )}
                       </div>
