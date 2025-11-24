@@ -13,7 +13,7 @@ import { LogoSettings } from '@/types/property';
 export const useLogoStyles = (logoSettings: LogoSettings) => {
   return useMemo(() => {
     // ✅ Tamaños sincronizados con canvasReelRenderer.ts para paridad preview/export
-    const sizes = { small: 57, medium: 67, large: 76, xlarge: 86 };
+    const sizes = { small: 48, medium: 56, large: 64, xlarge: 72 };
     const size = sizes[logoSettings.size as keyof typeof sizes] || sizes.medium;
     
     // ✅ FORZAR background='none' cuando shape='circle'

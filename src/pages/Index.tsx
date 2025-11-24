@@ -973,8 +973,8 @@ const Index = () => {
                     <div className="flex justify-center mb-6 overflow-hidden">
                       {aliadoConfig && (
                         <div style={{
-                          width: selectedContentType === "post" ? "480px" : "480px",
-                          height: selectedContentType === "post" ? "480px" : "853px",
+                          width: selectedContentType === "post" ? "542px" : "542px",
+                          height: selectedContentType === "post" ? "542px" : "964px",
                           overflow: "hidden",
                           borderRadius: "1rem",
                           position: "relative"
@@ -985,7 +985,7 @@ const Index = () => {
                             position: "absolute",
                             top: "50%",
                             left: "50%",
-                            transform: "translate(-50%, -50%) scale(0.444)"
+                            transform: "translate(-50%, -50%) scale(0.502)"
                           }}>
                             <CanvasPreview
                               propertyData={propertyData as PropertyData} 
@@ -1121,12 +1121,13 @@ const Index = () => {
                       <div className="flex-1 flex items-center justify-center mb-6 min-h-0">
                         {aliadoConfig && (
                           <div style={{
-                            width: selectedContentType === "post" ? "480px" : "480px",
-                            height: selectedContentType === "post" ? "480px" : "853px",
+                            width: selectedContentType === "post" ? "542px" : "542px",
+                            height: selectedContentType === "post" ? "542px" : "964px",
                             overflow: "hidden",
                             borderRadius: "1rem",
                             margin: "0 auto",
-                            position: "relative"
+                            position: "relative",
+                            flexShrink: 0
                           }}>
                             {selectedContentType === "historia" ? (
                               <div style={{
@@ -1135,7 +1136,7 @@ const Index = () => {
                                 position: "absolute",
                                 top: "50%",
                                 left: "50%",
-                                transform: "translate(-50%, -50%) scale(0.444)"
+                                transform: "translate(-50%, -50%) scale(0.502)"
                               }}>
                                 <CanvasPreview 
                                   propertyData={propertyData as PropertyData} 
@@ -1159,9 +1160,9 @@ const Index = () => {
                                 position: "absolute",
                                 top: "50%",
                                 left: "50%",
-                                transform: "translate(-50%, -50%) scale(0.444)"
+                                transform: "translate(-50%, -50%) scale(0.502)"
                               }}>
-                                <CanvasPreview 
+                                <CanvasPreview
                                   propertyData={propertyData as PropertyData} 
                                   aliadoConfig={aliadoConfig} 
                                   contentType={selectedContentType!} 
