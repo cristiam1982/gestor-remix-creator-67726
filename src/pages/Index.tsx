@@ -5,6 +5,7 @@ import { BrandedHeroSection } from "@/components/BrandedHeroSection";
 import { PropertyForm } from "@/components/PropertyForm";
 import { ArrendadoForm } from "@/components/ArrendadoForm";
 import { PhotoManager } from "@/components/PhotoManager";
+import { StoryLayoutSelector } from "@/components/StoryLayoutSelector";
 import { FooterCustomization } from "@/components/MultiVideoFooterControls";
 import { CanvasPreview } from "@/components/CanvasPreview";
 import { ArrendadoPreview } from "@/components/ArrendadoPreview";
@@ -19,7 +20,7 @@ import { generateMultiVideoReel } from "@/utils/multiVideoGenerator";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { PostControlsPanel } from "@/components/PostControlsPanel";
 import { LoadingState } from "@/components/LoadingState";
-import { AliadoConfig, PropertyData, ContentType, LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
+import { AliadoConfig, PropertyData, ContentType, LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig, StoryLayout } from "@/types/property";
 import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -50,7 +51,8 @@ const Index = () => {
   const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
   const [propertyData, setPropertyData] = useState<Partial<PropertyData>>({
     fotos: [],
-    subtitulos: []
+    subtitulos: [],
+    storyLayout: "overlay" // Default layout
   });
   const [arrendadoData, setArrendadoData] = useState<Partial<ArrendadoData>>({
     fotos: [],
@@ -566,6 +568,25 @@ const Index = () => {
                 </TooltipProvider>
               </> : <>
                 <PropertyForm data={propertyData} onDataChange={setPropertyData} errors={validationErrors} />
+
+                {/* Selector de Plantilla - Solo para Historia */}
+                {selectedContentType === "historia" && (
+                  <Card className="p-6">
+                    <StoryLayoutSelector 
+                      selectedLayout={propertyData.storyLayout || "overlay"}
+                      onLayoutChange={(layout) => setPropertyData({ ...propertyData, storyLayout: layout })}
+                      primaryColor={aliadoConfig.colorPrimario}
+                      secondaryColor={aliadoConfig.colorSecundario}
+                    />
+                    {propertyData.storyLayout === "gallery" && propertyData.fotos && propertyData.fotos.length < 3 && (
+                      <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p className="text-sm text-yellow-800">
+                          ⚠️ El layout Gallery requiere al menos 3 fotos para funcionar correctamente.
+                        </p>
+                      </div>
+                    )}
+                  </Card>
+                )}
 
                 <PhotoManager photos={propertyData.fotos || []} onPhotosChange={photos => setPropertyData({
             ...propertyData,
