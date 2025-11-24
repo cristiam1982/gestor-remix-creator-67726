@@ -51,8 +51,8 @@ export const StoryGalleryLayout = ({
     ...(propertyData.piso ? [{ icon: null as any, label: `Piso ${propertyData.piso}` }] : [])
   ];
 
-  // Tamaños condicionales según modo
-  const sizes = exportMode ? {
+  // Tamaños fijos para canvas 1080x1920 (el scale del preview se maneja en Index.tsx)
+  const sizes = {
     miniPhoto: { width: 90, height: 130 },
     logoSize: logoSettings?.size === 'small' ? 60 : logoSettings?.size === 'large' ? 80 : logoSettings?.size === 'xlarge' ? 90 : 70,
     badgeText: 'text-xs',
@@ -61,15 +61,6 @@ export const StoryGalleryLayout = ({
     iconSize: 'w-3.5 h-3.5',
     badgePadding: 'px-3 py-1.5',
     locationText: 'text-sm'
-  } : {
-    miniPhoto: { width: 60, height: 90 },
-    logoSize: Math.round((logoSettings?.size === 'small' ? 60 : logoSettings?.size === 'large' ? 80 : logoSettings?.size === 'xlarge' ? 90 : 70) * 0.7),
-    badgeText: 'text-[10px]',
-    priceText: 'text-base',
-    featureText: 'text-[9px]',
-    iconSize: 'w-3 h-3',
-    badgePadding: 'px-2 py-1',
-    locationText: 'text-xs'
   };
 
   return (
