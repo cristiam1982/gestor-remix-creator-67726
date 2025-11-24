@@ -167,9 +167,9 @@ export const CanvasPreview = ({
 
   const isStory = contentType === "historia";
 
-  // Tamaño del logo "El Gestor" unificado
+  // Tamaño del logo "El Gestor" unificado (reducido 10%)
   const elGestorLogoSize = useMemo(() => {
-    return isStory ? 40 : 32;
+    return isStory ? 36 : 29;
   }, [isStory]);
 
   const handlePrevPhoto = () => {
