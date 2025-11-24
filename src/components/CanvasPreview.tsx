@@ -180,7 +180,7 @@ export const CanvasPreview = ({
   // Tamaño del logo "El Gestor" unificado (reducido 10%)
   const elGestorLogoSize = useMemo(() => {
     const baseSize = isStory ? 36 : 29;
-    return baseSize * CONTENT_SCALE;
+    return baseSize * CONTENT_SCALE * 1.08; // +8% aumento
   }, [isStory, CONTENT_SCALE]);
 
   const handlePrevPhoto = () => {
@@ -361,10 +361,10 @@ export const CanvasPreview = ({
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario,
                 marginBottom: `${verticalGap * 1.2 * CANVAS_SCALE}px`,
-                paddingLeft: `${12 * CONTENT_SCALE}px`,
-                paddingRight: `${12 * CONTENT_SCALE}px`,
-                paddingTop: `${8 * CONTENT_SCALE}px`,
-                paddingBottom: `${8 * CONTENT_SCALE}px`,
+            paddingLeft: `${8 * CONTENT_SCALE}px`,
+            paddingRight: `${8 * CONTENT_SCALE}px`,
+            paddingTop: `${6 * CONTENT_SCALE}px`,
+            paddingBottom: `${6 * CONTENT_SCALE}px`,
                 borderRadius: `${10 * CONTENT_SCALE}px`,
                 border: `${2 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.7)`
               }}
@@ -381,8 +381,7 @@ export const CanvasPreview = ({
               <p 
                 className="font-extrabold text-white leading-tight relative z-[70]"
                 style={{ 
-                  fontSize: `${24 * CONTENT_SCALE * textStyle.scale}px`,
-                  textShadow: '0 2px 8px rgba(0,0,0,0.5)'
+                  fontSize: `${24 * CONTENT_SCALE * textStyle.scale}px`
                 }}
               >
                 {priceText}
@@ -555,8 +554,8 @@ export const CanvasPreview = ({
             
             {propertyData.trafico && (
               <div 
-                className="flex items-center shadow-lg"
-                style={{ 
+                className="flex items-center"
+                style={{
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
                   paddingLeft: `${12 * CONTENT_SCALE}px`,
@@ -581,8 +580,8 @@ export const CanvasPreview = ({
             
             {propertyData.alturaLibre && (
               <div 
-                className="flex items-center shadow-lg"
-                style={{ 
+                className="flex items-center"
+                style={{
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
                   paddingLeft: `${12 * CONTENT_SCALE}px`,
@@ -607,8 +606,8 @@ export const CanvasPreview = ({
             
             {propertyData.vitrina && (
               <div 
-                className="flex items-center shadow-lg"
-                style={{ 
+                className="flex items-center"
+                style={{
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
                   paddingLeft: `${12 * CONTENT_SCALE}px`,
@@ -633,8 +632,8 @@ export const CanvasPreview = ({
             
             {propertyData.uso && (
               <div 
-                className="flex items-center shadow-lg"
-                style={{ 
+                className="flex items-center"
+                style={{
                   backgroundColor: aliadoConfig.colorSecundario,
                   border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
                   paddingLeft: `${12 * CONTENT_SCALE}px`,
