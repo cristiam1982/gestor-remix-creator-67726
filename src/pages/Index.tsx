@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
-import { Square, Smartphone, Image as ImageIcon, Video, Film, Download, RefreshCw, CheckCircle, DollarSign, Images, ChevronLeft, Info, Copy } from "lucide-react";
-import { ContentTypeCard } from "@/components/ContentTypeCard";
-import { BrandedHeroSection } from "@/components/BrandedHeroSection";
+import { Download, RefreshCw, Images, ChevronLeft, Copy, Video, Smartphone, ImageIcon } from "lucide-react";
+import { ContentSelectionHub } from "@/components/ContentSelectionHub";
 import { PropertyForm } from "@/components/PropertyForm";
 import { ArrendadoForm } from "@/components/ArrendadoForm";
 import { PhotoManager } from "@/components/PhotoManager";
 import { StoryLayoutSelector } from "@/components/StoryLayoutSelector";
 import { StoryLayoutRequirements } from "@/components/StoryLayoutRequirements";
-import { GalleryBackgroundSelector } from "@/components/GalleryBackgroundSelector";
-import { FooterCustomization } from "@/components/MultiVideoFooterControls";
 import { CanvasPreview } from "@/components/CanvasPreview";
 import { ArrendadoPreview } from "@/components/ArrendadoPreview";
 import { ReelSlideshow } from "@/components/ReelSlideshow";
@@ -19,10 +16,9 @@ import { MultiVideoProcessingModal } from "@/components/MultiVideoProcessingModa
 import { MultiVideoControlsPanel } from "@/components/MultiVideoControlsPanel";
 import { MultiVideoStaticPreview } from "@/components/MultiVideoStaticPreview";
 import { generateMultiVideoReel } from "@/utils/multiVideoGenerator";
-import { MetricsPanel } from "@/components/MetricsPanel";
 import { PostControlsPanel } from "@/components/PostControlsPanel";
 import { LoadingState } from "@/components/LoadingState";
-import { AliadoConfig, PropertyData, ContentType, LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig, StoryLayout } from "@/types/property";
+import { AliadoConfig, PropertyData, ContentType } from "@/types/property";
 import { ArrendadoData, ArrendadoType } from "@/types/arrendado";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -31,122 +27,91 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { generateCaption, regenerateCaption, generateArrendadoCaption } from "@/utils/captionGenerator";
-import { exportToImage, exportVideo } from "@/utils/imageExporter";
-import { validatePropertyData, validateArrendadoData } from "@/utils/formValidation";
+import { validatePropertyData } from "@/utils/formValidation";
 import { savePublicationMetric, clearMetrics } from "@/utils/metricsManager";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useToast } from "@/hooks/use-toast";
 import { ALIADO_CONFIG } from "@/config/aliadoConfig";
-import { exportAllPhotos } from "@/utils/postMultiExporter";
-interface VideoInfo {
-  id: string;
-  url: string;
-  file: File;
-  duration: number;
-  subtitle?: string;
-}
+import { usePropertyState } from "@/hooks/usePropertyState";
+import { useArrendadoState } from "@/hooks/useArrendadoState";
+import { useMultiVideoState, VideoInfo, FooterCustomization } from "@/hooks/useMultiVideoState";
+import { useContentExport } from "@/hooks/useContentExport";
 const Index = () => {
-  const {
-    toast
-  } = useToast();
-  const [aliadoConfig, setAliadoConfig] = useState<AliadoConfig>(ALIADO_CONFIG);
+  const { toast } = useToast();
+  const [aliadoConfig] = useState<AliadoConfig>(ALIADO_CONFIG);
   const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
-  const [propertyData, setPropertyData] = useState<Partial<PropertyData>>({
-    fotos: [],
-    subtitulos: [],
-    storyLayout: "overlay" // Default layout
-  });
-  const [arrendadoData, setArrendadoData] = useState<Partial<ArrendadoData>>({
-    fotos: [],
-    precio: "",
-    videoUrl: ""
-  });
-  const [arrendadoFormat, setArrendadoFormat] = useState<"historia" | "reel-fotos" | "reel-video">("historia");
   const [currentStep, setCurrentStep] = useState(1);
   const [generatedCaption, setGeneratedCaption] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [multiVideos, setMultiVideos] = useState<VideoInfo[]>([]);
-  const [isProcessingMultiVideo, setIsProcessingMultiVideo] = useState(false);
-  const [multiVideoProgress, setMultiVideoProgress] = useState(0);
-  const [multiVideoStage, setMultiVideoStage] = useState("");
-  const [generatedMultiVideoBlob, setGeneratedMultiVideoBlob] = useState<Blob | null>(null);
-  const [currentPhotoIndexOverride, setCurrentPhotoIndexOverride] = useState<number | undefined>(undefined);
-  const [isExportingAllPhotos, setIsExportingAllPhotos] = useState(false);
-  const [exportProgress, setExportProgress] = useState({
-    current: 0,
-    total: 0
-  });
 
-  // Estados para personalización del post cuadrado
-  const [postLogoSettings, setPostLogoSettings] = useState<LogoSettings>({
-    position: "top-right",
-    size: "small",
-    opacity: 90,
-    background: "elevated",
-    shape: "rounded"
-  });
-  const [postTextComposition, setPostTextComposition] = useState<TextCompositionSettings>({
-    typographyScale: 1.0,
-    badgeScale: 1.0,
-    badgeStyle: "rounded",
-    verticalSpacing: "normal"
-  });
-  const [postVisualLayers, setPostVisualLayers] = useState<VisualLayers>({
-    showPhoto: true,
-    showPrice: true,
-    showBadge: true,
-    showIcons: true,
-    showAllyLogo: true,
-    showCTA: true
-  });
-  const [postGradientDirection, setPostGradientDirection] = useState<"top" | "bottom" | "both" | "none">("both");
-  const [postGradientIntensity, setPostGradientIntensity] = useState(60);
-  const [postFirstPhotoConfig, setPostFirstPhotoConfig] = useState<FirstPhotoConfig>({
-    showPrice: true,
-    showTitle: true,
-    showIcons: true,
-    showCTA: true,
-    textScaleOverride: 0,
-    showAllyLogo: true
-  });
-
-  // Multi-video visual settings
-  const [multiVideoLogoSettings, setMultiVideoLogoSettings] = useState<LogoSettings>({
-    position: 'top-right',
-    opacity: 100,
-    background: 'elevated',
-    size: 'medium',
-    shape: 'rounded'
-  });
-  const [multiVideoTextComposition, setMultiVideoTextComposition] = useState<TextCompositionSettings>({
-    typographyScale: 0,
-    badgeScale: 0,
-    badgeStyle: 'rounded',
-    verticalSpacing: 'normal'
-  });
-  const [multiVideoVisualLayers, setMultiVideoVisualLayers] = useState<VisualLayers>({
-    showPhoto: true,
-    showPrice: true,
-    showBadge: true,
-    showIcons: true,
-    showAllyLogo: true,
-    showCTA: true
-  });
-  const [multiVideoGradientDirection, setMultiVideoGradientDirection] = useState<'none' | 'top' | 'bottom' | 'both'>('bottom');
-  const [multiVideoGradientIntensity, setMultiVideoGradientIntensity] = useState(60);
-  const [multiVideoFooterCustomization, setMultiVideoFooterCustomization] = useState<FooterCustomization>({
-    showElGestorLogo: true,
-    customPhone: '',
-    customHashtag: '',
-    customTypeText: '',
-    customLocationText: ''
-  });
+  // Custom hooks para estados organizados
   const {
-    loadAutoSavedData,
-    clearAutoSavedData
-  } = useAutoSave(propertyData, currentStep === 2);
+    propertyData,
+    setPropertyData,
+    postLogoSettings,
+    setPostLogoSettings,
+    postTextComposition,
+    setPostTextComposition,
+    postVisualLayers,
+    setPostVisualLayers,
+    postGradientDirection,
+    setPostGradientDirection,
+    postGradientIntensity,
+    setPostGradientIntensity,
+    postFirstPhotoConfig,
+    setPostFirstPhotoConfig,
+    resetPropertyState
+  } = usePropertyState();
+
+  const {
+    arrendadoData,
+    setArrendadoData,
+    arrendadoFormat,
+    setArrendadoFormat,
+    resetArrendadoState
+  } = useArrendadoState();
+
+  const {
+    multiVideos,
+    setMultiVideos,
+    isProcessingMultiVideo,
+    setIsProcessingMultiVideo,
+    multiVideoProgress,
+    setMultiVideoProgress,
+    multiVideoStage,
+    setMultiVideoStage,
+    generatedMultiVideoBlob,
+    setGeneratedMultiVideoBlob,
+    multiVideoLogoSettings,
+    setMultiVideoLogoSettings,
+    multiVideoTextComposition,
+    setMultiVideoTextComposition,
+    multiVideoVisualLayers,
+    setMultiVideoVisualLayers,
+    multiVideoGradientDirection,
+    setMultiVideoGradientDirection,
+    multiVideoGradientIntensity,
+    setMultiVideoGradientIntensity,
+    multiVideoFooterCustomization,
+    setMultiVideoFooterCustomization,
+    resetMultiVideoState
+  } = useMultiVideoState();
+
+  const {
+    isDownloading,
+    isExportingAllPhotos,
+    exportProgress,
+    currentPhotoIndexOverride,
+    handleDownloadImage: exportImage,
+    handleExportAllPhotos: exportAllPhotosFn
+  } = useContentExport();
+
+  const { clearAutoSavedData } = useAutoSave(propertyData, currentStep === 2);
   const isArrendadoType = selectedContentType === "arrendado" || selectedContentType === "vendido";
+
+  // Wrappers para mantener la interfaz original
+  const handleDownloadImage = () => exportImage(selectedContentType, propertyData, arrendadoData, isArrendadoType);
+  const handleExportAllPhotos = () => exportAllPhotosFn(propertyData, aliadoConfig, selectedContentType!);
   useEffect(() => {
     // Cargar datos autoguardados si existen
     try {
@@ -169,15 +134,9 @@ const Index = () => {
   };
   const handleBackToHub = () => {
     setSelectedContentType(null);
-    setPropertyData({
-      fotos: [],
-      subtitulos: []
-    });
-    setArrendadoData({
-      fotos: []
-    });
-    setMultiVideos([]);
-    setGeneratedMultiVideoBlob(null);
+    resetPropertyState();
+    resetArrendadoState();
+    resetMultiVideoState();
     setCurrentStep(1);
     setGeneratedCaption("");
     setValidationErrors({});
@@ -343,131 +302,14 @@ const Index = () => {
       });
     }
   };
-  const handleDownloadImage = async () => {
-    setIsDownloading(true);
-    toast({
-      title: "🎨 Generando imagen...",
-      description: "Esto tomará unos segundos"
-    });
-    try {
-      if (selectedContentType === "reel-video" && propertyData.fotos && propertyData.fotos[0]) {
-        await exportVideo(propertyData.fotos[0], `reel-${propertyData.tipo}-${Date.now()}.mp4`);
-        toast({
-          title: "✅ Video descargado",
-          description: "Edita el video con tu app favorita agregando los textos."
-        });
-        return;
-      }
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const tipo = isArrendadoType ? arrendadoData.tipo : propertyData.tipo;
-      const filename = `publicacion-${tipo}-${Date.now()}.png`;
-      
-      // UNIFICADO: Siempre usa canvas-export para Post/Historia
-      await exportToImage("canvas-export", filename, {
-        format: "png",
-        quality: 0.95
-      });
-      toast({
-        title: "✅ Descarga lista",
-        description: "Tu publicación se ha guardado correctamente."
-      });
-    } catch (error) {
-      console.error("Error al descargar:", error);
-      toast({
-        title: "❌ Error al descargar",
-        description: "Intenta nuevamente o contacta soporte.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-  const handleExportAllPhotos = async () => {
-    if (!propertyData.fotos || propertyData.fotos.length <= 1) {
-      toast({
-        title: "⚠️ No hay múltiples fotos",
-        description: "Necesitas al menos 2 fotos para usar esta función.",
-        variant: "destructive"
-      });
-      return;
-    }
-    setIsExportingAllPhotos(true);
-    setExportProgress({
-      current: 0,
-      total: propertyData.fotos.length
-    });
-    toast({
-      title: "📸 Exportando todas las fotos...",
-      description: `Se exportarán ${propertyData.fotos.length} imágenes`
-    });
-    try {
-      await exportAllPhotos(propertyData as PropertyData, aliadoConfig!, {
-        format: "png",
-        quality: 0.95
-      }, selectedContentType!, setCurrentPhotoIndexOverride, (current, total) => setExportProgress({
-        current,
-        total
-      }));
-      toast({
-        title: "✅ Exportación completada",
-        description: `Se descargaron ${propertyData.fotos.length} fotos exitosamente`
-      });
-    } catch (error) {
-      console.error("Error exportando fotos:", error);
-      toast({
-        title: "❌ Error en exportación",
-        description: "Algunas fotos no se pudieron exportar. Revisa la consola.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsExportingAllPhotos(false);
-      setCurrentPhotoIndexOverride(undefined);
-      setExportProgress({
-        current: 0,
-        total: 0
-      });
-    }
-  };
   if (!selectedContentType) {
-    return <div className="min-h-screen bg-white flex items-center justify-center p-4">
-        <div className="max-w-6xl w-full animate-fade-in">
-          <BrandedHeroSection aliadoConfig={aliadoConfig} />
-
-          {/* Métricas */}
-          <MetricsPanel onClearMetrics={handleClearMetrics} />
-
-          {/* Sección 1: Promoción de Inmuebles */}
-          <section className="mt-10">
-            <div className="text-center mb-6">
-              <h2 className="text-3xl font-bold mb-2">🎨 Promoción de Inmuebles</h2>
-              <p className="text-muted-foreground text-lg">
-                Crea contenido profesional para arriendo o venta de propiedades
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <ContentTypeCard icon={Square} title="Post" description="1:1 para feed de Instagram y Facebook" primaryColor={aliadoConfig.colorPrimario} secondaryColor={aliadoConfig.colorSecundario} onClick={() => handleContentTypeSelect("post")} />
-              <ContentTypeCard icon={Smartphone} title="Historia" description="9:16 para Stories de Instagram" primaryColor={aliadoConfig.colorPrimario} secondaryColor={aliadoConfig.colorSecundario} onClick={() => handleContentTypeSelect("historia")} />
-              <ContentTypeCard icon={ImageIcon} title="Reel con Fotos" description="Slideshow automático con música" primaryColor={aliadoConfig.colorPrimario} secondaryColor={aliadoConfig.colorSecundario} onClick={() => handleContentTypeSelect("reel-fotos")} />
-              <ContentTypeCard icon={Video} title="Reel con Video" description="Hasta 100 segundos de video" primaryColor={aliadoConfig.colorPrimario} secondaryColor={aliadoConfig.colorSecundario} onClick={() => handleContentTypeSelect("reel-video")} />
-              <ContentTypeCard icon={Film} title="Reel Multi-Video" description="Concatena 2-10 videos en un solo reel profesional" primaryColor={aliadoConfig.colorPrimario} secondaryColor={aliadoConfig.colorSecundario} onClick={() => handleContentTypeSelect("reel-multi-video")} />
-            </div>
-          </section>
-
-          {/* Sección 2: Generación de Confianza */}
-          <section className="mt-12">
-            <div className="text-center mb-6">
-              <h2 className="text-3xl font-bold mb-2">💼 Generación de Confianza</h2>
-              <p className="text-muted-foreground text-lg">
-                Comparte tus éxitos para atraer nuevos propietarios y generar confianza
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ContentTypeCard icon={CheckCircle} title="Inmueble Arrendado" description="Celebra arriendos exitosos" primaryColor={aliadoConfig.colorPrimario} secondaryColor={aliadoConfig.colorSecundario} onClick={() => handleContentTypeSelect("arrendado")} />
-              <ContentTypeCard icon={DollarSign} title="Inmueble Vendido" description="Celebra ventas exitosas" primaryColor={aliadoConfig.colorPrimario} secondaryColor={aliadoConfig.colorSecundario} onClick={() => handleContentTypeSelect("vendido")} />
-            </div>
-          </section>
-        </div>
-      </div>;
+    return (
+      <ContentSelectionHub
+        aliadoConfig={aliadoConfig}
+        onContentTypeSelect={handleContentTypeSelect}
+        onClearMetrics={handleClearMetrics}
+      />
+    );
   }
   return <div className="min-h-screen bg-background py-4 md:py-6 px-2 md:px-4">
       {isDownloading && <LoadingState message="Generando tu publicación..." />}
