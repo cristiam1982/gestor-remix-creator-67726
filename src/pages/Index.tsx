@@ -1273,14 +1273,19 @@ const Index = () => {
                             height: selectedContentType === "post" ? "360px" : "640px",
                             overflow: "hidden",
                             borderRadius: "1rem",
-                            margin: "0 auto"
+                            margin: "0 auto",
+                            position: "relative"
                           }}>
                             {selectedContentType === "historia" ? (
                               <div style={{
                                 width: "1080px",
                                 height: "1920px",
                                 transform: "scale(0.333)",
-                                transformOrigin: "top left"
+                                transformOrigin: "top center",
+                                position: "absolute",
+                                top: 0,
+                                left: "50%",
+                                marginLeft: "-540px"
                               }}>
                                 <CanvasPreview 
                                   propertyData={propertyData as PropertyData} 
