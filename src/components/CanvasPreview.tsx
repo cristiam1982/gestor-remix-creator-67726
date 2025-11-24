@@ -325,13 +325,13 @@ export const CanvasPreview = ({
         <div style={{ display: 'flex', flexDirection: 'column', gap: `${8 * CANVAS_SCALE}px` }}>
           {/* Título y ubicación - condicionado a firstPhotoConfig */}
           {(!isFirstPhoto || !firstPhotoConfig || firstPhotoConfig.showTitle) && (
-            <div style={{ marginBottom: `${verticalGap * 2 * CANVAS_SCALE}px` }}>
+            <div style={{ marginBottom: `${verticalGap * 1.5 * CANVAS_SCALE}px` }}>
               <h2 
                 className="font-bold text-white"
                 style={{ 
                   fontSize: `${24 * CONTENT_SCALE * textStyle.scale}px`,
                   textShadow: '0 2px 8px rgba(0,0,0,0.5)',
-                  marginBottom: `${(verticalGap / 2) * CANVAS_SCALE}px`
+                  marginBottom: `${(verticalGap / 3) * CANVAS_SCALE}px`
                 }}
               >
                 {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
@@ -360,7 +360,7 @@ export const CanvasPreview = ({
               className="inline-block z-[60]"
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario,
-                marginBottom: `${verticalGap * 2 * CANVAS_SCALE}px`,
+                marginBottom: `${verticalGap * 1.2 * CANVAS_SCALE}px`,
                 paddingLeft: `${16 * CONTENT_SCALE}px`,
                 paddingRight: `${16 * CONTENT_SCALE}px`,
                 paddingTop: `${8 * CONTENT_SCALE}px`,

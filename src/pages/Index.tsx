@@ -973,8 +973,8 @@ const Index = () => {
                     <div className="flex justify-center mb-6 overflow-hidden">
                       {aliadoConfig && (
                         <div style={{
-                          width: selectedContentType === "post" ? "360px" : "360px",
-                          height: selectedContentType === "post" ? "360px" : "640px",
+                          width: selectedContentType === "post" ? "480px" : "480px",
+                          height: selectedContentType === "post" ? "480px" : "853px",
                           overflow: "hidden",
                           borderRadius: "1rem",
                           position: "relative"
@@ -985,9 +985,9 @@ const Index = () => {
                             position: "absolute",
                             top: "50%",
                             left: "50%",
-                            transform: "translate(-50%, -50%) scale(0.333)"
+                            transform: "translate(-50%, -50%) scale(0.444)"
                           }}>
-                            <CanvasPreview 
+                            <CanvasPreview
                               propertyData={propertyData as PropertyData} 
                               aliadoConfig={aliadoConfig} 
                               contentType={selectedContentType!} 
@@ -1121,8 +1121,8 @@ const Index = () => {
                       <div className="flex-1 flex items-center justify-center mb-6 min-h-0">
                         {aliadoConfig && (
                           <div style={{
-                            width: selectedContentType === "post" ? "360px" : "360px",
-                            height: selectedContentType === "post" ? "360px" : "640px",
+                            width: selectedContentType === "post" ? "480px" : "480px",
+                            height: selectedContentType === "post" ? "480px" : "853px",
                             overflow: "hidden",
                             borderRadius: "1rem",
                             margin: "0 auto",
@@ -1135,7 +1135,7 @@ const Index = () => {
                                 position: "absolute",
                                 top: "50%",
                                 left: "50%",
-                                transform: "translate(-50%, -50%) scale(0.333)"
+                                transform: "translate(-50%, -50%) scale(0.444)"
                               }}>
                                 <CanvasPreview 
                                   propertyData={propertyData as PropertyData} 
@@ -1159,7 +1159,7 @@ const Index = () => {
                                 position: "absolute",
                                 top: "50%",
                                 left: "50%",
-                                transform: "translate(-50%, -50%) scale(0.333)"
+                                transform: "translate(-50%, -50%) scale(0.444)"
                               }}>
                                 <CanvasPreview 
                                   propertyData={propertyData as PropertyData} 
