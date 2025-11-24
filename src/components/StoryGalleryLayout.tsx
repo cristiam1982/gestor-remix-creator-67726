@@ -1,6 +1,6 @@
 import { PropertyData, AliadoConfig } from "@/types/property";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Bed, Bath, Car, Maximize, MapPin, Phone } from "lucide-react";
+import { Clock, Bed, Bath, Car, Maximize, MapPin, Phone, Image as ImageIcon } from "lucide-react";
 import elGestorLogo from "@/assets/el-gestor-logo.png";
 
 interface StoryGalleryLayoutProps {
@@ -14,8 +14,13 @@ export const StoryGalleryLayout = ({
   aliadoConfig,
   activePhotoIndex 
 }: StoryGalleryLayoutProps) => {
-  const mainPhoto = propertyData.fotos[activePhotoIndex] || propertyData.fotos[0];
-  const thumbnails = propertyData.fotos.slice(0, 3);
+  // Validación defensiva: asegurar que haya fotos suficientes
+  const availablePhotos = propertyData.fotos && propertyData.fotos.length >= 3 
+    ? propertyData.fotos 
+    : propertyData.fotos || [];
+  
+  const mainPhoto = availablePhotos[activePhotoIndex] || availablePhotos[0];
+  const thumbnails = availablePhotos.slice(0, 3);
   const modalidadText = propertyData.modalidad === "arriendo" ? "EN ARRIENDO" : "EN VENTA";
   const precioValue = propertyData.modalidad === "arriendo" ? propertyData.canon : propertyData.valorVenta;
 
@@ -86,13 +91,19 @@ export const StoryGalleryLayout = ({
             {thumbnails.map((photo, idx) => (
               <div 
                 key={idx}
-                className="w-20 h-20 rounded-lg overflow-hidden border-4 border-white shadow-2xl"
+                className="w-20 h-20 rounded-lg overflow-hidden border-4 border-white shadow-2xl bg-gray-800"
               >
-                <img 
-                  src={photo} 
-                  alt={`Thumbnail ${idx + 1}`}
-                  className="w-full h-full object-cover"
-                />
+                {photo ? (
+                  <img 
+                    src={photo} 
+                    alt={`Thumbnail ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <ImageIcon className="w-6 h-6 text-gray-500" />
+                  </div>
+                )}
               </div>
             ))}
           </div>
