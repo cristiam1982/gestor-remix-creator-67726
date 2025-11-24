@@ -195,7 +195,7 @@ export const CanvasPreview = ({
     }
   };
 
-  const showNavigation = hasMultiplePhotos;
+  const showNavigation = hasMultiplePhotos && !exportMode;
 
   // Si es historia con layout Gallery, renderizar el componente Gallery
   if (useGalleryLayout && propertyData.fotos && propertyData.fotos.length >= 3) {
