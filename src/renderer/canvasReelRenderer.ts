@@ -310,7 +310,8 @@ const drawLogoWithBackground = async (
   height: number,
   elapsedTime?: number // Tiempo transcurrido para animación
 ) => {
-  const sizes = { small: 60, medium: 70, large: 80, xlarge: 90 };
+  // ✅ Tamaños sincronizados con useLogoStyles.ts
+  const sizes = { small: 57, medium: 67, large: 76, xlarge: 86 };
   const logoSize = sizes[settings.size as keyof typeof sizes] || sizes.medium;
   const margin = 20;
   
@@ -347,21 +348,29 @@ const drawLogoWithBackground = async (
     let radius = 12;
     if (settings.shape === 'square') radius = 0;
     if (settings.shape === 'circle') radius = logoSize / 2;
-    if (settings.shape === 'squircle') radius = logoSize * 0.3;
+    if (settings.shape === 'squircle') radius = logoSize * 0.22; // ✅ 22% como en useLogoStyles
     
     // Dibujar fondo
     roundRect(ctx, x, y, logoSize, logoSize, radius);
     
     if (settings.background === 'frosted') {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      // ✅ Opacidad mejorada para simular backdrop-blur
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.50)';
+      ctx.fill();
+      
+      // Agregar borde sutil para efecto frosted
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
     } else if (settings.background === 'glow') {
       const rgb = hexToRgb(aliadoConfig.colorPrimario);
       ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`;
+      ctx.fill();
     } else if (settings.background === 'elevated') {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.fill();
     }
     
-    ctx.fill();
     ctx.restore();
   }
   

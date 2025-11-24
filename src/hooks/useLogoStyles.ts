@@ -4,10 +4,15 @@ import { LogoSettings } from '@/types/property';
 /**
  * Hook centralizado para generar los estilos del logo
  * Elimina duplicación entre ReelSlideshow y ArrendadoReelSlideshow
+ * 
+ * NOTA SOBRE EXPORTACIÓN:
+ * - Para shape='circle', background siempre debe ser 'none'
+ * - El efecto 'frosted' (backdrop-blur) no se exporta igual en html2canvas
+ * - canvasReelRenderer.ts simula estos efectos con opacidades y bordes
  */
 export const useLogoStyles = (logoSettings: LogoSettings) => {
   return useMemo(() => {
-    // Tamaños optimizados para preview aumentado (+12%)
+    // ✅ Tamaños sincronizados con canvasReelRenderer.ts para paridad preview/export
     const sizes = { small: 57, medium: 67, large: 76, xlarge: 86 };
     const size = sizes[logoSettings.size as keyof typeof sizes] || sizes.medium;
     
