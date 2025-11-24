@@ -5,7 +5,6 @@ import { ReelTextCompositionControls } from "@/components/ReelTextCompositionCon
 import { ReelLayersPanel } from "@/components/ReelLayersPanel";
 import { GradientSelector } from "@/components/GradientSelector";
 import { GradientIntensitySlider } from "@/components/GradientIntensitySlider";
-import { FirstPhotoControls } from "@/components/FirstPhotoControls";
 import { GalleryBackgroundSelector } from "@/components/GalleryBackgroundSelector";
 import {
   Accordion,
@@ -65,24 +64,7 @@ export const PostControlsPanel = ({
         </p>
       </div>
 
-      <Accordion type="multiple" className="w-full" defaultValue={["first-photo", "logo", "visual-elements"]}>
-        {/* Primera Foto (Portada) */}
-        <AccordionItem value="first-photo">
-          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-            🎬 Primera Foto (Portada)
-          </AccordionTrigger>
-          <AccordionContent className="pt-4">
-            <FirstPhotoControls
-              settings={firstPhotoConfig}
-              onChange={onFirstPhotoConfigChange}
-              showDuration={false}
-            />
-            <p className="text-xs text-muted-foreground mt-2">
-              Personaliza cómo se muestra la primera foto del post
-            </p>
-          </AccordionContent>
-        </AccordionItem>
-
+      <Accordion type="multiple" className="w-full" defaultValue={["logo"]}>
         {/* Logo del Aliado */}
         <AccordionItem value="logo">
           <AccordionTrigger className="text-sm font-semibold hover:no-underline">
