@@ -54,6 +54,7 @@ export const useLogoStyles = (logoSettings: LogoSettings) => {
 
     return {
       size: `${size}px`,
+      sizeNum: size, // Tamaño numérico puro para cálculos
       opacity: logoSettings.opacity / 100,
       backgroundClass,
       positionClass: positionClasses[logoSettings.position],
