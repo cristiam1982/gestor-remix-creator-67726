@@ -59,8 +59,8 @@ export const StoryGalleryLayout = ({
         margin: "0 auto"
       }}
     >
-      {/* Sección Superior: Foto Principal (52%) */}
-      <div className="relative h-[52%] bg-gray-900">
+      {/* Sección Superior: Foto Principal (56%) */}
+      <div className="relative h-[56%] bg-gray-900">
         <img 
           src={mainPhoto} 
           alt="Foto principal"
@@ -113,7 +113,7 @@ export const StoryGalleryLayout = ({
 
       {/* Grid de Miniaturas - Centrado sobre la división */}
       {thumbnails.length >= 3 && (
-        <div className="absolute left-1/2 transform -translate-x-1/2 z-30" style={{ top: "46%" }}>
+        <div className="absolute left-1/2 transform -translate-x-1/2 z-30" style={{ top: "49%" }}>
           <div className="flex gap-3">
             {thumbnails.map((photo, idx) => (
               <div 
@@ -137,17 +137,18 @@ export const StoryGalleryLayout = ({
         </div>
       )}
 
-      {/* Sección Inferior: Información (48%) */}
+      {/* Sección Inferior: Información (44%) */}
       <div 
-        className="absolute bottom-0 w-full h-[48%] px-6 flex flex-col justify-center"
+        className="absolute bottom-0 w-full h-[44%] px-6 flex flex-col justify-center"
         style={{ 
-          background: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1), ${bgColor}F0)`,
-          paddingTop: thumbnails.length >= 3 ? "5rem" : "2rem",
-          paddingBottom: "3rem"
+          backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1), ${bgColor}F0)`,
+          backgroundColor: bgColor,
+          paddingTop: thumbnails.length >= 3 ? "4.5rem" : "2rem",
+          paddingBottom: "2.5rem"
         }}
       >
         {/* Header: Estado + Ubicación */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Badge className="bg-white/10 text-white text-xs px-2 py-1 font-semibold">
               {modalidadText}
@@ -160,17 +161,17 @@ export const StoryGalleryLayout = ({
 
           {/* Precio Destacado */}
           <div 
-            className="inline-block px-4 py-2.5 rounded-lg"
+            className="inline-block px-3 py-2 rounded-lg"
             style={{ backgroundColor: aliadoConfig.colorPrimario }}
           >
-            <div className="text-xl font-bold text-black">
+            <div className="text-lg font-bold text-black">
               {formatPrecioColombia(precioValue || "")}
             </div>
           </div>
         </div>
 
         {/* Características en 2 columnas */}
-        <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 mt-5">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-4">
           {/* Columna Izquierda */}
           <div className="space-y-2">
             {leftFeatures.map((feature, idx) => {
