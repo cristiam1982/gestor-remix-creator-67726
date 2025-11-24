@@ -68,7 +68,7 @@ export const exportToImage = async (
     console.log('[exportToImage] Iniciando captura de', elementId);
     
     const canvas = await html2canvas(element, {
-      scale: 3,
+      scale: 1,
       useCORS: true,
       allowTaint: false,
       backgroundColor: null,
