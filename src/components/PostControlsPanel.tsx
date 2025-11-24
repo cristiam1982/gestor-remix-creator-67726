@@ -1,6 +1,7 @@
 import { LogoSettings, TextCompositionSettings, VisualLayers, FirstPhotoConfig } from "@/types/property";
 import { ReelLogoControls } from "@/components/ReelLogoControls";
 import { GalleryLogoControls } from "@/components/GalleryLogoControls";
+import { GalleryBadgeControls } from "@/components/GalleryBadgeControls";
 import { ReelTextCompositionControls } from "@/components/ReelTextCompositionControls";
 import { ReelLayersPanel } from "@/components/ReelLayersPanel";
 import { GradientSelector } from "@/components/GradientSelector";
@@ -32,6 +33,9 @@ interface PostControlsPanelProps {
   isGalleryMode?: boolean;
   galleryBackgroundColor?: string;
   onGalleryBackgroundColorChange?: (color: string) => void;
+  galleryBadgeText?: string;
+  onGalleryBadgeTextChange?: (text: string) => void;
+  defaultBadgeText?: string;
   primaryColor?: string;
   secondaryColor?: string;
 }
@@ -52,6 +56,9 @@ export const PostControlsPanel = ({
   isGalleryMode = false,
   galleryBackgroundColor,
   onGalleryBackgroundColorChange,
+  galleryBadgeText,
+  onGalleryBadgeTextChange,
+  defaultBadgeText,
   primaryColor,
   secondaryColor,
 }: PostControlsPanelProps) => {
@@ -137,6 +144,22 @@ export const PostControlsPanel = ({
                 primaryColor={primaryColor || '#000000'}
                 secondaryColor={secondaryColor || '#000000'}
                 onChange={onGalleryBackgroundColorChange || (() => {})}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        )}
+
+        {/* Texto del Badge (solo para Gallery) */}
+        {isGalleryMode && (
+          <AccordionItem value="gallery-badge">
+            <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+              🏷️ Texto del Badge
+            </AccordionTrigger>
+            <AccordionContent className="pt-4">
+              <GalleryBadgeControls
+                badgeText={galleryBadgeText || defaultBadgeText || "OFERTA LIMITADA"}
+                onChange={onGalleryBadgeTextChange || (() => {})}
+                defaultText={defaultBadgeText || "OFERTA LIMITADA"}
               />
             </AccordionContent>
           </AccordionItem>
