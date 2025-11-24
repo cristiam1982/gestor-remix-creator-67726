@@ -7,6 +7,7 @@ import { ArrendadoForm } from "@/components/ArrendadoForm";
 import { PhotoManager } from "@/components/PhotoManager";
 import { StoryLayoutSelector } from "@/components/StoryLayoutSelector";
 import { StoryLayoutRequirements } from "@/components/StoryLayoutRequirements";
+import { GalleryBackgroundSelector } from "@/components/GalleryBackgroundSelector";
 import { FooterCustomization } from "@/components/MultiVideoFooterControls";
 import { CanvasPreview } from "@/components/CanvasPreview";
 import { ArrendadoPreview } from "@/components/ArrendadoPreview";
@@ -1141,7 +1142,9 @@ const Index = () => {
                           </>}
                       </Button>
 
-                      {propertyData.fotos && propertyData.fotos.length > 1 && <Button onClick={handleExportAllPhotos} variant="outline" size="lg" className="w-full" disabled={isDownloading || isExportingAllPhotos}>
+                      {propertyData.fotos && propertyData.fotos.length > 1 && 
+                       !(selectedContentType === "historia" && propertyData.storyLayout === "gallery") && (
+                        <Button onClick={handleExportAllPhotos} variant="outline" size="lg" className="w-full" disabled={isDownloading || isExportingAllPhotos}>
                           {isExportingAllPhotos ? <>
                               <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
                               Exportando {exportProgress.current}/{exportProgress.total}
@@ -1149,11 +1152,35 @@ const Index = () => {
                               <Images className="w-5 h-5 mr-2" />
                               Exportar Todas las Fotos ({propertyData.fotos.length})
                             </>}
-                        </Button>}
+                        </Button>
+                      )}
                     </div>
                   </Card>
 
-                  <PostControlsPanel logoSettings={postLogoSettings} onLogoSettingsChange={setPostLogoSettings} textComposition={postTextComposition} onTextCompositionChange={setPostTextComposition} visualLayers={postVisualLayers} onVisualLayersChange={setPostVisualLayers} gradientDirection={postGradientDirection} onGradientDirectionChange={setPostGradientDirection} gradientIntensity={postGradientIntensity} onGradientIntensityChange={setPostGradientIntensity} firstPhotoConfig={postFirstPhotoConfig} onFirstPhotoConfigChange={setPostFirstPhotoConfig} />
+                  {selectedContentType === "historia" && propertyData.storyLayout === "gallery" ? (
+                    <Card className="p-6 space-y-6">
+                      <div className="space-y-2">
+                        <h2 className="text-2xl font-bold">⚙️ Personalización Gallery</h2>
+                        <p className="text-sm text-muted-foreground">
+                          Ajusta el color de fondo de tu historia
+                        </p>
+                      </div>
+
+                      <GalleryBackgroundSelector
+                        currentColor={propertyData.galleryBackgroundColorOverride || aliadoConfig.galleryBackgroundColor || aliadoConfig.colorSecundario}
+                        primaryColor={aliadoConfig.colorPrimario}
+                        secondaryColor={aliadoConfig.colorSecundario}
+                        onChange={(color) => {
+                          setPropertyData({
+                            ...propertyData,
+                            galleryBackgroundColorOverride: color
+                          });
+                        }}
+                      />
+                    </Card>
+                  ) : (
+                    <PostControlsPanel logoSettings={postLogoSettings} onLogoSettingsChange={setPostLogoSettings} textComposition={postTextComposition} onTextCompositionChange={setPostTextComposition} visualLayers={postVisualLayers} onVisualLayersChange={setPostVisualLayers} gradientDirection={postGradientDirection} onGradientDirectionChange={setPostGradientDirection} gradientIntensity={postGradientIntensity} onGradientIntensityChange={setPostGradientIntensity} firstPhotoConfig={postFirstPhotoConfig} onFirstPhotoConfigChange={setPostFirstPhotoConfig} />
+                  )}
                 </div>
 
                 {/* DESKTOP: Grid con ScrollArea en controles + preview fijo */}
@@ -1161,7 +1188,30 @@ const Index = () => {
                   {/* COLUMNA IZQUIERDA: Controles con scroll independiente */}
                   <ScrollArea className="h-full pr-4">
                     <div className="space-y-4 pb-6">
-                      <PostControlsPanel logoSettings={postLogoSettings} onLogoSettingsChange={setPostLogoSettings} textComposition={postTextComposition} onTextCompositionChange={setPostTextComposition} visualLayers={postVisualLayers} onVisualLayersChange={setPostVisualLayers} gradientDirection={postGradientDirection} onGradientDirectionChange={setPostGradientDirection} gradientIntensity={postGradientIntensity} onGradientIntensityChange={setPostGradientIntensity} firstPhotoConfig={postFirstPhotoConfig} onFirstPhotoConfigChange={setPostFirstPhotoConfig} />
+                      {selectedContentType === "historia" && propertyData.storyLayout === "gallery" ? (
+                        <Card className="p-6 space-y-6">
+                          <div className="space-y-2">
+                            <h2 className="text-2xl font-bold">⚙️ Personalización Gallery</h2>
+                            <p className="text-sm text-muted-foreground">
+                              Ajusta el color de fondo de tu historia
+                            </p>
+                          </div>
+
+                          <GalleryBackgroundSelector
+                            currentColor={propertyData.galleryBackgroundColorOverride || aliadoConfig.galleryBackgroundColor || aliadoConfig.colorSecundario}
+                            primaryColor={aliadoConfig.colorPrimario}
+                            secondaryColor={aliadoConfig.colorSecundario}
+                            onChange={(color) => {
+                              setPropertyData({
+                                ...propertyData,
+                                galleryBackgroundColorOverride: color
+                              });
+                            }}
+                          />
+                        </Card>
+                      ) : (
+                        <PostControlsPanel logoSettings={postLogoSettings} onLogoSettingsChange={setPostLogoSettings} textComposition={postTextComposition} onTextCompositionChange={setPostTextComposition} visualLayers={postVisualLayers} onVisualLayersChange={setPostVisualLayers} gradientDirection={postGradientDirection} onGradientDirectionChange={setPostGradientDirection} gradientIntensity={postGradientIntensity} onGradientIntensityChange={setPostGradientIntensity} firstPhotoConfig={postFirstPhotoConfig} onFirstPhotoConfigChange={setPostFirstPhotoConfig} />
+                      )}
                     </div>
                   </ScrollArea>
 
@@ -1210,7 +1260,9 @@ const Index = () => {
                             </>}
                         </Button>
 
-                        {propertyData.fotos && propertyData.fotos.length > 1 && <Button onClick={handleExportAllPhotos} variant="outline" size="lg" className="w-full" disabled={isDownloading || isExportingAllPhotos}>
+                        {propertyData.fotos && propertyData.fotos.length > 1 && 
+                         !(selectedContentType === "historia" && propertyData.storyLayout === "gallery") && (
+                          <Button onClick={handleExportAllPhotos} variant="outline" size="lg" className="w-full" disabled={isDownloading || isExportingAllPhotos}>
                             {isExportingAllPhotos ? <>
                                 <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
                                 Exportando {exportProgress.current}/{exportProgress.total}
@@ -1218,7 +1270,8 @@ const Index = () => {
                                 <Images className="w-5 h-5 mr-2" />
                                 Exportar Todas las Fotos ({propertyData.fotos.length})
                               </>}
-                           </Button>}
+                          </Button>
+                        )}
                </div>
             </Card>
           </div>
