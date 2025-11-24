@@ -59,8 +59,9 @@ export const CanvasPreview = ({
   exportMode = false
 }: CanvasPreviewProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  // Factor de escala: el canvas SIEMPRE se renderiza a 1080px (3x más que 360px)
-  const SCALE_FACTOR = 3;
+  // Factores de escala diferenciados para canvas 1080px
+  const CANVAS_SCALE = 3;    // Estructura: posicionamiento, contenedores, gaps
+  const CONTENT_SCALE = 2;   // Contenido: textos, iconos, borders
   const templateConfig = TEMPLATE_THEMES[template];
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const activePhotoIndex = currentPhotoIndexOverride !== undefined ? currentPhotoIndexOverride : currentPhotoIndex;
@@ -106,8 +107,8 @@ export const CanvasPreview = ({
     const scale = 1 + (effectiveTextComposition.typographyScale / 100);
     const badgeScale = 1 + (effectiveTextComposition.badgeScale / 100);
     
-    return { scale, badgeScale, scaleFactor: SCALE_FACTOR };
-  }, [effectiveTextComposition, SCALE_FACTOR]);
+    return { scale, badgeScale, canvasScale: CANVAS_SCALE, contentScale: CONTENT_SCALE };
+  }, [effectiveTextComposition, CANVAS_SCALE, CONTENT_SCALE]);
 
   // Map vertical spacing to pixel values con ajuste para captura
   const spacingMap = {
@@ -179,8 +180,8 @@ export const CanvasPreview = ({
   // Tamaño del logo "El Gestor" unificado (reducido 10%)
   const elGestorLogoSize = useMemo(() => {
     const baseSize = isStory ? 36 : 29;
-    return baseSize * SCALE_FACTOR;
-  }, [isStory, SCALE_FACTOR]);
+    return baseSize * CONTENT_SCALE;
+  }, [isStory, CONTENT_SCALE]);
 
   const handlePrevPhoto = () => {
     if (propertyData.fotos && currentPhotoIndex > 0) {
@@ -236,14 +237,14 @@ export const CanvasPreview = ({
                   size="icon"
                   className="absolute z-20 bg-white/90 hover:bg-white"
                   style={{
-                    left: `${16 * SCALE_FACTOR}px`,
+                    left: `${16 * CANVAS_SCALE}px`,
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    width: `${40 * SCALE_FACTOR}px`,
-                    height: `${40 * SCALE_FACTOR}px`
+                    width: `${40 * CANVAS_SCALE}px`,
+                    height: `${40 * CANVAS_SCALE}px`
                   }}
                 >
-                  <ChevronLeft style={{ width: `${24 * SCALE_FACTOR}px`, height: `${24 * SCALE_FACTOR}px` }} />
+                  <ChevronLeft style={{ width: `${24 * CONTENT_SCALE}px`, height: `${24 * CONTENT_SCALE}px` }} />
                 </Button>
               )}
               {currentPhotoIndex < propertyData.fotos.length - 1 && (
@@ -253,23 +254,23 @@ export const CanvasPreview = ({
                   size="icon"
                   className="absolute z-20 bg-white/90 hover:bg-white"
                   style={{
-                    right: `${16 * SCALE_FACTOR}px`,
+                    right: `${16 * CANVAS_SCALE}px`,
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    width: `${40 * SCALE_FACTOR}px`,
-                    height: `${40 * SCALE_FACTOR}px`
+                    width: `${40 * CANVAS_SCALE}px`,
+                    height: `${40 * CANVAS_SCALE}px`
                   }}
                 >
-                  <ChevronRight style={{ width: `${24 * SCALE_FACTOR}px`, height: `${24 * SCALE_FACTOR}px` }} />
+                  <ChevronRight style={{ width: `${24 * CONTENT_SCALE}px`, height: `${24 * CONTENT_SCALE}px` }} />
                 </Button>
               )}
               
               {/* Dots indicator */}
               <div className="absolute z-20 flex" style={{
-                top: `${16 * SCALE_FACTOR}px`,
+                top: `${16 * CANVAS_SCALE}px`,
                 left: '50%',
                 transform: 'translateX(-50%)',
-                gap: `${8 * SCALE_FACTOR}px`
+                gap: `${8 * CANVAS_SCALE}px`
               }}>
                 {propertyData.fotos.map((_, idx) => (
                   <button
@@ -277,8 +278,8 @@ export const CanvasPreview = ({
                     onClick={() => setCurrentPhotoIndex(idx)}
                     className="rounded-full transition-all"
                     style={{
-                      width: idx === currentPhotoIndex ? `${24 * SCALE_FACTOR}px` : `${8 * SCALE_FACTOR}px`,
-                      height: `${8 * SCALE_FACTOR}px`,
+                      width: idx === currentPhotoIndex ? `${24 * CONTENT_SCALE}px` : `${8 * CONTENT_SCALE}px`,
+                      height: `${8 * CONTENT_SCALE}px`,
                       backgroundColor: idx === currentPhotoIndex ? 'white' : 'rgba(255, 255, 255, 0.5)'
                     }}
                     aria-label={`Ver foto ${idx + 1}`}
@@ -295,8 +296,8 @@ export const CanvasPreview = ({
         <div 
           className={`absolute ${logoStyle.positionClass} z-20`}
           style={{ 
-            width: `${logoStyle.sizeNum * SCALE_FACTOR}px`,
-            height: `${logoStyle.sizeNum * SCALE_FACTOR}px`,
+            width: `${logoStyle.sizeNum * CANVAS_SCALE}px`,
+            height: `${logoStyle.sizeNum * CANVAS_SCALE}px`,
             opacity: logoStyle.opacity
           }}
         >
@@ -315,33 +316,33 @@ export const CanvasPreview = ({
       {/* Información inferior - diseño reel minimalista */}
       {(
       <div className="absolute z-30" style={{ 
-        bottom: `${16 * SCALE_FACTOR}px`,
-        left: `${16 * SCALE_FACTOR}px`,
-        right: `${16 * SCALE_FACTOR}px`,
-        paddingRight: `${96 * SCALE_FACTOR}px`,
-        paddingBottom: `${80 * SCALE_FACTOR}px`
+        bottom: `${16 * CANVAS_SCALE}px`,
+        left: `${16 * CANVAS_SCALE}px`,
+        right: `${16 * CANVAS_SCALE}px`,
+        paddingRight: `${96 * CANVAS_SCALE}px`,
+        paddingBottom: `${80 * CANVAS_SCALE}px`
       }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: `${8 * SCALE_FACTOR}px` }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: `${8 * CANVAS_SCALE}px` }}>
           {/* Título y ubicación - condicionado a firstPhotoConfig */}
           {(!isFirstPhoto || !firstPhotoConfig || firstPhotoConfig.showTitle) && (
-            <div style={{ marginBottom: `${verticalGap * 2 * SCALE_FACTOR}px` }}>
+            <div style={{ marginBottom: `${verticalGap * 2 * CANVAS_SCALE}px` }}>
               <h2 
                 className="font-bold text-white"
                 style={{ 
-                  fontSize: `${24 * SCALE_FACTOR * textStyle.scale}px`,
+                  fontSize: `${24 * CONTENT_SCALE * textStyle.scale}px`,
                   textShadow: '0 2px 8px rgba(0,0,0,0.5)',
-                  marginBottom: `${(verticalGap / 2) * SCALE_FACTOR}px`
+                  marginBottom: `${(verticalGap / 2) * CANVAS_SCALE}px`
                 }}
               >
                 {propertyData.tipo.charAt(0).toUpperCase() + propertyData.tipo.slice(1)}
               </h2>
               {propertyData.ubicacion && (
-                <div className="flex items-center" style={{ gap: `${(verticalGap / 2) * SCALE_FACTOR}px` }}>
-                  <MapPin style={{ width: `${16 * SCALE_FACTOR}px`, height: `${16 * SCALE_FACTOR}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <div className="flex items-center" style={{ gap: `${(verticalGap / 2) * CANVAS_SCALE}px` }}>
+                  <MapPin style={{ width: `${16 * CONTENT_SCALE}px`, height: `${16 * CONTENT_SCALE}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                   <span 
                     className="font-semibold text-white"
                     style={{ 
-                      fontSize: `${16 * SCALE_FACTOR * textStyle.scale}px`,
+                      fontSize: `${16 * CONTENT_SCALE * textStyle.scale}px`,
                       textShadow: '0 2px 8px rgba(0,0,0,0.5)'
                     }}
                   >
@@ -359,20 +360,20 @@ export const CanvasPreview = ({
               className="inline-block z-[60]"
               style={{ 
                 backgroundColor: aliadoConfig.colorPrimario,
-                marginBottom: `${verticalGap * 2 * SCALE_FACTOR}px`,
-                paddingLeft: `${16 * SCALE_FACTOR}px`,
-                paddingRight: `${16 * SCALE_FACTOR}px`,
-                paddingTop: `${8 * SCALE_FACTOR}px`,
-                paddingBottom: `${8 * SCALE_FACTOR}px`,
-                borderRadius: `${12 * SCALE_FACTOR}px`,
-                border: `${2 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.7)`
+                marginBottom: `${verticalGap * 2 * CANVAS_SCALE}px`,
+                paddingLeft: `${16 * CONTENT_SCALE}px`,
+                paddingRight: `${16 * CONTENT_SCALE}px`,
+                paddingTop: `${8 * CONTENT_SCALE}px`,
+                paddingBottom: `${8 * CONTENT_SCALE}px`,
+                borderRadius: `${12 * CONTENT_SCALE}px`,
+                border: `${2 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.7)`
               }}
             >
               <p 
                 className="text-white font-semibold uppercase tracking-wide relative z-[70]"
                 style={{ 
-                  fontSize: `${10 * SCALE_FACTOR}px`,
-                  marginBottom: `${2 * SCALE_FACTOR}px`
+                  fontSize: `${10 * CONTENT_SCALE}px`,
+                  marginBottom: `${2 * CONTENT_SCALE}px`
                 }}
               >
                 {isVenta ? "Precio de Venta" : "Canon Mensual"}
@@ -380,7 +381,7 @@ export const CanvasPreview = ({
               <p 
                 className="font-extrabold text-white leading-tight relative z-[70]"
                 style={{ 
-                  fontSize: `${24 * SCALE_FACTOR * textStyle.scale}px`,
+                  fontSize: `${24 * CONTENT_SCALE * textStyle.scale}px`,
                   textShadow: '0 2px 8px rgba(0,0,0,0.5)'
                 }}
               >
@@ -391,26 +392,26 @@ export const CanvasPreview = ({
 
           {/* Iconos de atributos con fondo más opaco */}
           {effectiveVisualLayers.showIcons && (
-          <div className="flex flex-wrap" style={{ gap: `${(verticalGap / 2) * SCALE_FACTOR}px` }}>
+          <div className="flex flex-wrap" style={{ gap: `${(verticalGap / 2) * CANVAS_SCALE}px` }}>
             {propertyData.habitaciones && (
               <div 
                 className="flex items-center shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
-                  border: `${1 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.2)`,
-                  paddingLeft: `${12 * SCALE_FACTOR}px`,
-                  paddingRight: `${12 * SCALE_FACTOR}px`,
-                  paddingTop: `${8 * SCALE_FACTOR}px`,
-                  paddingBottom: `${8 * SCALE_FACTOR}px`,
-                  borderRadius: `${8 * SCALE_FACTOR}px`,
-                  gap: `${8 * SCALE_FACTOR}px`
+                  border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
+                  paddingLeft: `${12 * CONTENT_SCALE}px`,
+                  paddingRight: `${12 * CONTENT_SCALE}px`,
+                  paddingTop: `${8 * CONTENT_SCALE}px`,
+                  paddingBottom: `${8 * CONTENT_SCALE}px`,
+                  borderRadius: `${8 * CONTENT_SCALE}px`,
+                  gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
-                <Bed style={{ width: `${20 * SCALE_FACTOR}px`, height: `${20 * SCALE_FACTOR}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Bed style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * SCALE_FACTOR * textStyle.scale}px`,
+                    fontSize: `${14 * CONTENT_SCALE * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -424,20 +425,20 @@ export const CanvasPreview = ({
                 className="flex items-center shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
-                  border: `${1 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.2)`,
-                  paddingLeft: `${12 * SCALE_FACTOR}px`,
-                  paddingRight: `${12 * SCALE_FACTOR}px`,
-                  paddingTop: `${8 * SCALE_FACTOR}px`,
-                  paddingBottom: `${8 * SCALE_FACTOR}px`,
-                  borderRadius: `${8 * SCALE_FACTOR}px`,
-                  gap: `${8 * SCALE_FACTOR}px`
+                  border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
+                  paddingLeft: `${12 * CONTENT_SCALE}px`,
+                  paddingRight: `${12 * CONTENT_SCALE}px`,
+                  paddingTop: `${8 * CONTENT_SCALE}px`,
+                  paddingBottom: `${8 * CONTENT_SCALE}px`,
+                  borderRadius: `${8 * CONTENT_SCALE}px`,
+                  gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
-                <Bath style={{ width: `${20 * SCALE_FACTOR}px`, height: `${20 * SCALE_FACTOR}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Bath style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * SCALE_FACTOR * textStyle.scale}px`,
+                    fontSize: `${14 * CONTENT_SCALE * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -451,20 +452,20 @@ export const CanvasPreview = ({
                 className="flex items-center shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
-                  border: `${1 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.2)`,
-                  paddingLeft: `${12 * SCALE_FACTOR}px`,
-                  paddingRight: `${12 * SCALE_FACTOR}px`,
-                  paddingTop: `${8 * SCALE_FACTOR}px`,
-                  paddingBottom: `${8 * SCALE_FACTOR}px`,
-                  borderRadius: `${8 * SCALE_FACTOR}px`,
-                  gap: `${8 * SCALE_FACTOR}px`
+                  border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
+                  paddingLeft: `${12 * CONTENT_SCALE}px`,
+                  paddingRight: `${12 * CONTENT_SCALE}px`,
+                  paddingTop: `${8 * CONTENT_SCALE}px`,
+                  paddingBottom: `${8 * CONTENT_SCALE}px`,
+                  borderRadius: `${8 * CONTENT_SCALE}px`,
+                  gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
-                <Car style={{ width: `${20 * SCALE_FACTOR}px`, height: `${20 * SCALE_FACTOR}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Car style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * SCALE_FACTOR * textStyle.scale}px`,
+                    fontSize: `${14 * CONTENT_SCALE * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -478,20 +479,20 @@ export const CanvasPreview = ({
                 className="flex items-center shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
-                  border: `${1 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.2)`,
-                  paddingLeft: `${12 * SCALE_FACTOR}px`,
-                  paddingRight: `${12 * SCALE_FACTOR}px`,
-                  paddingTop: `${8 * SCALE_FACTOR}px`,
-                  paddingBottom: `${8 * SCALE_FACTOR}px`,
-                  borderRadius: `${8 * SCALE_FACTOR}px`,
-                  gap: `${8 * SCALE_FACTOR}px`
+                  border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
+                  paddingLeft: `${12 * CONTENT_SCALE}px`,
+                  paddingRight: `${12 * CONTENT_SCALE}px`,
+                  paddingTop: `${8 * CONTENT_SCALE}px`,
+                  paddingBottom: `${8 * CONTENT_SCALE}px`,
+                  borderRadius: `${8 * CONTENT_SCALE}px`,
+                  gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
-                <Square style={{ width: `${20 * SCALE_FACTOR}px`, height: `${20 * SCALE_FACTOR}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
+                <Square style={{ width: `${20 * CONTENT_SCALE}px`, height: `${20 * CONTENT_SCALE}px`, color: 'white', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }} />
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * SCALE_FACTOR * textStyle.scale}px`,
+                    fontSize: `${14 * CONTENT_SCALE * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -505,19 +506,19 @@ export const CanvasPreview = ({
                 className="flex items-center shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
-                  border: `${1 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.2)`,
-                  paddingLeft: `${12 * SCALE_FACTOR}px`,
-                  paddingRight: `${12 * SCALE_FACTOR}px`,
-                  paddingTop: `${8 * SCALE_FACTOR}px`,
-                  paddingBottom: `${8 * SCALE_FACTOR}px`,
-                  borderRadius: `${8 * SCALE_FACTOR}px`,
-                  gap: `${8 * SCALE_FACTOR}px`
+                  border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
+                  paddingLeft: `${12 * CONTENT_SCALE}px`,
+                  paddingRight: `${12 * CONTENT_SCALE}px`,
+                  paddingTop: `${8 * CONTENT_SCALE}px`,
+                  paddingBottom: `${8 * CONTENT_SCALE}px`,
+                  borderRadius: `${8 * CONTENT_SCALE}px`,
+                  gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * SCALE_FACTOR * textStyle.scale}px`,
+                    fontSize: `${14 * CONTENT_SCALE * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -531,19 +532,19 @@ export const CanvasPreview = ({
                 className="flex items-center shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
-                  border: `${1 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.2)`,
-                  paddingLeft: `${12 * SCALE_FACTOR}px`,
-                  paddingRight: `${12 * SCALE_FACTOR}px`,
-                  paddingTop: `${8 * SCALE_FACTOR}px`,
-                  paddingBottom: `${8 * SCALE_FACTOR}px`,
-                  borderRadius: `${8 * SCALE_FACTOR}px`,
-                  gap: `${8 * SCALE_FACTOR}px`
+                  border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
+                  paddingLeft: `${12 * CONTENT_SCALE}px`,
+                  paddingRight: `${12 * CONTENT_SCALE}px`,
+                  paddingTop: `${8 * CONTENT_SCALE}px`,
+                  paddingBottom: `${8 * CONTENT_SCALE}px`,
+                  borderRadius: `${8 * CONTENT_SCALE}px`,
+                  gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * SCALE_FACTOR * textStyle.scale}px`,
+                    fontSize: `${14 * CONTENT_SCALE * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -557,19 +558,19 @@ export const CanvasPreview = ({
                 className="flex items-center shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
-                  border: `${1 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.2)`,
-                  paddingLeft: `${12 * SCALE_FACTOR}px`,
-                  paddingRight: `${12 * SCALE_FACTOR}px`,
-                  paddingTop: `${8 * SCALE_FACTOR}px`,
-                  paddingBottom: `${8 * SCALE_FACTOR}px`,
-                  borderRadius: `${8 * SCALE_FACTOR}px`,
-                  gap: `${8 * SCALE_FACTOR}px`
+                  border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
+                  paddingLeft: `${12 * CONTENT_SCALE}px`,
+                  paddingRight: `${12 * CONTENT_SCALE}px`,
+                  paddingTop: `${8 * CONTENT_SCALE}px`,
+                  paddingBottom: `${8 * CONTENT_SCALE}px`,
+                  borderRadius: `${8 * CONTENT_SCALE}px`,
+                  gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * SCALE_FACTOR * textStyle.scale}px`,
+                    fontSize: `${14 * CONTENT_SCALE * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -583,19 +584,19 @@ export const CanvasPreview = ({
                 className="flex items-center shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
-                  border: `${1 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.2)`,
-                  paddingLeft: `${12 * SCALE_FACTOR}px`,
-                  paddingRight: `${12 * SCALE_FACTOR}px`,
-                  paddingTop: `${8 * SCALE_FACTOR}px`,
-                  paddingBottom: `${8 * SCALE_FACTOR}px`,
-                  borderRadius: `${8 * SCALE_FACTOR}px`,
-                  gap: `${8 * SCALE_FACTOR}px`
+                  border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
+                  paddingLeft: `${12 * CONTENT_SCALE}px`,
+                  paddingRight: `${12 * CONTENT_SCALE}px`,
+                  paddingTop: `${8 * CONTENT_SCALE}px`,
+                  paddingBottom: `${8 * CONTENT_SCALE}px`,
+                  borderRadius: `${8 * CONTENT_SCALE}px`,
+                  gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * SCALE_FACTOR * textStyle.scale}px`,
+                    fontSize: `${14 * CONTENT_SCALE * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -609,19 +610,19 @@ export const CanvasPreview = ({
                 className="flex items-center shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
-                  border: `${1 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.2)`,
-                  paddingLeft: `${12 * SCALE_FACTOR}px`,
-                  paddingRight: `${12 * SCALE_FACTOR}px`,
-                  paddingTop: `${8 * SCALE_FACTOR}px`,
-                  paddingBottom: `${8 * SCALE_FACTOR}px`,
-                  borderRadius: `${8 * SCALE_FACTOR}px`,
-                  gap: `${8 * SCALE_FACTOR}px`
+                  border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
+                  paddingLeft: `${12 * CONTENT_SCALE}px`,
+                  paddingRight: `${12 * CONTENT_SCALE}px`,
+                  paddingTop: `${8 * CONTENT_SCALE}px`,
+                  paddingBottom: `${8 * CONTENT_SCALE}px`,
+                  borderRadius: `${8 * CONTENT_SCALE}px`,
+                  gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * SCALE_FACTOR * textStyle.scale}px`,
+                    fontSize: `${14 * CONTENT_SCALE * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -635,19 +636,19 @@ export const CanvasPreview = ({
                 className="flex items-center shadow-lg"
                 style={{ 
                   backgroundColor: aliadoConfig.colorSecundario,
-                  border: `${1 * SCALE_FACTOR}px solid rgba(255, 255, 255, 0.2)`,
-                  paddingLeft: `${12 * SCALE_FACTOR}px`,
-                  paddingRight: `${12 * SCALE_FACTOR}px`,
-                  paddingTop: `${8 * SCALE_FACTOR}px`,
-                  paddingBottom: `${8 * SCALE_FACTOR}px`,
-                  borderRadius: `${8 * SCALE_FACTOR}px`,
-                  gap: `${8 * SCALE_FACTOR}px`
+                  border: `${1 * CONTENT_SCALE}px solid rgba(255, 255, 255, 0.2)`,
+                  paddingLeft: `${12 * CONTENT_SCALE}px`,
+                  paddingRight: `${12 * CONTENT_SCALE}px`,
+                  paddingTop: `${8 * CONTENT_SCALE}px`,
+                  paddingBottom: `${8 * CONTENT_SCALE}px`,
+                  borderRadius: `${8 * CONTENT_SCALE}px`,
+                  gap: `${8 * CONTENT_SCALE}px`
                 }}
               >
                 <span 
                   className="font-semibold text-white"
                   style={{ 
-                    fontSize: `${14 * SCALE_FACTOR * textStyle.scale}px`,
+                    fontSize: `${14 * CONTENT_SCALE * textStyle.scale}px`,
                     textShadow: '1px 1px 3px rgba(0,0,0,0.6)' 
                   }}
                 >
@@ -667,8 +668,8 @@ export const CanvasPreview = ({
       <div 
         className="absolute z-30"
         style={{
-          bottom: isStory ? `${96 * SCALE_FACTOR}px` : `${16 * SCALE_FACTOR}px`,
-          right: `${16 * SCALE_FACTOR}px`
+          bottom: isStory ? `${96 * CANVAS_SCALE}px` : `${16 * CANVAS_SCALE}px`,
+          right: `${16 * CANVAS_SCALE}px`
         }}
       >
         <img 
